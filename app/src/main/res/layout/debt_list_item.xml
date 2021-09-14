@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/selected_background"
+    android:layout_margin="@dimen/_10sdp">
+
+    <LinearLayout
+        android:padding="@dimen/_5sdp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/iran_sans"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/_11sdp"
+            android:text="خ امام از اول اونجا تا اخر اینجا"
+            android:gravity="right|center_vertical"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/iran_sans_fa_num_bold"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/_13sdp"
+            android:text="8000 تومان"
+            android:gravity="right|center_vertical"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_1sdp"
+        android:background="@color/gray"
+        android:layout_marginTop="@dimen/_3sdp"
+        android:layout_marginBottom="@dimen/_3sdp"
+        />
+
+    <LinearLayout
+        android:padding="@dimen/_5sdp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/iran_sans_fa_num_bold"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/_13sdp"
+            android:text="1400-02-08 19:27"
+            android:gravity="left|center_vertical"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/iran_sans"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/_11sdp"
+            android:text="شروع پارک"
+            android:gravity="right|center_vertical"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:padding="@dimen/_5sdp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/iran_sans_fa_num_bold"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/_13sdp"
+            android:text="1400-02-08 21:27"
+            android:gravity="left|center_vertical"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/iran_sans"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/_11sdp"
+            android:text="پایان پارک"
+            android:gravity="right|center_vertical"/>
+
+    </LinearLayout>
+
+</LinearLayout>

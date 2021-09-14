@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".SplashActivity">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/login_bg" />
+
+    <ImageView
+        android:layout_width="@dimen/_80sdp"
+        android:layout_height="@dimen/_80sdp"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/_30sdp"
+        android:src="@drawable/login_bg" />
+
+    <LinearLayout
+        android:layout_centerVertical="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:background="@drawable/white_bg_15"
+        android:orientation="vertical"
+        android:padding="@dimen/_15sdp"
+        android:layout_margin="@dimen/_20sdp">
+
+        <TextView
+            android:fontFamily="@font/iran_sans"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="شماره موبایل خود را وارد کنید"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_15sdp"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:background="@drawable/gray_bg_5"
+            android:padding="@dimen/_5sdp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:fontFamily="@font/iran_sans"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:hint="09147817188"
+                android:padding="@dimen/_5sdp"
+                android:textColor="@color/black" />
+
+            <ImageView
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_mobile"
+                app:tint="@color/blue" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:background="@drawable/gray_bg_5"
+            android:padding="@dimen/_5sdp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:fontFamily="@font/iran_sans"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:hint="رمز عبور"
+                android:padding="@dimen/_5sdp"
+                android:textColor="@color/black" />
+
+            <ImageView
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_password"
+                app:tint="@color/blue" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:fontFamily="@font/iran_sans"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ادامه"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:padding="@dimen/_10sdp"
+            android:textColor="@color/white"
+            android:background="@drawable/blue_bg_5"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

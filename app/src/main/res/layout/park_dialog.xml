@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_gravity="center"
+    android:layout_margin="@dimen/_20sdp"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/dialog_background"
+    android:padding="@dimen/_10sdp">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="right"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/iran_sans_fa_num"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_15sdp"
+            android:text="87"/>
+
+        <TextView
+            android:layout_marginRight="@dimen/_10sdp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/iran_sans"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/_13sdp"
+            android:text="جایگاه شماره "/>
+
+        <ImageView
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:src="@drawable/ic_parking"
+            app:tint="@color/green" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="right"
+        android:gravity="center">
+
+        <TextView
+            android:layout_marginRight="@dimen/_10sdp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/iran_sans"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/_13sdp"
+            android:text="نوع و پلاک خودرو را مشخص کنید"/>
+
+        <ImageView
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:src="@drawable/ic_car_outline"
+            app:tint="@color/green" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/_15sdp">
+
+        <TextView
+            android:background="@drawable/unselected_background"
+            android:padding="@dimen/_5sdp"
+            android:gravity="center"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:fontFamily="@font/iran_sans"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/_13sdp"
+            android:text="ارس جدید"/>
+
+        <TextView
+            android:background="@drawable/unselected_background"
+            android:padding="@dimen/_5sdp"
+            android:gravity="center"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:fontFamily="@font/iran_sans"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/_13sdp"
+            android:text="ارس"/>
+
+        <TextView
+            android:background="@drawable/selected_background"
+            android:padding="@dimen/_5sdp"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:fontFamily="@font/iran_sans"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/_13sdp"
+            android:text="ملی"
+            android:gravity="center"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/_20sdp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/unselected_background">
+
+            <EditText
+                android:background="@drawable/unselected_background"
+                android:paddingTop="@dimen/_5sdp"
+                android:paddingBottom="@dimen/_5sdp"
+                android:paddingRight="@dimen/_10sdp"
+                android:paddingLeft="@dimen/_10sdp"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/iran_sans_fa_num"
+                android:textColor="@color/text_gray"
+                android:textSize="@dimen/_13sdp"
+                android:hint="56"
+                android:letterSpacing="0.3"/>
+
+            <EditText
+                android:background="@drawable/unselected_background"
+                android:paddingTop="@dimen/_5sdp"
+                android:paddingBottom="@dimen/_5sdp"
+                android:paddingRight="@dimen/_5sdp"
+                android:paddingLeft="@dimen/_5sdp"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/iran_sans"
+                android:textColor="@color/text_gray"
+                android:textSize="@dimen/_13sdp"
+                android:hint="س"/>
+
+            <EditText
+                android:background="@drawable/unselected_background"
+                android:paddingTop="@dimen/_5sdp"
+                android:paddingBottom="@dimen/_5sdp"
+                android:paddingRight="@dimen/_10sdp"
+                android:paddingLeft="@dimen/_10sdp"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/iran_sans_fa_num"
+                android:textColor="@color/text_gray"
+                android:textSize="@dimen/_13sdp"
+                android:hint="526"
+                android:letterSpacing="0.3"/>
+
+        </LinearLayout>
+
+        <EditText
+            android:background="@drawable/unselected_background"
+            android:paddingTop="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_5sdp"
+            android:paddingRight="@dimen/_10sdp"
+            android:paddingLeft="@dimen/_10sdp"
+            android:gravity="center"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/iran_sans_fa_num"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/_13sdp"
+            android:hint="15"
+            android:letterSpacing="0.3"/>
+
+    </LinearLayout>
+
+    <EditText
+        android:background="@drawable/unselected_background"
+        android:paddingTop="@dimen/_5sdp"
+        android:paddingBottom="@dimen/_5sdp"
+        android:paddingRight="@dimen/_10sdp"
+        android:paddingLeft="@dimen/_10sdp"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/iran_sans_fa_num"
+        android:textColor="@color/text_gray"
+        android:textSize="@dimen/_13sdp"
+        android:hint="12345"
+        android:letterSpacing="0.3"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/_20sdp"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/_20sdp">
+
+        <EditText
+            android:background="@drawable/unselected_background"
+            android:paddingTop="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_5sdp"
+            android:paddingRight="@dimen/_10sdp"
+            android:paddingLeft="@dimen/_10sdp"
+            android:gravity="center"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/iran_sans_fa_num"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/_13sdp"
+            android:hint="12345"
+            android:letterSpacing="0.3"/>
+
+        <EditText
+            android:background="@drawable/unselected_background"
+            android:paddingTop="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_5sdp"
+            android:paddingRight="@dimen/_10sdp"
+            android:paddingLeft="@dimen/_10sdp"
+            android:gravity="center"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/iran_sans_fa_num"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/_13sdp"
+            android:hint="55"
+            android:letterSpacing="0.3"/>
+
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="right"
+        android:gravity="center">
+
+        <TextView
+            android:layout_marginRight="@dimen/_10sdp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/iran_sans"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/_13sdp"
+            android:text="پرینت قبض"/>
+
+        <CheckBox
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:checked="true"
+            />
+
+    </LinearLayout>
+
+    <TextView
+        android:fontFamily="@font/iran_sans"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ثبت"
+        android:paddingRight="@dimen/_40sdp"
+        android:paddingLeft="@dimen/_40sdp"
+        android:paddingTop="@dimen/_8sdp"
+        android:paddingBottom="@dimen/_8sdp"
+        android:gravity="center"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:textColor="@color/white"
+        android:background="@drawable/blue_bg_5"/>
+
+</LinearLayout>
