@@ -14,7 +14,7 @@ import com.azarpark.watchman.databinding.ParkDialog02Binding;
 
 public class CheckoutDialog extends DialogFragment {
 
-    public static final String TAG = "ParkDialog02Tag";
+    public static final String TAG = "CheckoutDialog";
     CheckoutDialogBinding binding;
     OnCheckoutButtonsClicked checkoutButtonsClicked;
     private ParkModel parkModel;

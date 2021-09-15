@@ -16,10 +16,16 @@ import android.widget.Toast;
 import com.azarpark.watchman.databinding.ActivityMainBinding;
 import com.azarpark.watchman.databinding.MainMenuBinding;
 import com.azarpark.watchman.databinding.MenuPopupWindowBinding;
+import com.azarpark.watchman.retrofit_remote.RetrofitAPIClient;
+import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
+import com.azarpark.watchman.retrofit_remote.responses.TestResponse;
 
 import java.util.ArrayList;
 
 import jp.wasabeef.blurry.Blurry;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     boolean menuIsOpen = false;
     PopupWindow popupWindow;
     View popupView;
+    ConfirmDialog confirmDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,11 +124,55 @@ public class MainActivity extends AppCompatActivity {
 
         popupView.findViewById(R.id.exit_request).setOnClickListener(view -> Toast.makeText(getApplicationContext(), "exit_request", Toast.LENGTH_SHORT).show());
         popupView.findViewById(R.id.debt_inquiry).setOnClickListener(view -> startActivity(new Intent(MainActivity.this, DebtCheckActivity.class)));
-        popupView.findViewById(R.id.car_number_charge).setOnClickListener(view -> Toast.makeText(getApplicationContext(), "car_number_charge", Toast.LENGTH_SHORT).show());
-        popupView.findViewById(R.id.help).setOnClickListener(view -> Toast.makeText(getApplicationContext(), "help", Toast.LENGTH_SHORT).show());
+        popupView.findViewById(R.id.car_number_charge).setOnClickListener(view -> startActivity(new Intent(MainActivity.this, CarNumberChargeActivity.class)));
+        popupView.findViewById(R.id.help).setOnClickListener(view -> {
+
+            Toast.makeText(getApplicationContext(), "help", Toast.LENGTH_SHORT).show();
+
+            RetrofitAPIRepository repository = new RetrofitAPIRepository();
+
+            repository.test(new Callback<TestResponse>() {
+                @Override
+                public void onResponse(Call<TestResponse> call, Response<TestResponse> response) {
+
+                    Toast.makeText(getApplicationContext(), "post title : " +  response.body().getTitle(), Toast.LENGTH_SHORT).show();
+
+
+
+                }
+
+                @Override
+                public void onFailure(Call<TestResponse> call, Throwable t) {
+
+                    Toast.makeText(getApplicationContext(), "failure", Toast.LENGTH_SHORT).show();
+
+                }
+            },1);
+
+        });
         popupView.findViewById(R.id.about_us).setOnClickListener(view -> Toast.makeText(getApplicationContext(), "about_us", Toast.LENGTH_SHORT).show());
         popupView.findViewById(R.id.rules).setOnClickListener(view -> Toast.makeText(getApplicationContext(), "rules", Toast.LENGTH_SHORT).show());
-        popupView.findViewById(R.id.logout).setOnClickListener(view -> Toast.makeText(getApplicationContext(), "logout", Toast.LENGTH_SHORT).show());
+        popupView.findViewById(R.id.logout).setOnClickListener(view -> {
+
+            confirmDialog = new ConfirmDialog("خروج", "ایا اطمینان دارید؟", "خروج", "لغو", new ConfirmDialog.ConfirmButtonClicks() {
+                @Override
+                public void onConfirmClicked() {
+
+                    Toast.makeText(getApplicationContext(), "exit", Toast.LENGTH_SHORT).show();
+                    confirmDialog.dismiss();
+                }
+
+                @Override
+                public void onCancelClicked() {
+
+                    Toast.makeText(getApplicationContext(), "cancel", Toast.LENGTH_SHORT).show();
+                    confirmDialog.dismiss();
+                }
+            });
+
+            confirmDialog.show(getSupportFragmentManager(),ConfirmDialog.TAG);
+
+        });
 
 
     }
