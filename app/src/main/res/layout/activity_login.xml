@@ -50,14 +50,16 @@
             android:orientation="horizontal">
 
             <EditText
-                android:fontFamily="@font/iran_sans"
+                android:id="@+id/username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:background="@android:color/transparent"
+                android:fontFamily="@font/iran_sans"
                 android:gravity="center"
                 android:hint="09147817188"
                 android:padding="@dimen/_5sdp"
+                android:text="09147817188"
                 android:textColor="@color/black" />
 
             <ImageView
@@ -79,13 +81,15 @@
             android:orientation="horizontal">
 
             <EditText
-                android:fontFamily="@font/iran_sans"
+                android:id="@+id/password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:background="@android:color/transparent"
+                android:fontFamily="@font/iran_sans"
                 android:gravity="center"
                 android:hint="رمز عبور"
+                android:text="1234"
                 android:padding="@dimen/_5sdp"
                 android:textColor="@color/black" />
 
@@ -100,10 +104,11 @@
         </RelativeLayout>
 
         <TextView
+            android:onClick="onLoginClicked"
             android:fontFamily="@font/iran_sans"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="ادامه"
+            android:text="ورود"
             android:gravity="center"
             android:layout_marginTop="@dimen/_20sdp"
             android:padding="@dimen/_10sdp"

@@ -1,6 +1,8 @@
 package com.azarpark.watchman.retrofit_remote;
 
-import com.azarpark.watchman.retrofit_remote.interfaces.Test;
+import com.azarpark.watchman.retrofit_remote.bodies.LoginBody;
+import com.azarpark.watchman.retrofit_remote.interfaces.Login;
+import com.azarpark.watchman.retrofit_remote.responses.LoginResponse;
 import com.azarpark.watchman.retrofit_remote.responses.TestResponse;
 
 import retrofit2.Callback;
@@ -8,11 +10,11 @@ import retrofit2.Callback;
 
 public class RetrofitAPIRepository {
 
-    public void test (Callback<TestResponse> responseCallback, int id){
+    public void login (LoginBody body, Callback<LoginResponse> responseCallback){
 
-        Test test = RetrofitAPIClient.getClient().create(Test.class);
+        Login login = RetrofitAPIClient.getClient().create(Login.class);
 
-        test.test(id).enqueue(responseCallback);
+        login.login(body).enqueue(responseCallback);
 
     }
 

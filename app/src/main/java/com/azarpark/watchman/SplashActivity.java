@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 
 import com.azarpark.watchman.databinding.ActivitySplashBinding;
 
@@ -17,7 +18,12 @@ public class SplashActivity extends AppCompatActivity {
         binding = ActivitySplashBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        binding.getRoot().setOnClickListener(view -> startActivity(new Intent(SplashActivity.this, LoginActivity.class)));
+        new Handler().postDelayed(() -> {
+
+            SplashActivity.this.finish();
+            startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+
+        },500);
 
     }
 }
