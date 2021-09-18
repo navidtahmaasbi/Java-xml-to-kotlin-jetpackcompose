@@ -1,4 +1,4 @@
-package com.azarpark.watchman;
+package com.azarpark.watchman.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 

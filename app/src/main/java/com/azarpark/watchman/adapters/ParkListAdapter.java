@@ -1,4 +1,5 @@
-package com.azarpark.watchman;
+package com.azarpark.watchman.adapters;
+
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,15 +9,18 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.azarpark.watchman.databinding.ParkItemBinding;
+import com.azarpark.watchman.models.ParkModel;
+import com.azarpark.watchman.models.Place;
 
 import java.util.ArrayList;
 
 public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    ArrayList<ParkModel> items;
+    ArrayList<Place> items;
     OnItemClicked onItemClicked;
 
     public ParkListAdapter(OnItemClicked onItemClicked) {
+        items = new ArrayList<>();
         this.onItemClicked = onItemClicked;
     }
 
@@ -36,7 +40,7 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     }
 
-    public void setItems(ArrayList<ParkModel> items){
+    public void setItems(ArrayList<Place> items){
 
         this.items = items;
         notifyDataSetChanged();
@@ -60,7 +64,7 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public static interface OnItemClicked{
 
-        public void itemClicked(ParkModel parkModel);
+        public void itemClicked(Place place);
 
     }
 }

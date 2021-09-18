@@ -15,4 +15,6 @@
     <color name="red">#FF0000</color>
     <color name="popup_background">#FAFFFFFF</color>
     <color name="green">#FF03DAC5</color>
+    <color name="loadingbar_background">#16000000</color>
+    <color name="dark_blue">#365A91</color>
 </resources>

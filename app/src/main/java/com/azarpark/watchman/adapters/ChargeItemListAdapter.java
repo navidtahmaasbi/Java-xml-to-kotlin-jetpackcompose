@@ -1,4 +1,4 @@
-package com.azarpark.watchman;
+package com.azarpark.watchman.adapters;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;

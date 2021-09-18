@@ -1,4 +1,5 @@
-package com.azarpark.watchman;
+package com.azarpark.watchman.adapters;
+
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -6,8 +7,10 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+
 import com.azarpark.watchman.databinding.DebtListItemBinding;
 import com.azarpark.watchman.databinding.ParkItemBinding;
+import com.azarpark.watchman.models.DebtModel;
 
 import java.util.ArrayList;
 

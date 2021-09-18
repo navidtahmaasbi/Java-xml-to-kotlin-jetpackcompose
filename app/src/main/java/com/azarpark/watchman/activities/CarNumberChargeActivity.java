@@ -1,9 +1,10 @@
-package com.azarpark.watchman;
+package com.azarpark.watchman.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
+import com.azarpark.watchman.adapters.ChargeItemListAdapter;
 import com.azarpark.watchman.databinding.ActivityCarNumberChargeBinding;
 
 import java.text.NumberFormat;

@@ -1,26 +1,30 @@
-package com.azarpark.watchman;
+package com.azarpark.watchman.dialogs;
+
 
 import android.app.Dialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
-import com.azarpark.watchman.databinding.CheckoutDialogBinding;
-import com.azarpark.watchman.databinding.ParkDialog02Binding;
+import com.azarpark.watchman.databinding.ParkDialogBinding;
+import com.azarpark.watchman.interfaces.OnSubmitClicked;
+import com.azarpark.watchman.models.ParkModel;
 
-public class CheckoutDialog extends DialogFragment {
+public class ParkDialog extends DialogFragment {
 
-    public static final String TAG = "CheckoutDialog";
-    CheckoutDialogBinding binding;
-    OnCheckoutButtonsClicked checkoutButtonsClicked;
+    public static final String TAG = "ParkDialogTag";
+    ParkDialogBinding binding;
+    private OnSubmitClicked onSubmitClicked;
     private ParkModel parkModel;
 
-    public CheckoutDialog(OnCheckoutButtonsClicked checkoutButtonsClicked, ParkModel parkModel) {
-        this.checkoutButtonsClicked = checkoutButtonsClicked;
+    public ParkDialog(OnSubmitClicked onSubmitClicked, ParkModel parkModel) {
+        this.onSubmitClicked = onSubmitClicked;
         this.parkModel = parkModel;
     }
 
@@ -28,12 +32,9 @@ public class CheckoutDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
 //        return super.onCreateDialog(savedInstanceState);
-        binding = CheckoutDialogBinding.inflate(LayoutInflater.from(getContext()));
+        binding = ParkDialogBinding.inflate(LayoutInflater.from(getContext()));
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(binding.getRoot());
-
-        binding.showDebtList.setOnClickListener(view -> checkoutButtonsClicked.onShowDebtListClicked(parkModel));
-
         return builder.create();
     }
 

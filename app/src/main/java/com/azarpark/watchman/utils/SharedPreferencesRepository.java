@@ -1,4 +1,4 @@
-package com.azarpark.watchman;
+package com.azarpark.watchman.utils;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -30,7 +30,7 @@ public class SharedPreferencesRepository {
 
     public String getString(String key) {
 
-        String defaultString = "no " + key + " found";
+        String defaultString = "";
 
         return prefs.getString(key, defaultString);
 

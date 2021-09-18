@@ -1,4 +1,4 @@
-package com.azarpark.watchman;
+package com.azarpark.watchman.dialogs;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -9,24 +9,20 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import com.azarpark.watchman.databinding.CheckoutDialogBinding;
 import com.azarpark.watchman.databinding.ParkDialog02Binding;
-import com.azarpark.watchman.databinding.ParkDialogBinding;
+import com.azarpark.watchman.interfaces.OnCheckoutButtonsClicked;
+import com.azarpark.watchman.models.ParkModel;
 
-public class ParkDialog02 extends DialogFragment {
+public class CheckoutDialog extends DialogFragment {
 
-    public static final String TAG = "ParkDialog02Tag";
-    ParkDialog02Binding binding;
-    private OnSubmitClicked onSubmitClicked;
+    public static final String TAG = "CheckoutDialog";
+    CheckoutDialogBinding binding;
+    OnCheckoutButtonsClicked checkoutButtonsClicked;
     private ParkModel parkModel;
 
-    public ParkDialog02(OnSubmitClicked onSubmitClicked, ParkModel parkModel) {
-        this.onSubmitClicked = onSubmitClicked;
-        this.parkModel = parkModel;
-    }
-
-    public ParkDialog02(int contentLayoutId, OnSubmitClicked onSubmitClicked, ParkModel parkModel) {
-        super(contentLayoutId);
-        this.onSubmitClicked = onSubmitClicked;
+    public CheckoutDialog(OnCheckoutButtonsClicked checkoutButtonsClicked, ParkModel parkModel) {
+        this.checkoutButtonsClicked = checkoutButtonsClicked;
         this.parkModel = parkModel;
     }
 
@@ -34,11 +30,11 @@ public class ParkDialog02 extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
 //        return super.onCreateDialog(savedInstanceState);
-        binding = ParkDialog02Binding.inflate(LayoutInflater.from(getContext()));
+        binding = CheckoutDialogBinding.inflate(LayoutInflater.from(getContext()));
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(binding.getRoot());
 
-        binding.submit.setOnClickListener(view -> onSubmitClicked.onClick(parkModel));
+        binding.showDebtList.setOnClickListener(view -> checkoutButtonsClicked.onShowDebtListClicked(parkModel));
 
         return builder.create();
     }

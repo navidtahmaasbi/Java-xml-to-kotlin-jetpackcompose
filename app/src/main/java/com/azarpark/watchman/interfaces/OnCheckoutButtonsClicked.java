@@ -1,4 +1,6 @@
-package com.azarpark.watchman;
+package com.azarpark.watchman.interfaces;
+
+import com.azarpark.watchman.models.ParkModel;
 
 public interface OnCheckoutButtonsClicked {
 

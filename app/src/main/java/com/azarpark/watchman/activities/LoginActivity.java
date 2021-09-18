@@ -1,26 +1,23 @@
-package com.azarpark.watchman;
+package com.azarpark.watchman.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 
+
+import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.bodies.LoginBody;
-import com.azarpark.watchman.retrofit_remote.interfaces.Login;
 import com.azarpark.watchman.retrofit_remote.responses.LoginResponse;
 import com.azarpark.watchman.utils.Assistant;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
 import com.azarpark.watchman.databinding.ActivityLoginBinding;
+import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
 import java.net.HttpURLConnection;
 
@@ -46,9 +43,9 @@ public class LoginActivity extends AppCompatActivity {
 
         Assistant assistant = new Assistant();
 
-        if (assistant.isMobile(binding.username.getText().toString()))
+        if (!assistant.isMobile(binding.username.getText().toString()))
             Toast.makeText(getApplicationContext(), "شماره تلفن را درست وارد کنید", Toast.LENGTH_SHORT).show();
-        else if (assistant.isPassword(binding.password.getText().toString()))
+        else if (!assistant.isPassword(binding.password.getText().toString()))
             Toast.makeText(getApplicationContext(), "رمز عبور را درست وارد کنید", Toast.LENGTH_SHORT).show();
         else
             login(binding.username.getText().toString(), binding.password.getText().toString());
@@ -59,11 +56,14 @@ public class LoginActivity extends AppCompatActivity {
     private void login(String username, String password) {
 
         RetrofitAPIRepository repository = new RetrofitAPIRepository();
+        LoadingBar loadingBar = new LoadingBar(LoginActivity.this,LoginActivity.this);
+        loadingBar.show();
 
         repository.login(new LoginBody(username, password), new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
 
+                loadingBar.dismiss();
                 if (response.code() == HttpURLConnection.HTTP_OK) {
 
                     SharedPreferencesRepository sharedPreferencesRepository = new SharedPreferencesRepository(getApplicationContext());
@@ -71,6 +71,7 @@ public class LoginActivity extends AppCompatActivity {
                     sharedPreferencesRepository.saveString(SharedPreferencesRepository.ACCESS_TOKEN, response.body().access_token);
                     sharedPreferencesRepository.saveString(SharedPreferencesRepository.REFRESH_TOKEN, response.body().refresh_token);
 
+                    LoginActivity.this.finish();
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
 
                 } else {
@@ -83,7 +84,8 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
-
+                loadingBar.dismiss();
+                Toast.makeText(getApplicationContext(), "onFailure", Toast.LENGTH_SHORT).show();
             }
         });
 

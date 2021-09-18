@@ -12,7 +12,7 @@ public class Assistant {
 
     public boolean isPassword(String password){
 
-        return password.length() < 4;
+        return password.length() >= 4;
 
     }
 

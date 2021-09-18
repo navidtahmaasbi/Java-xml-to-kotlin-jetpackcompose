@@ -70,7 +70,7 @@
         android:id="@+id/recycler_view"
         tools:itemCount="40"
         tools:listitem="@layout/park_item"
-        app:spanCount="2"
+        app:spanCount="3"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"/>
 
 </LinearLayout>

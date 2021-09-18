@@ -1,4 +1,5 @@
-package com.azarpark.watchman;
+package com.azarpark.watchman.dialogs;
+
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.azarpark.watchman.databinding.CheckoutDialogBinding;
 import com.azarpark.watchman.databinding.ConfirmDialogBinding;
+import com.azarpark.watchman.models.ParkModel;
 
 public class ConfirmDialog extends DialogFragment {
 
