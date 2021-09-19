@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.azarpark.watchman.databinding.AmountItemBinding;
-import com.azarpark.watchman.databinding.ParkItemBinding;
 
 import java.util.ArrayList;
 

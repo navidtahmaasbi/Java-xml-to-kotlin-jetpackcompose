@@ -16,8 +16,10 @@
         <entry key="..\:/azarpark/android/app/src/main/res/drawable/btn_radio_on_to_off_mtrl_animation.xml" value="0.3828125" />
         <entry key="..\:/azarpark/android/app/src/main/res/drawable/dialog_background.xml" value="0.3828125" />
         <entry key="..\:/azarpark/android/app/src/main/res/drawable/gray_bg_5.xml" value="0.3310810810810811" />
+        <entry key="..\:/azarpark/android/app/src/main/res/drawable/green_number_bg.xml" value="0.33611111111111114" />
         <entry key="..\:/azarpark/android/app/src/main/res/drawable/ic_app_icon.xml" value="0.3310810810810811" />
         <entry key="..\:/azarpark/android/app/src/main/res/drawable/ic_app_icon_offline.xml" value="0.3310810810810811" />
+        <entry key="..\:/azarpark/android/app/src/main/res/drawable/ic_arrow_down.xml" value="0.3828125" />
         <entry key="..\:/azarpark/android/app/src/main/res/drawable/ic_arrow_left.xml" value="0.3828125" />
         <entry key="..\:/azarpark/android/app/src/main/res/drawable/ic_back.xml" value="0.3828125" />
         <entry key="..\:/azarpark/android/app/src/main/res/drawable/ic_car_outline.xml" value="0.3828125" />
@@ -26,6 +28,7 @@
         <entry key="..\:/azarpark/android/app/src/main/res/drawable/ic_error.xml" value="0.3828125" />
         <entry key="..\:/azarpark/android/app/src/main/res/drawable/ic_frame.xml" value="0.3828125" />
         <entry key="..\:/azarpark/android/app/src/main/res/drawable/ic_help.xml" value="0.3828125" />
+        <entry key="..\:/azarpark/android/app/src/main/res/drawable/ic_list.xml" value="0.3828125" />
         <entry key="..\:/azarpark/android/app/src/main/res/drawable/ic_login_logo.xml" value="0.22135416666666666" />
         <entry key="..\:/azarpark/android/app/src/main/res/drawable/ic_logo_type.xml" value="0.3828125" />
         <entry key="..\:/azarpark/android/app/src/main/res/drawable/ic_logout.xml" value="0.3828125" />
@@ -45,12 +48,19 @@
         <entry key="..\:/azarpark/android/app/src/main/res/drawable/ic_print_logo.xml" value="0.3828125" />
         <entry key="..\:/azarpark/android/app/src/main/res/drawable/ic_qr_code.xml" value="0.3828125" />
         <entry key="..\:/azarpark/android/app/src/main/res/drawable/ic_splash_logo.xml" value="0.3828125" />
+        <entry key="..\:/azarpark/android/app/src/main/res/drawable/ic_terms.xml" value="0.3828125" />
+        <entry key="..\:/azarpark/android/app/src/main/res/drawable/ic_torch_off.xml" value="0.3828125" />
+        <entry key="..\:/azarpark/android/app/src/main/res/drawable/ic_torch_on.xml" value="0.3828125" />
+        <entry key="..\:/azarpark/android/app/src/main/res/drawable/ic_user.xml" value="0.3828125" />
+        <entry key="..\:/azarpark/android/app/src/main/res/drawable/ic_wallet.xml" value="0.3828125" />
+        <entry key="..\:/azarpark/android/app/src/main/res/drawable/ic_wifi_off.xml" value="0.3828125" />
         <entry key="..\:/azarpark/android/app/src/main/res/drawable/mtrl_ic_arrow_drop_up.xml" value="0.3828125" />
         <entry key="..\:/azarpark/android/app/src/main/res/drawable/number_bg.xml" value="0.3828125" />
         <entry key="..\:/azarpark/android/app/src/main/res/drawable/red_circle.xml" value="0.3828125" />
         <entry key="..\:/azarpark/android/app/src/main/res/drawable/selected_background.xml" value="0.3828125" />
         <entry key="..\:/azarpark/android/app/src/main/res/drawable/unselected_background.xml" value="0.3828125" />
         <entry key="..\:/azarpark/android/app/src/main/res/drawable/white_bg_15.xml" value="0.3310810810810811" />
+        <entry key="..\:/azarpark/android/app/src/main/res/drawable/white_bg_5.xml" value="0.3769230769230769" />
         <entry key="..\:/azarpark/android/app/src/main/res/drawable/white_bottom_5_bg.xml" value="0.3828125" />
         <entry key="..\:/azarpark/android/app/src/main/res/layout/activity_car_number_charge.xml" value="0.36666666666666664" />
         <entry key="..\:/azarpark/android/app/src/main/res/layout/activity_debt_check.xml" value="0.22" />
@@ -66,6 +76,8 @@
         <entry key="..\:/azarpark/android/app/src/main/res/layout/debt_list_item.xml" value="0.33" />
         <entry key="..\:/azarpark/android/app/src/main/res/layout/fragment_first.xml" value="0.36666666666666664" />
         <entry key="..\:/azarpark/android/app/src/main/res/layout/fragment_second.xml" value="0.36666666666666664" />
+        <entry key="..\:/azarpark/android/app/src/main/res/layout/free_park_item.xml" value="0.36666666666666664" />
+        <entry key="..\:/azarpark/android/app/src/main/res/layout/full_park_item.xml" value="0.5" />
         <entry key="..\:/azarpark/android/app/src/main/res/layout/loadingbar.xml" value="0.36666666666666664" />
         <entry key="..\:/azarpark/android/app/src/main/res/layout/main_menu.xml" value="0.36666666666666664" />
         <entry key="..\:/azarpark/android/app/src/main/res/layout/menu_popup_window.xml" value="0.36666666666666664" />

@@ -62,12 +62,6 @@ public class MainActivity extends AppCompatActivity {
 
         getPlaces();
 
-//        ArrayList<ParkModel> items = new ArrayList<>();
-//        for (int i = 0; i < 40; i++) {
-//            items.add(new ParkModel());
-//        }
-//        adapter.setItems(items);
-
     }
 
     private void getPlaces() {

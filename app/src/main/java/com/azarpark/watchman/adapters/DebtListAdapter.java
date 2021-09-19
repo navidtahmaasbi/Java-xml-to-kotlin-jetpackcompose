@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.azarpark.watchman.databinding.DebtListItemBinding;
-import com.azarpark.watchman.databinding.ParkItemBinding;
 import com.azarpark.watchman.models.DebtModel;
 
 import java.util.ArrayList;
