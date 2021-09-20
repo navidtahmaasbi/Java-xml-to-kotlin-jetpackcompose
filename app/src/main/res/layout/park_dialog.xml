@@ -18,6 +18,7 @@
         android:gravity="center">
 
         <TextView
+            android:id="@+id/place_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/iran_sans_fa_num"
@@ -74,6 +75,7 @@
         android:layout_marginTop="@dimen/_15sdp">
 
         <TextView
+            android:id="@+id/plate_new_aras_selector"
             android:background="@drawable/unselected_background"
             android:padding="@dimen/_5sdp"
             android:gravity="center"
@@ -86,6 +88,7 @@
             android:text="ارس جدید"/>
 
         <TextView
+            android:id="@+id/plate_old_aras_selector"
             android:background="@drawable/unselected_background"
             android:padding="@dimen/_5sdp"
             android:gravity="center"
@@ -100,6 +103,7 @@
             android:text="ارس"/>
 
         <TextView
+            android:id="@+id/plate_simple_selector"
             android:background="@drawable/selected_background"
             android:padding="@dimen/_5sdp"
             android:layout_width="0dp"
@@ -114,7 +118,9 @@
     </LinearLayout>
 
     <LinearLayout
+        android:visibility="gone"
         android:layout_width="wrap_content"
+        android:id="@+id/plate_simple_area"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_gravity="center_horizontal"
@@ -127,6 +133,7 @@
             android:background="@drawable/unselected_background">
 
             <EditText
+                android:id="@+id/plate_simple_tag1"
                 android:background="@drawable/unselected_background"
                 android:paddingTop="@dimen/_5sdp"
                 android:paddingBottom="@dimen/_5sdp"
@@ -142,6 +149,7 @@
                 android:letterSpacing="0.3"/>
 
             <EditText
+                android:id="@+id/plate_simple_tag2"
                 android:background="@drawable/unselected_background"
                 android:paddingTop="@dimen/_5sdp"
                 android:paddingBottom="@dimen/_5sdp"
@@ -156,6 +164,7 @@
                 android:hint="س"/>
 
             <EditText
+                android:id="@+id/plate_simple_tag3"
                 android:background="@drawable/unselected_background"
                 android:paddingTop="@dimen/_5sdp"
                 android:paddingBottom="@dimen/_5sdp"
@@ -173,6 +182,7 @@
         </LinearLayout>
 
         <EditText
+            android:id="@+id/plate_simple_tag4"
             android:background="@drawable/unselected_background"
             android:paddingTop="@dimen/_5sdp"
             android:paddingBottom="@dimen/_5sdp"
@@ -191,7 +201,9 @@
     </LinearLayout>
 
     <EditText
+        android:visibility="gone"
         android:background="@drawable/unselected_background"
+        android:id="@+id/plate_old_aras"
         android:paddingTop="@dimen/_5sdp"
         android:paddingBottom="@dimen/_5sdp"
         android:paddingRight="@dimen/_10sdp"
@@ -208,6 +220,8 @@
         android:layout_marginTop="@dimen/_20sdp"/>
 
     <LinearLayout
+        android:id="@+id/plate_new_aras_area"
+        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -215,13 +229,13 @@
         android:layout_marginTop="@dimen/_20sdp">
 
         <EditText
+            android:id="@+id/plate_new_aras_tag1"
             android:background="@drawable/unselected_background"
             android:paddingTop="@dimen/_5sdp"
             android:paddingBottom="@dimen/_5sdp"
             android:paddingRight="@dimen/_10sdp"
             android:paddingLeft="@dimen/_10sdp"
             android:gravity="center"
-            android:layout_marginLeft="@dimen/_10sdp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/iran_sans_fa_num"
@@ -231,6 +245,7 @@
             android:letterSpacing="0.3"/>
 
         <EditText
+            android:id="@+id/plate_new_aras_tag2"
             android:background="@drawable/unselected_background"
             android:paddingTop="@dimen/_5sdp"
             android:paddingBottom="@dimen/_5sdp"
@@ -268,6 +283,7 @@
             android:text="پرینت قبض"/>
 
         <CheckBox
+            android:id="@+id/print_checkbox"
             android:layout_width="@dimen/_20sdp"
             android:layout_height="@dimen/_20sdp"
             android:checked="true"
@@ -276,6 +292,7 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/submit"
         android:fontFamily="@font/iran_sans"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

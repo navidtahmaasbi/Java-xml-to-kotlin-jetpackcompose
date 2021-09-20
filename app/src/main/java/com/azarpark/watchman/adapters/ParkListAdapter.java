@@ -3,6 +3,7 @@ package com.azarpark.watchman.adapters;
 
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -53,10 +54,36 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             if (place.tag4 != null && !place.tag4.isEmpty()){
 
-                //this is plate ir
+                viewHolder.binding.plateIrArea.setVisibility(View.VISIBLE);
+                viewHolder.binding.plateArasArea.setVisibility(View.GONE);
+                viewHolder.binding.plateArasNewArea.setVisibility(View.GONE);
 
-            }// else if
+                viewHolder.binding.plateIrTag1.setText(place.tag1);
+                viewHolder.binding.plateIrTag2.setText(place.tag2);
+                viewHolder.binding.plateIrTag3.setText(place.tag3);
+                viewHolder.binding.plateIrTag4.setText(place.tag4);
 
+            } else if(place.tag2 == null || place.tag2.isEmpty()){
+
+                viewHolder.binding.plateIrArea.setVisibility(View.GONE);
+                viewHolder.binding.plateArasArea.setVisibility(View.VISIBLE);
+                viewHolder.binding.plateArasNewArea.setVisibility(View.GONE);
+
+                viewHolder.binding.plateArasTag1Fa.setText(place.tag1);
+                viewHolder.binding.plateArasTag1En.setText(place.tag1);
+
+            }else {
+
+                viewHolder.binding.plateIrArea.setVisibility(View.GONE);
+                viewHolder.binding.plateArasArea.setVisibility(View.GONE);
+                viewHolder.binding.plateArasNewArea.setVisibility(View.VISIBLE);
+
+                viewHolder.binding.plateArasNewTag1Fa.setText(place.tag1);
+                viewHolder.binding.plateArasNewTag2Fa.setText(place.tag2);
+                viewHolder.binding.plateArasNewTag1En.setText(place.tag1);
+                viewHolder.binding.plateArasNewTag2En.setText(place.tag2);
+
+            }
 
             viewHolder.binding.getRoot().setOnClickListener(view -> onItemClicked.itemClicked(items.get(position)));
         } else {

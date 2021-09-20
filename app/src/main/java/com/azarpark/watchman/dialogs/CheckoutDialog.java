@@ -10,7 +10,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.azarpark.watchman.databinding.CheckoutDialogBinding;
-import com.azarpark.watchman.databinding.ParkDialog02Binding;
 import com.azarpark.watchman.interfaces.OnCheckoutButtonsClicked;
 import com.azarpark.watchman.models.ParkModel;
 
