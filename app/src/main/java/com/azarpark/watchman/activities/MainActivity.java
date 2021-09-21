@@ -4,11 +4,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.Html;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.azarpark.watchman.R;
@@ -98,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
                     if (response.body().getSuccess() == 1){
 
-                        Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
                         openParkInfoDialog(place,response.body());
                     }else if (response.body().getSuccess() == 0){
 
@@ -244,10 +248,6 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<ExitParkResponse> call, Response<ExitParkResponse> response) {
 
 
-
-                Gson gson = new Gson();
-                System.out.println("----------> resssss : " + response.toString());
-
                 loadingBar.dismiss();
                 if (response.code() == HttpURLConnection.HTTP_OK) {
 
@@ -308,12 +308,31 @@ public class MainActivity extends AppCompatActivity {
 
         binding.exitRequests.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, ExitRequestListActivity.class)));
 
+        binding.filterEdittext.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                adapter.filterItems(charSequence.toString());
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
     }
 
     private void initMenuPopup() {
 
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        popupView = inflater.inflate(R.layout.menu_popup_window, null);
+        popupView = inflater.inflate(R.layout.menu_popup_window02, null);
         int width = LinearLayout.LayoutParams.MATCH_PARENT;
         int height = LinearLayout.LayoutParams.MATCH_PARENT;
         boolean focusable = false; // lets taps outside the popup also dismiss it
@@ -372,6 +391,8 @@ public class MainActivity extends AppCompatActivity {
             confirmDialog.show(getSupportFragmentManager(), ConfirmDialog.TAG);
 
         });
+
+        ((TextView)popupView.findViewById(R.id.text)).setText(Html.fromHtml(getResources().getString(R.string.lorem)));
 
 
     }

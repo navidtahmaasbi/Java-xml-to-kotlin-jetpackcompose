@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:layoutDirection="ltr"
     android:background="@color/gray">
 
     <RelativeLayout
@@ -63,6 +64,19 @@
 
 
     </RelativeLayout>
+
+    <EditText
+        android:id="@+id/filter_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/unselected_background"
+        android:layout_margin="@dimen/_10sdp"
+        android:padding="@dimen/_8sdp"
+        android:hint="شماره جایگاه را وارد کنید"
+        android:fontFamily="@font/iran_sans_fa_num"
+        android:gravity="center"
+        android:inputType="numberDecimal"
+        android:textSize="@dimen/_13sdp"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"

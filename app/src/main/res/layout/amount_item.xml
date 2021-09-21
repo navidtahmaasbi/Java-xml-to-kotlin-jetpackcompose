@@ -5,6 +5,7 @@
     android:orientation="vertical"
     android:layout_margin="@dimen/_5sdp"
     android:padding="@dimen/_5sdp"
+    android:layoutDirection="ltr"
     android:background="@drawable/selected_background"
     android:gravity="center"
     xmlns:android="http://schemas.android.com/apk/res/android">

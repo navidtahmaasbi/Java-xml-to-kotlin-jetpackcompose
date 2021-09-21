@@ -2,6 +2,7 @@ package com.azarpark.watchman.dialogs;
 
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.azarpark.watchman.R;
+import com.azarpark.watchman.activities.DebtListActivity;
 import com.azarpark.watchman.databinding.ParkInfoDialogBinding;
 import com.azarpark.watchman.interfaces.OnGetInfoClicked;
 import com.azarpark.watchman.models.Place;
@@ -88,6 +90,8 @@ public class ParkInfoDialog extends DialogFragment {
             binding.plateNewArasTag2Fa.setText(place.tag2);
 
         }
+
+        binding.showDebtList.setOnClickListener(view -> startActivity(new Intent(getActivity(), DebtListActivity.class)));
 
         binding.pay.setOnClickListener(view -> onGetInfoClicked.pay(parkPriceResponse.getPrice(),place.id));
 

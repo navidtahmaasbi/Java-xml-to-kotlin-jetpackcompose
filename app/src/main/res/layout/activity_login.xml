@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".SplashActivity">
+    android:layoutDirection="ltr"
+    >
 
     <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="match_parent"
@@ -19,7 +20,7 @@
         android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/_30sdp"
-        android:src="@drawable/login_bg" />
+        android:src="@drawable/ic_login_logo" />
 
     <LinearLayout
         android:layout_centerVertical="true"

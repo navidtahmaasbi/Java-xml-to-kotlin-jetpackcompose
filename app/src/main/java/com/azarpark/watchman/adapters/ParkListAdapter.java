@@ -22,12 +22,13 @@ import java.util.Date;
 
 public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    ArrayList<Place> items;
+    ArrayList<Place> items, filteredItems;
     OnItemClicked onItemClicked;
     int VIEW_TYPE_FREE = 0, VIEW_TYPE_FUll = 1;
 
     public ParkListAdapter(OnItemClicked onItemClicked) {
         items = new ArrayList<>();
+        filteredItems = new ArrayList<>();
         this.onItemClicked = onItemClicked;
     }
 
@@ -43,16 +44,16 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
-        Place place = items.get(position);
+        Place place = filteredItems.get(position);
         if (holder instanceof FullParkModelViewHolder) {
 
             FullParkModelViewHolder viewHolder = (FullParkModelViewHolder) holder;
 
             viewHolder.binding.placeNumber.setText(Integer.toString(place.number));
 
-            viewHolder.binding.placeStatus.setText(place.status.equals(PlaceStatus.full_by_watchman.toString())?"پارکبان":"شهروند");
+            viewHolder.binding.placeStatus.setText(place.status.equals(PlaceStatus.full_by_watchman.toString()) ? "پارکبان" : "شهروند");
 
-            if (place.tag4 != null && !place.tag4.isEmpty()){
+            if (place.tag4 != null && !place.tag4.isEmpty()) {
 
                 viewHolder.binding.plateIrArea.setVisibility(View.VISIBLE);
                 viewHolder.binding.plateArasArea.setVisibility(View.GONE);
@@ -63,7 +64,7 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 viewHolder.binding.plateIrTag3.setText(place.tag3);
                 viewHolder.binding.plateIrTag4.setText(place.tag4);
 
-            } else if(place.tag2 == null || place.tag2.isEmpty()){
+            } else if (place.tag2 == null || place.tag2.isEmpty()) {
 
                 viewHolder.binding.plateIrArea.setVisibility(View.GONE);
                 viewHolder.binding.plateArasArea.setVisibility(View.VISIBLE);
@@ -72,7 +73,7 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 viewHolder.binding.plateArasTag1Fa.setText(place.tag1);
                 viewHolder.binding.plateArasTag1En.setText(place.tag1);
 
-            }else {
+            } else {
 
                 viewHolder.binding.plateIrArea.setVisibility(View.GONE);
                 viewHolder.binding.plateArasArea.setVisibility(View.GONE);
@@ -85,14 +86,14 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             }
 
-            viewHolder.binding.getRoot().setOnClickListener(view -> onItemClicked.itemClicked(items.get(position)));
+            viewHolder.binding.getRoot().setOnClickListener(view -> onItemClicked.itemClicked(filteredItems.get(position)));
         } else {
 
             FreeParkModelViewHolder viewHolder = (FreeParkModelViewHolder) holder;
 
             viewHolder.binding.placeNumber.setText(Integer.toString(place.number));
 
-            viewHolder.binding.getRoot().setOnClickListener(view -> onItemClicked.itemClicked(items.get(position)));
+            viewHolder.binding.getRoot().setOnClickListener(view -> onItemClicked.itemClicked(filteredItems.get(position)));
 
         }
 
@@ -102,6 +103,7 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void setItems(ArrayList<Place> items) {
 
         this.items = items;
+        filteredItems = items;
         notifyDataSetChanged();
 
     }
@@ -109,7 +111,7 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public int getItemViewType(int position) {
 
-        if (items.get(position).status.equals(PlaceStatus.full_by_user.toString()) || items.get(position).status.equals(PlaceStatus.full_by_watchman.toString()))
+        if (filteredItems.get(position).status.equals(PlaceStatus.full_by_user.toString()) || filteredItems.get(position).status.equals(PlaceStatus.full_by_watchman.toString()))
             return VIEW_TYPE_FUll;
 
         return VIEW_TYPE_FREE;
@@ -117,7 +119,25 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return filteredItems.size();
+    }
+
+    public void filterItems(String filterText) {
+
+        filteredItems = new ArrayList<>();
+
+        for (Place place : items)
+            if (Integer.toString(place.number).contains(filterText) ||
+                    (place.tag1 != null && place.tag1.contains(filterText)) ||
+                    (place.tag2 != null && place.tag2.contains(filterText)) ||
+                    (place.tag3 != null && place.tag3.contains(filterText)) ||
+                    (place.tag4 != null && place.tag4.contains(filterText))
+            )
+                filteredItems.add(place);
+
+        notifyDataSetChanged();
+
+
     }
 
     public static class FullParkModelViewHolder extends RecyclerView.ViewHolder {

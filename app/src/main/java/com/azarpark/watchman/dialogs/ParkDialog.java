@@ -3,6 +3,8 @@ package com.azarpark.watchman.dialogs;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
@@ -103,6 +105,98 @@ public class ParkDialog extends DialogFragment {
                         place.id,
                         place.street_id
                 ));
+        });
+
+        binding.plateSimpleTag1.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                if(binding.plateSimpleTag1.getText().toString().length()==2)     //size is your limit
+                {
+                    binding.plateSimpleTag2.requestFocus();
+                }
+
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        binding.plateSimpleTag2.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                if(binding.plateSimpleTag2.getText().toString().length()==1)     //size is your limit
+                {
+                    binding.plateSimpleTag3.requestFocus();
+                }
+
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        binding.plateSimpleTag3.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                if(binding.plateSimpleTag3.getText().toString().length()==3)     //size is your limit
+                {
+                    binding.plateSimpleTag4.requestFocus();
+                }
+
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        binding.plateNewArasTag1.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                if(binding.plateNewArasTag1.getText().toString().length()==5)     //size is your limit
+                {
+                    binding.plateNewArasTag2.requestFocus();
+                }
+
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
         });
 
         return builder.create();

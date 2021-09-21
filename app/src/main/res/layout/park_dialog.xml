@@ -8,6 +8,7 @@
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="@drawable/dialog_background"
+    android:layoutDirection="ltr"
     android:padding="@dimen/_10sdp">
 
     <LinearLayout
@@ -133,6 +134,8 @@
             android:background="@drawable/unselected_background">
 
             <EditText
+                android:inputType="numberDecimal"
+                android:maxLength="2"
                 android:id="@+id/plate_simple_tag1"
                 android:background="@drawable/unselected_background"
                 android:paddingTop="@dimen/_5sdp"
@@ -149,6 +152,7 @@
                 android:letterSpacing="0.3"/>
 
             <EditText
+                android:maxLength="1"
                 android:id="@+id/plate_simple_tag2"
                 android:background="@drawable/unselected_background"
                 android:paddingTop="@dimen/_5sdp"
@@ -164,6 +168,8 @@
                 android:hint="س"/>
 
             <EditText
+                android:inputType="numberDecimal"
+                android:maxLength="3"
                 android:id="@+id/plate_simple_tag3"
                 android:background="@drawable/unselected_background"
                 android:paddingTop="@dimen/_5sdp"
@@ -182,6 +188,8 @@
         </LinearLayout>
 
         <EditText
+            android:inputType="numberDecimal"
+            android:maxLength="2"
             android:id="@+id/plate_simple_tag4"
             android:background="@drawable/unselected_background"
             android:paddingTop="@dimen/_5sdp"
@@ -201,6 +209,8 @@
     </LinearLayout>
 
     <EditText
+        android:inputType="numberDecimal"
+        android:maxLength="5"
         android:visibility="gone"
         android:background="@drawable/unselected_background"
         android:id="@+id/plate_old_aras"
@@ -229,6 +239,8 @@
         android:layout_marginTop="@dimen/_20sdp">
 
         <EditText
+            android:inputType="numberDecimal"
+            android:maxLength="5"
             android:id="@+id/plate_new_aras_tag1"
             android:background="@drawable/unselected_background"
             android:paddingTop="@dimen/_5sdp"
@@ -245,6 +257,8 @@
             android:letterSpacing="0.3"/>
 
         <EditText
+            android:inputType="numberDecimal"
+            android:maxLength="2"
             android:id="@+id/plate_new_aras_tag2"
             android:background="@drawable/unselected_background"
             android:paddingTop="@dimen/_5sdp"
