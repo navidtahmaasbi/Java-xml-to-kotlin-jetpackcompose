@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.azarpark.watchman.R;
 import com.azarpark.watchman.databinding.FreeParkItemBinding;
 import com.azarpark.watchman.databinding.FullParkItemBinding;
 import com.azarpark.watchman.enums.PlaceStatus;
@@ -86,7 +87,14 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             }
 
-            viewHolder.binding.getRoot().setOnClickListener(view -> onItemClicked.itemClicked(filteredItems.get(position)));
+            viewHolder.binding.getRoot().setOnClickListener(view -> onItemClicked.itemClicked(place));
+
+            if (place.exit_request != null)
+                viewHolder.binding.header.setBackgroundResource(R.drawable.red_top_5_bg);
+            else
+                viewHolder.binding.header.setBackgroundResource(R.drawable.blue_top_5_bg);
+
+
         } else {
 
             FreeParkModelViewHolder viewHolder = (FreeParkModelViewHolder) holder;

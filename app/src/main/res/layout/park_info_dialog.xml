@@ -506,6 +506,7 @@
 
 
     <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/payment_area"
         android:layout_marginTop="@dimen/_10sdp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -535,6 +536,48 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="اقدام به پرداخت"
+            android:paddingTop="@dimen/_8sdp"
+            android:paddingBottom="@dimen/_8sdp"
+            android:gravity="center"
+            android:textSize="@dimen/_10sdp"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/white"
+            android:background="@drawable/blue_bg_5"/>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:visibility="gone"
+        android:id="@+id/exit_request_area"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/accept_exit_request"
+            android:fontFamily="@font/iran_sans"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="پذیرفتن درخواست"
+            android:paddingTop="@dimen/_8sdp"
+            android:paddingBottom="@dimen/_8sdp"
+            android:gravity="center"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_10sdp"
+            android:layout_marginRight="@dimen/_2sdp"
+            android:background="@drawable/blue_bg_5"/>
+
+        <TextView
+            android:id="@+id/decline_exit_request"
+            android:fontFamily="@font/iran_sans"
+            android:layout_width="0dp"
+            android:layout_marginLeft="@dimen/_2sdp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="رد درخواست"
             android:paddingTop="@dimen/_8sdp"
             android:paddingBottom="@dimen/_8sdp"
             android:gravity="center"

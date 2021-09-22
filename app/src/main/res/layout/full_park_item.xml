@@ -7,6 +7,7 @@
     android:layout_margin="@dimen/_5sdp">
 
     <LinearLayout
+        android:id="@+id/header"
         android:paddingTop="@dimen/_5sdp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

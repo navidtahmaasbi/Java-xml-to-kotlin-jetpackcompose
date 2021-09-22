@@ -41,9 +41,9 @@
     </RelativeLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/payment"
         android:layout_below="@+id/action_bar">
 
         <LinearLayout
@@ -84,186 +84,214 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_15sdp"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/_15sdp">
 
                     <TextView
+                        android:id="@+id/plate_new_aras_selector"
+                        android:background="@drawable/unselected_background"
+                        android:padding="@dimen/_5sdp"
+                        android:gravity="center"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:background="@drawable/unselected_background"
                         android:fontFamily="@font/iran_sans"
-                        android:gravity="center"
-                        android:padding="@dimen/_5sdp"
-                        android:text="ارس جدید"
                         android:textColor="@color/text_gray"
-                        android:textSize="@dimen/_13sdp" />
+                        android:textSize="@dimen/_13sdp"
+                        android:text="ارس جدید"/>
 
                     <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="@dimen/_10sdp"
+                        android:id="@+id/plate_old_aras_selector"
+                        android:background="@drawable/unselected_background"
+                        android:padding="@dimen/_5sdp"
+                        android:gravity="center"
                         android:layout_marginRight="@dimen/_10sdp"
-                        android:layout_weight="1"
-                        android:background="@drawable/unselected_background"
-                        android:fontFamily="@font/iran_sans"
-                        android:gravity="center"
-                        android:padding="@dimen/_5sdp"
-                        android:text="ارس"
-                        android:textColor="@color/text_gray"
-                        android:textSize="@dimen/_13sdp" />
-
-                    <TextView
+                        android:layout_marginLeft="@dimen/_10sdp"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:background="@drawable/selected_background"
                         android:fontFamily="@font/iran_sans"
-                        android:gravity="center"
-                        android:padding="@dimen/_5sdp"
-                        android:text="ملی"
                         android:textColor="@color/text_gray"
-                        android:textSize="@dimen/_13sdp" />
+                        android:textSize="@dimen/_13sdp"
+                        android:text="ارس"/>
+
+                    <TextView
+                        android:id="@+id/plate_simple_selector"
+                        android:background="@drawable/selected_background"
+                        android:padding="@dimen/_5sdp"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/iran_sans"
+                        android:textColor="@color/text_gray"
+                        android:textSize="@dimen/_13sdp"
+                        android:text="ملی"
+                        android:gravity="center"/>
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
+                    android:id="@+id/plate_simple_area"
                     android:layout_height="wrap_content"
+                    android:orientation="horizontal"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="@dimen/_20sdp"
-                    android:orientation="horizontal">
+                    android:layout_marginTop="@dimen/_20sdp">
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/unselected_background"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:background="@drawable/unselected_background">
 
                         <EditText
+                            android:inputType="numberDecimal"
+                            android:maxLength="2"
+                            android:id="@+id/plate_simple_tag1"
+                            android:background="@drawable/unselected_background"
+                            android:paddingTop="@dimen/_5sdp"
+                            android:paddingBottom="@dimen/_5sdp"
+                            android:paddingRight="@dimen/_10sdp"
+                            android:paddingLeft="@dimen/_10sdp"
+                            android:gravity="center"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/unselected_background"
                             android:fontFamily="@font/iran_sans_fa_num"
-                            android:gravity="center"
+                            android:textColor="@color/text_gray"
+                            android:textSize="@dimen/_13sdp"
                             android:hint="56"
-                            android:letterSpacing="0.3"
-                            android:paddingLeft="@dimen/_10sdp"
-                            android:paddingTop="@dimen/_5sdp"
-                            android:paddingRight="@dimen/_10sdp"
-                            android:paddingBottom="@dimen/_5sdp"
-                            android:textColor="@color/text_gray"
-                            android:textSize="@dimen/_13sdp" />
+                            android:letterSpacing="0.3"/>
 
                         <EditText
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:maxLength="1"
+                            android:id="@+id/plate_simple_tag2"
                             android:background="@drawable/unselected_background"
-                            android:fontFamily="@font/iran_sans"
-                            android:gravity="center"
-                            android:hint="س"
-                            android:paddingLeft="@dimen/_5sdp"
                             android:paddingTop="@dimen/_5sdp"
+                            android:paddingBottom="@dimen/_5sdp"
                             android:paddingRight="@dimen/_5sdp"
-                            android:paddingBottom="@dimen/_5sdp"
-                            android:textColor="@color/text_gray"
-                            android:textSize="@dimen/_13sdp" />
-
-                        <EditText
+                            android:paddingLeft="@dimen/_5sdp"
+                            android:gravity="center"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/unselected_background"
-                            android:fontFamily="@font/iran_sans_fa_num"
-                            android:gravity="center"
-                            android:hint="526"
-                            android:letterSpacing="0.3"
-                            android:paddingLeft="@dimen/_10sdp"
-                            android:paddingTop="@dimen/_5sdp"
-                            android:paddingRight="@dimen/_10sdp"
-                            android:paddingBottom="@dimen/_5sdp"
+                            android:fontFamily="@font/iran_sans"
                             android:textColor="@color/text_gray"
-                            android:textSize="@dimen/_13sdp" />
+                            android:textSize="@dimen/_13sdp"
+                            android:hint="س"/>
+
+                        <EditText
+                            android:inputType="numberDecimal"
+                            android:maxLength="3"
+                            android:id="@+id/plate_simple_tag3"
+                            android:background="@drawable/unselected_background"
+                            android:paddingTop="@dimen/_5sdp"
+                            android:paddingBottom="@dimen/_5sdp"
+                            android:paddingRight="@dimen/_10sdp"
+                            android:paddingLeft="@dimen/_10sdp"
+                            android:gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/iran_sans_fa_num"
+                            android:textColor="@color/text_gray"
+                            android:textSize="@dimen/_13sdp"
+                            android:hint="526"
+                            android:letterSpacing="0.3"/>
 
                     </LinearLayout>
 
                     <EditText
+                        android:inputType="numberDecimal"
+                        android:maxLength="2"
+                        android:id="@+id/plate_simple_tag4"
+                        android:background="@drawable/unselected_background"
+                        android:paddingTop="@dimen/_5sdp"
+                        android:paddingBottom="@dimen/_5sdp"
+                        android:paddingRight="@dimen/_10sdp"
+                        android:paddingLeft="@dimen/_10sdp"
+                        android:gravity="center"
+                        android:layout_marginLeft="@dimen/_10sdp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_10sdp"
-                        android:background="@drawable/unselected_background"
                         android:fontFamily="@font/iran_sans_fa_num"
-                        android:gravity="center"
-                        android:hint="15"
-                        android:letterSpacing="0.3"
-                        android:paddingLeft="@dimen/_10sdp"
-                        android:paddingTop="@dimen/_5sdp"
-                        android:paddingRight="@dimen/_10sdp"
-                        android:paddingBottom="@dimen/_5sdp"
                         android:textColor="@color/text_gray"
-                        android:textSize="@dimen/_13sdp" />
+                        android:textSize="@dimen/_13sdp"
+                        android:hint="15"
+                        android:letterSpacing="0.3"/>
 
                 </LinearLayout>
 
                 <EditText
+                    android:inputType="numberDecimal"
+                    android:maxLength="5"
+                    android:visibility="gone"
+                    android:background="@drawable/unselected_background"
+                    android:id="@+id/plate_old_aras"
+                    android:paddingTop="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_5sdp"
+                    android:paddingRight="@dimen/_10sdp"
+                    android:paddingLeft="@dimen/_10sdp"
+                    android:gravity="center"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="@dimen/_20sdp"
-                    android:background="@drawable/unselected_background"
                     android:fontFamily="@font/iran_sans_fa_num"
-                    android:gravity="center"
+                    android:textColor="@color/text_gray"
+                    android:textSize="@dimen/_13sdp"
                     android:hint="12345"
                     android:letterSpacing="0.3"
-                    android:paddingLeft="@dimen/_10sdp"
-                    android:paddingTop="@dimen/_5sdp"
-                    android:paddingRight="@dimen/_10sdp"
-                    android:paddingBottom="@dimen/_5sdp"
-                    android:textColor="@color/text_gray"
-                    android:textSize="@dimen/_13sdp" />
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="@dimen/_20sdp"/>
 
                 <LinearLayout
+                    android:id="@+id/plate_new_aras_area"
+                    android:visibility="gone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:orientation="horizontal"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="@dimen/_20sdp"
-                    android:orientation="horizontal">
+                    android:layout_marginTop="@dimen/_20sdp">
 
                     <EditText
+                        android:inputType="numberDecimal"
+                        android:maxLength="5"
+                        android:id="@+id/plate_new_aras_tag1"
+                        android:background="@drawable/unselected_background"
+                        android:paddingTop="@dimen/_5sdp"
+                        android:paddingBottom="@dimen/_5sdp"
+                        android:paddingRight="@dimen/_10sdp"
+                        android:paddingLeft="@dimen/_10sdp"
+                        android:gravity="center"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_10sdp"
-                        android:background="@drawable/unselected_background"
                         android:fontFamily="@font/iran_sans_fa_num"
-                        android:gravity="center"
+                        android:textColor="@color/text_gray"
+                        android:textSize="@dimen/_13sdp"
                         android:hint="12345"
-                        android:letterSpacing="0.3"
-                        android:paddingLeft="@dimen/_10sdp"
-                        android:paddingTop="@dimen/_5sdp"
-                        android:paddingRight="@dimen/_10sdp"
-                        android:paddingBottom="@dimen/_5sdp"
-                        android:textColor="@color/text_gray"
-                        android:textSize="@dimen/_13sdp" />
+                        android:letterSpacing="0.3"/>
 
                     <EditText
+                        android:inputType="numberDecimal"
+                        android:maxLength="2"
+                        android:id="@+id/plate_new_aras_tag2"
+                        android:background="@drawable/unselected_background"
+                        android:paddingTop="@dimen/_5sdp"
+                        android:paddingBottom="@dimen/_5sdp"
+                        android:paddingRight="@dimen/_10sdp"
+                        android:paddingLeft="@dimen/_10sdp"
+                        android:gravity="center"
+                        android:layout_marginLeft="@dimen/_10sdp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_10sdp"
-                        android:background="@drawable/unselected_background"
                         android:fontFamily="@font/iran_sans_fa_num"
-                        android:gravity="center"
-                        android:hint="55"
-                        android:letterSpacing="0.3"
-                        android:paddingLeft="@dimen/_10sdp"
-                        android:paddingTop="@dimen/_5sdp"
-                        android:paddingRight="@dimen/_10sdp"
-                        android:paddingBottom="@dimen/_5sdp"
                         android:textColor="@color/text_gray"
-                        android:textSize="@dimen/_13sdp" />
+                        android:textSize="@dimen/_13sdp"
+                        android:hint="55"
+                        android:letterSpacing="0.3"/>
+
 
 
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/submit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
@@ -276,6 +304,65 @@
                     android:paddingRight="@dimen/_40sdp"
                     android:paddingBottom="@dimen/_8sdp"
                     android:text="مشاهده بدهی"
+                    android:textColor="@color/white" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/debt_area"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginBottom="@dimen/_20sdp"
+                android:layout_marginRight="@dimen/_20sdp"
+                android:layout_marginLeft="@dimen/_20sdp"
+                android:background="@drawable/dialog_background"
+                android:orientation="vertical"
+                android:padding="@dimen/_10sdp">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/debt_amount"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/iran_sans_fa_num_bold"
+                        android:text="-15000 تومان"
+                        android:gravity="right"
+                        android:textColor="@color/red"
+                        android:textSize="@dimen/_13sdp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/iran_sans"
+                        android:text="بدهی شما"
+                        android:textColor="@color/text_gray"
+                        android:textSize="@dimen/_13sdp" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <TextView
+                    android:id="@+id/payment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="@dimen/_20sdp"
+                    android:background="@drawable/blue_bg_5"
+                    android:fontFamily="@font/iran_sans"
+                    android:gravity="center"
+                    android:paddingLeft="@dimen/_40sdp"
+                    android:paddingTop="@dimen/_8sdp"
+                    android:paddingRight="@dimen/_40sdp"
+                    android:paddingBottom="@dimen/_8sdp"
+                    android:text="پرداخت بدهی"
                     android:textColor="@color/white" />
 
             </LinearLayout>
@@ -295,21 +382,25 @@
     </androidx.core.widget.NestedScrollView>
 
 
-    <TextView
-        android:id="@+id/payment"
-        android:layout_alignParentBottom="true"
-        android:fontFamily="@font/iran_sans"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="پرداخت بدهی"
-        android:paddingRight="@dimen/_40sdp"
-        android:paddingLeft="@dimen/_40sdp"
-        android:paddingTop="@dimen/_8sdp"
-        android:paddingBottom="@dimen/_8sdp"
-        android:gravity="center"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="@dimen/_10sdp"
-        android:textColor="@color/white"
-        android:background="@drawable/blue_bg_5"/>
+<!--    <TextView-->
+<!--        android:visibility="gone"-->
+<!--        android:id="@+id/payment"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:layout_gravity="center_horizontal"-->
+<!--        android:layout_marginStart="@dimen/_10sdp"-->
+<!--        android:layout_marginTop="@dimen/_10sdp"-->
+<!--        android:layout_marginEnd="@dimen/_10sdp"-->
+<!--        android:layout_marginBottom="@dimen/_10sdp"-->
+<!--        android:background="@drawable/blue_bg_5"-->
+<!--        android:fontFamily="@font/iran_sans"-->
+<!--        android:gravity="center"-->
+<!--        android:paddingLeft="@dimen/_40sdp"-->
+<!--        android:paddingTop="@dimen/_8sdp"-->
+<!--        android:paddingRight="@dimen/_40sdp"-->
+<!--        android:paddingBottom="@dimen/_8sdp"-->
+<!--        android:text="پرداخت بدهی"-->
+<!--        android:textColor="@color/white" />-->
 
 </RelativeLayout>

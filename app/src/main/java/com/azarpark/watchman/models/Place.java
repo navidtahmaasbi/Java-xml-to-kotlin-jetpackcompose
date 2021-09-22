@@ -20,4 +20,6 @@ public class Place {
     public String tag2;
     public String tag3;
     public String tag4;
+    public EstimatePrice estimate_price;
+    public ExitRequest exit_request;
 }

@@ -10,23 +10,23 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
-import com.azarpark.watchman.databinding.CheckoutDialogBinding;
 import com.azarpark.watchman.databinding.ConfirmDialogBinding;
+import com.azarpark.watchman.databinding.MessageDialogBinding;
 
-public class ConfirmDialog extends DialogFragment {
+public class MessageDialog extends DialogFragment {
 
-    public static final String TAG = "ConfirmDialog";
-    ConfirmDialogBinding binding;
+    public static final String TAG = "MessageDialog";
+    MessageDialogBinding binding;
     ConfirmButtonClicks confirmButtonClicks;
     String title;
-    String question;
+    String message;
     String confirmButtonText;
     String cancelButtonText;
 
-    public ConfirmDialog(String title, String question, String confirmButtonText, String cancelButtonText, ConfirmButtonClicks confirmButtonClicks) {
+    public MessageDialog(String title, String message, String confirmButtonText, ConfirmButtonClicks confirmButtonClicks) {
         this.confirmButtonClicks = confirmButtonClicks;
         this.title = title;
-        this.question = question;
+        this.message = message;
         this.confirmButtonText = confirmButtonText;
         this.cancelButtonText = cancelButtonText;
     }
@@ -34,19 +34,15 @@ public class ConfirmDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-//        return super.onCreateDialog(savedInstanceState);
-        binding = ConfirmDialogBinding.inflate(LayoutInflater.from(getContext()));
+        binding = MessageDialogBinding.inflate(LayoutInflater.from(getContext()));
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(binding.getRoot());
 
         binding.title.setText(title);
-        binding.question.setText(question);
+        binding.message.setText(message);
         binding.confirm.setText(confirmButtonText);
-        binding.cancel.setText(cancelButtonText);
 
         binding.confirm.setOnClickListener(view -> confirmButtonClicks.onConfirmClicked());
-
-        binding.cancel.setOnClickListener(view -> confirmButtonClicks.onCancelClicked());
 
         return builder.create();
     }
@@ -55,7 +51,6 @@ public class ConfirmDialog extends DialogFragment {
 
         public void onConfirmClicked();
 
-        public void onCancelClicked();
     }
 
 

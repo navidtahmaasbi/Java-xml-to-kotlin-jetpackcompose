@@ -15,9 +15,13 @@ import com.azarpark.watchman.R;
 public class LoadingBar {
 
     public Dialog dialog;
+    private boolean isLoading;
 
-    public LoadingBar(Context context, Activity activity) {
+    public boolean isLoading() {
+        return isLoading;
+    }
 
+    public LoadingBar(Context context) {
 
         dialog = new Dialog(context);
         dialog.setContentView(R.layout.loadingbar);
@@ -29,12 +33,14 @@ public class LoadingBar {
 
     public void show() {
 
+        isLoading = true;
         dialog.show();
 
     }
 
     public void dismiss() {
 
+        isLoading = false;
         dialog.dismiss();
 
     }

@@ -18,21 +18,21 @@ import android.widget.Toast;
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.adapters.ParkListAdapter;
 import com.azarpark.watchman.databinding.ActivityMainBinding;
-import com.azarpark.watchman.dialogs.CheckoutDialog;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.LoadingBar;
+import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.dialogs.ParkDialog;
 import com.azarpark.watchman.dialogs.ParkInfoDialog;
 import com.azarpark.watchman.enums.PlaceStatus;
-import com.azarpark.watchman.interfaces.OnCheckoutButtonsClicked;
+import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnGetInfoClicked;
-import com.azarpark.watchman.models.ParkModel;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.models.Street;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.bodies.ParkBody;
 import com.azarpark.watchman.retrofit_remote.responses.EstimateParkPriceResponse;
 import com.azarpark.watchman.retrofit_remote.responses.ExitParkResponse;
+import com.azarpark.watchman.retrofit_remote.responses.ExitRequestResponse;
 import com.azarpark.watchman.retrofit_remote.responses.ParkResponse;
 import com.azarpark.watchman.retrofit_remote.responses.PlacesResponse;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
@@ -54,13 +54,17 @@ public class MainActivity extends AppCompatActivity {
     ParkListAdapter adapter;
     ParkDialog parkDialog;
     ParkInfoDialog parkInfoDialog;
+    LoadingBar loadingBar;
+    MessageDialog messageDialog;
 
 
-        @Override
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        loadingBar = new LoadingBar(MainActivity.this);
 
         initMenuPopup();
 
@@ -68,16 +72,15 @@ public class MainActivity extends AppCompatActivity {
 
         adapter = new ParkListAdapter(place -> {
 
-            if(place.status.equals(PlaceStatus.free.toString()) || 
-                    place.status.equals(PlaceStatus.free_by_user.toString()) || 
-                    place.status.equals(PlaceStatus.free_by_watchman.toString())){
+            if (place.status.equals(PlaceStatus.free.toString()) ||
+                    place.status.equals(PlaceStatus.free_by_user.toString()) ||
+                    place.status.equals(PlaceStatus.free_by_watchman.toString())) {
 
                 openParkDialog(place);
 
-            }
-            else
+            } else
                 getParkData(place);
-            
+
 
         });
         binding.recyclerView.setAdapter(adapter);
@@ -90,21 +93,21 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository();
-        LoadingBar loadingBar = new LoadingBar(MainActivity.this,MainActivity.this);
+        LoadingBar loadingBar = new LoadingBar(MainActivity.this);
         loadingBar.show();
 
-        repository.estimateParkPrice("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),place.id, new Callback<EstimateParkPriceResponse>() {
+        repository.estimateParkPrice("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), place.id, new Callback<EstimateParkPriceResponse>() {
             @Override
             public void onResponse(Call<EstimateParkPriceResponse> call, Response<EstimateParkPriceResponse> response) {
 
                 loadingBar.dismiss();
                 if (response.code() == HttpURLConnection.HTTP_OK) {
 
-                    if (response.body().getSuccess() == 1){
+                    if (response.body().getSuccess() == 1) {
 
 //                        Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
-                        openParkInfoDialog(place,response.body());
-                    }else if (response.body().getSuccess() == 0){
+                        openParkInfoDialog(place, response.body());
+                    } else if (response.body().getSuccess() == 0) {
 
                         Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
 
@@ -132,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository();
-        LoadingBar loadingBar = new LoadingBar(MainActivity.this,MainActivity.this);
+        LoadingBar loadingBar = new LoadingBar(MainActivity.this);
         loadingBar.show();
 
         repository.getPlaces("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), new Callback<PlacesResponse>() {
@@ -167,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void openParkDialog(Place place) {
 
-         parkDialog = new ParkDialog(this::parkCar, place);
+        parkDialog = new ParkDialog(this::parkCar, place);
         parkDialog.show(getSupportFragmentManager(), ParkDialog.TAG);
 
 
@@ -177,22 +180,22 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository();
-        LoadingBar loadingBar = new LoadingBar(MainActivity.this,MainActivity.this);
+        LoadingBar loadingBar = new LoadingBar(MainActivity.this);
         loadingBar.show();
 
-        repository.park("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),parkBody, new Callback<ParkResponse>() {
+        repository.park("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), parkBody, new Callback<ParkResponse>() {
             @Override
             public void onResponse(Call<ParkResponse> call, Response<ParkResponse> response) {
 
                 loadingBar.dismiss();
                 if (response.code() == HttpURLConnection.HTTP_OK) {
 
-                    if (response.body().getSuccess() == 1){
+                    if (response.body().getSuccess() == 1) {
 
                         Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
                         parkDialog.dismiss();
                         getPlaces();
-                    }else if (response.body().getSuccess() == 0){
+                    } else if (response.body().getSuccess() == 0) {
 
                         Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
 
@@ -230,6 +233,13 @@ public class MainActivity extends AppCompatActivity {
                 exitPark(place);
 
             }
+
+            @Override
+            public void removeExitRequest(int exitRequestID) {
+
+                Toast.makeText(getApplicationContext(), "call decline exit request api", Toast.LENGTH_SHORT).show();
+
+            }
         }, place, parkPriceResponse);
         parkInfoDialog.show(getSupportFragmentManager(), ParkDialog.TAG);
 
@@ -240,10 +250,10 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository();
-        LoadingBar loadingBar = new LoadingBar(MainActivity.this,MainActivity.this);
+        LoadingBar loadingBar = new LoadingBar(MainActivity.this);
         loadingBar.show();
 
-        repository.exitPark("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),place.id, new Callback<ExitParkResponse>() {
+        repository.exitPark("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), place.id, new Callback<ExitParkResponse>() {
             @Override
             public void onResponse(Call<ExitParkResponse> call, Response<ExitParkResponse> response) {
 
@@ -251,12 +261,12 @@ public class MainActivity extends AppCompatActivity {
                 loadingBar.dismiss();
                 if (response.code() == HttpURLConnection.HTTP_OK) {
 
-                    if (response.body().getSuccess() == 1){
+                    if (response.body().getSuccess() == 1) {
 
                         Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
                         parkInfoDialog.dismiss();
                         getPlaces();
-                    }else if (response.body().getSuccess() == 0){
+                    } else if (response.body().getSuccess() == 0) {
 
                         Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
 
@@ -278,31 +288,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-    private void openCheckoutDialog(Place place) {
-
-        CheckoutDialog checkoutDialog = new CheckoutDialog(new OnCheckoutButtonsClicked() {
-            @Override
-            public void onPaymentClicked(ParkModel parkModel) {
-
-            }
-
-            @Override
-            public void onDebtClicked(ParkModel parkModel) {
-
-            }
-
-            @Override
-            public void onShowDebtListClicked(ParkModel parkModel) {
-
-                startActivity(new Intent(MainActivity.this, DebtListActivity.class));
-
-            }
-        }, new ParkModel());
-        checkoutDialog.show(getSupportFragmentManager(), ParkDialog.TAG);
-
-
-    }
 
     private void listeners() {
 
@@ -392,7 +377,7 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
-        ((TextView)popupView.findViewById(R.id.text)).setText(Html.fromHtml(getResources().getString(R.string.lorem)));
+        ((TextView) popupView.findViewById(R.id.text)).setText(Html.fromHtml(getResources().getString(R.string.lorem)));
 
 
     }
@@ -425,5 +410,44 @@ public class MainActivity extends AppCompatActivity {
             popupWindow.dismiss();
         } else
             super.onBackPressed();
+    }
+
+
+    private void exitRequest(PlateType plateType, String tag1, String tag2, String tag3, String tag4) {
+
+        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
+        RetrofitAPIRepository repository = new RetrofitAPIRepository();
+        loadingBar.show();
+
+        repository.exitRequest("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
+                plateType, tag1, tag2, tag3, tag4, new Callback<ExitRequestResponse>() {
+                    @Override
+                    public void onResponse(Call<ExitRequestResponse> call, Response<ExitRequestResponse> response) {
+
+                        System.out.println("--------> url : " + response.raw().request().url());
+
+                        loadingBar.dismiss();
+                        if (response.code() == HttpURLConnection.HTTP_OK) {
+
+
+                            messageDialog = new MessageDialog("درخواست خروج", response.body().getDescription(), "تایید", () -> messageDialog.dismiss());
+
+                            messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
+
+
+                        } else {
+
+                            Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ExitRequestResponse> call, Throwable t) {
+                        loadingBar.dismiss();
+                        Toast.makeText(getApplicationContext(), "onFailure", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
     }
 }

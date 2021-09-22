@@ -43,6 +43,7 @@ public class ParkInfoDialog extends DialogFragment {
         binding.placeNumber.setText(place.number+"");
         binding.startTime.setText(place.start);
         binding.parkPrice.setText(parkPriceResponse.getPrice() +" تومان");
+        binding.parkTime.setText(parkPriceResponse.getHours() +" ساعت و" + parkPriceResponse.getMinutes() + " دقیقه");
 
         binding.carBalance.setText(parkPriceResponse.getCar_balance() + " تومان");
 
@@ -56,6 +57,22 @@ public class ParkInfoDialog extends DialogFragment {
             binding.showDebtList.setVisibility(View.VISIBLE);
 
         }
+
+        if (place.exit_request != null){
+
+            binding.exitRequestArea.setVisibility(View.VISIBLE);
+            binding.paymentArea.setVisibility(View.GONE);
+
+        }else {
+
+            binding.exitRequestArea.setVisibility(View.GONE);
+            binding.paymentArea.setVisibility(View.VISIBLE);
+
+        }
+
+        binding.acceptExitRequest.setOnClickListener(view -> onGetInfoClicked.payAsDebt(place));
+
+        binding.declineExitRequest.setOnClickListener(view -> onGetInfoClicked.removeExitRequest(place.exit_request.id));
 
 
         if (place.tag4 != null && !place.tag4.isEmpty()){

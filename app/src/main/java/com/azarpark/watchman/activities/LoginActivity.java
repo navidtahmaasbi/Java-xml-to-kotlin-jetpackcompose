@@ -56,7 +56,7 @@ public class LoginActivity extends AppCompatActivity {
     private void login(String username, String password) {
 
         RetrofitAPIRepository repository = new RetrofitAPIRepository();
-        LoadingBar loadingBar = new LoadingBar(LoginActivity.this,LoginActivity.this);
+        LoadingBar loadingBar = new LoadingBar(LoginActivity.this);
         loadingBar.show();
 
         repository.login(new LoginBody(username, password), new Callback<LoginResponse>() {

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import com.azarpark.watchman.adapters.DebtListAdapter;
 import com.azarpark.watchman.databinding.ActivityDebtListBinding;
 import com.azarpark.watchman.models.DebtModel;
+import com.azarpark.watchman.models.Park;
 
 import java.util.ArrayList;
 
@@ -23,9 +24,9 @@ public class DebtListActivity extends AppCompatActivity {
         DebtListAdapter adapter = new DebtListAdapter();
         binding.recyclerView.setAdapter(adapter);
 
-        ArrayList<DebtModel> items = new ArrayList<>();
+        ArrayList<Park> items = new ArrayList<>();
         for (int i = 0; i < 40; i++) {
-            items.add(new DebtModel());
+            items.add(new Park());
         }
         adapter.setItems(items);
 

@@ -1,14 +1,19 @@
 package com.azarpark.watchman.retrofit_remote;
 
+import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.retrofit_remote.bodies.LoginBody;
 import com.azarpark.watchman.retrofit_remote.bodies.ParkBody;
+import com.azarpark.watchman.retrofit_remote.interfaces.CarDebtHistory;
 import com.azarpark.watchman.retrofit_remote.interfaces.EstimateParkPrice;
 import com.azarpark.watchman.retrofit_remote.interfaces.ExitPark;
+import com.azarpark.watchman.retrofit_remote.interfaces.ExitRequest;
 import com.azarpark.watchman.retrofit_remote.interfaces.GetPlaces;
 import com.azarpark.watchman.retrofit_remote.interfaces.Login;
 import com.azarpark.watchman.retrofit_remote.interfaces.Park;
+import com.azarpark.watchman.retrofit_remote.responses.DebtHistoryResponse;
 import com.azarpark.watchman.retrofit_remote.responses.EstimateParkPriceResponse;
 import com.azarpark.watchman.retrofit_remote.responses.ExitParkResponse;
+import com.azarpark.watchman.retrofit_remote.responses.ExitRequestResponse;
 import com.azarpark.watchman.retrofit_remote.responses.LoginResponse;
 import com.azarpark.watchman.retrofit_remote.responses.ParkResponse;
 import com.azarpark.watchman.retrofit_remote.responses.PlacesResponse;
@@ -56,6 +61,22 @@ public class RetrofitAPIRepository {
         ExitPark request = RetrofitAPIClient.getClient().create(ExitPark.class);
 
         request.exit(token,placeID).enqueue(responseCallback);
+
+    }
+
+    public void getCarDebtHistory(String token, PlateType plateType,String tag1,String tag2,String tag3,String tag4,int limit, int offset , Callback<DebtHistoryResponse> responseCallback) {
+
+        CarDebtHistory request = RetrofitAPIClient.getClient().create(CarDebtHistory.class);
+
+        request.get(token,plateType.toString(),tag1,tag2,tag3,tag4,limit,offset).enqueue(responseCallback);
+
+    }
+
+    public void exitRequest(String token, PlateType plateType,String tag1,String tag2,String tag3,String tag4 , Callback<ExitRequestResponse> responseCallback) {
+
+        ExitRequest request = RetrofitAPIClient.getClient().create(ExitRequest.class);
+
+        request.submit(token,plateType.toString(),tag1,tag2,tag3,tag4).enqueue(responseCallback);
 
     }
 

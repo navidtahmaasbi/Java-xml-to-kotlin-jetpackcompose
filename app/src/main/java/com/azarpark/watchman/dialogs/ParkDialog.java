@@ -16,8 +16,8 @@ import androidx.fragment.app.DialogFragment;
 
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.databinding.ParkDialogBinding;
+import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnParkClicked;
-import com.azarpark.watchman.interfaces.OnSubmitClicked;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.retrofit_remote.bodies.ParkBody;
 
@@ -237,17 +237,10 @@ public class ParkDialog extends DialogFragment {
 
     }
 
-
     @Override
     public void onDestroy() {
         super.onDestroy();
         binding = null;
     }
 
-    private enum PlateType {
-
-        simple,
-        old_aras,
-        new_aras
-    }
 }

@@ -7,4 +7,6 @@ public interface OnGetInfoClicked {
     public void pay(int price, int placeID);
 
     public void payAsDebt(Place place);
+
+    public void removeExitRequest(int exitRequestID);
 }

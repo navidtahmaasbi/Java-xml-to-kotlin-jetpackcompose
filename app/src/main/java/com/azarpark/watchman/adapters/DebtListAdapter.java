@@ -10,13 +10,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.azarpark.watchman.databinding.DebtListItemBinding;
 import com.azarpark.watchman.models.DebtModel;
+import com.azarpark.watchman.models.Park;
 
 import java.util.ArrayList;
 
 public class DebtListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    ArrayList<DebtModel> items;
+    ArrayList<Park> items;
 
+    public DebtListAdapter() {
+
+        items = new ArrayList<>();
+    }
 
     @NonNull
     @Override
@@ -32,9 +37,16 @@ public class DebtListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     }
 
-    public void setItems(ArrayList<DebtModel> items){
+    public void setItems(ArrayList<Park> items){
 
         this.items = items;
+        notifyDataSetChanged();
+
+    }
+
+    public void addItems(ArrayList<Park> items){
+
+        this.items.addAll(items);
         notifyDataSetChanged();
 
     }
