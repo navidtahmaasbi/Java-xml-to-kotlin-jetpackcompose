@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.azarpark.watchman.databinding.DebtListItemBinding;
 import com.azarpark.watchman.models.DebtModel;
 import com.azarpark.watchman.models.Park;
+import com.azarpark.watchman.models.Place;
 
 import java.util.ArrayList;
 
@@ -33,6 +34,11 @@ public class DebtListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
         DebtModelViewHolder viewHolder = (DebtModelViewHolder)holder;
+        Park park = items.get(position);
+        viewHolder.binding.price.setText(park.price + " تومان");
+        viewHolder.binding.street.setText(park.street_name);
+        viewHolder.binding.start.setText(park.start_j);
+        viewHolder.binding.end.setText(park.end_j);
 
 
     }

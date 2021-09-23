@@ -4,17 +4,21 @@ import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.retrofit_remote.bodies.LoginBody;
 import com.azarpark.watchman.retrofit_remote.bodies.ParkBody;
 import com.azarpark.watchman.retrofit_remote.interfaces.CarDebtHistory;
+import com.azarpark.watchman.retrofit_remote.interfaces.DeleteExitRequest;
 import com.azarpark.watchman.retrofit_remote.interfaces.EstimateParkPrice;
 import com.azarpark.watchman.retrofit_remote.interfaces.ExitPark;
 import com.azarpark.watchman.retrofit_remote.interfaces.ExitRequest;
 import com.azarpark.watchman.retrofit_remote.interfaces.GetPlaces;
 import com.azarpark.watchman.retrofit_remote.interfaces.Login;
+import com.azarpark.watchman.retrofit_remote.interfaces.Logout;
 import com.azarpark.watchman.retrofit_remote.interfaces.Park;
 import com.azarpark.watchman.retrofit_remote.responses.DebtHistoryResponse;
+import com.azarpark.watchman.retrofit_remote.responses.DeleteExitRequestResponse;
 import com.azarpark.watchman.retrofit_remote.responses.EstimateParkPriceResponse;
 import com.azarpark.watchman.retrofit_remote.responses.ExitParkResponse;
 import com.azarpark.watchman.retrofit_remote.responses.ExitRequestResponse;
 import com.azarpark.watchman.retrofit_remote.responses.LoginResponse;
+import com.azarpark.watchman.retrofit_remote.responses.LogoutResponse;
 import com.azarpark.watchman.retrofit_remote.responses.ParkResponse;
 import com.azarpark.watchman.retrofit_remote.responses.PlacesResponse;
 import com.azarpark.watchman.retrofit_remote.responses.TestResponse;
@@ -77,6 +81,21 @@ public class RetrofitAPIRepository {
         ExitRequest request = RetrofitAPIClient.getClient().create(ExitRequest.class);
 
         request.submit(token,plateType.toString(),tag1,tag2,tag3,tag4).enqueue(responseCallback);
+
+    }
+    public void deleteExitRequest(String token, int place_id , Callback<DeleteExitRequestResponse> responseCallback) {
+
+        DeleteExitRequest request = RetrofitAPIClient.getClient().create(DeleteExitRequest.class);
+
+        request.delete(token,place_id).enqueue(responseCallback);
+
+    }
+
+    public void logout(String token, Callback<LogoutResponse> responseCallback) {
+
+        Logout request = RetrofitAPIClient.getClient().create(Logout.class);
+
+        request.submit(token).enqueue(responseCallback);
 
     }
 

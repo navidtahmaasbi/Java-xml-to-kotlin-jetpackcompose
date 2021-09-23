@@ -3,6 +3,7 @@ package com.azarpark.watchman.activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.View;
 
 import com.azarpark.watchman.adapters.ChargeItemListAdapter;
 import com.azarpark.watchman.databinding.ActivityCarNumberChargeBinding;
@@ -34,6 +35,12 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
         adapter.setItems(items);
 
+
+    }
+
+    public void myOnBackPressed(View view){
+
+        onBackPressed();
 
     }
 }

@@ -19,6 +19,9 @@ import com.azarpark.watchman.interfaces.OnGetInfoClicked;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.retrofit_remote.responses.EstimateParkPriceResponse;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 public class ParkInfoDialog extends DialogFragment {
 
     public static final String TAG = "ParkInfoDialog";
@@ -40,12 +43,17 @@ public class ParkInfoDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(binding.getRoot());
 
-        binding.placeNumber.setText(place.number+"");
+        binding.placeNumber.setText(place.number + "");
         binding.startTime.setText(place.start);
-        binding.parkPrice.setText(parkPriceResponse.getPrice() +" تومان");
-        binding.parkTime.setText(parkPriceResponse.getHours() +" ساعت و" + parkPriceResponse.getMinutes() + " دقیقه");
+        binding.parkPrice.setText(NumberFormat.getNumberInstance(Locale.US).format(parkPriceResponse.getPrice()) + " تومان");
+        binding.parkTime.setText(parkPriceResponse.getHours() + " ساعت و" + parkPriceResponse.getMinutes() + " دقیقه");
 
-        binding.carBalance.setText(parkPriceResponse.getCar_balance() + " تومان");
+        binding.carBalance.setText(NumberFormat.getNumberInstance(Locale.US).format(parkPriceResponse.getCar_balance()) + " تومان");
+
+        if (parkPriceResponse.getCar_balance() < 0)
+            binding.carBalanceTitle.setText("اعتبار شما");
+        else
+            binding.carBalanceTitle.setText("بدهی شما");
 
         if (parkPriceResponse.getCar_balance() >= 0)
 
@@ -58,12 +66,12 @@ public class ParkInfoDialog extends DialogFragment {
 
         }
 
-        if (place.exit_request != null){
+        if (place.exit_request != null) {
 
             binding.exitRequestArea.setVisibility(View.VISIBLE);
             binding.paymentArea.setVisibility(View.GONE);
 
-        }else {
+        } else {
 
             binding.exitRequestArea.setVisibility(View.GONE);
             binding.paymentArea.setVisibility(View.VISIBLE);
@@ -72,10 +80,10 @@ public class ParkInfoDialog extends DialogFragment {
 
         binding.acceptExitRequest.setOnClickListener(view -> onGetInfoClicked.payAsDebt(place));
 
-        binding.declineExitRequest.setOnClickListener(view -> onGetInfoClicked.removeExitRequest(place.exit_request.id));
+        binding.declineExitRequest.setOnClickListener(view -> onGetInfoClicked.removeExitRequest(place));
 
 
-        if (place.tag4 != null && !place.tag4.isEmpty()){
+        if (place.tag4 != null && !place.tag4.isEmpty()) {
 
             binding.plateSimpleArea.setVisibility(View.VISIBLE);
             binding.plateOldArasArea.setVisibility(View.GONE);
@@ -86,7 +94,7 @@ public class ParkInfoDialog extends DialogFragment {
             binding.plateSimpleTag3.setText(place.tag3);
             binding.plateSimpleTag4.setText(place.tag4);
 
-        } else if(place.tag2 == null || place.tag2.isEmpty()){
+        } else if (place.tag2 == null || place.tag2.isEmpty()) {
 
             binding.plateSimpleArea.setVisibility(View.GONE);
             binding.plateOldArasArea.setVisibility(View.VISIBLE);
@@ -95,7 +103,7 @@ public class ParkInfoDialog extends DialogFragment {
             binding.plateOldArasTag1En.setText(place.tag1);
             binding.plateOldArasTag1Fa.setText(place.tag1);
 
-        }else {
+        } else {
 
             binding.plateSimpleArea.setVisibility(View.GONE);
             binding.plateOldArasArea.setVisibility(View.GONE);
@@ -110,7 +118,7 @@ public class ParkInfoDialog extends DialogFragment {
 
         binding.showDebtList.setOnClickListener(view -> startActivity(new Intent(getActivity(), DebtListActivity.class)));
 
-        binding.pay.setOnClickListener(view -> onGetInfoClicked.pay(parkPriceResponse.getPrice(),place.id));
+        binding.pay.setOnClickListener(view -> onGetInfoClicked.pay(parkPriceResponse.getPrice(), place.id));
 
         binding.payAsDebt.setOnClickListener(view -> onGetInfoClicked.payAsDebt(place));
 

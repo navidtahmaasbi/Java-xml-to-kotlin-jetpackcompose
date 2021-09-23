@@ -215,6 +215,9 @@ public class ParkDialog extends DialogFragment {
             binding.plateSimpleArea.setVisibility(View.VISIBLE);
             binding.plateOldAras.setVisibility(View.GONE);
             binding.plateNewArasArea.setVisibility(View.GONE);
+
+            binding.plateSimpleTag1.requestFocus();
+
         } else if (selectedTab == PlateType.old_aras) {
 
             binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_background);
@@ -224,6 +227,9 @@ public class ParkDialog extends DialogFragment {
             binding.plateSimpleArea.setVisibility(View.GONE);
             binding.plateOldAras.setVisibility(View.VISIBLE);
             binding.plateNewArasArea.setVisibility(View.GONE);
+
+            binding.plateOldAras.requestFocus();
+
         } else if (selectedTab == PlateType.new_aras) {
 
             binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_background);
@@ -233,6 +239,8 @@ public class ParkDialog extends DialogFragment {
             binding.plateSimpleArea.setVisibility(View.GONE);
             binding.plateOldAras.setVisibility(View.GONE);
             binding.plateNewArasArea.setVisibility(View.VISIBLE);
+
+            binding.plateNewArasTag1.requestFocus();
         }
 
     }

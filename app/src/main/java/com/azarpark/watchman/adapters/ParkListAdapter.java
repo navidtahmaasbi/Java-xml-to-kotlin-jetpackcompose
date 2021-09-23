@@ -16,16 +16,19 @@ import com.azarpark.watchman.enums.PlaceStatus;
 import com.azarpark.watchman.models.Place;
 
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     ArrayList<Place> items, filteredItems;
     OnItemClicked onItemClicked;
     int VIEW_TYPE_FREE = 0, VIEW_TYPE_FUll = 1;
+    boolean showExitRequestItems = false;
 
     public ParkListAdapter(OnItemClicked onItemClicked) {
         items = new ArrayList<>();
@@ -53,6 +56,9 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             viewHolder.binding.placeNumber.setText(Integer.toString(place.number));
 
             viewHolder.binding.placeStatus.setText(place.status.equals(PlaceStatus.full_by_watchman.toString()) ? "پارکبان" : "شهروند");
+
+            if (place.estimate_price.price > 0)
+                viewHolder.binding.paymentStatus.setText(NumberFormat.getNumberInstance(Locale.US).format(place.estimate_price.price) +"");
 
             if (place.tag4 != null && !place.tag4.isEmpty()) {
 
@@ -145,6 +151,31 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         notifyDataSetChanged();
 
+
+    }
+
+    public boolean isShowExitRequestItems() {
+
+        return showExitRequestItems;
+
+    }
+
+    public void showExitRequestItems(boolean show) {
+
+        showExitRequestItems = show;
+        filteredItems = new ArrayList<>();
+
+        if (show) {
+
+            for (Place place : items)
+                if (place.exit_request != null) {
+                    filteredItems.add(place);
+                }
+
+        } else
+            filteredItems = items;
+
+        notifyDataSetChanged();
 
     }
 

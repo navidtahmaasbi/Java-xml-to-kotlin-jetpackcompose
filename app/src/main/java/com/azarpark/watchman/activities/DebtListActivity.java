@@ -3,6 +3,7 @@ package com.azarpark.watchman.activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.View;
 
 import com.azarpark.watchman.adapters.DebtListAdapter;
 import com.azarpark.watchman.databinding.ActivityDebtListBinding;
@@ -29,6 +30,12 @@ public class DebtListActivity extends AppCompatActivity {
             items.add(new Park());
         }
         adapter.setItems(items);
+
+    }
+
+    public void myOnBackPressed(View view){
+
+        onBackPressed();
 
     }
 }

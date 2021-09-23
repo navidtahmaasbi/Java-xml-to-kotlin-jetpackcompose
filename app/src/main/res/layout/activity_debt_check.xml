@@ -16,14 +16,13 @@
         android:background="@color/blue">
 
         <ImageView
-            android:id="@+id/menu_toggle"
             android:layout_width="@dimen/_45sdp"
             android:layout_height="@dimen/_45sdp"
             android:layout_alignParentRight="true"
-            android:onClick="onMenuToggleClicked"
+            android:onClick="myOnBackPressed"
             android:padding="@dimen/_15sdp"
-            android:src="@drawable/ic_arrow_down"
             android:rotation="-90"
+            android:src="@drawable/ic_arrow_down"
             app:tint="@color/white" />
 
         <ImageView
@@ -339,6 +338,7 @@
                         android:textSize="@dimen/_13sdp" />
 
                     <TextView
+                        android:id="@+id/balance_title"
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"

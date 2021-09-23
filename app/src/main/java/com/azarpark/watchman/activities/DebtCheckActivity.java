@@ -260,19 +260,14 @@ public class DebtCheckActivity extends AppCompatActivity {
 
                             if (response.body().getSuccess() == 1) {
 
-                                if (response.body().getBalance() >= 0) {
+                                binding.balanceTitle.setText(response.body().balance >= 0 ? "اعتبار شما" : "بدهی شما");
 
-                                    messageDialog = new MessageDialog("پیام", "این پلاک هیچ بدهی ندارد", "تایید", () -> messageDialog.dismiss());
+                                binding.debtAmount.setText(response.body().balance + " تومان");
 
-                                    messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
+                                binding.debtArea.setVisibility(View.VISIBLE);
+                                adapter.addItems(response.body().items);
 
-                                } else {
 
-                                    binding.debtAmount.setText(response.body().balance + " تومان");
-                                    binding.debtArea.setVisibility(View.VISIBLE);
-                                    adapter.addItems(response.body().items);
-
-                                }
                             } else if (response.body().getSuccess() == 0) {
 
                                 Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
@@ -295,7 +290,6 @@ public class DebtCheckActivity extends AppCompatActivity {
 
     }
 
-
     private void setSelectedTab(PlateType selectedTab) {
 
         this.selectedTab = selectedTab;
@@ -309,6 +303,9 @@ public class DebtCheckActivity extends AppCompatActivity {
             binding.plateSimpleArea.setVisibility(View.VISIBLE);
             binding.plateOldAras.setVisibility(View.GONE);
             binding.plateNewArasArea.setVisibility(View.GONE);
+
+            binding.plateSimpleTag1.requestFocus();
+
         } else if (selectedTab == PlateType.old_aras) {
 
             binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_background);
@@ -318,6 +315,9 @@ public class DebtCheckActivity extends AppCompatActivity {
             binding.plateSimpleArea.setVisibility(View.GONE);
             binding.plateOldAras.setVisibility(View.VISIBLE);
             binding.plateNewArasArea.setVisibility(View.GONE);
+
+            binding.plateOldAras.requestFocus();
+
         } else if (selectedTab == PlateType.new_aras) {
 
             binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_background);
@@ -327,7 +327,15 @@ public class DebtCheckActivity extends AppCompatActivity {
             binding.plateSimpleArea.setVisibility(View.GONE);
             binding.plateOldAras.setVisibility(View.GONE);
             binding.plateNewArasArea.setVisibility(View.VISIBLE);
+
+            binding.plateNewArasTag1.requestFocus();
         }
+
+    }
+
+    public void myOnBackPressed(View view) {
+
+        onBackPressed();
 
     }
 }

@@ -3,6 +3,9 @@ package com.azarpark.watchman.activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Html;
@@ -24,19 +27,18 @@ import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.dialogs.ParkDialog;
 import com.azarpark.watchman.dialogs.ParkInfoDialog;
 import com.azarpark.watchman.enums.PlaceStatus;
-import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnGetInfoClicked;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.models.Street;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.bodies.ParkBody;
+import com.azarpark.watchman.retrofit_remote.responses.DeleteExitRequestResponse;
 import com.azarpark.watchman.retrofit_remote.responses.EstimateParkPriceResponse;
 import com.azarpark.watchman.retrofit_remote.responses.ExitParkResponse;
-import com.azarpark.watchman.retrofit_remote.responses.ExitRequestResponse;
+import com.azarpark.watchman.retrofit_remote.responses.LogoutResponse;
 import com.azarpark.watchman.retrofit_remote.responses.ParkResponse;
 import com.azarpark.watchman.retrofit_remote.responses.PlacesResponse;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
-import com.google.gson.Gson;
 
 import java.net.HttpURLConnection;
 
@@ -56,6 +58,10 @@ public class MainActivity extends AppCompatActivity {
     ParkInfoDialog parkInfoDialog;
     LoadingBar loadingBar;
     MessageDialog messageDialog;
+    int exitRequestCount = 0;
+    TextView watchManName;
+    boolean updatePopUpIsShowed = false;
+    int version = 0;
 
 
     @Override
@@ -63,6 +69,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        try {
+            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            version = pInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
 
         loadingBar = new LoadingBar(MainActivity.this);
 
@@ -131,8 +144,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void getPlaces() {
 
-        System.out.println("---------> getPlaces");
-
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository();
         LoadingBar loadingBar = new LoadingBar(MainActivity.this);
@@ -142,13 +153,48 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<PlacesResponse> call, Response<PlacesResponse> response) {
 
-                System.out.println("---------> response");
                 loadingBar.dismiss();
                 if (response.code() == HttpURLConnection.HTTP_OK) {
 
+                    if (!updatePopUpIsShowed && version != 0 && response.body().update.last_version > version){
+
+                        updatePopUpIsShowed = true;
+
+                        if (response.body().update.is_forced == 1){
+
+                            messageDialog = new MessageDialog("به روز رسانی", "به روز رسانی اجباری برای آذرپارک موجود است.", "به روز رسانی", () -> {
+
+                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(response.body().update.update_link));
+                                startActivity(browserIntent);
+
+                            });
+
+                        }
+
+
+
+                    }
+
+                    if (watchManName != null)
+                        watchManName.setText(response.body().watchman.name);
+
+                    exitRequestCount = 0;
                     //todo set placeholder to empty street or places list
-                    for (Street street : response.body().watchman.streets)
+                    for (Street street : response.body().watchman.streets) {
+
                         adapter.setItems(street.places);
+                        for (Place place : street.places)
+                            if (place.exit_request != null)
+                                exitRequestCount++;
+
+                    }
+
+                    if (exitRequestCount > 0) {
+
+                        binding.exitRequestCount.setText(Integer.toString(exitRequestCount));
+                        binding.exitRequests.setVisibility(View.VISIBLE);
+                    } else
+                        binding.exitRequests.setVisibility(View.GONE);
 
 
                 } else {
@@ -235,9 +281,9 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void removeExitRequest(int exitRequestID) {
+            public void removeExitRequest(Place place1) {
 
-                Toast.makeText(getApplicationContext(), "call decline exit request api", Toast.LENGTH_SHORT).show();
+                deleteExitRequest(place1.id);
 
             }
         }, place, parkPriceResponse);
@@ -291,8 +337,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void listeners() {
 
-        binding.exitRequests.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, ExitRequestListActivity.class)));
-
         binding.filterEdittext.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -323,7 +367,7 @@ public class MainActivity extends AppCompatActivity {
         boolean focusable = false; // lets taps outside the popup also dismiss it
         popupWindow = new PopupWindow(popupView, width, height, focusable);
 
-        popupView.findViewById(R.id.exit_request).setOnClickListener(view -> Toast.makeText(getApplicationContext(), "exit_request", Toast.LENGTH_SHORT).show());
+        popupView.findViewById(R.id.exit_request).setOnClickListener(view -> startActivity(new Intent(MainActivity.this, ExitRequestActivity.class)));
         popupView.findViewById(R.id.debt_inquiry).setOnClickListener(view -> startActivity(new Intent(MainActivity.this, DebtCheckActivity.class)));
         popupView.findViewById(R.id.car_number_charge).setOnClickListener(view -> startActivity(new Intent(MainActivity.this, CarNumberChargeActivity.class)));
         popupView.findViewById(R.id.help).setOnClickListener(view -> {
@@ -351,6 +395,7 @@ public class MainActivity extends AppCompatActivity {
 //            },1);
 
         });
+        watchManName = popupView.findViewById(R.id.name);
         popupView.findViewById(R.id.about_us).setOnClickListener(view -> Toast.makeText(getApplicationContext(), "about_us", Toast.LENGTH_SHORT).show());
         popupView.findViewById(R.id.rules).setOnClickListener(view -> Toast.makeText(getApplicationContext(), "rules", Toast.LENGTH_SHORT).show());
         popupView.findViewById(R.id.logout).setOnClickListener(view -> {
@@ -359,11 +404,8 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onConfirmClicked() {
 
-                    SharedPreferencesRepository sh_p = new SharedPreferencesRepository(getApplicationContext());
-                    sh_p.saveString(SharedPreferencesRepository.ACCESS_TOKEN, "");
-                    sh_p.saveString(SharedPreferencesRepository.REFRESH_TOKEN, "");
-                    MainActivity.this.finish();
-                    confirmDialog.dismiss();
+                    logout();
+
                 }
 
                 @Override
@@ -382,6 +424,79 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void deleteExitRequest(int place_id) {
+
+        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
+        RetrofitAPIRepository repository = new RetrofitAPIRepository();
+        loadingBar.show();
+
+        repository.deleteExitRequest("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
+                place_id, new Callback<DeleteExitRequestResponse>() {
+                    @Override
+                    public void onResponse(Call<DeleteExitRequestResponse> call, Response<DeleteExitRequestResponse> response) {
+
+                        System.out.println("--------> url : " + response.raw().request().url());
+
+                        loadingBar.dismiss();
+                        if (response.code() == HttpURLConnection.HTTP_OK) {
+
+                            getPlaces();
+                            if (parkInfoDialog != null)
+                                parkInfoDialog.dismiss();
+
+                        } else {
+
+                            Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<DeleteExitRequestResponse> call, Throwable t) {
+                        loadingBar.dismiss();
+                        Toast.makeText(getApplicationContext(), "onFailure", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+    }
+
+    private void logout() {
+
+        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
+        RetrofitAPIRepository repository = new RetrofitAPIRepository();
+        loadingBar.show();
+
+        repository.logout("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), new Callback<LogoutResponse>() {
+                    @Override
+                    public void onResponse(Call<LogoutResponse> call, Response<LogoutResponse> response) {
+
+                        System.out.println("--------> url : " + response.raw().request().url());
+
+                        loadingBar.dismiss();
+                        if (response.code() == HttpURLConnection.HTTP_OK) {
+
+                            SharedPreferencesRepository sh_p = new SharedPreferencesRepository(getApplicationContext());
+                            sh_p.saveString(SharedPreferencesRepository.ACCESS_TOKEN, "");
+                            sh_p.saveString(SharedPreferencesRepository.REFRESH_TOKEN, "");
+                            MainActivity.this.finish();
+                            confirmDialog.dismiss();
+
+                        } else {
+
+                            Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<LogoutResponse> call, Throwable t) {
+                        loadingBar.dismiss();
+                        Toast.makeText(getApplicationContext(), "onFailure", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+    }
+
     public void onMenuToggleClicked(View view) {
 
         popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
@@ -395,12 +510,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void onExitRequestIconClicked(View view) {
 
-        Toast.makeText(getApplicationContext(), "onExitRequestIconClicked", Toast.LENGTH_SHORT).show();
+        adapter.showExitRequestItems(!adapter.isShowExitRequestItems());
     }
 
     public void onBarcodeIconClicked(View view) {
 
-        Toast.makeText(getApplicationContext(), "onBarcodeIconClicked", Toast.LENGTH_SHORT).show();
+        getPlaces();
+//        Toast.makeText(getApplicationContext(), "onBarcodeIconClicked", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -413,41 +529,4 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void exitRequest(PlateType plateType, String tag1, String tag2, String tag3, String tag4) {
-
-        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository();
-        loadingBar.show();
-
-        repository.exitRequest("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-                plateType, tag1, tag2, tag3, tag4, new Callback<ExitRequestResponse>() {
-                    @Override
-                    public void onResponse(Call<ExitRequestResponse> call, Response<ExitRequestResponse> response) {
-
-                        System.out.println("--------> url : " + response.raw().request().url());
-
-                        loadingBar.dismiss();
-                        if (response.code() == HttpURLConnection.HTTP_OK) {
-
-
-                            messageDialog = new MessageDialog("درخواست خروج", response.body().getDescription(), "تایید", () -> messageDialog.dismiss());
-
-                            messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
-
-
-                        } else {
-
-                            Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
-
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ExitRequestResponse> call, Throwable t) {
-                        loadingBar.dismiss();
-                        Toast.makeText(getApplicationContext(), "onFailure", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-    }
 }

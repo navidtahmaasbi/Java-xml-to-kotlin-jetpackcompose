@@ -25,39 +25,49 @@
             app:tint="@color/white" />
 
         <ImageView
-            android:onClick="onBarcodeIconClicked"
             android:id="@+id/barcode"
             android:layout_width="@dimen/_45sdp"
             android:layout_height="@dimen/_45sdp"
             android:layout_alignParentLeft="true"
+            android:onClick="onBarcodeIconClicked"
             android:padding="@dimen/_10sdp"
             android:src="@drawable/ic_qr_code"
             app:tint="@color/white" />
 
         <RelativeLayout
-            android:onClick="onExitRequestIconClicked"
             android:id="@+id/exit_requests"
+            android:layout_width="@dimen/_110sdp"
+            android:layout_height="@dimen/_45sdp"
             android:layout_toRightOf="@+id/barcode"
-            android:layout_width="@dimen/_45sdp"
-            android:layout_height="@dimen/_45sdp">
+            android:onClick="onExitRequestIconClicked"
+            android:visibility="gone">
 
-            <ImageView
-                android:layout_width="@dimen/_45sdp"
-                android:layout_height="@dimen/_45sdp"
-                android:padding="@dimen/_10sdp"
-                android:src="@drawable/logout"
-                app:tint="@color/white" />
+            <!--            <ImageView-->
+            <!--                android:layout_width="@dimen/_45sdp"-->
+            <!--                android:layout_height="@dimen/_45sdp"-->
+            <!--                android:padding="@dimen/_10sdp"-->
+            <!--                android:src="@drawable/logout"-->
+            <!--                app:tint="@color/white" />-->
 
             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="درخواست های خروج"
+                android:fontFamily="@font/iran_sans"
+                android:textColor="@color/white"
+                android:layout_centerVertical="true"/>
+
+            <TextView
+                android:id="@+id/exit_request_count"
                 android:layout_width="@dimen/_20sdp"
                 android:layout_height="@dimen/_20sdp"
-                android:textSize="@dimen/_13sdp"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/red_circle"
                 android:fontFamily="@font/iran_sans_fa_num"
+                android:gravity="center"
                 android:text="5"
                 android:textColor="@color/white"
-                android:layout_alignParentRight="true"
-                android:gravity="center"
-                android:background="@drawable/red_circle"/>
+                android:textSize="@dimen/_13sdp" />
 
         </RelativeLayout>
 
@@ -70,9 +80,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/unselected_background"
-        android:layout_margin="@dimen/_10sdp"
-        android:padding="@dimen/_8sdp"
-        android:hint="شماره جایگاه را وارد کنید"
+        android:layout_margin="@dimen/_2sdp"
+        android:padding="@dimen/_3sdp"
+        android:hint="فیلتر جایگاه ها"
         android:fontFamily="@font/iran_sans_fa_num"
         android:gravity="center"
         android:inputType="numberDecimal"

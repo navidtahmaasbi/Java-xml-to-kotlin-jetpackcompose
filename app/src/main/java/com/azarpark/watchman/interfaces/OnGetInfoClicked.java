@@ -8,5 +8,5 @@ public interface OnGetInfoClicked {
 
     public void payAsDebt(Place place);
 
-    public void removeExitRequest(int exitRequestID);
+    public void removeExitRequest(Place place);
 }
