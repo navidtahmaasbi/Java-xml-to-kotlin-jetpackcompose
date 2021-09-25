@@ -88,9 +88,6 @@ public class MainActivity extends AppCompatActivity {
     TextView watchManName;
     boolean updatePopUpIsShowed = false;
     int version = 0;
-    MyServiceConnection connection;
-    IProxy service;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,8 +125,6 @@ public class MainActivity extends AppCompatActivity {
         binding.recyclerView.setAdapter(adapter);
 
         getPlaces();
-
-        initService();
 
     }
 
@@ -435,53 +430,10 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
-        popupView.findViewById(R.id.logo).setOnClickListener(view -> {
-
-            LinearLayout root = popupView.findViewById(R.id.root);
-
-            
-
-
-
-            String text="<div> mehdi08 </div>";
-            try {
-//                int result= service.PrintByString(text);
-                int result= service.PrintByBitmap(getBitmapFromView(root));
-            } catch (RemoteException e) {
-                e.printStackTrace();
-                Toast.makeText(MainActivity.this,e.getMessage(),Toast.LENGTH_LONG).show();
-            }
-
-
-
-        });
-
-//        ((TextView) popupView.findViewById(R.id.text)).setText(Html.fromHtml(getResources().getString(R.string.lorem)));
-
 
     }
 
-    //create bitmap from view and returns it
-    private Bitmap getBitmapFromView(View view) {
-        //Define a bitmap with the same size as the view
-        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),Bitmap.Config.ARGB_8888);
-        //Bind a canvas to it
-        Canvas canvas = new Canvas(returnedBitmap);
-        //Get the view's background
-        Drawable bgDrawable =view.getBackground();
-        if (bgDrawable!=null) {
-            //has background drawable, then draw it on the canvas
-            bgDrawable.draw(canvas);
-        }   else{
-            //does not have background drawable, then draw white background on the canvas
-            canvas.drawColor(Color.WHITE);
-        }
-        // draw the view on the canvas
-        view.draw(canvas);
-        //return the bitmap
-        return returnedBitmap;
-    }
-    // used for scanning gallery
+
 
     private void deleteExitRequest(int place_id) {
 
@@ -589,104 +541,5 @@ public class MainActivity extends AppCompatActivity {
             super.onBackPressed();
     }
 
-
-    class MyServiceConnection implements ServiceConnection {
-        public void onServiceConnected(ComponentName name, IBinder boundService) {
-            service = IProxy.Stub.asInterface((IBinder) boundService);
-            Log.i("--------->", "onServiceConnected(): Connected");
-            Toast.makeText(MainActivity.this, "AIDLExample Service connected",
-                    Toast.LENGTH_LONG).show();
-        }
-
-        public void onServiceDisconnected(ComponentName name) {
-            service = null;
-            Log.i("---------->", "onServiceDisconnected(): Disconnected");
-            Toast.makeText(MainActivity.this, "AIDLExample Service Connected",
-                    Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void initService() {
-        Log.i("TAG", "initService()");
-        connection = new MainActivity.MyServiceConnection();
-        Intent i = new Intent();
-        i.setClassName("ir.sep.android.smartpos", "ir.sep.android.Service.Proxy");
-        boolean ret = bindService(i, connection, Context.BIND_AUTO_CREATE);
-        Log.i("TAG", "initService() bound value: " + ret);
-    }
-
-    private void releaseService() {
-        unbindService(connection);
-        connection = null;
-        Log.d(TAG, "releaseService(): unbound.");
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        releaseService();
-    }
-
-    public void pay(int amount) {
-
-        UUID uuid = UUID.randomUUID();
-        String randomUUIDString = uuid.toString();
-        Intent intent = new Intent();
-        intent.putExtra("TransType", 3);
-        intent.putExtra("Amount", amount);
-        intent.putExtra("ResNum", randomUUIDString);
-//        intent.putExtra("AppId", "1");
-        intent.setComponent(new ComponentName("ir.sep.android.smartpos",
-                "ir.sep.android.smartpos.ThirdPartyActivity"));
-        startActivityForResult(intent, 1);
-
-    }
-
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_OK && requestCode==1) {
-
-            int state = data.getIntExtra("State", -1); // Response Code Switch
-
-            String refNum = data.getStringExtra("RefNum"); // Reference number
-            String resNum = data.getStringExtra("ResNum");
-            // you should store the resNum variable and then call verify method
-            System.out.println("--------> state : " + state);
-            if (state == 0) // successful
-            {
-                Toast.makeText(getBaseContext(), "Purchase did sucssessful....", Toast.LENGTH_LONG).show();
-                verify(refNum,resNum);
-            } else
-                Toast.makeText(getBaseContext(), "Purchase did faild....", Toast.LENGTH_LONG).show();
-
-        }
-
-        else if (resultCode == RESULT_OK && requestCode==2) {
-            Toast.makeText(MainActivity.this,data.getStringExtra("ScannerResult"),Toast.LENGTH_LONG).show();
-            System.out.println("---------> ScannerResult :" + data.getStringExtra("ScannerResult"));//https://irana.app/how?qr=090YK6
-        }
-    }
-
-    public void verify(String refNum,String resNum){
-
-        try {
-            int verifyResult = service.VerifyTransaction(1, refNum,resNum);
-            if (verifyResult == 0) // sucsess
-            {
-                Toast.makeText(getBaseContext(), "Purchase did sucssessful....", Toast.LENGTH_LONG).show();
-            } else if (verifyResult == 1)//sucsess but print is faild
-            {
-                Toast.makeText(getBaseContext(), "Purchase did sucssessful....", Toast.LENGTH_LONG).show();
-                int r = service.PrintByRefNum(refNum);
-            } else // faild
-            {
-                Toast.makeText(getBaseContext(), "Purchase did faild....", Toast.LENGTH_LONG).show();
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-
-    }
 
 }

@@ -8,6 +8,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -40,7 +44,7 @@ import retrofit2.Response;
 public class CarNumberChargeActivity extends AppCompatActivity {
 
     ActivityCarNumberChargeBinding binding;
-    private PlateType selectedTab = PlateType.simple;
+    private PlateType selectedTab = PlateType.old_aras;
     MyServiceConnection connection;
     IProxy service;
 
@@ -387,17 +391,39 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
     public void pay(int amount) {
 
-        UUID uuid = UUID.randomUUID();
-        String randomUUIDString = uuid.toString();
         Intent intent = new Intent();
-        intent.putExtra("TransType", 3);
-        intent.putExtra("Amount", amount);
-        intent.putExtra("ResNum", randomUUIDString);
-//        intent.putExtra("AppId", "1");
-        intent.setComponent(new ComponentName("ir.sep.android.smartpos",
-                "ir.sep.android.smartpos.ThirdPartyActivity"));
-        startActivityForResult(intent, 1);
+        intent.putExtra("TransType", 1);
+        intent.putExtra("Amount", String.valueOf(amount));
+        intent.putExtra("ResNum", UUID.randomUUID().toString());
+        intent.putExtra("AppId", String.valueOf(0));
 
+
+        intent.setComponent(new ComponentName("ir.sep.android.smartpos", "ir.sep.android.smartpos.ThirdPartyActivity"));
+
+        startActivityForResult(intent,
+                1);
+
+    }
+
+//    int result= service.PrintByBitmap(getBitmapFromView(root));
+    private Bitmap getBitmapFromView(View view) {
+        //Define a bitmap with the same size as the view
+        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),Bitmap.Config.ARGB_8888);
+        //Bind a canvas to it
+        Canvas canvas = new Canvas(returnedBitmap);
+        //Get the view's background
+        Drawable bgDrawable =view.getBackground();
+        if (bgDrawable!=null) {
+            //has background drawable, then draw it on the canvas
+            bgDrawable.draw(canvas);
+        }   else{
+            //does not have background drawable, then draw white background on the canvas
+            canvas.drawColor(Color.WHITE);
+        }
+        // draw the view on the canvas
+        view.draw(canvas);
+        //return the bitmap
+        return returnedBitmap;
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -411,10 +437,12 @@ public class CarNumberChargeActivity extends AppCompatActivity {
             String resNum = data.getStringExtra("ResNum");
             // you should store the resNum variable and then call verify method
             System.out.println("--------> state : " + state);
+            System.out.println("--------> refNum : " + refNum);
+            System.out.println("--------> resNum : " + resNum);
             if (state == 0) // successful
             {
                 Toast.makeText(getBaseContext(), "Purchase did sucssessful....", Toast.LENGTH_LONG).show();
-                verify(refNum,resNum);
+//                verify(refNum,resNum);
             } else
                 Toast.makeText(getBaseContext(), "Purchase did faild....", Toast.LENGTH_LONG).show();
 
@@ -429,7 +457,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
     public void verify(String refNum,String resNum){
 
         try {
-            int verifyResult = service.VerifyTransaction(1, refNum,resNum);
+            int verifyResult = service.VerifyTransaction(0, refNum,resNum);
             if (verifyResult == 0) // sucsess
             {
                 Toast.makeText(getBaseContext(), "Purchase did sucssessful....", Toast.LENGTH_LONG).show();
