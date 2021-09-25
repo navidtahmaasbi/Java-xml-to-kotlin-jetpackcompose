@@ -1,18 +1,39 @@
 package com.azarpark.watchman.activities;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -40,8 +61,13 @@ import com.azarpark.watchman.retrofit_remote.responses.ParkResponse;
 import com.azarpark.watchman.retrofit_remote.responses.PlacesResponse;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.UUID;
 
+import ir.sep.android.Service.IProxy;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -62,6 +88,8 @@ public class MainActivity extends AppCompatActivity {
     TextView watchManName;
     boolean updatePopUpIsShowed = false;
     int version = 0;
+    MyServiceConnection connection;
+    IProxy service;
 
 
     @Override
@@ -69,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        setupUI(binding.getRoot());
 
         try {
             PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -92,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                 openParkDialog(place);
 
             } else
-                getParkData(place);
+                openParkInfoDialog(place);
 
 
         });
@@ -100,45 +129,7 @@ public class MainActivity extends AppCompatActivity {
 
         getPlaces();
 
-    }
-
-    private void getParkData(Place place) {
-
-        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository();
-        LoadingBar loadingBar = new LoadingBar(MainActivity.this);
-        loadingBar.show();
-
-        repository.estimateParkPrice("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), place.id, new Callback<EstimateParkPriceResponse>() {
-            @Override
-            public void onResponse(Call<EstimateParkPriceResponse> call, Response<EstimateParkPriceResponse> response) {
-
-                loadingBar.dismiss();
-                if (response.code() == HttpURLConnection.HTTP_OK) {
-
-                    if (response.body().getSuccess() == 1) {
-
-//                        Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
-                        openParkInfoDialog(place, response.body());
-                    } else if (response.body().getSuccess() == 0) {
-
-                        Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
-
-                    }
-
-                } else {
-
-                    Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<EstimateParkPriceResponse> call, Throwable t) {
-                loadingBar.dismiss();
-                Toast.makeText(getApplicationContext(), "onFailure", Toast.LENGTH_SHORT).show();
-            }
-        });
+        initService();
 
     }
 
@@ -156,11 +147,11 @@ public class MainActivity extends AppCompatActivity {
                 loadingBar.dismiss();
                 if (response.code() == HttpURLConnection.HTTP_OK) {
 
-                    if (!updatePopUpIsShowed && version != 0 && response.body().update.last_version > version){
+                    if (!updatePopUpIsShowed && version != 0 && response.body().update.last_version > version) {
 
                         updatePopUpIsShowed = true;
 
-                        if (response.body().update.is_forced == 1){
+                        if (response.body().update.is_forced == 1) {
 
                             messageDialog = new MessageDialog("به روز رسانی", "به روز رسانی اجباری برای آذرپارک موجود است.", "به روز رسانی", () -> {
 
@@ -170,7 +161,6 @@ public class MainActivity extends AppCompatActivity {
                             });
 
                         }
-
 
 
                     }
@@ -263,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void openParkInfoDialog(Place place, EstimateParkPriceResponse parkPriceResponse) {
+    private void openParkInfoDialog(Place place) {
 
         parkInfoDialog = new ParkInfoDialog(new OnGetInfoClicked() {
             @Override
@@ -286,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
                 deleteExitRequest(place1.id);
 
             }
-        }, place, parkPriceResponse);
+        }, place);
         parkInfoDialog.show(getSupportFragmentManager(), ParkDialog.TAG);
 
 
@@ -334,8 +324,42 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager =
+                (InputMethodManager) activity.getSystemService(
+                        Activity.INPUT_METHOD_SERVICE);
+        if(inputMethodManager.isAcceptingText()){
+            inputMethodManager.hideSoftInputFromWindow(
+                    activity.getCurrentFocus().getWindowToken(),
+                    0
+            );
+        }
+    }
+
+    public void setupUI(View view) {
+
+        // Set up touch listener for non-text box views to hide keyboard.
+        if (!(view instanceof EditText)) {
+            view.setOnTouchListener(new View.OnTouchListener() {
+                public boolean onTouch(View v, MotionEvent event) {
+                    hideSoftKeyboard(MainActivity.this);
+                    return false;
+                }
+            });
+        }
+
+        //If a layout container, iterate over children and seed recursion.
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                View innerView = ((ViewGroup) view).getChildAt(i);
+                setupUI(innerView);
+            }
+        }
+    }
 
     private void listeners() {
+
+        binding.refresh.setOnClickListener(view -> getPlaces());
 
         binding.filterEdittext.addTextChangedListener(new TextWatcher() {
             @Override
@@ -372,32 +396,24 @@ public class MainActivity extends AppCompatActivity {
         popupView.findViewById(R.id.car_number_charge).setOnClickListener(view -> startActivity(new Intent(MainActivity.this, CarNumberChargeActivity.class)));
         popupView.findViewById(R.id.help).setOnClickListener(view -> {
 
-            Toast.makeText(getApplicationContext(), "help", Toast.LENGTH_SHORT).show();
-
-//            RetrofitAPIRepository repository = new RetrofitAPIRepository();
-//
-//            repository.test(new Callback<TestResponse>() {
-//                @Override
-//                public void onResponse(Call<TestResponse> call, Response<TestResponse> response) {
-//
-//                    Toast.makeText(getApplicationContext(), "post title : " +  response.body().getTitle(), Toast.LENGTH_SHORT).show();
-//
-//
-//
-//                }
-//
-//                @Override
-//                public void onFailure(Call<TestResponse> call, Throwable t) {
-//
-//                    Toast.makeText(getApplicationContext(), "failure", Toast.LENGTH_SHORT).show();
-//
-//                }
-//            },1);
+            Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
+//            intent.putExtra("url","");
+            startActivity(intent);
 
         });
         watchManName = popupView.findViewById(R.id.name);
-        popupView.findViewById(R.id.about_us).setOnClickListener(view -> Toast.makeText(getApplicationContext(), "about_us", Toast.LENGTH_SHORT).show());
-        popupView.findViewById(R.id.rules).setOnClickListener(view -> Toast.makeText(getApplicationContext(), "rules", Toast.LENGTH_SHORT).show());
+        popupView.findViewById(R.id.about_us).setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
+//            intent.putExtra("url","");
+            startActivity(intent);
+        });
+        popupView.findViewById(R.id.rules).setOnClickListener(view -> {
+
+            Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
+//            intent.putExtra("url","");
+            startActivity(intent);
+
+        });
         popupView.findViewById(R.id.logout).setOnClickListener(view -> {
 
             confirmDialog = new ConfirmDialog("خروج", "ایا اطمینان دارید؟", "خروج", "لغو", new ConfirmDialog.ConfirmButtonClicks() {
@@ -419,10 +435,53 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
-        ((TextView) popupView.findViewById(R.id.text)).setText(Html.fromHtml(getResources().getString(R.string.lorem)));
+        popupView.findViewById(R.id.logo).setOnClickListener(view -> {
+
+            LinearLayout root = popupView.findViewById(R.id.root);
+
+            
+
+
+
+            String text="<div> mehdi08 </div>";
+            try {
+//                int result= service.PrintByString(text);
+                int result= service.PrintByBitmap(getBitmapFromView(root));
+            } catch (RemoteException e) {
+                e.printStackTrace();
+                Toast.makeText(MainActivity.this,e.getMessage(),Toast.LENGTH_LONG).show();
+            }
+
+
+
+        });
+
+//        ((TextView) popupView.findViewById(R.id.text)).setText(Html.fromHtml(getResources().getString(R.string.lorem)));
 
 
     }
+
+    //create bitmap from view and returns it
+    private Bitmap getBitmapFromView(View view) {
+        //Define a bitmap with the same size as the view
+        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),Bitmap.Config.ARGB_8888);
+        //Bind a canvas to it
+        Canvas canvas = new Canvas(returnedBitmap);
+        //Get the view's background
+        Drawable bgDrawable =view.getBackground();
+        if (bgDrawable!=null) {
+            //has background drawable, then draw it on the canvas
+            bgDrawable.draw(canvas);
+        }   else{
+            //does not have background drawable, then draw white background on the canvas
+            canvas.drawColor(Color.WHITE);
+        }
+        // draw the view on the canvas
+        view.draw(canvas);
+        //return the bitmap
+        return returnedBitmap;
+    }
+    // used for scanning gallery
 
     private void deleteExitRequest(int place_id) {
 
@@ -467,33 +526,33 @@ public class MainActivity extends AppCompatActivity {
         loadingBar.show();
 
         repository.logout("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), new Callback<LogoutResponse>() {
-                    @Override
-                    public void onResponse(Call<LogoutResponse> call, Response<LogoutResponse> response) {
+            @Override
+            public void onResponse(Call<LogoutResponse> call, Response<LogoutResponse> response) {
 
-                        System.out.println("--------> url : " + response.raw().request().url());
+                System.out.println("--------> url : " + response.raw().request().url());
 
-                        loadingBar.dismiss();
-                        if (response.code() == HttpURLConnection.HTTP_OK) {
+                loadingBar.dismiss();
+                if (response.code() == HttpURLConnection.HTTP_OK) {
 
-                            SharedPreferencesRepository sh_p = new SharedPreferencesRepository(getApplicationContext());
-                            sh_p.saveString(SharedPreferencesRepository.ACCESS_TOKEN, "");
-                            sh_p.saveString(SharedPreferencesRepository.REFRESH_TOKEN, "");
-                            MainActivity.this.finish();
-                            confirmDialog.dismiss();
+                    SharedPreferencesRepository sh_p = new SharedPreferencesRepository(getApplicationContext());
+                    sh_p.saveString(SharedPreferencesRepository.ACCESS_TOKEN, "");
+                    sh_p.saveString(SharedPreferencesRepository.REFRESH_TOKEN, "");
+                    MainActivity.this.finish();
+                    confirmDialog.dismiss();
 
-                        } else {
+                } else {
 
-                            Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
 
-                        }
-                    }
+                }
+            }
 
-                    @Override
-                    public void onFailure(Call<LogoutResponse> call, Throwable t) {
-                        loadingBar.dismiss();
-                        Toast.makeText(getApplicationContext(), "onFailure", Toast.LENGTH_SHORT).show();
-                    }
-                });
+            @Override
+            public void onFailure(Call<LogoutResponse> call, Throwable t) {
+                loadingBar.dismiss();
+                Toast.makeText(getApplicationContext(), "onFailure", Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
@@ -515,8 +574,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void onBarcodeIconClicked(View view) {
 
-        getPlaces();
-//        Toast.makeText(getApplicationContext(), "onBarcodeIconClicked", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent();
+        intent.setComponent(new ComponentName("ir.sep.android.smartpos",
+                "ir.sep.android.smartpos.ScannerActivity"));
+        startActivityForResult(intent, 2);
     }
 
     @Override
@@ -528,5 +589,104 @@ public class MainActivity extends AppCompatActivity {
             super.onBackPressed();
     }
 
+
+    class MyServiceConnection implements ServiceConnection {
+        public void onServiceConnected(ComponentName name, IBinder boundService) {
+            service = IProxy.Stub.asInterface((IBinder) boundService);
+            Log.i("--------->", "onServiceConnected(): Connected");
+            Toast.makeText(MainActivity.this, "AIDLExample Service connected",
+                    Toast.LENGTH_LONG).show();
+        }
+
+        public void onServiceDisconnected(ComponentName name) {
+            service = null;
+            Log.i("---------->", "onServiceDisconnected(): Disconnected");
+            Toast.makeText(MainActivity.this, "AIDLExample Service Connected",
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void initService() {
+        Log.i("TAG", "initService()");
+        connection = new MainActivity.MyServiceConnection();
+        Intent i = new Intent();
+        i.setClassName("ir.sep.android.smartpos", "ir.sep.android.Service.Proxy");
+        boolean ret = bindService(i, connection, Context.BIND_AUTO_CREATE);
+        Log.i("TAG", "initService() bound value: " + ret);
+    }
+
+    private void releaseService() {
+        unbindService(connection);
+        connection = null;
+        Log.d(TAG, "releaseService(): unbound.");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        releaseService();
+    }
+
+    public void pay(int amount) {
+
+        UUID uuid = UUID.randomUUID();
+        String randomUUIDString = uuid.toString();
+        Intent intent = new Intent();
+        intent.putExtra("TransType", 3);
+        intent.putExtra("Amount", amount);
+        intent.putExtra("ResNum", randomUUIDString);
+//        intent.putExtra("AppId", "1");
+        intent.setComponent(new ComponentName("ir.sep.android.smartpos",
+                "ir.sep.android.smartpos.ThirdPartyActivity"));
+        startActivityForResult(intent, 1);
+
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK && requestCode==1) {
+
+            int state = data.getIntExtra("State", -1); // Response Code Switch
+
+            String refNum = data.getStringExtra("RefNum"); // Reference number
+            String resNum = data.getStringExtra("ResNum");
+            // you should store the resNum variable and then call verify method
+            System.out.println("--------> state : " + state);
+            if (state == 0) // successful
+            {
+                Toast.makeText(getBaseContext(), "Purchase did sucssessful....", Toast.LENGTH_LONG).show();
+                verify(refNum,resNum);
+            } else
+                Toast.makeText(getBaseContext(), "Purchase did faild....", Toast.LENGTH_LONG).show();
+
+        }
+
+        else if (resultCode == RESULT_OK && requestCode==2) {
+            Toast.makeText(MainActivity.this,data.getStringExtra("ScannerResult"),Toast.LENGTH_LONG).show();
+            System.out.println("---------> ScannerResult :" + data.getStringExtra("ScannerResult"));//https://irana.app/how?qr=090YK6
+        }
+    }
+
+    public void verify(String refNum,String resNum){
+
+        try {
+            int verifyResult = service.VerifyTransaction(1, refNum,resNum);
+            if (verifyResult == 0) // sucsess
+            {
+                Toast.makeText(getBaseContext(), "Purchase did sucssessful....", Toast.LENGTH_LONG).show();
+            } else if (verifyResult == 1)//sucsess but print is faild
+            {
+                Toast.makeText(getBaseContext(), "Purchase did sucssessful....", Toast.LENGTH_LONG).show();
+                int r = service.PrintByRefNum(refNum);
+            } else // faild
+            {
+                Toast.makeText(getBaseContext(), "Purchase did faild....", Toast.LENGTH_LONG).show();
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 }

@@ -8,11 +8,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.azarpark.watchman.databinding.AmountItemBinding;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class ChargeItemListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    ArrayList<Double> items;
+    ArrayList<Integer> items;
     OnItemClicked onItemClicked;
 
     public ChargeItemListAdapter(OnItemClicked onItemClicked) {
@@ -32,12 +34,13 @@ public class ChargeItemListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
         viewHolder.binding.getRoot().setOnClickListener(view -> onItemClicked.itemClicked(items.get(position)));
 
-        viewHolder.binding.amount.setText(Double.toString(items.get(position)));
+
+        viewHolder.binding.amount.setText(NumberFormat.getNumberInstance(Locale.US).format(items.get(position))+"");
 
 
     }
 
-    public void setItems(ArrayList<Double> items){
+    public void setItems(ArrayList<Integer> items){
 
         this.items = items;
         notifyDataSetChanged();
@@ -61,7 +64,7 @@ public class ChargeItemListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
     public static interface OnItemClicked{
 
-        public void itemClicked(Double amount);
+        public void itemClicked(Integer amount);
 
     }
 }

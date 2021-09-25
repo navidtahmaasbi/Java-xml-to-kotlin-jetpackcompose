@@ -1,18 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clickable="true"
-    android:layoutDirection="ltr"
-    android:orientation="vertical">
-
-    <LinearLayout
-        android:id="@+id/root"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/light_gray">
+    android:orientation="vertical"
+    android:background="@color/light_gray"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layoutDirection="ltr">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
@@ -66,6 +60,7 @@
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <ImageView
+                android:id="@+id/logo"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/_100sdp"
                 android:layout_weight="1"
@@ -89,7 +84,7 @@
                 android:layout_margin="@dimen/_15sdp"
                 android:layout_weight="1"
                 app:cardCornerRadius="@dimen/_10sdp"
-                app:cardElevation="@dimen/_10sdp">
+                app:cardElevation="@dimen/_5sdp">
 
                 <LinearLayout
                     android:id="@+id/exit_request"
@@ -100,8 +95,8 @@
                     android:padding="@dimen/_10sdp">
 
                     <ImageView
-                        android:layout_width="@dimen/_60sdp"
-                        android:layout_height="@dimen/_60sdp"
+                        android:layout_width="@dimen/_50sdp"
+                        android:layout_height="@dimen/_50sdp"
                         android:src="@drawable/logout"
                         app:tint="@color/blue" />
 
@@ -126,7 +121,7 @@
                 android:layout_margin="@dimen/_15sdp"
                 android:layout_weight="1"
                 app:cardCornerRadius="@dimen/_10sdp"
-                app:cardElevation="@dimen/_10sdp">
+                app:cardElevation="@dimen/_5sdp">
 
                 <LinearLayout
                     android:id="@+id/debt_inquiry"
@@ -137,8 +132,8 @@
                     android:padding="@dimen/_10sdp">
 
                     <ImageView
-                        android:layout_width="@dimen/_60sdp"
-                        android:layout_height="@dimen/_60sdp"
+                        android:layout_width="@dimen/_50sdp"
+                        android:layout_height="@dimen/_50sdp"
                         android:src="@drawable/list"
                         app:tint="@color/blue" />
 
@@ -170,7 +165,7 @@
                 android:layout_margin="@dimen/_15sdp"
                 android:layout_weight="1"
                 app:cardCornerRadius="@dimen/_10sdp"
-                app:cardElevation="@dimen/_10sdp">
+                app:cardElevation="@dimen/_5sdp">
 
                 <LinearLayout
                     android:id="@+id/car_number_charge"
@@ -181,8 +176,8 @@
                     android:padding="@dimen/_10sdp">
 
                     <ImageView
-                        android:layout_width="@dimen/_60sdp"
-                        android:layout_height="@dimen/_60sdp"
+                        android:layout_width="@dimen/_50sdp"
+                        android:layout_height="@dimen/_50sdp"
                         android:src="@drawable/ic_wallet"
                         app:tint="@color/blue" />
 
@@ -207,7 +202,7 @@
                 android:layout_margin="@dimen/_15sdp"
                 android:layout_weight="1"
                 app:cardCornerRadius="@dimen/_10sdp"
-                app:cardElevation="@dimen/_10sdp">
+                app:cardElevation="@dimen/_5sdp">
 
                 <LinearLayout
                     android:id="@+id/help"
@@ -218,8 +213,8 @@
                     android:padding="@dimen/_10sdp">
 
                     <ImageView
-                        android:layout_width="@dimen/_60sdp"
-                        android:layout_height="@dimen/_60sdp"
+                        android:layout_width="@dimen/_50sdp"
+                        android:layout_height="@dimen/_50sdp"
                         android:src="@drawable/ic_help"
                         app:tint="@color/blue" />
 
@@ -251,7 +246,7 @@
                 android:layout_margin="@dimen/_15sdp"
                 android:layout_weight="1"
                 app:cardCornerRadius="@dimen/_10sdp"
-                app:cardElevation="@dimen/_10sdp">
+                app:cardElevation="@dimen/_5sdp">
 
                 <LinearLayout
                     android:id="@+id/about_us"
@@ -262,8 +257,8 @@
                     android:padding="@dimen/_10sdp">
 
                     <ImageView
-                        android:layout_width="@dimen/_60sdp"
-                        android:layout_height="@dimen/_60sdp"
+                        android:layout_width="@dimen/_50sdp"
+                        android:layout_height="@dimen/_50sdp"
                         android:src="@drawable/ic_help"
                         app:tint="@color/blue" />
 
@@ -288,7 +283,7 @@
                 android:layout_margin="@dimen/_15sdp"
                 android:layout_weight="1"
                 app:cardCornerRadius="@dimen/_10sdp"
-                app:cardElevation="@dimen/_10sdp">
+                app:cardElevation="@dimen/_5sdp">
 
                 <LinearLayout
                     android:id="@+id/rules"
@@ -299,8 +294,8 @@
                     android:padding="@dimen/_10sdp">
 
                     <ImageView
-                        android:layout_width="@dimen/_60sdp"
-                        android:layout_height="@dimen/_60sdp"
+                        android:layout_width="@dimen/_50sdp"
+                        android:layout_height="@dimen/_50sdp"
                         android:src="@drawable/list"
                         app:tint="@color/blue" />
 
@@ -321,25 +316,4 @@
 
         </LinearLayout>
 
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/_20sdp">
-
-            <TextView
-                android:id="@+id/text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/iran_sans"
-                android:text="لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با استفاده از طراحان گرافیک است، چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است، و برای شرایط فعلی تکنولوژی مورد نیاز، و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد، کتابهای زیادی در شصت و سه درصد گذشته حال و آینده، شناخت فراوان جامعه و متخصصان را می طلبد، تا با نرم افزارها شناخت بیشتری را برای طراحان رایانه ای علی الخصوص طراحان خلاقی، و فرهنگ پیشرو در زبان فارسی ایجاد کرد، در این صورت می توان امید داشت که تمام و دشواری موجود در ارائه راهکارها، و شرایط سخت تایپ به پایان رسد و زمان مورد نیاز شامل حروفچینی دستاوردهای اصلی، و جوابگوی سوالات پیوسته اهل دنیای موجود طراحی اساسا مورد استفاده قرار گیرد."
-                android:textColor="@color/blue"
-                android:textSize="@dimen/_11sdp"
-                android:lineSpacingExtra="@dimen/_2sdp"
-                android:justificationMode="inter_word"/>
-        </LinearLayout>
-
     </LinearLayout>
-
-</ScrollView>

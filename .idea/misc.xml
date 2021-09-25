@@ -71,6 +71,7 @@
         <entry key="..\:/azarpark/android/app/src/main/res/layout/activity_login.xml" value="0.36666666666666664" />
         <entry key="..\:/azarpark/android/app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="..\:/azarpark/android/app/src/main/res/layout/activity_splash.xml" value="0.33" />
+        <entry key="..\:/azarpark/android/app/src/main/res/layout/activity_web_view.xml" value="0.36666666666666664" />
         <entry key="..\:/azarpark/android/app/src/main/res/layout/amount_item.xml" value="0.36666666666666664" />
         <entry key="..\:/azarpark/android/app/src/main/res/layout/checkout_dialog.xml" value="0.37864583333333335" />
         <entry key="..\:/azarpark/android/app/src/main/res/layout/confirm_dialog.xml" value="0.36666666666666664" />
@@ -83,7 +84,8 @@
         <entry key="..\:/azarpark/android/app/src/main/res/layout/loadingbar.xml" value="0.36666666666666664" />
         <entry key="..\:/azarpark/android/app/src/main/res/layout/main_menu.xml" value="0.36666666666666664" />
         <entry key="..\:/azarpark/android/app/src/main/res/layout/menu_popup_window.xml" value="0.36666666666666664" />
-        <entry key="..\:/azarpark/android/app/src/main/res/layout/menu_popup_window02.xml" value="0.37864583333333335" />
+        <entry key="..\:/azarpark/android/app/src/main/res/layout/menu_popup_window02.xml" value="0.25" />
+        <entry key="..\:/azarpark/android/app/src/main/res/layout/menu_popup_window03.xml" value="0.36666666666666664" />
         <entry key="..\:/azarpark/android/app/src/main/res/layout/message_dialog.xml" value="0.36666666666666664" />
         <entry key="..\:/azarpark/android/app/src/main/res/layout/park_dialog.xml" value="0.36666666666666664" />
         <entry key="..\:/azarpark/android/app/src/main/res/layout/park_dialog02.xml" value="0.36666666666666664" />

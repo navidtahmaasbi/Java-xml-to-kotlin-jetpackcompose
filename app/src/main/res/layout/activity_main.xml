@@ -1,27 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:background="@color/gray"
     android:layoutDirection="ltr"
-    android:background="@color/gray">
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_45sdp"
+        android:layout_height="?android:attr/actionBarSize"
         android:background="@color/blue">
 
+        <!--        <ImageView-->
+        <!--            android:id="@+id/menu_toggle"-->
+        <!--            android:layout_width="@dimen/_45sdp"-->
+        <!--            android:layout_height="@dimen/_45sdp"-->
+        <!--            android:layout_alignParentRight="true"-->
+        <!--            android:onClick="onMenuToggleClicked"-->
+        <!--            android:padding="@dimen/_10sdp"-->
+        <!--            android:src="@drawable/ic_menu"-->
+        <!--            app:tint="@color/white" />-->
+
         <ImageView
-            android:id="@+id/menu_toggle"
-            android:layout_width="@dimen/_45sdp"
-            android:layout_height="@dimen/_45sdp"
-            android:layout_alignParentRight="true"
             android:onClick="onMenuToggleClicked"
+            android:layout_width="@dimen/_100sdp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
             android:padding="@dimen/_10sdp"
-            android:src="@drawable/ic_menu"
+            android:src="@drawable/ic_logo_type"
             app:tint="@color/white" />
 
         <ImageView
@@ -30,15 +39,24 @@
             android:layout_height="@dimen/_45sdp"
             android:layout_alignParentLeft="true"
             android:onClick="onBarcodeIconClicked"
-            android:padding="@dimen/_10sdp"
+            android:padding="@dimen/_13sdp"
             android:src="@drawable/ic_qr_code"
+            app:tint="@color/white" />
+
+        <ImageView
+            android:id="@+id/refresh"
+            android:layout_width="@dimen/_45sdp"
+            android:layout_height="@dimen/_45sdp"
+            android:layout_toRightOf="@+id/barcode"
+            android:padding="@dimen/_13sdp"
+            android:src="@drawable/refresh"
             app:tint="@color/white" />
 
         <RelativeLayout
             android:id="@+id/exit_requests"
             android:layout_width="@dimen/_110sdp"
             android:layout_height="@dimen/_45sdp"
-            android:layout_toRightOf="@+id/barcode"
+            android:layout_toRightOf="@+id/refresh"
             android:onClick="onExitRequestIconClicked"
             android:visibility="gone">
 
@@ -52,10 +70,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="درخواست های خروج"
+                android:layout_centerVertical="true"
                 android:fontFamily="@font/iran_sans"
-                android:textColor="@color/white"
-                android:layout_centerVertical="true"/>
+                android:text="درخواست های خروج"
+                android:textColor="@color/white" />
 
             <TextView
                 android:id="@+id/exit_request_count"
@@ -72,29 +90,28 @@
         </RelativeLayout>
 
 
-
     </RelativeLayout>
 
     <EditText
         android:id="@+id/filter_edittext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/unselected_background"
         android:layout_margin="@dimen/_2sdp"
-        android:padding="@dimen/_3sdp"
-        android:hint="فیلتر جایگاه ها"
+        android:background="@drawable/unselected_background"
         android:fontFamily="@font/iran_sans_fa_num"
         android:gravity="center"
+        android:hint="فیلتر جایگاه ها"
         android:inputType="numberDecimal"
-        android:textSize="@dimen/_13sdp"/>
+        android:padding="@dimen/_3sdp"
+        android:textSize="@dimen/_13sdp" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/recycler_view"
-        tools:itemCount="40"
-        tools:listitem="@layout/full_park_item"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:spanCount="3"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"/>
+        tools:itemCount="40"
+        tools:listitem="@layout/full_park_item" />
 
 </LinearLayout>

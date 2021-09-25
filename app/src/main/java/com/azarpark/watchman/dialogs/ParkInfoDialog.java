@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,13 +15,21 @@ import androidx.fragment.app.DialogFragment;
 
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.activities.DebtListActivity;
+import com.azarpark.watchman.activities.MainActivity;
 import com.azarpark.watchman.databinding.ParkInfoDialogBinding;
 import com.azarpark.watchman.interfaces.OnGetInfoClicked;
 import com.azarpark.watchman.models.Place;
+import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.responses.EstimateParkPriceResponse;
+import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
+import java.net.HttpURLConnection;
 import java.text.NumberFormat;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ParkInfoDialog extends DialogFragment {
 
@@ -28,11 +37,9 @@ public class ParkInfoDialog extends DialogFragment {
     ParkInfoDialogBinding binding;
     private OnGetInfoClicked onGetInfoClicked;
     private Place place;
-    EstimateParkPriceResponse parkPriceResponse;
 
-    public ParkInfoDialog(OnGetInfoClicked onGetInfoClicked, Place place, EstimateParkPriceResponse parkPriceResponse) {
+    public ParkInfoDialog(OnGetInfoClicked onGetInfoClicked, Place place) {
         this.onGetInfoClicked = onGetInfoClicked;
-        this.parkPriceResponse = parkPriceResponse;
         this.place = place;
     }
 
@@ -43,28 +50,11 @@ public class ParkInfoDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(binding.getRoot());
 
+        getParkData(place);
+
         binding.placeNumber.setText(place.number + "");
         binding.startTime.setText(place.start);
-        binding.parkPrice.setText(NumberFormat.getNumberInstance(Locale.US).format(parkPriceResponse.getPrice()) + " تومان");
-        binding.parkTime.setText(parkPriceResponse.getHours() + " ساعت و" + parkPriceResponse.getMinutes() + " دقیقه");
 
-        binding.carBalance.setText(NumberFormat.getNumberInstance(Locale.US).format(parkPriceResponse.getCar_balance()) + " تومان");
-
-        if (parkPriceResponse.getCar_balance() < 0)
-            binding.carBalanceTitle.setText("اعتبار شما");
-        else
-            binding.carBalanceTitle.setText("بدهی شما");
-
-        if (parkPriceResponse.getCar_balance() >= 0)
-
-            binding.showDebtList.setVisibility(View.GONE);
-
-        else {
-
-            binding.carBalance.setTextColor(getResources().getColor(R.color.red));
-            binding.showDebtList.setVisibility(View.VISIBLE);
-
-        }
 
         if (place.exit_request != null) {
 
@@ -118,13 +108,72 @@ public class ParkInfoDialog extends DialogFragment {
 
         binding.showDebtList.setOnClickListener(view -> startActivity(new Intent(getActivity(), DebtListActivity.class)));
 
-        binding.pay.setOnClickListener(view -> onGetInfoClicked.pay(parkPriceResponse.getPrice(), place.id));
-
         binding.payAsDebt.setOnClickListener(view -> onGetInfoClicked.payAsDebt(place));
 
         return builder.create();
     }
 
+    private void getParkData(Place place) {
+
+        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getContext());
+        RetrofitAPIRepository repository = new RetrofitAPIRepository();
+        LoadingBar loadingBar = new LoadingBar(getActivity());
+        loadingBar.show();
+
+        repository.estimateParkPrice("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), place.id, new Callback<EstimateParkPriceResponse>() {
+            @Override
+            public void onResponse(Call<EstimateParkPriceResponse> call, Response<EstimateParkPriceResponse> response) {
+
+                loadingBar.dismiss();
+                if (response.code() == HttpURLConnection.HTTP_OK) {
+
+                    if (response.body().getSuccess() == 1) {
+
+                        EstimateParkPriceResponse parkPriceResponse = response.body();
+
+                        binding.parkPrice.setText(NumberFormat.getNumberInstance(Locale.US).format(parkPriceResponse.getPrice()) + " تومان");
+                        binding.parkTime.setText(parkPriceResponse.getHours() + " ساعت و" + parkPriceResponse.getMinutes() + " دقیقه");
+
+                        binding.carBalance.setText(NumberFormat.getNumberInstance(Locale.US).format(parkPriceResponse.getCar_balance()) + " تومان");
+
+                        if (parkPriceResponse.getCar_balance() < 0)
+                            binding.carBalanceTitle.setText("اعتبار شما");
+                        else
+                            binding.carBalanceTitle.setText("بدهی شما");
+
+                        if (parkPriceResponse.getCar_balance() >= 0)
+
+                            binding.showDebtList.setVisibility(View.GONE);
+                        else {
+
+                            binding.carBalance.setTextColor(getResources().getColor(R.color.red));
+                            binding.showDebtList.setVisibility(View.VISIBLE);
+                        }
+
+                        binding.pay.setOnClickListener(view -> onGetInfoClicked.pay(parkPriceResponse.getPrice(), place.id));
+
+
+                    } else if (response.body().getSuccess() == 0) {
+
+                        Toast.makeText(getContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
+
+                    }
+
+                } else {
+
+                    Toast.makeText(getContext(), "error", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<EstimateParkPriceResponse> call, Throwable t) {
+                loadingBar.dismiss();
+                Toast.makeText(getContext(), "onFailure", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
 
     @Override
     public void onDestroy() {

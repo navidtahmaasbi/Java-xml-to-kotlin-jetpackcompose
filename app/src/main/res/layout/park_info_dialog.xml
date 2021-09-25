@@ -350,7 +350,7 @@
             android:fontFamily="@font/iran_sans_fa_num_bold"
             android:textColor="@color/text_gray"
             android:textSize="@dimen/_11sdp"
-            android:text="3 ساعت و 16 دقیقه"
+            android:text="درحال محاسبه ..."
             android:gravity="center"/>
 
         <TextView
@@ -387,7 +387,7 @@
             android:fontFamily="@font/iran_sans_fa_num_bold"
             android:textColor="@color/text_gray"
             android:textSize="@dimen/_11sdp"
-            android:text="3000 تومان"
+            android:text="درحال محاسبه ..."
             android:gravity="center"/>
 
         <TextView
@@ -426,7 +426,8 @@
             android:textColor="@color/red"
             android:textSize="@dimen/_9sdp"
             android:text="مشاهده بدهی ها"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:visibility="gone"/>
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
@@ -442,7 +443,7 @@
                 android:fontFamily="@font/iran_sans_fa_num_bold"
                 android:textColor="@color/text_gray"
                 android:textSize="@dimen/_11sdp"
-                android:text="3000 تومان"
+                android:text="درحال محاسبه ..."
                 android:gravity="center"/>
 
             <TextView
