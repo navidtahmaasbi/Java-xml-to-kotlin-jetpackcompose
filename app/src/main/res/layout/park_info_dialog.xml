@@ -10,39 +10,6 @@
     android:layoutDirection="ltr"
     android:padding="@dimen/_10sdp">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="right"
-        android:gravity="center">
-
-        <TextView
-            android:id="@+id/place_number"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/iran_sans_fa_num"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_15sdp"
-            android:text="87"/>
-
-        <TextView
-            android:layout_marginRight="@dimen/_10sdp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/iran_sans"
-            android:textColor="@color/text_gray"
-            android:textSize="@dimen/_13sdp"
-            android:text="جایگاه شماره "/>
-
-        <ImageView
-            android:layout_width="@dimen/_20sdp"
-            android:layout_height="@dimen/_20sdp"
-            android:src="@drawable/ic_parking"
-            app:tint="@color/green" />
-
-    </LinearLayout>
-
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_marginTop="@dimen/_10sdp"
         android:layout_width="match_parent"
@@ -282,22 +249,39 @@
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <TextView
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_weight="4"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/iran_sans"
-            android:text="شماره پلاک خودرو"
-            android:textColor="@color/text_gray"
-            android:textSize="@dimen/_11sdp" />
+            android:layout_weight="5"
+            android:orientation="horizontal"
+            android:layout_gravity="right"
+            android:gravity="center_vertical|right">
 
-        <ImageView
-            android:id="@+id/img"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_car_outline"
-            app:tint="@color/green" />
+            <TextView
+                android:id="@+id/place_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/iran_sans_fa_num_bold"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_15sdp"
+                android:text="87"/>
+
+            <TextView
+                android:layout_marginRight="@dimen/_10sdp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/iran_sans"
+                android:textColor="@color/text_gray"
+                android:textSize="@dimen/_13sdp"
+                android:text="جایگاه "/>
+
+            <ImageView
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:src="@drawable/ic_parking"
+                app:tint="@color/green" />
+
+        </LinearLayout>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -435,6 +419,16 @@
             android:orientation="horizontal"
             android:gravity="right|center_vertical">
 
+            <CheckBox
+                android:visibility="gone"
+                android:id="@+id/add_debt_to_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="پرداخت شود"
+                android:layoutDirection="rtl"
+                android:fontFamily="@font/iran_sans"/>
+
             <TextView
                 android:id="@+id/car_balance"
                 android:padding="@dimen/_5sdp"
@@ -458,12 +452,64 @@
                 android:gravity="center"/>
 
             <ImageView
+                android:id="@+id/balance_icon"
                 android:layout_width="@dimen/_15sdp"
                 android:layout_height="@dimen/_15sdp"
                 android:src="@drawable/ic_clock"
                 app:tint="@color/green" />
 
+            <CheckBox
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:checked="true"
+                android:id="@+id/balance_checkbox"
+                android:visibility="gone"/>
+
         </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+    </LinearLayout>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_1sdp"
+        android:background="@color/unselected_gray"
+        android:layout_marginTop="@dimen/_3sdp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_30sdp"
+        android:orientation="horizontal"
+        android:gravity="right|center_vertical"
+        android:layout_marginTop="@dimen/_5sdp">
+
+        <TextView
+            android:id="@+id/total_price"
+            android:padding="@dimen/_5sdp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/iran_sans_fa_num_bold"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/_11sdp"
+            android:text="درحال محاسبه ..."
+            android:gravity="center"/>
+
+        <TextView
+            android:padding="@dimen/_5sdp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/iran_sans_bold"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/_11sdp"
+            android:text="هزینه قابل پرداخت "
+
+            android:gravity="center"/>
+
+        <ImageView
+            android:layout_width="@dimen/_15sdp"
+            android:layout_height="@dimen/_15sdp"
+            android:src="@drawable/ic_clock"
+            app:tint="@color/green" />
 
     </LinearLayout>
 

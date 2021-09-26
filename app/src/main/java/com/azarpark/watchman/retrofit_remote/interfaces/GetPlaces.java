@@ -1,5 +1,6 @@
 package com.azarpark.watchman.retrofit_remote.interfaces;
 
+import com.azarpark.watchman.retrofit_remote.responses.GetCitiesResponse;
 import com.azarpark.watchman.retrofit_remote.responses.PlacesResponse;
 
 import retrofit2.Call;

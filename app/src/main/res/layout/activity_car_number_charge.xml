@@ -226,7 +226,6 @@
                 </LinearLayout>
 
                 <EditText
-                    android:text="11111"
                     android:id="@+id/plate_old_aras"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -299,7 +298,6 @@
             </LinearLayout>
 
             <EditText
-                android:text="1100"
                 android:id="@+id/amount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

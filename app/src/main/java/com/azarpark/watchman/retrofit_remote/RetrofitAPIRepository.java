@@ -8,20 +8,24 @@ import com.azarpark.watchman.retrofit_remote.interfaces.DeleteExitRequest;
 import com.azarpark.watchman.retrofit_remote.interfaces.EstimateParkPrice;
 import com.azarpark.watchman.retrofit_remote.interfaces.ExitPark;
 import com.azarpark.watchman.retrofit_remote.interfaces.ExitRequest;
+import com.azarpark.watchman.retrofit_remote.interfaces.GetCities;
 import com.azarpark.watchman.retrofit_remote.interfaces.GetPlaces;
 import com.azarpark.watchman.retrofit_remote.interfaces.Login;
 import com.azarpark.watchman.retrofit_remote.interfaces.Logout;
 import com.azarpark.watchman.retrofit_remote.interfaces.Park;
+import com.azarpark.watchman.retrofit_remote.interfaces.VerifyTransaction;
 import com.azarpark.watchman.retrofit_remote.responses.DebtHistoryResponse;
 import com.azarpark.watchman.retrofit_remote.responses.DeleteExitRequestResponse;
 import com.azarpark.watchman.retrofit_remote.responses.EstimateParkPriceResponse;
 import com.azarpark.watchman.retrofit_remote.responses.ExitParkResponse;
 import com.azarpark.watchman.retrofit_remote.responses.ExitRequestResponse;
+import com.azarpark.watchman.retrofit_remote.responses.GetCitiesResponse;
 import com.azarpark.watchman.retrofit_remote.responses.LoginResponse;
 import com.azarpark.watchman.retrofit_remote.responses.LogoutResponse;
 import com.azarpark.watchman.retrofit_remote.responses.ParkResponse;
 import com.azarpark.watchman.retrofit_remote.responses.PlacesResponse;
 import com.azarpark.watchman.retrofit_remote.responses.TestResponse;
+import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse;
 
 import retrofit2.Callback;
 
@@ -39,6 +43,14 @@ public class RetrofitAPIRepository {
     public void getPlaces(String token, Callback<PlacesResponse> responseCallback) {
 
         GetPlaces request = RetrofitAPIClient.getClient().create(GetPlaces.class);
+
+        request.get(token).enqueue(responseCallback);
+
+    }
+
+    public void getCities(String token, Callback<GetCitiesResponse> responseCallback) {
+
+        GetCities request = RetrofitAPIClient.getClient().create(GetCities.class);
 
         request.get(token).enqueue(responseCallback);
 
@@ -76,6 +88,14 @@ public class RetrofitAPIRepository {
 
     }
 
+    public void verifyTransaction(String token, PlateType plateType,String tag1,String tag2,String tag3,String tag4,String amount, String transaction_id, int placeID , Callback<VerifyTransactionResponse> responseCallback) {
+
+        VerifyTransaction request = RetrofitAPIClient.getClient().create(VerifyTransaction.class);
+
+        request.verify(token,plateType.toString(),tag1,tag2,tag3,tag4,amount,transaction_id,placeID).enqueue(responseCallback);
+
+    }
+
     public void exitRequest(String token, PlateType plateType,String tag1,String tag2,String tag3,String tag4 , Callback<ExitRequestResponse> responseCallback) {
 
         ExitRequest request = RetrofitAPIClient.getClient().create(ExitRequest.class);
@@ -83,6 +103,7 @@ public class RetrofitAPIRepository {
         request.submit(token,plateType.toString(),tag1,tag2,tag3,tag4).enqueue(responseCallback);
 
     }
+
     public void deleteExitRequest(String token, int place_id , Callback<DeleteExitRequestResponse> responseCallback) {
 
         DeleteExitRequest request = RetrofitAPIClient.getClient().create(DeleteExitRequest.class);

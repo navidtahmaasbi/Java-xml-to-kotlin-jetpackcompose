@@ -1,6 +1,7 @@
 package com.azarpark.watchman.dialogs;
 
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,8 +16,8 @@ import androidx.fragment.app.DialogFragment;
 
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.activities.DebtListActivity;
-import com.azarpark.watchman.activities.MainActivity;
 import com.azarpark.watchman.databinding.ParkInfoDialogBinding;
+import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnGetInfoClicked;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
@@ -37,6 +38,7 @@ public class ParkInfoDialog extends DialogFragment {
     ParkInfoDialogBinding binding;
     private OnGetInfoClicked onGetInfoClicked;
     private Place place;
+    int totalPrice = 0;
 
     public ParkInfoDialog(OnGetInfoClicked onGetInfoClicked, Place place) {
         this.onGetInfoClicked = onGetInfoClicked;
@@ -54,7 +56,6 @@ public class ParkInfoDialog extends DialogFragment {
 
         binding.placeNumber.setText(place.number + "");
         binding.startTime.setText(place.start);
-
 
         if (place.exit_request != null) {
 
@@ -106,7 +107,23 @@ public class ParkInfoDialog extends DialogFragment {
 
         }
 
-        binding.showDebtList.setOnClickListener(view -> startActivity(new Intent(getActivity(), DebtListActivity.class)));
+        binding.showDebtList.setOnClickListener(view -> {
+
+            PlateType selectedPlateType = PlateType.simple;
+
+            if (place.tag2 == null)
+                selectedPlateType = PlateType.old_aras;
+            else if (place.tag3 == null)
+                selectedPlateType = PlateType.new_aras;
+
+            Intent intent = new Intent(getActivity(), DebtListActivity.class);
+            intent.putExtra("plateType", selectedPlateType.toString());
+            intent.putExtra("tag1", place.tag1);
+            intent.putExtra("tag2", place.tag2);
+            intent.putExtra("tag3", place.tag3);
+            intent.putExtra("tag4", place.tag4);
+            startActivity(intent);
+        });
 
         binding.payAsDebt.setOnClickListener(view -> onGetInfoClicked.payAsDebt(place));
 
@@ -121,6 +138,7 @@ public class ParkInfoDialog extends DialogFragment {
         loadingBar.show();
 
         repository.estimateParkPrice("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), place.id, new Callback<EstimateParkPriceResponse>() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onResponse(Call<EstimateParkPriceResponse> call, Response<EstimateParkPriceResponse> response) {
 
@@ -131,26 +149,82 @@ public class ParkInfoDialog extends DialogFragment {
 
                         EstimateParkPriceResponse parkPriceResponse = response.body();
 
-                        binding.parkPrice.setText(NumberFormat.getNumberInstance(Locale.US).format(parkPriceResponse.getPrice()) + " تومان");
                         binding.parkTime.setText(parkPriceResponse.getHours() + " ساعت و" + parkPriceResponse.getMinutes() + " دقیقه");
 
-                        binding.carBalance.setText(NumberFormat.getNumberInstance(Locale.US).format(parkPriceResponse.getCar_balance()) + " تومان");
 
-                        if (parkPriceResponse.getCar_balance() < 0)
-                            binding.carBalanceTitle.setText("اعتبار شما");
-                        else
+                        int parkPrice = parkPriceResponse.getPrice();
+                        int carBalance = parkPriceResponse.getCar_balance();
+
+
+                        if (carBalance < 0) {
+
                             binding.carBalanceTitle.setText("بدهی شما");
-
-                        if (parkPriceResponse.getCar_balance() >= 0)
-
-                            binding.showDebtList.setVisibility(View.GONE);
-                        else {
+                            binding.carBalance.setText(NumberFormat.getNumberInstance(Locale.US).format(-carBalance) + " تومان");
 
                             binding.carBalance.setTextColor(getResources().getColor(R.color.red));
+
                             binding.showDebtList.setVisibility(View.VISIBLE);
+
+                            binding.parkPrice.setText(NumberFormat.getNumberInstance(Locale.US).format(parkPrice) + " تومان");
+                            totalPrice = parkPrice - carBalance;
+                            binding.totalPrice.setText(NumberFormat.getNumberInstance(Locale.US).format(totalPrice) + " تومان");
+
+                            binding.balanceCheckbox.setVisibility(View.VISIBLE);
+                            binding.balanceIcon.setVisibility(View.GONE);
+
+
+                            binding.balanceCheckbox.setOnCheckedChangeListener((compoundButton, b) -> {
+
+                                totalPrice = b ? parkPrice - carBalance : parkPrice;
+                                binding.totalPrice.setText(NumberFormat.getNumberInstance(Locale.US).format(totalPrice) + " تومان");
+
+                            });
+
+                            binding.pay.setOnClickListener(view -> onGetInfoClicked.pay(totalPrice, place));
+
+                        } else {
+
+                            binding.carBalanceTitle.setText("اعتبار شما");
+                            binding.carBalance.setText(NumberFormat.getNumberInstance(Locale.US).format(carBalance) + " تومان");
+
+                            binding.showDebtList.setVisibility(View.GONE);
+
+                            binding.carBalance.setTextColor(getResources().getColor(R.color.green));
+
+
+
+                            if (carBalance > parkPrice){
+
+                                totalPrice = 0 ;
+
+                                binding.pay.setBackgroundDrawable(getResources().getDrawable(R.drawable.green_5_bg));
+                                binding.pay.setText("پرداخت از اعتبار");
+
+                                binding.payAsDebt.setVisibility(View.GONE);
+
+                                binding.pay.setOnClickListener(view -> onGetInfoClicked.payAsDebt(place));
+
+                            }else {
+
+                                totalPrice = parkPrice - carBalance;
+
+                                binding.pay.setOnClickListener(view -> onGetInfoClicked.pay(totalPrice, place));
+
+                            }
+
+
+
+                            binding.totalPrice.setText(NumberFormat.getNumberInstance(Locale.US).format(totalPrice) + " تومان");
+
+                            binding.parkPrice.setText(NumberFormat.getNumberInstance(Locale.US).format(parkPrice) + " تومان");
+
+                            binding.balanceCheckbox.setVisibility(View.GONE);
+                            binding.balanceIcon.setVisibility(View.VISIBLE);
+
                         }
 
-                        binding.pay.setOnClickListener(view -> onGetInfoClicked.pay(parkPriceResponse.getPrice(), place.id));
+
+
 
 
                     } else if (response.body().getSuccess() == 0) {

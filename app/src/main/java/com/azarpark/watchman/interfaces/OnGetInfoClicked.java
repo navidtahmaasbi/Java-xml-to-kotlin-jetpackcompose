@@ -4,7 +4,7 @@ import com.azarpark.watchman.models.Place;
 
 public interface OnGetInfoClicked {
 
-    public void pay(int price, int placeID);
+    public void pay(int price, Place place);
 
     public void payAsDebt(Place place);
 

@@ -14,7 +14,17 @@ public class SharedPreferencesRepository {
 
     public static String
             ACCESS_TOKEN = "accessToken",
-            REFRESH_TOKEN = "refreshToken";
+            REFRESH_TOKEN = "refreshToken",
+            PLATE_TYPE = "PLATE_TYPE",
+            TAG1 = "TAG1",
+            TAG2 = "TAG2",
+            TAG3 = "TAG3",
+            TAG4 = "TAG4",
+            AMOUNT = "AMOUNT",
+            PLACE_ID = "PLACE_ID",
+            TRANSACTION_ID = "TRANSACTION_ID",
+            REF_NUM = "REF_NUM"
+                    ;
 
     public SharedPreferencesRepository(Context context) {
 
@@ -31,6 +41,13 @@ public class SharedPreferencesRepository {
     public String getString(String key) {
 
         String defaultString = "";
+
+        return prefs.getString(key, defaultString);
+
+    }
+
+    public String getString(String key,String defaultString) {
+
 
         return prefs.getString(key, defaultString);
 

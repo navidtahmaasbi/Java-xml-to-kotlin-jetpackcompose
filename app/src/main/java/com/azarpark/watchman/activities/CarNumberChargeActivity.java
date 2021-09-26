@@ -24,10 +24,13 @@ import android.widget.Toast;
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.adapters.ChargeItemListAdapter;
 import com.azarpark.watchman.databinding.ActivityCarNumberChargeBinding;
+import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.enums.PlateType;
+import com.azarpark.watchman.payment.MyServiceConnection;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.bodies.ParkBody;
 import com.azarpark.watchman.retrofit_remote.responses.DebtHistoryResponse;
+import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
 import java.net.HttpURLConnection;
@@ -44,15 +47,23 @@ import retrofit2.Response;
 public class CarNumberChargeActivity extends AppCompatActivity {
 
     ActivityCarNumberChargeBinding binding;
-    private PlateType selectedTab = PlateType.old_aras;
+    private PlateType selectedTab = PlateType.simple;
     MyServiceConnection connection;
     IProxy service;
+    LoadingBar loadingBar;
+    SharedPreferencesRepository sh_r ;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityCarNumberChargeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        sh_r = new SharedPreferencesRepository(getApplicationContext());
+        loadingBar = new LoadingBar(CarNumberChargeActivity.this);
+
+        initService();
 
         binding.plateSimpleTag1.requestFocus();
 
@@ -252,7 +263,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
     private void charge(String amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4) {
 
-        pay(Integer.parseInt(amount));
+        paymentRequest(Integer.parseInt(amount),plateType,tag1,tag2,tag3,tag4,-1);
 
 //        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
 //        RetrofitAPIRepository repository = new RetrofitAPIRepository();
@@ -351,26 +362,10 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
     //------------------------------------------------------------------
 
-
-    class MyServiceConnection implements ServiceConnection {
-        public void onServiceConnected(ComponentName name, IBinder boundService) {
-            service = IProxy.Stub.asInterface((IBinder) boundService);
-            Log.i("--------->", "onServiceConnected(): Connected");
-            Toast.makeText(CarNumberChargeActivity.this, "AIDLExample Service connected",
-                    Toast.LENGTH_LONG).show();
-        }
-
-        public void onServiceDisconnected(ComponentName name) {
-            service = null;
-            Log.i("---------->", "onServiceDisconnected(): Disconnected");
-            Toast.makeText(CarNumberChargeActivity.this, "AIDLExample Service Connected",
-                    Toast.LENGTH_LONG).show();
-        }
-    }
-
     private void initService() {
+
         Log.i("TAG", "initService()");
-        connection = new MyServiceConnection();
+        connection = new MyServiceConnection(service);
         Intent i = new Intent();
         i.setClassName("ir.sep.android.smartpos", "ir.sep.android.Service.Proxy");
         boolean ret = bindService(i, connection, Context.BIND_AUTO_CREATE);
@@ -389,7 +384,19 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         releaseService();
     }
 
-    public void pay(int amount) {
+    public void paymentRequest(int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4,int placeID) {
+
+        amount *= 10;
+        System.out.println("---------> amount : " + amount);
+
+        sh_r.saveString(SharedPreferencesRepository.PLATE_TYPE, plateType.toString());
+        sh_r.saveString(SharedPreferencesRepository.TAG1, tag1);
+        sh_r.saveString(SharedPreferencesRepository.TAG2, tag2);
+        sh_r.saveString(SharedPreferencesRepository.TAG3, tag3);
+        sh_r.saveString(SharedPreferencesRepository.TAG4, tag4);
+        sh_r.saveString(SharedPreferencesRepository.TAG4, tag4);
+        sh_r.saveString(SharedPreferencesRepository.AMOUNT, String.valueOf(amount));
+        sh_r.saveString(SharedPreferencesRepository.PLACE_ID, Integer.toString(placeID));
 
         Intent intent = new Intent();
         intent.putExtra("TransType", 1);
@@ -397,11 +404,9 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         intent.putExtra("ResNum", UUID.randomUUID().toString());
         intent.putExtra("AppId", String.valueOf(0));
 
-
         intent.setComponent(new ComponentName("ir.sep.android.smartpos", "ir.sep.android.smartpos.ThirdPartyActivity"));
 
-        startActivityForResult(intent,
-                1);
+        startActivityForResult(intent, 1);
 
     }
 
@@ -442,7 +447,17 @@ public class CarNumberChargeActivity extends AppCompatActivity {
             if (state == 0) // successful
             {
                 Toast.makeText(getBaseContext(), "Purchase did sucssessful....", Toast.LENGTH_LONG).show();
-//                verify(refNum,resNum);
+
+                verifyTransaction(
+                        PlateType.valueOf(sh_r.getString(SharedPreferencesRepository.PLATE_TYPE)),
+                        sh_r.getString(SharedPreferencesRepository.TAG1),
+                        sh_r.getString(SharedPreferencesRepository.TAG2,"0"),
+                        sh_r.getString(SharedPreferencesRepository.TAG3,"0"),
+                        sh_r.getString(SharedPreferencesRepository.TAG4,"0"),
+                        sh_r.getString(SharedPreferencesRepository.AMOUNT),
+                        refNum,
+                        Integer.parseInt(sh_r.getString(SharedPreferencesRepository.PLACE_ID))
+                );
             } else
                 Toast.makeText(getBaseContext(), "Purchase did faild....", Toast.LENGTH_LONG).show();
 
@@ -472,6 +487,47 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+
+    }
+
+    private void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id,int placeID) {
+
+        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
+        RetrofitAPIRepository repository = new RetrofitAPIRepository();
+        loadingBar.show();
+
+        amount = Integer.toString((Integer.parseInt(amount) / 10));
+
+        repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
+                plateType, tag1, tag2, tag3, tag4, amount, transaction_id, placeID, new Callback<VerifyTransactionResponse>() {
+                    @Override
+                    public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
+
+                        System.out.println("--------> url : " + response.raw().request().url());
+
+                        loadingBar.dismiss();
+                        if (response.code() == HttpURLConnection.HTTP_OK) {
+
+//                            if (response.body().getSuccess() == 1)
+//                                parkInfoDialog.dismiss();
+
+                            Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
+
+
+
+                        } else {
+
+                            Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
+                        loadingBar.dismiss();
+                        Toast.makeText(getApplicationContext(), "onFailure", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
     }
 
