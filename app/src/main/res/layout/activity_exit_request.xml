@@ -5,8 +5,9 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:layoutDirection="ltr">
+    android:background="@color/gray"
+    android:layoutDirection="ltr"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/action_bar"
@@ -15,6 +16,7 @@
         android:background="@color/blue">
 
         <ImageView
+            android:id="@+id/back"
             android:layout_width="@dimen/_45sdp"
             android:layout_height="@dimen/_45sdp"
             android:layout_alignParentRight="true"
@@ -24,27 +26,27 @@
             android:src="@drawable/ic_arrow_down"
             app:tint="@color/white" />
 
-        <ImageView
-            android:id="@+id/barcode"
-            android:layout_width="@dimen/_45sdp"
-            android:layout_height="@dimen/_45sdp"
-            android:layout_alignParentLeft="true"
-            android:onClick="onBarcodeIconClicked"
-            android:padding="@dimen/_10sdp"
-            android:src="@drawable/ic_qr_code"
-            android:visibility="invisible"
-            app:tint="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:layout_toLeftOf="@+id/back"
+            android:fontFamily="@font/iran_sans_bold"
+            android:text="درخواست خروج"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_13sdp" />
 
 
     </RelativeLayout>
-
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="@dimen/_20sdp"
-        android:background="@drawable/dialog_background"
+        android:background="@drawable/selected_background"
         android:orientation="vertical"
         android:padding="@dimen/_10sdp">
 
@@ -72,214 +74,259 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="@dimen/_15sdp">
+            android:layout_marginTop="@dimen/_15sdp"
+            android:orientation="horizontal">
 
-            <TextView
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/plate_new_aras_selector"
-                android:background="@drawable/unselected_background"
-                android:padding="@dimen/_5sdp"
-                android:gravity="center"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:fontFamily="@font/iran_sans"
-                android:textColor="@color/text_gray"
-                android:textSize="@dimen/_13sdp"
-                android:text="ارس جدید"/>
+                android:background="@drawable/unselected_background"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp">
 
-            <TextView
+                <TextView
+                    android:id="@+id/plate_new_aras_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/_3sdp"
+                    android:fontFamily="@font/iran_sans"
+                    android:gravity="center"
+                    android:text="ارس جدید"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_11sdp" />
+
+                <ImageView
+                    android:layout_width="@dimen/_13sdp"
+                    android:layout_height="@dimen/_15sdp"
+                    android:src="@drawable/ic_checked_circle"
+                    app:tint="@color/white" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/plate_old_aras_selector"
-                android:background="@drawable/unselected_background"
-                android:padding="@dimen/_5sdp"
-                android:gravity="center"
-                android:layout_marginRight="@dimen/_10sdp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_marginLeft="@dimen/_10sdp"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_marginRight="@dimen/_10sdp"
                 android:layout_weight="1"
-                android:fontFamily="@font/iran_sans"
-                android:textColor="@color/text_gray"
-                android:textSize="@dimen/_13sdp"
-                android:text="ارس"/>
+                android:background="@drawable/unselected_tab"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp">
 
-            <TextView
+                <TextView
+                    android:id="@+id/plate_old_aras_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/_3sdp"
+                    android:fontFamily="@font/iran_sans"
+                    android:gravity="center"
+                    android:text="ارس"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_13sdp" />
+
+                <ImageView
+                    android:layout_width="@dimen/_13sdp"
+                    android:layout_height="@dimen/_15sdp"
+                    android:src="@drawable/ic_checked_circle"
+                    app:tint="@color/white" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/plate_simple_selector"
-                android:background="@drawable/selected_background"
-                android:padding="@dimen/_5sdp"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:fontFamily="@font/iran_sans"
-                android:textColor="@color/text_gray"
-                android:textSize="@dimen/_13sdp"
-                android:text="ملی"
-                android:gravity="center"/>
+                android:background="@drawable/selected_tab"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp">
+
+                <TextView
+                    android:id="@+id/plate_simple_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/_3sdp"
+                    android:fontFamily="@font/iran_sans"
+                    android:gravity="center"
+                    android:text="ملی"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_13sdp" />
+
+                <ImageView
+                    android:layout_width="@dimen/_13sdp"
+                    android:layout_height="@dimen/_15sdp"
+                    android:src="@drawable/ic_checked_circle"
+                    app:tint="@color/white" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="wrap_content"
             android:id="@+id/plate_simple_area"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/_20sdp">
+            android:layout_marginTop="@dimen/_20sdp"
+            android:orientation="horizontal"
+            >
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/unselected_background">
+                android:background="@drawable/unselected_background"
+                android:orientation="horizontal">
 
                 <EditText
-                    android:inputType="numberDecimal"
-                    android:maxLength="2"
                     android:id="@+id/plate_simple_tag1"
-                    android:background="@drawable/unselected_background"
-                    android:paddingTop="@dimen/_5sdp"
-                    android:paddingBottom="@dimen/_5sdp"
-                    android:paddingRight="@dimen/_10sdp"
-                    android:paddingLeft="@dimen/_10sdp"
-                    android:gravity="center"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/iran_sans_fa_num"
-                    android:textColor="@color/text_gray"
-                    android:textSize="@dimen/_13sdp"
+                    android:background="@drawable/unselected_background"
+                    android:fontFamily="@font/sahel_fa_num_semi_bold"
+                    android:gravity="center"
                     android:hint="56"
-                    android:letterSpacing="0.3"/>
-
-                <EditText
-                    android:maxLength="1"
-                    android:id="@+id/plate_simple_tag2"
-                    android:background="@drawable/unselected_background"
-                    android:paddingTop="@dimen/_5sdp"
-                    android:paddingBottom="@dimen/_5sdp"
-                    android:paddingRight="@dimen/_5sdp"
-                    android:paddingLeft="@dimen/_5sdp"
-                    android:gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/iran_sans"
-                    android:textColor="@color/text_gray"
-                    android:textSize="@dimen/_13sdp"
-                    android:hint="س"/>
-
-                <EditText
                     android:inputType="numberDecimal"
-                    android:maxLength="3"
-                    android:id="@+id/plate_simple_tag3"
-                    android:background="@drawable/unselected_background"
-                    android:paddingTop="@dimen/_5sdp"
-                    android:paddingBottom="@dimen/_5sdp"
-                    android:paddingRight="@dimen/_10sdp"
+                    android:letterSpacing="0.3"
+                    android:maxLength="2"
                     android:paddingLeft="@dimen/_10sdp"
-                    android:gravity="center"
+                    android:paddingTop="@dimen/_5sdp"
+                    android:paddingRight="@dimen/_10sdp"
+                    android:paddingBottom="@dimen/_5sdp"
+                    android:textColor="@color/text_gray"
+                    android:textSize="@dimen/_13sdp" />
+
+                <EditText
+                    android:id="@+id/plate_simple_tag2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/iran_sans_fa_num"
+                    android:background="@drawable/unselected_background"
+                    android:fontFamily="@font/sahel_fa_num_semi_bold"
+                    android:gravity="center"
+                    android:hint="س"
+                    android:maxLength="1"
+                    android:paddingLeft="@dimen/_5sdp"
+                    android:paddingTop="@dimen/_5sdp"
+                    android:paddingRight="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_5sdp"
                     android:textColor="@color/text_gray"
-                    android:textSize="@dimen/_13sdp"
+                    android:textSize="@dimen/_13sdp" />
+
+                <EditText
+                    android:id="@+id/plate_simple_tag3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/unselected_background"
+                    android:fontFamily="@font/sahel_fa_num_semi_bold"
+                    android:gravity="center"
                     android:hint="526"
-                    android:letterSpacing="0.3"/>
+                    android:inputType="numberDecimal"
+                    android:letterSpacing="0.3"
+                    android:maxLength="3"
+                    android:paddingLeft="@dimen/_10sdp"
+                    android:paddingTop="@dimen/_5sdp"
+                    android:paddingRight="@dimen/_10sdp"
+                    android:paddingBottom="@dimen/_5sdp"
+                    android:textColor="@color/text_gray"
+                    android:textSize="@dimen/_13sdp" />
 
             </LinearLayout>
 
             <EditText
-                android:inputType="numberDecimal"
-                android:maxLength="2"
                 android:id="@+id/plate_simple_tag4"
-                android:background="@drawable/unselected_background"
-                android:paddingTop="@dimen/_5sdp"
-                android:paddingBottom="@dimen/_5sdp"
-                android:paddingRight="@dimen/_10sdp"
-                android:paddingLeft="@dimen/_10sdp"
-                android:gravity="center"
-                android:layout_marginLeft="@dimen/_10sdp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/iran_sans_fa_num"
-                android:textColor="@color/text_gray"
-                android:textSize="@dimen/_13sdp"
+                android:layout_marginLeft="@dimen/_10sdp"
+                android:background="@drawable/unselected_background"
+                android:fontFamily="@font/sahel_fa_num_semi_bold"
+                android:gravity="center"
                 android:hint="15"
-                android:letterSpacing="0.3"/>
+
+                android:inputType="numberDecimal"
+                android:letterSpacing="0.3"
+                android:maxLength="2"
+                android:paddingLeft="@dimen/_10sdp"
+                android:paddingTop="@dimen/_5sdp"
+                android:paddingRight="@dimen/_10sdp"
+                android:paddingBottom="@dimen/_5sdp"
+                android:textColor="@color/text_gray"
+                android:textSize="@dimen/_13sdp" />
 
         </LinearLayout>
 
         <EditText
-            android:inputType="numberDecimal"
-            android:maxLength="5"
-            android:visibility="gone"
-            android:background="@drawable/unselected_background"
             android:id="@+id/plate_old_aras"
-            android:paddingTop="@dimen/_5sdp"
-            android:paddingBottom="@dimen/_5sdp"
-            android:paddingRight="@dimen/_10sdp"
-            android:paddingLeft="@dimen/_10sdp"
-            android:gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/iran_sans_fa_num"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:background="@drawable/unselected_background"
+            android:fontFamily="@font/sahel_fa_num_semi_bold"
+            android:gravity="center"
+            android:hint="12345"
+            android:inputType="numberDecimal"
+            android:letterSpacing="0.3"
+            android:maxLength="5"
+            android:paddingLeft="@dimen/_10sdp"
+            android:paddingTop="@dimen/_5sdp"
+            android:paddingRight="@dimen/_10sdp"
+            android:paddingBottom="@dimen/_5sdp"
             android:textColor="@color/text_gray"
             android:textSize="@dimen/_13sdp"
-            android:hint="12345"
-            android:letterSpacing="0.3"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/_20sdp"/>
+            android:visibility="gone" />
 
         <LinearLayout
             android:id="@+id/plate_new_aras_area"
-            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/_20sdp">
+            android:layout_marginTop="@dimen/_20sdp"
+            android:orientation="horizontal"
+            android:visibility="gone">
 
             <EditText
-                android:inputType="numberDecimal"
-                android:maxLength="5"
                 android:id="@+id/plate_new_aras_tag1"
-                android:background="@drawable/unselected_background"
-                android:paddingTop="@dimen/_5sdp"
-                android:paddingBottom="@dimen/_5sdp"
-                android:paddingRight="@dimen/_10sdp"
-                android:paddingLeft="@dimen/_10sdp"
-                android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/iran_sans_fa_num"
-                android:textColor="@color/text_gray"
-                android:textSize="@dimen/_13sdp"
+                android:background="@drawable/unselected_background"
+                android:fontFamily="@font/sahel_fa_num_semi_bold"
+                android:gravity="center"
                 android:hint="12345"
-                android:letterSpacing="0.3"/>
+                android:inputType="numberDecimal"
+                android:letterSpacing="0.3"
+                android:maxLength="5"
+                android:paddingLeft="@dimen/_10sdp"
+                android:paddingTop="@dimen/_5sdp"
+                android:paddingRight="@dimen/_10sdp"
+                android:paddingBottom="@dimen/_5sdp"
+                android:textColor="@color/text_gray"
+                android:textSize="@dimen/_13sdp" />
 
             <EditText
-                android:inputType="numberDecimal"
-                android:maxLength="2"
                 android:id="@+id/plate_new_aras_tag2"
-                android:background="@drawable/unselected_background"
-                android:paddingTop="@dimen/_5sdp"
-                android:paddingBottom="@dimen/_5sdp"
-                android:paddingRight="@dimen/_10sdp"
-                android:paddingLeft="@dimen/_10sdp"
-                android:gravity="center"
-                android:layout_marginLeft="@dimen/_10sdp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/iran_sans_fa_num"
-                android:textColor="@color/text_gray"
-                android:textSize="@dimen/_13sdp"
+                android:layout_marginLeft="@dimen/_10sdp"
+                android:background="@drawable/unselected_background"
+                android:fontFamily="@font/sahel_fa_num_semi_bold"
+                android:gravity="center"
                 android:hint="55"
-                android:letterSpacing="0.3"/>
-
+                android:inputType="numberDecimal"
+                android:letterSpacing="0.3"
+                android:maxLength="2"
+                android:paddingLeft="@dimen/_10sdp"
+                android:paddingTop="@dimen/_5sdp"
+                android:paddingRight="@dimen/_10sdp"
+                android:paddingBottom="@dimen/_5sdp"
+                android:textColor="@color/text_gray"
+                android:textSize="@dimen/_13sdp" />
 
 
         </LinearLayout>
 
         <TextView
-            android:onClick="onSubmitClicked"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -287,6 +334,7 @@
             android:background="@drawable/blue_bg_5"
             android:fontFamily="@font/iran_sans"
             android:gravity="center"
+            android:onClick="onSubmitClicked"
             android:paddingLeft="@dimen/_40sdp"
             android:paddingTop="@dimen/_8sdp"
             android:paddingRight="@dimen/_40sdp"

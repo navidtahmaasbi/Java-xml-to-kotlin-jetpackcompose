@@ -23,7 +23,8 @@ public class SharedPreferencesRepository {
             AMOUNT = "AMOUNT",
             PLACE_ID = "PLACE_ID",
             TRANSACTION_ID = "TRANSACTION_ID",
-            REF_NUM = "REF_NUM"
+            REF_NUM = "REF_NUM",
+            SUB_DOMAIN = "SUB_DOMAIN"
                     ;
 
     public SharedPreferencesRepository(Context context) {

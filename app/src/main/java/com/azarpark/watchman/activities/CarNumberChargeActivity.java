@@ -19,6 +19,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.azarpark.watchman.R;
@@ -59,6 +60,8 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityCarNumberChargeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        binding.plateSimpleTag1.requestFocus();
 
         sh_r = new SharedPreferencesRepository(getApplicationContext());
         loadingBar = new LoadingBar(CarNumberChargeActivity.this);
@@ -317,39 +320,43 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
         if (selectedTab == PlateType.simple) {
 
-            binding.plateSimpleSelector.setBackgroundResource(R.drawable.selected_background);
-            binding.plateOldArasSelector.setBackgroundResource(R.drawable.unselected_background);
-            binding.plateNewArasSelector.setBackgroundResource(R.drawable.unselected_background);
+            binding.plateSimpleSelector.setBackgroundResource(R.drawable.selected_tab);
+            binding.plateOldArasSelector.setBackgroundResource(R.drawable.unselected_tab);
+            binding.plateNewArasSelector.setBackgroundResource(R.drawable.unselected_tab);
+
+            binding.plateSimpleTitle.setTextColor(getResources().getColor(R.color.white));
+            binding.plateOldArasTitle.setTextColor(getResources().getColor(R.color.black));
+            binding.plateNewArasTitle.setTextColor(getResources().getColor(R.color.black));
 
             binding.plateSimpleArea.setVisibility(View.VISIBLE);
             binding.plateOldAras.setVisibility(View.GONE);
             binding.plateNewArasArea.setVisibility(View.GONE);
-
-            binding.plateSimpleTag1.requestFocus();
-
         } else if (selectedTab == PlateType.old_aras) {
 
-            binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_background);
-            binding.plateOldArasSelector.setBackgroundResource(R.drawable.selected_background);
-            binding.plateNewArasSelector.setBackgroundResource(R.drawable.unselected_background);
+            binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_tab);
+            binding.plateOldArasSelector.setBackgroundResource(R.drawable.selected_tab);
+            binding.plateNewArasSelector.setBackgroundResource(R.drawable.unselected_tab);
+
+            binding.plateSimpleTitle.setTextColor(getResources().getColor(R.color.black));
+            binding.plateOldArasTitle.setTextColor(getResources().getColor(R.color.white));
+            binding.plateNewArasTitle.setTextColor(getResources().getColor(R.color.black));
 
             binding.plateSimpleArea.setVisibility(View.GONE);
             binding.plateOldAras.setVisibility(View.VISIBLE);
             binding.plateNewArasArea.setVisibility(View.GONE);
-
-            binding.plateOldAras.requestFocus();
-
         } else if (selectedTab == PlateType.new_aras) {
 
-            binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_background);
-            binding.plateOldArasSelector.setBackgroundResource(R.drawable.unselected_background);
-            binding.plateNewArasSelector.setBackgroundResource(R.drawable.selected_background);
+            binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_tab);
+            binding.plateOldArasSelector.setBackgroundResource(R.drawable.unselected_tab);
+            binding.plateNewArasSelector.setBackgroundResource(R.drawable.selected_tab);
+
+            binding.plateSimpleTitle.setTextColor(getResources().getColor(R.color.black));
+            binding.plateOldArasTitle.setTextColor(getResources().getColor(R.color.black));
+            binding.plateNewArasTitle.setTextColor(getResources().getColor(R.color.white));
 
             binding.plateSimpleArea.setVisibility(View.GONE);
             binding.plateOldAras.setVisibility(View.GONE);
             binding.plateNewArasArea.setVisibility(View.VISIBLE);
-
-            binding.plateNewArasTag1.requestFocus();
         }
 
     }
@@ -357,6 +364,12 @@ public class CarNumberChargeActivity extends AppCompatActivity {
     public void myOnBackPressed(View view){
 
         onBackPressed();
+
+        View v = this.getCurrentFocus();
+        if (v != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        }
 
     }
 

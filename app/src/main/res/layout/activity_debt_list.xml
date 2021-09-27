@@ -15,7 +15,7 @@
         android:background="@color/blue">
 
         <ImageView
-            android:id="@+id/menu_toggle"
+            android:id="@+id/back"
             android:layout_width="@dimen/_45sdp"
             android:layout_height="@dimen/_45sdp"
             android:layout_alignParentRight="true"
@@ -24,6 +24,18 @@
             android:rotation="-90"
             android:src="@drawable/ic_arrow_down"
             app:tint="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:layout_toLeftOf="@+id/back"
+            android:fontFamily="@font/iran_sans_bold"
+            android:text="بدهی های این پلاک"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_13sdp" />
+
 
         <ImageView
             android:id="@+id/barcode"

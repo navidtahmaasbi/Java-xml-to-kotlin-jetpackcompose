@@ -31,6 +31,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -95,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
     int version = 0;
     MyServiceConnection connection;
     IProxy service;
-    SharedPreferencesRepository sh_r ;
+    SharedPreferencesRepository sh_r;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,6 +132,8 @@ public class MainActivity extends AppCompatActivity {
 
             } else
                 openParkInfoDialog(place);
+
+            binding.filterEdittext.setText("");
 
 
         });
@@ -186,17 +189,14 @@ public class MainActivity extends AppCompatActivity {
 
                     }
 
-                    if (exitRequestCount > 0) {
-
-                        binding.exitRequestCount.setText(Integer.toString(exitRequestCount));
-                        binding.exitRequests.setVisibility(View.VISIBLE);
-                    } else
-                        binding.exitRequests.setVisibility(View.GONE);
+                    binding.exitRequestCount.setText(Integer.toString(exitRequestCount));
 
 
                 } else {
 
-                    Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
+                    System.out.println("---------> msg : " + response.raw().toString());
+
+                    Toast.makeText(getApplicationContext(), "error : " + response.code(), Toast.LENGTH_SHORT).show();
 
                 }
             }
@@ -204,41 +204,29 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<PlacesResponse> call, Throwable t) {
                 loadingBar.dismiss();
-                System.out.println("---------> onFailure");
-                Toast.makeText(getApplicationContext(), "onFailure", Toast.LENGTH_SHORT).show();
-            }
-        });
 
-    }
 
-    private void getCities() {
+                confirmDialog = new ConfirmDialog(
+                        getResources().getString(R.string.retry_title),
+                        getResources().getString(R.string.retry_text),
+                        getResources().getString(R.string.retry_confirm_button),
+                        getResources().getString(R.string.retry_cancel_button),
+                        new ConfirmDialog.ConfirmButtonClicks() {
+                            @Override
+                            public void onConfirmClicked() {
+                                confirmDialog.dismiss();
+                                getPlaces();
+                            }
 
-        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository();
-        LoadingBar loadingBar = new LoadingBar(MainActivity.this);
-        loadingBar.show();
+                            @Override
+                            public void onCancelClicked() {
+                                confirmDialog.dismiss();
+                            }
+                        }
+                );
 
-        repository.getCities("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), new Callback<GetCitiesResponse>() {
-            @Override
-            public void onResponse(Call<GetCitiesResponse> call, Response<GetCitiesResponse> response) {
-
-                loadingBar.dismiss();
-                if (response.code() == HttpURLConnection.HTTP_OK) {
-
-                    
-
-                } else {
-
-                    Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<GetCitiesResponse> call, Throwable t) {
-                loadingBar.dismiss();
-                System.out.println("---------> onFailure");
-                Toast.makeText(getApplicationContext(), "onFailure", Toast.LENGTH_SHORT).show();
+                if (!confirmDialog.isAdded())
+                    confirmDialog.show(getSupportFragmentManager(), "tag");
             }
         });
 
@@ -268,12 +256,12 @@ public class MainActivity extends AppCompatActivity {
 
                     if (response.body().getSuccess() == 1) {
 
-                        Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), response.body().getDescription (), Toast.LENGTH_SHORT).show();
                         parkDialog.dismiss();
                         getPlaces();
                     } else if (response.body().getSuccess() == 0) {
 
-                        Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
 
                     }
 
@@ -346,7 +334,6 @@ public class MainActivity extends AppCompatActivity {
 
                     if (response.body().getSuccess() == 1) {
 
-                        Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
                         parkInfoDialog.dismiss();
                         getPlaces();
                     } else if (response.body().getSuccess() == 0) {
@@ -432,20 +419,30 @@ public class MainActivity extends AppCompatActivity {
     private void initMenuPopup() {
 
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        popupView = inflater.inflate(R.layout.menu_popup_window02, null);
+        popupView = inflater.inflate(R.layout.menu_popup_window03, null);
         int width = LinearLayout.LayoutParams.MATCH_PARENT;
         int height = LinearLayout.LayoutParams.MATCH_PARENT;
         boolean focusable = false; // lets taps outside the popup also dismiss it
         popupWindow = new PopupWindow(popupView, width, height, focusable);
 
-        popupView.findViewById(R.id.exit_request).setOnClickListener(view -> startActivity(new Intent(MainActivity.this, ExitRequestActivity.class)));
-        popupView.findViewById(R.id.debt_inquiry).setOnClickListener(view -> startActivity(new Intent(MainActivity.this, DebtCheckActivity.class)));
-        popupView.findViewById(R.id.car_number_charge).setOnClickListener(view -> startActivity(new Intent(MainActivity.this, CarNumberChargeActivity.class)));
+        popupView.findViewById(R.id.exit_request).setOnClickListener(view -> {
+            startActivity(new Intent(MainActivity.this, ExitRequestActivity.class));
+            popupWindow.dismiss();
+        });
+        popupView.findViewById(R.id.debt_inquiry).setOnClickListener(view -> {
+            startActivity(new Intent(MainActivity.this, DebtCheckActivity.class));
+            popupWindow.dismiss();
+        });
+        popupView.findViewById(R.id.car_number_charge).setOnClickListener(view -> {
+            startActivity(new Intent(MainActivity.this, CarNumberChargeActivity.class));
+            popupWindow.dismiss();
+        });
         popupView.findViewById(R.id.help).setOnClickListener(view -> {
 
             Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
 //            intent.putExtra("url","");
             startActivity(intent);
+            popupWindow.dismiss();
 
         });
         watchManName = popupView.findViewById(R.id.name);
@@ -453,12 +450,19 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
 //            intent.putExtra("url","");
             startActivity(intent);
+            popupWindow.dismiss();
         });
         popupView.findViewById(R.id.rules).setOnClickListener(view -> {
 
             Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
 //            intent.putExtra("url","");
             startActivity(intent);
+            popupWindow.dismiss();
+
+        });
+        popupView.findViewById(R.id.root).setOnClickListener(view -> {
+
+            popupWindow.dismiss();
 
         });
         popupView.findViewById(R.id.logout).setOnClickListener(view -> {
@@ -479,6 +483,8 @@ public class MainActivity extends AppCompatActivity {
             });
 
             confirmDialog.show(getSupportFragmentManager(), ConfirmDialog.TAG);
+
+            popupWindow.dismiss();
 
         });
 
@@ -571,7 +577,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void onExitRequestIconClicked(View view) {
 
-        adapter.showExitRequestItems(!adapter.isShowExitRequestItems());
+        if (exitRequestCount > 0)
+            adapter.showExitRequestItems(!adapter.isShowExitRequestItems());
+        else
+            Toast.makeText(getApplicationContext(), "درخواست خروج ندارید", Toast.LENGTH_SHORT).show();
     }
 
     public void onBarcodeIconClicked(View view) {
@@ -616,7 +625,7 @@ public class MainActivity extends AppCompatActivity {
         releaseService();
     }
 
-    public void paymentRequest(int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4,int placeID) {
+    public void paymentRequest(int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
 
         amount *= 10;
         System.out.println("---------> amount : " + amount);
@@ -673,7 +682,7 @@ public class MainActivity extends AppCompatActivity {
             String refNum = data.getStringExtra("RefNum"); // Reference number
             String resNum = data.getStringExtra("ResNum");
 
-            sh_r.saveString(SharedPreferencesRepository.REF_NUM,refNum);
+            sh_r.saveString(SharedPreferencesRepository.REF_NUM, refNum);
             // you should store the resNum variable and then call verify method
             System.out.println("--------> state : " + state);
             System.out.println("--------> refNum : " + refNum);
@@ -685,13 +694,13 @@ public class MainActivity extends AppCompatActivity {
                 verifyTransaction(
                         PlateType.valueOf(sh_r.getString(SharedPreferencesRepository.PLATE_TYPE)),
                         sh_r.getString(SharedPreferencesRepository.TAG1),
-                        sh_r.getString(SharedPreferencesRepository.TAG2,"0"),
-                        sh_r.getString(SharedPreferencesRepository.TAG3,"0"),
-                        sh_r.getString(SharedPreferencesRepository.TAG4,"0"),
+                        sh_r.getString(SharedPreferencesRepository.TAG2, "0"),
+                        sh_r.getString(SharedPreferencesRepository.TAG3, "0"),
+                        sh_r.getString(SharedPreferencesRepository.TAG4, "0"),
                         sh_r.getString(SharedPreferencesRepository.AMOUNT),
                         refNum,
                         Integer.parseInt(sh_r.getString(SharedPreferencesRepository.PLACE_ID))
-                        );
+                );
 
 
             } else
@@ -723,7 +732,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id,int placeID) {
+    private void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id, int placeID) {
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository();

@@ -22,9 +22,11 @@
         app:srcCompat="@drawable/splash_logo" />
 
     <ProgressBar
+        android:id="@+id/loading_bar"
         android:layout_width="@dimen/_40sdp"
         android:layout_height="@dimen/_40sdp"
         android:layout_gravity="center_horizontal"
+        android:theme="@style/Theme.Watchman.WhiteAccent"
         android:layout_marginTop="@dimen/_10sdp"/>
 
     <androidx.appcompat.widget.LinearLayoutCompat

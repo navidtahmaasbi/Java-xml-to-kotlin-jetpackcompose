@@ -5,18 +5,24 @@
     android:layout_height="wrap_content"
     android:layoutDirection="ltr"
     android:background="@drawable/selected_background"
-    android:layout_margin="@dimen/_10sdp">
+    android:layout_marginTop="@dimen/_10sdp"
+    android:layout_marginBottom="@dimen/_10sdp"
+    android:layout_marginRight="@dimen/_20sdp"
+    android:layout_marginLeft="@dimen/_20sdp"
+    android:paddingRight="@dimen/_15sdp"
+    android:paddingLeft="@dimen/_15sdp"
+    >
 
     <LinearLayout
         android:padding="@dimen/_5sdp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:gravity="right">
 
         <TextView
             android:id="@+id/street"
-            android:layout_width="0dp"
-            android:layout_weight="2"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:fontFamily="@font/iran_sans"
             android:textColor="@color/text_gray"
@@ -24,10 +30,16 @@
             android:text="خ امام از اول اونجا تا اخر اینجا"
             android:gravity="right|center_vertical"/>
 
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="@dimen/_1sdp"
+            android:layout_height="match_parent"
+            android:background="@color/gray"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:layout_marginLeft="@dimen/_10sdp"/>
+
         <TextView
             android:id="@+id/price"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:fontFamily="@font/iran_sans_fa_num_bold"
             android:textColor="@color/text_gray"

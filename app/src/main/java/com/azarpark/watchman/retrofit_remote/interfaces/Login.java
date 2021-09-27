@@ -13,6 +13,6 @@ import retrofit2.http.Path;
 
 public interface Login {
 
-    @POST("/oauth/token")
+    @POST("oauth/token")
     Call<LoginResponse> login(@Body LoginBody body);
 }

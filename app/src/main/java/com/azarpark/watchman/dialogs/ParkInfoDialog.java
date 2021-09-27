@@ -4,9 +4,12 @@ package com.azarpark.watchman.dialogs;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -40,6 +43,18 @@ public class ParkInfoDialog extends DialogFragment {
     private Place place;
     int totalPrice = 0;
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        if (getDialog() != null && getDialog().getWindow() != null) {
+            getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//            getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        }
+
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
     public ParkInfoDialog(OnGetInfoClicked onGetInfoClicked, Place place) {
         this.onGetInfoClicked = onGetInfoClicked;
         this.place = place;
@@ -55,23 +70,28 @@ public class ParkInfoDialog extends DialogFragment {
         getParkData(place);
 
         binding.placeNumber.setText(place.number + "");
-        binding.startTime.setText(place.start);
+        try {
 
-        if (place.exit_request != null) {
+            String startTime = place.start;
+            startTime = startTime.split(" ")[1];
+            binding.startTime.setText(startTime + "  ");
 
-            binding.exitRequestArea.setVisibility(View.VISIBLE);
-            binding.paymentArea.setVisibility(View.GONE);
-
-        } else {
-
-            binding.exitRequestArea.setVisibility(View.GONE);
-            binding.paymentArea.setVisibility(View.VISIBLE);
-
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
-        binding.acceptExitRequest.setOnClickListener(view -> onGetInfoClicked.payAsDebt(place));
 
-        binding.declineExitRequest.setOnClickListener(view -> onGetInfoClicked.removeExitRequest(place));
+        binding.acceptExitRequest.setOnClickListener(view -> Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
+        binding.acceptExitRequest.setOnLongClickListener(view -> {
+            onGetInfoClicked.payAsDebt(place);
+            return false;
+        });
+
+        binding.declineExitRequest.setOnClickListener(view -> Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
+        binding.declineExitRequest.setOnLongClickListener(view -> {
+            onGetInfoClicked.removeExitRequest(place);
+            return false;
+        });
 
 
         if (place.tag4 != null && !place.tag4.isEmpty()) {
@@ -125,7 +145,11 @@ public class ParkInfoDialog extends DialogFragment {
             startActivity(intent);
         });
 
-        binding.payAsDebt.setOnClickListener(view -> onGetInfoClicked.payAsDebt(place));
+        binding.payAsDebt.setOnClickListener(view -> Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
+        binding.payAsDebt.setOnLongClickListener(view -> {
+            onGetInfoClicked.payAsDebt(place);
+            return false;
+        });
 
         return builder.create();
     }
@@ -142,6 +166,18 @@ public class ParkInfoDialog extends DialogFragment {
             @Override
             public void onResponse(Call<EstimateParkPriceResponse> call, Response<EstimateParkPriceResponse> response) {
 
+                if (place.exit_request != null) {
+
+                    binding.exitRequestArea.setVisibility(View.VISIBLE);
+                    binding.paymentArea.setVisibility(View.GONE);
+
+                } else {
+
+                    binding.exitRequestArea.setVisibility(View.GONE);
+                    binding.paymentArea.setVisibility(View.VISIBLE);
+
+                }
+
                 loadingBar.dismiss();
                 if (response.code() == HttpURLConnection.HTTP_OK) {
 
@@ -149,12 +185,12 @@ public class ParkInfoDialog extends DialogFragment {
 
                         EstimateParkPriceResponse parkPriceResponse = response.body();
 
-                        binding.parkTime.setText(parkPriceResponse.getHours() + " ساعت و" + parkPriceResponse.getMinutes() + " دقیقه");
-
+                        binding.startTime.setText(binding.startTime.getText() + "  " + (parkPriceResponse.getHours() + 1) + " ساعت");
 
                         int parkPrice = parkPriceResponse.getPrice();
                         int carBalance = parkPriceResponse.getCar_balance();
 
+                        binding.paymentArea.setVisibility(View.VISIBLE);
 
                         if (carBalance < 0) {
 
@@ -180,7 +216,11 @@ public class ParkInfoDialog extends DialogFragment {
 
                             });
 
-                            binding.pay.setOnClickListener(view -> onGetInfoClicked.pay(totalPrice, place));
+                            binding.pay.setOnClickListener(view ->Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
+                            binding.pay.setOnLongClickListener(view -> {
+                                onGetInfoClicked.pay(totalPrice, place);
+                                return false;
+                            });
 
                         } else {
 
@@ -189,7 +229,7 @@ public class ParkInfoDialog extends DialogFragment {
 
                             binding.showDebtList.setVisibility(View.GONE);
 
-                            binding.carBalance.setTextColor(getResources().getColor(R.color.green));
+                            binding.carBalance.setTextColor(getResources().getColor(R.color.dark_green));
 
 
 
@@ -202,13 +242,21 @@ public class ParkInfoDialog extends DialogFragment {
 
                                 binding.payAsDebt.setVisibility(View.GONE);
 
-                                binding.pay.setOnClickListener(view -> onGetInfoClicked.payAsDebt(place));
+                                binding.pay.setOnClickListener(view -> Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
+                                binding.pay.setOnLongClickListener(view -> {
+                                    onGetInfoClicked.payAsDebt(place);
+                                    return false;
+                                });
 
                             }else {
 
                                 totalPrice = parkPrice - carBalance;
 
-                                binding.pay.setOnClickListener(view -> onGetInfoClicked.pay(totalPrice, place));
+                                binding.pay.setOnClickListener(view -> Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
+                                binding.pay.setOnLongClickListener(view -> {
+                                    onGetInfoClicked.pay(totalPrice, place);
+                                    return false;
+                                });
 
                             }
 
@@ -223,10 +271,6 @@ public class ParkInfoDialog extends DialogFragment {
 
                         }
 
-
-
-
-
                     } else if (response.body().getSuccess() == 0) {
 
                         Toast.makeText(getContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
@@ -238,8 +282,8 @@ public class ParkInfoDialog extends DialogFragment {
                     Toast.makeText(getContext(), "error", Toast.LENGTH_SHORT).show();
 
                 }
-            }
 
+            }
             @Override
             public void onFailure(Call<EstimateParkPriceResponse> call, Throwable t) {
                 loadingBar.dismiss();

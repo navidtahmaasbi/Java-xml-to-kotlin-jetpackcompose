@@ -9,4 +9,6 @@ public interface OnGetInfoClicked {
     public void payAsDebt(Place place);
 
     public void removeExitRequest(Place place);
+
+//    public void charge(Place place);
 }

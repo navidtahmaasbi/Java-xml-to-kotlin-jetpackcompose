@@ -2,8 +2,10 @@ package com.azarpark.watchman.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.azarpark.watchman.R;
@@ -36,6 +38,8 @@ public class ExitRequestActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         loadingBar = new LoadingBar(ExitRequestActivity.this);
 
+        binding.plateSimpleTag1.requestFocus();
+
         binding.plateSimpleSelector.setOnClickListener(view -> {
 
             setSelectedTab(PlateType.simple);
@@ -62,27 +66,39 @@ public class ExitRequestActivity extends AppCompatActivity {
 
         if (selectedTab == PlateType.simple) {
 
-            binding.plateSimpleSelector.setBackgroundResource(R.drawable.selected_background);
-            binding.plateOldArasSelector.setBackgroundResource(R.drawable.unselected_background);
-            binding.plateNewArasSelector.setBackgroundResource(R.drawable.unselected_background);
+            binding.plateSimpleSelector.setBackgroundResource(R.drawable.selected_tab);
+            binding.plateOldArasSelector.setBackgroundResource(R.drawable.unselected_tab);
+            binding.plateNewArasSelector.setBackgroundResource(R.drawable.unselected_tab);
+
+            binding.plateSimpleTitle.setTextColor(getResources().getColor(R.color.white));
+            binding.plateOldArasTitle.setTextColor(getResources().getColor(R.color.black));
+            binding.plateNewArasTitle.setTextColor(getResources().getColor(R.color.black));
 
             binding.plateSimpleArea.setVisibility(View.VISIBLE);
             binding.plateOldAras.setVisibility(View.GONE);
             binding.plateNewArasArea.setVisibility(View.GONE);
         } else if (selectedTab == PlateType.old_aras) {
 
-            binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_background);
-            binding.plateOldArasSelector.setBackgroundResource(R.drawable.selected_background);
-            binding.plateNewArasSelector.setBackgroundResource(R.drawable.unselected_background);
+            binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_tab);
+            binding.plateOldArasSelector.setBackgroundResource(R.drawable.selected_tab);
+            binding.plateNewArasSelector.setBackgroundResource(R.drawable.unselected_tab);
+
+            binding.plateSimpleTitle.setTextColor(getResources().getColor(R.color.black));
+            binding.plateOldArasTitle.setTextColor(getResources().getColor(R.color.white));
+            binding.plateNewArasTitle.setTextColor(getResources().getColor(R.color.black));
 
             binding.plateSimpleArea.setVisibility(View.GONE);
             binding.plateOldAras.setVisibility(View.VISIBLE);
             binding.plateNewArasArea.setVisibility(View.GONE);
         } else if (selectedTab == PlateType.new_aras) {
 
-            binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_background);
-            binding.plateOldArasSelector.setBackgroundResource(R.drawable.unselected_background);
-            binding.plateNewArasSelector.setBackgroundResource(R.drawable.selected_background);
+            binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_tab);
+            binding.plateOldArasSelector.setBackgroundResource(R.drawable.unselected_tab);
+            binding.plateNewArasSelector.setBackgroundResource(R.drawable.selected_tab);
+
+            binding.plateSimpleTitle.setTextColor(getResources().getColor(R.color.black));
+            binding.plateOldArasTitle.setTextColor(getResources().getColor(R.color.black));
+            binding.plateNewArasTitle.setTextColor(getResources().getColor(R.color.white));
 
             binding.plateSimpleArea.setVisibility(View.GONE);
             binding.plateOldAras.setVisibility(View.GONE);
@@ -150,7 +166,10 @@ public class ExitRequestActivity extends AppCompatActivity {
                         if (response.code() == HttpURLConnection.HTTP_OK) {
 
 
-                            messageDialog = new MessageDialog("درخواست خروج", response.body().getDescription(), "تایید", () -> messageDialog.dismiss());
+                            messageDialog = new MessageDialog("درخواست خروج", response.body().getDescription(), "تایید", () -> {
+                                messageDialog.dismiss();
+                                onBackPressed();
+                            });
 
                             messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
 
@@ -174,6 +193,12 @@ public class ExitRequestActivity extends AppCompatActivity {
     public void myOnBackPressed(View view){
 
         onBackPressed();
+
+        View v = this.getCurrentFocus();
+        if (v != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        }
 
     }
 

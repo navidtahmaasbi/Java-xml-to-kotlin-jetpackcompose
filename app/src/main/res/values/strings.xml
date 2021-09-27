@@ -6,6 +6,10 @@
     <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
+    <string name="retry_text">اتصال اینترنت را بررسی کرده و دوباره امتحان کنید</string>
+    <string name="retry_title">خطا</string>
+    <string name="retry_confirm_button">تلاش دوباره</string>
+    <string name="retry_cancel_button">انصراف</string>
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>

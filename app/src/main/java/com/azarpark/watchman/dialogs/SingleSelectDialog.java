@@ -14,25 +14,28 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
-import com.azarpark.watchman.databinding.ConfirmDialogBinding;
+import com.azarpark.watchman.adapters.SingleSelectListAdapter;
 import com.azarpark.watchman.databinding.MessageDialogBinding;
+import com.azarpark.watchman.databinding.SingleSelectDialogBinding;
+import com.azarpark.watchman.models.City;
 
-public class MessageDialog extends DialogFragment {
+import java.util.ArrayList;
 
-    public static final String TAG = "MessageDialog";
-    MessageDialogBinding binding;
-    ConfirmButtonClicks confirmButtonClicks;
+public class SingleSelectDialog extends DialogFragment {
+
+    public static final String TAG = "SingleSelectDialog";
+    SingleSelectDialogBinding binding;
+    OnItemSelected onItemSelected;
     String title;
-    String message;
-    String confirmButtonText;
-    String cancelButtonText;
+    String description;
+    SingleSelectListAdapter adapter;
+    ArrayList<String> items;
 
-    public MessageDialog(String title, String message, String confirmButtonText, ConfirmButtonClicks confirmButtonClicks) {
-        this.confirmButtonClicks = confirmButtonClicks;
+    public SingleSelectDialog(String title, String description, ArrayList<String> items, OnItemSelected onItemSelected) {
+        this.onItemSelected = onItemSelected;
         this.title = title;
-        this.message = message;
-        this.confirmButtonText = confirmButtonText;
-        this.cancelButtonText = cancelButtonText;
+        this.description = description;
+        this.items = items;
     }
 
     @Nullable
@@ -50,22 +53,27 @@ public class MessageDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        binding = MessageDialogBinding.inflate(LayoutInflater.from(getContext()));
+        binding = SingleSelectDialogBinding.inflate(LayoutInflater.from(getContext()));
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(binding.getRoot());
 
-        binding.title.setText(title);
-        binding.message.setText(message);
-        binding.confirm.setText(confirmButtonText);
+        adapter = new SingleSelectListAdapter(onItemSelected);
 
-        binding.confirm.setOnClickListener(view -> confirmButtonClicks.onConfirmClicked());
+        this.setCancelable(false);
+
+        binding.title.setText(title);
+        binding.description.setText(description);
+
+        binding.recyclerView.setAdapter(adapter);
+
+        adapter.setItems(items);
 
         return builder.create();
     }
 
-    public static interface ConfirmButtonClicks {
+    public static interface OnItemSelected {
 
-        public void onConfirmClicked();
+        public void select(int position);
 
     }
 

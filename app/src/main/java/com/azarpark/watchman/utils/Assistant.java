@@ -2,6 +2,8 @@ package com.azarpark.watchman.utils;
 
 import android.service.autofill.RegexValidator;
 
+import java.net.HttpURLConnection;
+
 public class Assistant {
 
     public boolean isMobile(String mobile){

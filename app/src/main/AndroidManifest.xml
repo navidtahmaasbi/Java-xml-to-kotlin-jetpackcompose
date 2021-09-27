@@ -17,17 +17,19 @@
         <activity
             android:name=".activities.CarNumberChargeActivity"
             android:exported="true"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateVisible">
 
 
 
         </activity>
         <activity
             android:name=".activities.DebtCheckActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:windowSoftInputMode="stateVisible"/>
         <activity
             android:name=".activities.ExitRequestActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:windowSoftInputMode="stateVisible"/>
         <activity
             android:name=".activities.DebtListActivity"
             android:exported="true" />
@@ -47,7 +49,8 @@
             android:theme="@style/Theme.Watchman.NoActionBar" />
         <activity
             android:name=".activities.SplashActivity"
-            android:exported="true">
+            android:exported="true"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -17,9 +17,9 @@ public class WebViewActivity extends AppCompatActivity {
         binding = ActivityWebViewBinding.inflate(LayoutInflater.from(getApplicationContext()));
         setContentView(binding.getRoot());
 
-        String url = getIntent().getExtras().getString("url","https://www.google.com");
+        if (getIntent().hasExtra("url"))
+            binding.webView.loadUrl(getIntent().getExtras().getString("url", "https://www.google.com"));
 
-        binding.webView.loadUrl(url);
 
     }
 }

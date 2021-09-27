@@ -4,7 +4,7 @@ public class LoginResponse {
 
     public String token_type;
     public double expires_in;
-        public String access_token;
+    public String access_token;
     public String refresh_token;
 
     public String getToken_type() {

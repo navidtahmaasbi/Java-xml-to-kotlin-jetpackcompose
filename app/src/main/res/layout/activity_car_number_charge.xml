@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/light_gray"
+    android:background="@color/gray"
     android:layoutDirection="ltr">
 
     <RelativeLayout
@@ -16,7 +16,7 @@
         android:background="@color/blue">
 
         <ImageView
-            android:id="@+id/menu_toggle"
+            android:id="@+id/back"
             android:layout_width="@dimen/_45sdp"
             android:layout_height="@dimen/_45sdp"
             android:layout_alignParentRight="true"
@@ -24,7 +24,19 @@
             android:padding="@dimen/_15sdp"
             android:rotation="-90"
             android:src="@drawable/ic_arrow_down"
-            app:tint="@color/white" />
+            app:tint="@color/white"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:layout_toLeftOf="@+id/back"
+            android:fontFamily="@font/iran_sans_bold"
+            android:text="شارژ پلاک"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_13sdp" />
 
         <ImageView
             android:id="@+id/barcode"
@@ -60,7 +72,7 @@
                 android:layout_marginTop="@dimen/_20sdp"
                 android:layout_marginEnd="@dimen/_20sdp"
                 android:layout_marginBottom="@dimen/_20sdp"
-                android:background="@drawable/dialog_background"
+                android:background="@drawable/selected_background"
                 android:orientation="vertical"
                 android:padding="@dimen/_10sdp">
 
@@ -91,46 +103,91 @@
                     android:layout_marginTop="@dimen/_15sdp"
                     android:orientation="horizontal">
 
-                    <TextView
+                    <androidx.appcompat.widget.LinearLayoutCompat
                         android:id="@+id/plate_new_aras_selector"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:background="@drawable/unselected_background"
-                        android:fontFamily="@font/iran_sans"
                         android:gravity="center"
-                        android:padding="@dimen/_5sdp"
-                        android:text="ارس جدید"
-                        android:textColor="@color/text_gray"
-                        android:textSize="@dimen/_13sdp" />
+                        android:padding="@dimen/_5sdp">
 
-                    <TextView
+                        <TextView
+                            android:id="@+id/plate_new_aras_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="@dimen/_3sdp"
+                            android:fontFamily="@font/iran_sans"
+                            android:gravity="center"
+                            android:text="ارس جدید"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_11sdp" />
+
+                        <ImageView
+                            android:layout_width="@dimen/_13sdp"
+                            android:layout_height="@dimen/_15sdp"
+                            android:src="@drawable/ic_checked_circle"
+                            app:tint="@color/white" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
                         android:id="@+id/plate_old_aras_selector"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="@dimen/_10sdp"
                         android:layout_marginRight="@dimen/_10sdp"
                         android:layout_weight="1"
-                        android:background="@drawable/unselected_background"
-                        android:fontFamily="@font/iran_sans"
+                        android:background="@drawable/unselected_tab"
                         android:gravity="center"
-                        android:padding="@dimen/_5sdp"
-                        android:text="ارس"
-                        android:textColor="@color/text_gray"
-                        android:textSize="@dimen/_13sdp" />
+                        android:padding="@dimen/_5sdp">
 
-                    <TextView
+                        <TextView
+                            android:id="@+id/plate_old_aras_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="@dimen/_3sdp"
+                            android:fontFamily="@font/iran_sans"
+                            android:gravity="center"
+                            android:text="ارس"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_13sdp" />
+
+                        <ImageView
+                            android:layout_width="@dimen/_13sdp"
+                            android:layout_height="@dimen/_15sdp"
+                            android:src="@drawable/ic_checked_circle"
+                            app:tint="@color/white" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
                         android:id="@+id/plate_simple_selector"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:background="@drawable/selected_background"
-                        android:fontFamily="@font/iran_sans"
+                        android:background="@drawable/selected_tab"
                         android:gravity="center"
-                        android:padding="@dimen/_5sdp"
-                        android:text="ملی"
-                        android:textColor="@color/text_gray"
-                        android:textSize="@dimen/_13sdp" />
+                        android:padding="@dimen/_5sdp">
+
+                        <TextView
+                            android:id="@+id/plate_simple_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="@dimen/_3sdp"
+                            android:fontFamily="@font/iran_sans"
+                            android:gravity="center"
+                            android:text="ملی"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_13sdp" />
+
+                        <ImageView
+                            android:layout_width="@dimen/_13sdp"
+                            android:layout_height="@dimen/_15sdp"
+                            android:src="@drawable/ic_checked_circle"
+                            app:tint="@color/white" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
 
                 </LinearLayout>
 
@@ -141,7 +198,7 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="@dimen/_20sdp"
                     android:orientation="horizontal"
-                    android:visibility="gone">
+                    >
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -154,7 +211,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@drawable/unselected_background"
-                            android:fontFamily="@font/iran_sans_fa_num"
+                            android:fontFamily="@font/sahel_fa_num_semi_bold"
                             android:gravity="center"
                             android:hint="56"
                             android:inputType="numberDecimal"
@@ -172,7 +229,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@drawable/unselected_background"
-                            android:fontFamily="@font/iran_sans"
+                            android:fontFamily="@font/sahel_fa_num_semi_bold"
                             android:gravity="center"
                             android:hint="س"
                             android:maxLength="1"
@@ -188,7 +245,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@drawable/unselected_background"
-                            android:fontFamily="@font/iran_sans_fa_num"
+                            android:fontFamily="@font/sahel_fa_num_semi_bold"
                             android:gravity="center"
                             android:hint="526"
                             android:inputType="numberDecimal"
@@ -209,7 +266,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_10sdp"
                         android:background="@drawable/unselected_background"
-                        android:fontFamily="@font/iran_sans_fa_num"
+                        android:fontFamily="@font/sahel_fa_num_semi_bold"
                         android:gravity="center"
                         android:hint="15"
 
@@ -232,7 +289,7 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="@dimen/_20sdp"
                     android:background="@drawable/unselected_background"
-                    android:fontFamily="@font/iran_sans_fa_num"
+                    android:fontFamily="@font/sahel_fa_num_semi_bold"
                     android:gravity="center"
                     android:hint="12345"
                     android:inputType="numberDecimal"
@@ -260,7 +317,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/unselected_background"
-                        android:fontFamily="@font/iran_sans_fa_num"
+                        android:fontFamily="@font/sahel_fa_num_semi_bold"
                         android:gravity="center"
                         android:hint="12345"
                         android:inputType="numberDecimal"
@@ -279,7 +336,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_10sdp"
                         android:background="@drawable/unselected_background"
-                        android:fontFamily="@font/iran_sans_fa_num"
+                        android:fontFamily="@font/sahel_fa_num_semi_bold"
                         android:gravity="center"
                         android:hint="55"
                         android:inputType="numberDecimal"

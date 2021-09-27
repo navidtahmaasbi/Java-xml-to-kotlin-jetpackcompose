@@ -2,8 +2,12 @@ package com.azarpark.watchman.dialogs;
 
 
 import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,6 +33,18 @@ public class ConfirmDialog extends DialogFragment {
         this.question = question;
         this.confirmButtonText = confirmButtonText;
         this.cancelButtonText = cancelButtonText;
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        if (getDialog() != null && getDialog().getWindow() != null) {
+            getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//            getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        }
+
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @NonNull

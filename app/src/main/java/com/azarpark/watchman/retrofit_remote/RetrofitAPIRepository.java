@@ -50,7 +50,7 @@ public class RetrofitAPIRepository {
 
     public void getCities(String token, Callback<GetCitiesResponse> responseCallback) {
 
-        GetCities request = RetrofitAPIClient.getClient().create(GetCities.class);
+        GetCities request = RetrofitAPIClient.getInitialClient().create(GetCities.class);
 
         request.get(token).enqueue(responseCallback);
 

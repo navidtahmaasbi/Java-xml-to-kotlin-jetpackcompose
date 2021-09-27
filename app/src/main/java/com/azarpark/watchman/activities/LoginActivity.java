@@ -4,7 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 
 
+import com.azarpark.watchman.R;
+import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.LoadingBar;
+import com.azarpark.watchman.retrofit_remote.RetrofitAPIClient;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.bodies.LoginBody;
 import com.azarpark.watchman.retrofit_remote.responses.LoginResponse;
@@ -29,6 +32,7 @@ import retrofit2.http.HTTP;
 public class LoginActivity extends AppCompatActivity {
 
     ActivityLoginBinding binding;
+    ConfirmDialog confirmDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +40,8 @@ public class LoginActivity extends AppCompatActivity {
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        System.out.println("--------> bass url : " + RetrofitAPIClient.getClient().baseUrl());
+        System.out.println("--------> bass url : " + RetrofitAPIClient.BASE_URL);
 
     }
 
@@ -76,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 } else {
 
-                    Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "error " + response.code(), Toast.LENGTH_SHORT).show();
 
                 }
 
@@ -85,11 +91,33 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
                 loadingBar.dismiss();
-                Toast.makeText(getApplicationContext(), "onFailure", Toast.LENGTH_SHORT).show();
+                t.printStackTrace();
+
+
+                 confirmDialog = new ConfirmDialog(
+                        getResources().getString(R.string.retry_title),
+                        getResources().getString(R.string.retry_text),
+                        getResources().getString(R.string.retry_confirm_button),
+                        getResources().getString(R.string.retry_cancel_button),
+                        new ConfirmDialog.ConfirmButtonClicks() {
+                            @Override
+                            public void onConfirmClicked() {
+                                login(username,password);
+                            }
+
+                            @Override
+                            public void onCancelClicked() {
+                                confirmDialog.dismiss();
+                            }
+                        }
+                );
+
+
+                confirmDialog.show(getSupportFragmentManager(),"tag");
+
             }
         });
 
     }
-
 
 }

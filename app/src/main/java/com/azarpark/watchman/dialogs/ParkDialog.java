@@ -2,11 +2,16 @@ package com.azarpark.watchman.dialogs;
 
 
 import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -202,45 +207,61 @@ public class ParkDialog extends DialogFragment {
         return builder.create();
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        if (getDialog() != null && getDialog().getWindow() != null) {
+            getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//            getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        }
+
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
     private void setSelectedTab(PlateType selectedTab) {
 
         this.selectedTab = selectedTab;
 
         if (selectedTab == PlateType.simple) {
 
-            binding.plateSimpleSelector.setBackgroundResource(R.drawable.selected_background);
-            binding.plateOldArasSelector.setBackgroundResource(R.drawable.unselected_background);
-            binding.plateNewArasSelector.setBackgroundResource(R.drawable.unselected_background);
+            binding.plateSimpleSelector.setBackgroundResource(R.drawable.selected_tab);
+            binding.plateOldArasSelector.setBackgroundResource(R.drawable.unselected_tab);
+            binding.plateNewArasSelector.setBackgroundResource(R.drawable.unselected_tab);
+
+            binding.plateSimpleTitle.setTextColor(getResources().getColor(R.color.white));
+            binding.plateOldArasTitle.setTextColor(getResources().getColor(R.color.black));
+            binding.plateNewArasTitle.setTextColor(getResources().getColor(R.color.black));
 
             binding.plateSimpleArea.setVisibility(View.VISIBLE);
             binding.plateOldAras.setVisibility(View.GONE);
             binding.plateNewArasArea.setVisibility(View.GONE);
-
-            binding.plateSimpleTag1.requestFocus();
-
         } else if (selectedTab == PlateType.old_aras) {
 
-            binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_background);
-            binding.plateOldArasSelector.setBackgroundResource(R.drawable.selected_background);
-            binding.plateNewArasSelector.setBackgroundResource(R.drawable.unselected_background);
+            binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_tab);
+            binding.plateOldArasSelector.setBackgroundResource(R.drawable.selected_tab);
+            binding.plateNewArasSelector.setBackgroundResource(R.drawable.unselected_tab);
+
+            binding.plateSimpleTitle.setTextColor(getResources().getColor(R.color.black));
+            binding.plateOldArasTitle.setTextColor(getResources().getColor(R.color.white));
+            binding.plateNewArasTitle.setTextColor(getResources().getColor(R.color.black));
 
             binding.plateSimpleArea.setVisibility(View.GONE);
             binding.plateOldAras.setVisibility(View.VISIBLE);
             binding.plateNewArasArea.setVisibility(View.GONE);
-
-            binding.plateOldAras.requestFocus();
-
         } else if (selectedTab == PlateType.new_aras) {
 
-            binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_background);
-            binding.plateOldArasSelector.setBackgroundResource(R.drawable.unselected_background);
-            binding.plateNewArasSelector.setBackgroundResource(R.drawable.selected_background);
+            binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_tab);
+            binding.plateOldArasSelector.setBackgroundResource(R.drawable.unselected_tab);
+            binding.plateNewArasSelector.setBackgroundResource(R.drawable.selected_tab);
+
+            binding.plateSimpleTitle.setTextColor(getResources().getColor(R.color.black));
+            binding.plateOldArasTitle.setTextColor(getResources().getColor(R.color.black));
+            binding.plateNewArasTitle.setTextColor(getResources().getColor(R.color.white));
 
             binding.plateSimpleArea.setVisibility(View.GONE);
             binding.plateOldAras.setVisibility(View.GONE);
             binding.plateNewArasArea.setVisibility(View.VISIBLE);
-
-            binding.plateNewArasTag1.requestFocus();
         }
 
     }

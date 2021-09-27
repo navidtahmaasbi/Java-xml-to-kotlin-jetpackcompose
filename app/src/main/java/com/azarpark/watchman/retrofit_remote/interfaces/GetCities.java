@@ -10,7 +10,7 @@ import retrofit2.http.Path;
 
 public interface GetCities {
 
-    @GET("api/cities")
+    @GET("/api/cities")
     Call<GetCitiesResponse> get(@Header("Authorization") String authToken);
 
 }

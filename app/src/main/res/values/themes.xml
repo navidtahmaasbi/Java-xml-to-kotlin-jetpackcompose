@@ -2,8 +2,8 @@
     <!-- Base application theme. -->
     <style name="Theme.Watchman" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimary">@color/blue</item>
+        <item name="colorPrimaryVariant">@color/dark_blue</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
@@ -22,4 +22,9 @@
     <style name="Theme.Watchman.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.Watchman.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="Theme.Watchman.WhiteAccent">
+        <item name="colorAccent">@color/white</item> <!-- Whatever color you want-->
+        <item name="colorOnSecondary">@color/white</item> <!-- Whatever color you want-->
+    </style>
 </resources>
