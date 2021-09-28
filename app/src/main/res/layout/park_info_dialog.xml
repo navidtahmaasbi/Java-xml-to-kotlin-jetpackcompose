@@ -529,12 +529,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="@dimen/_10sdp"
-            android:background="@drawable/selected_background"
-            android:fontFamily="@font/iran_sans"
+            android:background="@drawable/blue_bg_5"
+            android:fontFamily="@font/iran_sans_bold"
             android:gravity="center"
             android:padding="@dimen/_5sdp"
             android:text="افزایش شارژ"
-            android:textColor="@color/text_gray"
+            android:textColor="@color/white"
             android:textSize="@dimen/_13sdp" />
 
         <LinearLayout

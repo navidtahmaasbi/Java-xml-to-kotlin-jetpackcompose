@@ -1,5 +1,6 @@
 package com.azarpark.watchman.interfaces;
 
+import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.Place;
 
 public interface OnGetInfoClicked {
@@ -10,5 +11,5 @@ public interface OnGetInfoClicked {
 
     public void removeExitRequest(Place place);
 
-//    public void charge(Place place);
+    public void charge(PlateType plateType, String tag1, String tag2, String tag3, String tag4);
 }

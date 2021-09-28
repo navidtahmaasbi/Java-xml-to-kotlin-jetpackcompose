@@ -48,6 +48,7 @@ import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.dialogs.ParkDialog;
 import com.azarpark.watchman.dialogs.ParkInfoDialog;
+import com.azarpark.watchman.dialogs.PlateChargeDialog;
 import com.azarpark.watchman.enums.PlaceStatus;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnGetInfoClicked;
@@ -97,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
     MyServiceConnection connection;
     IProxy service;
     SharedPreferencesRepository sh_r;
+    PlateChargeDialog plateChargeDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +123,8 @@ public class MainActivity extends AppCompatActivity {
         initMenuPopup();
 
         listeners();
+
+        binding.filterEdittext.clearFocus();
 
         adapter = new ParkListAdapter(place -> {
 
@@ -289,9 +293,9 @@ public class MainActivity extends AppCompatActivity {
 
                 PlateType selectedPlateType = PlateType.simple;
 
-                if (place.tag2 == null)
+                if (place.tag2 == null|| place.tag2.isEmpty())
                     selectedPlateType = PlateType.old_aras;
-                else if (place.tag3 == null)
+                else if (place.tag3 == null|| place.tag3.isEmpty())
                     selectedPlateType = PlateType.new_aras;
 
                 paymentRequest(price, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id);
@@ -309,6 +313,22 @@ public class MainActivity extends AppCompatActivity {
             public void removeExitRequest(Place place1) {
 
                 deleteExitRequest(place1.id);
+
+            }
+
+            @Override
+            public void charge(PlateType plateType, String tag1, String tag2, String tag3, String tag4) {
+
+                parkInfoDialog.dismiss();
+
+                plateChargeDialog = new PlateChargeDialog(amount -> {
+
+                    paymentRequest(amount,plateType,tag1,tag2,tag3,tag4,-1);
+                    plateChargeDialog.dismiss();
+
+                },place);
+
+                plateChargeDialog.show(getSupportFragmentManager(),PlateChargeDialog.TAG);
 
             }
         }, place);

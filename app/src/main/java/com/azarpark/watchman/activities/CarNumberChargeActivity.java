@@ -52,8 +52,8 @@ public class CarNumberChargeActivity extends AppCompatActivity {
     MyServiceConnection connection;
     IProxy service;
     LoadingBar loadingBar;
-    SharedPreferencesRepository sh_r ;
-
+    SharedPreferencesRepository sh_r;
+    ChargeItemListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,7 +148,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                if(binding.plateSimpleTag1.getText().toString().length()==2)     //size is your limit
+                if (binding.plateSimpleTag1.getText().toString().length() == 2)     //size is your limit
                 {
                     binding.plateSimpleTag2.requestFocus();
                 }
@@ -171,7 +171,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                if(binding.plateSimpleTag2.getText().toString().length()==1)     //size is your limit
+                if (binding.plateSimpleTag2.getText().toString().length() == 1)     //size is your limit
                 {
                     binding.plateSimpleTag3.requestFocus();
                 }
@@ -194,7 +194,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                if(binding.plateSimpleTag3.getText().toString().length()==3)     //size is your limit
+                if (binding.plateSimpleTag3.getText().toString().length() == 3)     //size is your limit
                 {
                     binding.plateSimpleTag4.requestFocus();
                 }
@@ -217,7 +217,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                if(binding.plateNewArasTag1.getText().toString().length()==5)     //size is your limit
+                if (binding.plateNewArasTag1.getText().toString().length() == 5)     //size is your limit
                 {
                     binding.plateNewArasTag2.requestFocus();
                 }
@@ -231,12 +231,31 @@ public class CarNumberChargeActivity extends AppCompatActivity {
             }
         });
 
+        binding.amount.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-        ChargeItemListAdapter adapter = new ChargeItemListAdapter(amount -> {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                adapter.clearSelectedItem();
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+
+        adapter = new ChargeItemListAdapter(amount -> {
 
             binding.amount.setText(NumberFormat.getNumberInstance(Locale.US).format(amount));
 
-        });
+        }, getApplicationContext());
         binding.recyclerView.setAdapter(adapter);
 
         ArrayList<Integer> items = new ArrayList<>();
@@ -246,17 +265,16 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
         adapter.setItems(items);
 
-
     }
 
     private boolean isNumber(String amount) {
 
-        amount.replace(",","");
+        amount = amount.replace(",", "");
 
         try {
 
             int a = Integer.parseInt(amount);
-        }catch (Exception e){
+        } catch (Exception e) {
 
             return false;
         }
@@ -266,7 +284,9 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
     private void charge(String amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4) {
 
-        paymentRequest(Integer.parseInt(amount),plateType,tag1,tag2,tag3,tag4,-1);
+        amount = amount.replace(",", "");
+
+        paymentRequest(Integer.parseInt(amount), plateType, tag1, tag2, tag3, tag4, -1);
 
 //        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
 //        RetrofitAPIRepository repository = new RetrofitAPIRepository();
@@ -361,13 +381,13 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
     }
 
-    public void myOnBackPressed(View view){
+    public void myOnBackPressed(View view) {
 
         onBackPressed();
 
         View v = this.getCurrentFocus();
         if (v != null) {
-            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
         }
 
@@ -397,7 +417,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         releaseService();
     }
 
-    public void paymentRequest(int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4,int placeID) {
+    public void paymentRequest(int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
 
         amount *= 10;
         System.out.println("---------> amount : " + amount);
@@ -423,18 +443,18 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
     }
 
-//    int result= service.PrintByBitmap(getBitmapFromView(root));
+    //    int result= service.PrintByBitmap(getBitmapFromView(root));
     private Bitmap getBitmapFromView(View view) {
         //Define a bitmap with the same size as the view
-        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),Bitmap.Config.ARGB_8888);
+        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
         //Bind a canvas to it
         Canvas canvas = new Canvas(returnedBitmap);
         //Get the view's background
-        Drawable bgDrawable =view.getBackground();
-        if (bgDrawable!=null) {
+        Drawable bgDrawable = view.getBackground();
+        if (bgDrawable != null) {
             //has background drawable, then draw it on the canvas
             bgDrawable.draw(canvas);
-        }   else{
+        } else {
             //does not have background drawable, then draw white background on the canvas
             canvas.drawColor(Color.WHITE);
         }
@@ -447,7 +467,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == RESULT_OK && requestCode==1) {
+        if (resultCode == RESULT_OK && requestCode == 1) {
 
             int state = data.getIntExtra("State", -1); // Response Code Switch
 
@@ -464,9 +484,9 @@ public class CarNumberChargeActivity extends AppCompatActivity {
                 verifyTransaction(
                         PlateType.valueOf(sh_r.getString(SharedPreferencesRepository.PLATE_TYPE)),
                         sh_r.getString(SharedPreferencesRepository.TAG1),
-                        sh_r.getString(SharedPreferencesRepository.TAG2,"0"),
-                        sh_r.getString(SharedPreferencesRepository.TAG3,"0"),
-                        sh_r.getString(SharedPreferencesRepository.TAG4,"0"),
+                        sh_r.getString(SharedPreferencesRepository.TAG2, "0"),
+                        sh_r.getString(SharedPreferencesRepository.TAG3, "0"),
+                        sh_r.getString(SharedPreferencesRepository.TAG4, "0"),
                         sh_r.getString(SharedPreferencesRepository.AMOUNT),
                         refNum,
                         Integer.parseInt(sh_r.getString(SharedPreferencesRepository.PLACE_ID))
@@ -474,18 +494,16 @@ public class CarNumberChargeActivity extends AppCompatActivity {
             } else
                 Toast.makeText(getBaseContext(), "Purchase did faild....", Toast.LENGTH_LONG).show();
 
-        }
-
-        else if (resultCode == RESULT_OK && requestCode==2) {
-            Toast.makeText(CarNumberChargeActivity.this,data.getStringExtra("ScannerResult"),Toast.LENGTH_LONG).show();
+        } else if (resultCode == RESULT_OK && requestCode == 2) {
+            Toast.makeText(CarNumberChargeActivity.this, data.getStringExtra("ScannerResult"), Toast.LENGTH_LONG).show();
             System.out.println("---------> ScannerResult :" + data.getStringExtra("ScannerResult"));//https://irana.app/how?qr=090YK6
         }
     }
 
-    public void verify(String refNum,String resNum){
+    public void verify(String refNum, String resNum) {
 
         try {
-            int verifyResult = service.VerifyTransaction(0, refNum,resNum);
+            int verifyResult = service.VerifyTransaction(0, refNum, resNum);
             if (verifyResult == 0) // sucsess
             {
                 Toast.makeText(getBaseContext(), "Purchase did sucssessful....", Toast.LENGTH_LONG).show();
@@ -503,7 +521,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
     }
 
-    private void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id,int placeID) {
+    private void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id, int placeID) {
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository();
@@ -525,7 +543,6 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 //                                parkInfoDialog.dismiss();
 
                             Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
-
 
 
                         } else {

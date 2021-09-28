@@ -7,7 +7,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/gray"
-    android:layoutDirection="ltr">
+    android:layoutDirection="ltr"
+    tools:context=".activities.CarNumberChargeActivity">
 
     <RelativeLayout
         android:id="@+id/action_bar"
@@ -43,7 +44,6 @@
             android:layout_width="@dimen/_45sdp"
             android:layout_height="@dimen/_45sdp"
             android:layout_alignParentLeft="true"
-            android:onClick="onBarcodeIconClicked"
             android:padding="@dimen/_10sdp"
             android:src="@drawable/ic_qr_code"
             android:visibility="invisible"
@@ -197,8 +197,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="@dimen/_20sdp"
-                    android:orientation="horizontal"
-                    >
+                    android:orientation="horizontal">
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -363,7 +362,7 @@
                 android:layout_marginRight="@dimen/_15sdp"
                 android:layout_marginBottom="@dimen/_10sdp"
                 android:background="@drawable/selected_background"
-                android:fontFamily="@font/iran_sans"
+                android:fontFamily="@font/iran_sans_fa_num"
                 android:gravity="center"
                 android:hint="مبلغ شارژ"
                 android:inputType="numberDecimal"

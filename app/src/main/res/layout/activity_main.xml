@@ -49,13 +49,13 @@
                 app:tint="@color/white" />
 
             <ImageView
-                android:visibility="gone"
                 android:id="@+id/refresh"
                 android:layout_width="@dimen/_45sdp"
                 android:layout_height="@dimen/_45sdp"
                 android:layout_toRightOf="@+id/barcode"
                 android:padding="@dimen/_13sdp"
                 android:src="@drawable/refresh"
+                android:visibility="gone"
                 app:tint="@color/white" />
 
             <androidx.appcompat.widget.LinearLayoutCompat

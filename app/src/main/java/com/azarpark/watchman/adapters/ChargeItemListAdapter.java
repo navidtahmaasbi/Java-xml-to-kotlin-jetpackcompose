@@ -1,11 +1,15 @@
 package com.azarpark.watchman.adapters;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.azarpark.watchman.R;
 import com.azarpark.watchman.databinding.AmountItemBinding;
 
 import java.text.NumberFormat;
@@ -16,31 +20,51 @@ public class ChargeItemListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
     ArrayList<Integer> items;
     OnItemClicked onItemClicked;
+    int selectedPosition = -1;
+    Context context;
 
-    public ChargeItemListAdapter(OnItemClicked onItemClicked) {
+
+    public ChargeItemListAdapter(OnItemClicked onItemClicked,Context context) {
         this.onItemClicked = onItemClicked;
+        this.context = context;
+    }
+
+    public void clearSelectedItem(){
+
+        selectedPosition = -1;
+        notifyDataSetChanged();
+
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ItemViewHolder(AmountItemBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false));
+        return new ItemViewHolder(AmountItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
 
-        ItemViewHolder viewHolder = (ItemViewHolder)holder;
+        ItemViewHolder viewHolder = (ItemViewHolder) holder;
 
-        viewHolder.binding.getRoot().setOnClickListener(view -> onItemClicked.itemClicked(items.get(position)));
+        viewHolder.binding.getRoot().setOnClickListener(view -> {
+            onItemClicked.itemClicked(items.get(position));
+            selectedPosition = position;
+            notifyDataSetChanged();
 
+        });
 
-        viewHolder.binding.amount.setText(NumberFormat.getNumberInstance(Locale.US).format(items.get(position))+"");
+        if (position == selectedPosition)
+            viewHolder.binding.check.setColorFilter(ContextCompat.getColor(context, R.color.blue), android.graphics.PorterDuff.Mode.SRC_IN);
+        else
+            viewHolder.binding.check.setColorFilter(ContextCompat.getColor(context, R.color.gray), android.graphics.PorterDuff.Mode.SRC_IN);
+
+        viewHolder.binding.amount.setText(NumberFormat.getNumberInstance(Locale.US).format(items.get(position)) + "");
 
 
     }
 
-    public void setItems(ArrayList<Integer> items){
+    public void setItems(ArrayList<Integer> items) {
 
         this.items = items;
         notifyDataSetChanged();
@@ -52,7 +76,7 @@ public class ChargeItemListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         return items.size();
     }
 
-    public static class ItemViewHolder extends RecyclerView.ViewHolder{
+    public static class ItemViewHolder extends RecyclerView.ViewHolder {
 
         AmountItemBinding binding;
 
@@ -62,7 +86,7 @@ public class ChargeItemListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         }
     }
 
-    public static interface OnItemClicked{
+    public static interface OnItemClicked {
 
         public void itemClicked(Integer amount);
 

@@ -58,6 +58,7 @@ public class ParkInfoDialog extends DialogFragment {
     public ParkInfoDialog(OnGetInfoClicked onGetInfoClicked, Place place) {
         this.onGetInfoClicked = onGetInfoClicked;
         this.place = place;
+
     }
 
     @NonNull
@@ -131,9 +132,9 @@ public class ParkInfoDialog extends DialogFragment {
 
             PlateType selectedPlateType = PlateType.simple;
 
-            if (place.tag2 == null)
+            if (place.tag2 == null || place.tag2.isEmpty())
                 selectedPlateType = PlateType.old_aras;
-            else if (place.tag3 == null)
+            else if (place.tag3 == null || place.tag3.isEmpty())
                 selectedPlateType = PlateType.new_aras;
 
             Intent intent = new Intent(getActivity(), DebtListActivity.class);
@@ -151,6 +152,19 @@ public class ParkInfoDialog extends DialogFragment {
             return false;
         });
 
+        binding.increaseBalance.setOnClickListener(view -> {
+
+            PlateType selectedPlateType = PlateType.simple;
+
+            if (place.tag2 == null || place.tag2.isEmpty())
+                selectedPlateType = PlateType.old_aras;
+            else if (place.tag3 == null || place.tag3.isEmpty())
+                selectedPlateType = PlateType.new_aras;
+
+            onGetInfoClicked.charge(selectedPlateType,place.tag1,place.tag2, place.tag3, place.tag4);
+
+        });
+
         return builder.create();
     }
 
@@ -159,135 +173,148 @@ public class ParkInfoDialog extends DialogFragment {
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository();
         LoadingBar loadingBar = new LoadingBar(getActivity());
-        loadingBar.show();
 
         repository.estimateParkPrice("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), place.id, new Callback<EstimateParkPriceResponse>() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onResponse(Call<EstimateParkPriceResponse> call, Response<EstimateParkPriceResponse> response) {
 
-                if (place.exit_request != null) {
+                try {
 
-                    binding.exitRequestArea.setVisibility(View.VISIBLE);
-                    binding.paymentArea.setVisibility(View.GONE);
+                    if (place.exit_request != null) {
 
-                } else {
+                        binding.exitRequestArea.setVisibility(View.VISIBLE);
+                        binding.paymentArea.setVisibility(View.GONE);
 
-                    binding.exitRequestArea.setVisibility(View.GONE);
-                    binding.paymentArea.setVisibility(View.VISIBLE);
+                    } else {
 
-                }
-
-                loadingBar.dismiss();
-                if (response.code() == HttpURLConnection.HTTP_OK) {
-
-                    if (response.body().getSuccess() == 1) {
-
-                        EstimateParkPriceResponse parkPriceResponse = response.body();
-
-                        binding.startTime.setText(binding.startTime.getText() + "  " + (parkPriceResponse.getHours() + 1) + " ساعت");
-
-                        int parkPrice = parkPriceResponse.getPrice();
-                        int carBalance = parkPriceResponse.getCar_balance();
-
+                        binding.exitRequestArea.setVisibility(View.GONE);
                         binding.paymentArea.setVisibility(View.VISIBLE);
 
-                        if (carBalance < 0) {
+                    }
 
-                            binding.carBalanceTitle.setText("بدهی شما");
-                            binding.carBalance.setText(NumberFormat.getNumberInstance(Locale.US).format(-carBalance) + " تومان");
+                    if (response.code() == HttpURLConnection.HTTP_OK) {
 
-                            binding.carBalance.setTextColor(getResources().getColor(R.color.red));
+                        if (response.body().getSuccess() == 1) {
 
-                            binding.showDebtList.setVisibility(View.VISIBLE);
+                            EstimateParkPriceResponse parkPriceResponse = response.body();
 
-                            binding.parkPrice.setText(NumberFormat.getNumberInstance(Locale.US).format(parkPrice) + " تومان");
-                            totalPrice = parkPrice - carBalance;
-                            binding.totalPrice.setText(NumberFormat.getNumberInstance(Locale.US).format(totalPrice) + " تومان");
+                            binding.startTime.setText(binding.startTime.getText() + "  " + (parkPriceResponse.getHours() + 1) + " ساعت");
 
-                            binding.balanceCheckbox.setVisibility(View.VISIBLE);
-                            binding.balanceIcon.setVisibility(View.GONE);
+                            int parkPrice = parkPriceResponse.getPrice();
+                            int carBalance = parkPriceResponse.getCar_balance();
 
+                            binding.paymentArea.setVisibility(View.VISIBLE);
 
-                            binding.balanceCheckbox.setOnCheckedChangeListener((compoundButton, b) -> {
+                            if (carBalance < 0) {
 
-                                totalPrice = b ? parkPrice - carBalance : parkPrice;
+                                binding.carBalanceTitle.setText("بدهی شما");
+                                binding.carBalance.setText(NumberFormat.getNumberInstance(Locale.US).format(-carBalance) + " تومان");
+
+                                binding.carBalance.setTextColor(getResources().getColor(R.color.red));
+
+                                binding.showDebtList.setVisibility(View.VISIBLE);
+
+                                binding.parkPrice.setText(NumberFormat.getNumberInstance(Locale.US).format(parkPrice) + " تومان");
+                                totalPrice = parkPrice - carBalance;
                                 binding.totalPrice.setText(NumberFormat.getNumberInstance(Locale.US).format(totalPrice) + " تومان");
 
-                            });
-
-                            binding.pay.setOnClickListener(view ->Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
-                            binding.pay.setOnLongClickListener(view -> {
-                                onGetInfoClicked.pay(totalPrice, place);
-                                return false;
-                            });
-
-                        } else {
-
-                            binding.carBalanceTitle.setText("اعتبار شما");
-                            binding.carBalance.setText(NumberFormat.getNumberInstance(Locale.US).format(carBalance) + " تومان");
-
-                            binding.showDebtList.setVisibility(View.GONE);
-
-                            binding.carBalance.setTextColor(getResources().getColor(R.color.dark_green));
+                                binding.balanceCheckbox.setVisibility(View.VISIBLE);
+                                binding.balanceIcon.setVisibility(View.GONE);
 
 
+                                binding.balanceCheckbox.setOnCheckedChangeListener((compoundButton, b) -> {
 
-                            if (carBalance > parkPrice){
+                                    totalPrice = b ? parkPrice - carBalance : parkPrice;
+                                    binding.totalPrice.setText(NumberFormat.getNumberInstance(Locale.US).format(totalPrice) + " تومان");
 
-                                totalPrice = 0 ;
-
-                                binding.pay.setBackgroundDrawable(getResources().getDrawable(R.drawable.green_5_bg));
-                                binding.pay.setText("پرداخت از اعتبار");
-
-                                binding.payAsDebt.setVisibility(View.GONE);
-
-                                binding.pay.setOnClickListener(view -> Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
-                                binding.pay.setOnLongClickListener(view -> {
-                                    onGetInfoClicked.payAsDebt(place);
-                                    return false;
                                 });
 
-                            }else {
-
-                                totalPrice = parkPrice - carBalance;
-
-                                binding.pay.setOnClickListener(view -> Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
+                                binding.pay.setOnClickListener(view ->Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
                                 binding.pay.setOnLongClickListener(view -> {
                                     onGetInfoClicked.pay(totalPrice, place);
                                     return false;
                                 });
 
+                            } else {
+
+                                binding.carBalanceTitle.setText("اعتبار شما");
+                                binding.carBalance.setText(NumberFormat.getNumberInstance(Locale.US).format(carBalance) + " تومان");
+
+                                binding.showDebtList.setVisibility(View.GONE);
+
+                                binding.carBalance.setTextColor(getResources().getColor(R.color.dark_green));
+
+
+
+                                if (carBalance > parkPrice){
+
+                                    totalPrice = 0 ;
+
+                                    binding.pay.setBackgroundDrawable(getResources().getDrawable(R.drawable.green_5_bg));
+                                    binding.pay.setText("پرداخت از اعتبار");
+
+                                    binding.payAsDebt.setVisibility(View.GONE);
+
+                                    binding.pay.setOnClickListener(view -> Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
+                                    binding.pay.setOnLongClickListener(view -> {
+                                        onGetInfoClicked.payAsDebt(place);
+                                        return false;
+                                    });
+
+                                }else {
+
+                                    totalPrice = parkPrice - carBalance;
+
+                                    binding.pay.setOnClickListener(view -> Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
+                                    binding.pay.setOnLongClickListener(view -> {
+                                        onGetInfoClicked.pay(totalPrice, place);
+                                        return false;
+                                    });
+
+                                }
+
+
+
+                                binding.totalPrice.setText(NumberFormat.getNumberInstance(Locale.US).format(totalPrice) + " تومان");
+
+                                binding.parkPrice.setText(NumberFormat.getNumberInstance(Locale.US).format(parkPrice) + " تومان");
+
+                                binding.balanceCheckbox.setVisibility(View.GONE);
+                                binding.balanceIcon.setVisibility(View.VISIBLE);
+
                             }
 
+                        } else if (response.body().getSuccess() == 0) {
 
-
-                            binding.totalPrice.setText(NumberFormat.getNumberInstance(Locale.US).format(totalPrice) + " تومان");
-
-                            binding.parkPrice.setText(NumberFormat.getNumberInstance(Locale.US).format(parkPrice) + " تومان");
-
-                            binding.balanceCheckbox.setVisibility(View.GONE);
-                            binding.balanceIcon.setVisibility(View.VISIBLE);
+                            Toast.makeText(getContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
 
                         }
 
-                    } else if (response.body().getSuccess() == 0) {
+                    } else {
 
-                        Toast.makeText(getContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "error", Toast.LENGTH_SHORT).show();
 
                     }
 
-                } else {
+                }catch (Exception e){
 
-                    Toast.makeText(getContext(), "error", Toast.LENGTH_SHORT).show();
+                    System.out.println("---------> popup is closed");
 
                 }
+
 
             }
             @Override
             public void onFailure(Call<EstimateParkPriceResponse> call, Throwable t) {
-                loadingBar.dismiss();
-                Toast.makeText(getContext(), "onFailure", Toast.LENGTH_SHORT).show();
+                try {
+
+                    Toast.makeText(getContext(), "onFailure", Toast.LENGTH_SHORT).show();
+
+                }catch (Exception e){
+                    System.out.println("---------> popup is closed");
+                }
+
             }
         });
 
