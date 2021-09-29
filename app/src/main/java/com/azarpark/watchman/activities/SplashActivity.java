@@ -11,7 +11,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.azarpark.watchman.R;
 import com.azarpark.watchman.databinding.ActivitySplashBinding;
+import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.dialogs.SingleSelectDialog;
 import com.azarpark.watchman.models.City;
@@ -33,7 +35,7 @@ public class SplashActivity extends AppCompatActivity {
     SingleSelectDialog citySelectDialog;
     ArrayList<City> cities;
     SharedPreferencesRepository sh_p;
-
+    ConfirmDialog confirmDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,8 +60,7 @@ public class SplashActivity extends AppCompatActivity {
                 RetrofitAPIClient.setBaseUrl("https://" + sh_p.getString(SharedPreferencesRepository.SUB_DOMAIN) + ".backend.iranademo.ir");
 
                 SplashActivity.this.finish();
-                SharedPreferencesRepository sharedPreferencesRepository = new SharedPreferencesRepository(getApplicationContext());
-                if (sharedPreferencesRepository.getString(SharedPreferencesRepository.ACCESS_TOKEN).isEmpty())
+                if (sh_p.getString(SharedPreferencesRepository.ACCESS_TOKEN).isEmpty())
                     startActivity(new Intent(SplashActivity.this, LoginActivity.class));
                 else{
 
@@ -100,9 +101,24 @@ public class SplashActivity extends AppCompatActivity {
             public void onFailure(Call<GetCitiesResponse> call, Throwable t) {
 //                loadingBar.dismiss();
                 binding.loadingBar.setVisibility(View.INVISIBLE);
-                System.out.println("---------> onFailure");
-                t.printStackTrace();
-                Toast.makeText(getApplicationContext(), "onFailure", Toast.LENGTH_SHORT).show();
+                confirmDialog = new ConfirmDialog(
+                        getResources().getString(R.string.retry_title),
+                        getResources().getString(R.string.retry_text),
+                        getResources().getString(R.string.retry_confirm_button),
+                        getResources().getString(R.string.retry_cancel_button),
+                        new ConfirmDialog.ConfirmButtonClicks() {
+                            @Override
+                            public void onConfirmClicked() {
+                                confirmDialog.dismiss();
+                                getCities();
+                            }
+
+                            @Override
+                            public void onCancelClicked() {
+                                confirmDialog.dismiss();
+                            }
+                        }
+                );
             }
         });
 
@@ -123,7 +139,13 @@ public class SplashActivity extends AppCompatActivity {
             RetrofitAPIClient.setBaseUrl("https://" + cities.get(position).subdomain + ".backend.iranademo.ir");
 //
             SplashActivity.this.finish();
-            startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+            if (sh_p.getString(SharedPreferencesRepository.ACCESS_TOKEN).isEmpty())
+                startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+            else{
+
+                startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                overridePendingTransition(0, 0);
+            }
 
         });
 

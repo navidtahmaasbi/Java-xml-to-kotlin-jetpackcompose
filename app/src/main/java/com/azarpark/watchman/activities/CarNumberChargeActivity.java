@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.adapters.ChargeItemListAdapter;
 import com.azarpark.watchman.databinding.ActivityCarNumberChargeBinding;
+import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.payment.MyServiceConnection;
@@ -54,6 +55,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
     LoadingBar loadingBar;
     SharedPreferencesRepository sh_r;
     ChargeItemListAdapter adapter;
+    ConfirmDialog confirmDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -529,6 +531,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
         amount = Integer.toString((Integer.parseInt(amount) / 10));
 
+        String finalAmount = amount;
         repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
                 plateType, tag1, tag2, tag3, tag4, amount, transaction_id, placeID, new Callback<VerifyTransactionResponse>() {
                     @Override
@@ -555,7 +558,27 @@ public class CarNumberChargeActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
                         loadingBar.dismiss();
-                        Toast.makeText(getApplicationContext(), "onFailure", Toast.LENGTH_SHORT).show();
+                        confirmDialog = new ConfirmDialog(
+                                getResources().getString(R.string.retry_title),
+                                getResources().getString(R.string.retry_text),
+                                getResources().getString(R.string.retry_confirm_button),
+                                getResources().getString(R.string.retry_cancel_button),
+                                new ConfirmDialog.ConfirmButtonClicks() {
+                                    @Override
+                                    public void onConfirmClicked() {
+                                        confirmDialog.dismiss();
+                                        verifyTransaction(plateType,tag1,tag2,tag3,tag4, finalAmount,transaction_id,placeID);
+                                    }
+
+                                    @Override
+                                    public void onCancelClicked() {
+                                        confirmDialog.dismiss();
+                                    }
+                                }
+                        );
+
+                        if (!confirmDialog.isAdded())
+                            confirmDialog.show(getSupportFragmentManager(), "tag");
                     }
                 });
 

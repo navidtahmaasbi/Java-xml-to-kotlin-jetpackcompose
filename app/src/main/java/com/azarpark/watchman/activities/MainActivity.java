@@ -91,6 +91,9 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferencesRepository sh_r;
     PlateChargeDialog plateChargeDialog;
     boolean placesLoadedForFirstTime = false;
+    String qr_url;
+    int refresh_time = 10;
+    Handler handler ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,6 +144,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        System.out.println("--------> refresh_time : " + refresh_time);
+
+        if (handler == null){
+            handler = new Handler();
+            handler.postDelayed(() -> {
+
+                getPlaces(false);
+
+            }, (refresh_time* 1000));
+        }
+
         getPlaces(!placesLoadedForFirstTime);
 
     }
@@ -159,11 +173,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<PlacesResponse> call, Response<PlacesResponse> response) {
 
+                System.out.println("---------> places response");
+
                 if (showLoadingBar)
                     loadingBar.dismiss();
                 if (response.code() == HttpURLConnection.HTTP_OK) {
 
                     placesLoadedForFirstTime = true;
+
+                    System.out.println("---------> ");
+
+                    qr_url = response.body().qr_url;
+                    refresh_time = response.body().refresh_time;
 
                     if (!updatePopUpIsShowed && version != 0 && response.body().update.last_version > version) {
 
@@ -198,10 +219,6 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         binding.exitRequestCount.setText(Integer.toString(exitRequestCount));
-
-                        new Handler().postDelayed(() -> {
-                            getPlaces(false);
-                        }, 5000);
 
                     }
 
@@ -289,7 +306,24 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ParkResponse> call, Throwable t) {
                 loadingBar.dismiss();
-                Toast.makeText(getApplicationContext(), "onFailure", Toast.LENGTH_SHORT).show();
+                confirmDialog = new ConfirmDialog(
+                        getResources().getString(R.string.retry_title),
+                        getResources().getString(R.string.retry_text),
+                        getResources().getString(R.string.retry_confirm_button),
+                        getResources().getString(R.string.retry_cancel_button),
+                        new ConfirmDialog.ConfirmButtonClicks() {
+                            @Override
+                            public void onConfirmClicked() {
+                                confirmDialog.dismiss();
+                                parkCar(parkBody);
+                            }
+
+                            @Override
+                            public void onCancelClicked() {
+                                confirmDialog.dismiss();
+                            }
+                        }
+                );
             }
         });
 
@@ -315,7 +349,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void payAsDebt(Place place) {
 
-                exitPark(place);
+                exitPark(place.id);
 
             }
 
@@ -345,14 +379,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void print(String startTime, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
 
-                System.out.println("----------> 2222");
 
-                PrintTemplateBinding printTemplateBinding = PrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()));
+                PrintTemplateBinding printTemplateBinding = PrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()),binding.printArea,true);
+
+                printTemplateBinding.placeId.setText(placeID+"");
+
+//                String time = startTime.split(" ")[]
 
                 printTemplateBinding.startTime.setText(startTime);
                 printTemplateBinding.description.setText("در صورت عدم حضور پارکیار عدد " + placeID + " را به شماره ۱۰۰۰۴۴۰۸۸ ارسال کنید");
 
-                printTemplateBinding.qrcode.setImageBitmap(QRGenerator("12345"));
+                printTemplateBinding.qrcode.setImageBitmap(QRGenerator(qr_url + placeID));
 
                 if (place.tag4 != null && !place.tag4.isEmpty()) {
 
@@ -387,6 +424,11 @@ public class MainActivity extends AppCompatActivity {
 
                 }
 
+                new Handler().postDelayed(() -> {
+
+                    connection.print(getViewBitmap(printTemplateBinding.getRoot()));
+
+                },1000);
 
             }
         }, place);
@@ -408,14 +450,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void exitPark(Place place) {
+    private void exitPark(int placeID) {
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository();
         LoadingBar loadingBar = new LoadingBar(MainActivity.this);
         loadingBar.show();
 
-        repository.exitPark("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), place.id, new Callback<ExitParkResponse>() {
+        repository.exitPark("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), placeID, new Callback<ExitParkResponse>() {
             @Override
             public void onResponse(Call<ExitParkResponse> call, Response<ExitParkResponse> response) {
 
@@ -443,7 +485,24 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ExitParkResponse> call, Throwable t) {
                 loadingBar.dismiss();
-                Toast.makeText(getApplicationContext(), "onFailure", Toast.LENGTH_SHORT).show();
+                confirmDialog = new ConfirmDialog(
+                        getResources().getString(R.string.retry_title),
+                        getResources().getString(R.string.retry_text),
+                        getResources().getString(R.string.retry_confirm_button),
+                        getResources().getString(R.string.retry_cancel_button),
+                        new ConfirmDialog.ConfirmButtonClicks() {
+                            @Override
+                            public void onConfirmClicked() {
+                                confirmDialog.dismiss();
+                                exitPark(placeID);
+                            }
+
+                            @Override
+                            public void onCancelClicked() {
+                                confirmDialog.dismiss();
+                            }
+                        }
+                );
             }
         });
 
@@ -580,6 +639,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+
     }
 
     private void deleteExitRequest(int place_id) {
@@ -660,10 +720,6 @@ public class MainActivity extends AppCompatActivity {
         popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
         menuIsOpen = true;
 
-//        popupView.setOnTouchListener((v, event) -> {
-//            popupWindow.dismiss();
-//            return true;
-//        });
     }
 
     public void onExitRequestIconClicked(View view) {
@@ -741,6 +797,43 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+
+    /**
+     * Draw the view into a bitmap.
+     */
+    public static Bitmap getViewBitmap(View v) {
+        v.clearFocus();
+        v.setPressed(false);
+
+        boolean willNotCache = v.willNotCacheDrawing();
+        v.setWillNotCacheDrawing(false);
+
+        // Reset the drawing cache background color to fully transparent
+        // for the duration of this operation
+        int color = v.getDrawingCacheBackgroundColor();
+        v.setDrawingCacheBackgroundColor(0);
+
+        if (color != 0) {
+            v.destroyDrawingCache();
+        }
+        v.buildDrawingCache();
+        Bitmap cacheBitmap = v.getDrawingCache();
+        if (cacheBitmap == null) {
+            Log.e(TAG, "failed getViewBitmap(" + v + ")", new RuntimeException());
+            return null;
+        }
+
+        Bitmap bitmap = Bitmap.createBitmap(cacheBitmap);
+
+        // Restore the view
+        v.destroyDrawingCache();
+        v.setWillNotCacheDrawing(willNotCache);
+        v.setDrawingCacheBackgroundColor(color);
+
+        return bitmap;
+    }
+
     //    int result= service.PrintByBitmap(getBitmapFromView(root));
     private Bitmap getBitmapFromView(View view) {
         //Define a bitmap with the same size as the view
@@ -794,19 +887,38 @@ public class MainActivity extends AppCompatActivity {
 
 
             } else
-                Toast.makeText(getBaseContext(), "Purchase did faild....", Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), "Purchase did failed....", Toast.LENGTH_LONG).show();
 
         } else if (resultCode == RESULT_OK && requestCode == 2) {
 
             String url = data.getStringExtra("ScannerResult");
-            int placeId = Integer.parseInt(url.split("=")[1]);
+            int placeId = Integer.parseInt(url.split("=")[url.split("=").length-1]);
 
             Place place = adapter.getItemWithID(placeId);
 
             if (place != null)
                 openParkInfoDialog(place);
-            else
-                Toast.makeText(getApplicationContext(), "open exit request", Toast.LENGTH_SHORT).show();
+            else {
+
+                confirmDialog = new ConfirmDialog("درخواست خروج", " آیا برای درخواست خروج اطمینان دارید؟", "بله", "خیر", new ConfirmDialog.ConfirmButtonClicks() {
+                    @Override
+                    public void onConfirmClicked() {
+
+                        exitPark(placeId);
+
+                    }
+
+                    @Override
+                    public void onCancelClicked() {
+
+                        confirmDialog.dismiss();
+
+                    }
+                });
+
+                confirmDialog.show(getSupportFragmentManager(), ConfirmDialog.TAG);
+
+            }
 
             System.out.println("---------> ScannerResult : " + url);//https://irana.app/how?qr=090YK6
             System.out.println("---------> placeId : " + placeId);

@@ -6,8 +6,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import com.azarpark.watchman.R;
 import com.azarpark.watchman.adapters.DebtListAdapter;
 import com.azarpark.watchman.databinding.ActivityDebtListBinding;
+import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.DebtModel;
@@ -28,6 +30,7 @@ public class DebtListActivity extends AppCompatActivity {
     ActivityDebtListBinding binding;
     LoadingBar loadingBar;
     DebtListAdapter adapter = new DebtListAdapter();
+    ConfirmDialog confirmDialog;
 
 
     @Override
@@ -94,9 +97,24 @@ public class DebtListActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
                         loadingBar.dismiss();
-                        System.out.println("---------> error : " + t.getMessage());
-                        t.printStackTrace();
-                        Toast.makeText(getApplicationContext(), "onFailure", Toast.LENGTH_SHORT).show();
+                        confirmDialog = new ConfirmDialog(
+                                getResources().getString(R.string.retry_title),
+                                getResources().getString(R.string.retry_text),
+                                getResources().getString(R.string.retry_confirm_button),
+                                getResources().getString(R.string.retry_cancel_button),
+                                new ConfirmDialog.ConfirmButtonClicks() {
+                                    @Override
+                                    public void onConfirmClicked() {
+                                        confirmDialog.dismiss();
+                                        getCarDebtHistory(plateType,tag1,tag2,tag3,tag4, limit,offset);
+                                    }
+
+                                    @Override
+                                    public void onCancelClicked() {
+                                        confirmDialog.dismiss();
+                                    }
+                                }
+                        );
                     }
                 });
 

@@ -2,8 +2,12 @@ package com.azarpark.watchman.payment;
 
 import android.content.ComponentName;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.util.Log;
+import android.view.View;
 
 import ir.sep.android.Service.IProxy;
 
@@ -23,6 +27,16 @@ public class MyServiceConnection implements ServiceConnection {
     public void onServiceDisconnected(ComponentName name) {
         service = null;
         Log.i("---------->", "onServiceDisconnected(): Disconnected");
+    }
+
+    public void print(Bitmap bitmap){
+
+        try {
+            service.PrintByBitmap(bitmap);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public IProxy getService() {

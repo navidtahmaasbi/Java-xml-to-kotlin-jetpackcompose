@@ -64,6 +64,8 @@ public class DebtCheckActivity extends AppCompatActivity {
     IProxy service;
     SharedPreferencesRepository sh_r;
 
+    ConfirmDialog confirmDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -339,7 +341,24 @@ public class DebtCheckActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
                         loadingBar.dismiss();
-                        Toast.makeText(getApplicationContext(), "onFailure", Toast.LENGTH_SHORT).show();
+                        confirmDialog = new ConfirmDialog(
+                                getResources().getString(R.string.retry_title),
+                                getResources().getString(R.string.retry_text),
+                                getResources().getString(R.string.retry_confirm_button),
+                                getResources().getString(R.string.retry_cancel_button),
+                                new ConfirmDialog.ConfirmButtonClicks() {
+                                    @Override
+                                    public void onConfirmClicked() {
+                                        confirmDialog.dismiss();
+                                        getCarDebtHistory(plateType,tag1,tag2,tag3,tag4, limit,offset);
+                                    }
+
+                                    @Override
+                                    public void onCancelClicked() {
+                                        confirmDialog.dismiss();
+                                    }
+                                }
+                        );
                     }
                 });
 
@@ -545,6 +564,7 @@ public class DebtCheckActivity extends AppCompatActivity {
 
         amount = Integer.toString((Integer.parseInt(amount) / 10));
 
+        String finalAmount = amount;
         repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
                 plateType, tag1, tag2, tag3, tag4, amount, transaction_id, placeID, new Callback<VerifyTransactionResponse>() {
                     @Override
@@ -570,7 +590,24 @@ public class DebtCheckActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
                         loadingBar.dismiss();
-                        Toast.makeText(getApplicationContext(), "onFailure", Toast.LENGTH_SHORT).show();
+                        confirmDialog = new ConfirmDialog(
+                                getResources().getString(R.string.retry_title),
+                                getResources().getString(R.string.retry_text),
+                                getResources().getString(R.string.retry_confirm_button),
+                                getResources().getString(R.string.retry_cancel_button),
+                                new ConfirmDialog.ConfirmButtonClicks() {
+                                    @Override
+                                    public void onConfirmClicked() {
+                                        confirmDialog.dismiss();
+                                        verifyTransaction(plateType,tag1,tag2,tag3,tag4,finalAmount,transaction_id,placeID);
+                                    }
+
+                                    @Override
+                                    public void onCancelClicked() {
+                                        confirmDialog.dismiss();
+                                    }
+                                }
+                        );
                     }
                 });
 
