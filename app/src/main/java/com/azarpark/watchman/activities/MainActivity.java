@@ -797,7 +797,19 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(), "Purchase did faild....", Toast.LENGTH_LONG).show();
 
         } else if (resultCode == RESULT_OK && requestCode == 2) {
-            System.out.println("---------> ScannerResult :" + data.getStringExtra("ScannerResult"));//https://irana.app/how?qr=090YK6
+
+            String url = data.getStringExtra("ScannerResult");
+            int placeId = Integer.parseInt(url.split("=")[1]);
+
+            Place place = adapter.getItemWithID(placeId);
+
+            if (place != null)
+                openParkInfoDialog(place);
+            else
+                Toast.makeText(getApplicationContext(), "open exit request", Toast.LENGTH_SHORT).show();
+
+            System.out.println("---------> ScannerResult : " + url);//https://irana.app/how?qr=090YK6
+            System.out.println("---------> placeId : " + placeId);
         }
     }
 

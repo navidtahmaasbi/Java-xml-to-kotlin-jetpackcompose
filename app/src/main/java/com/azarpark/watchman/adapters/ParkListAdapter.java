@@ -179,6 +179,15 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     }
 
+    public Place getItemWithID(int placeId) {
+
+        for (Place place:items)
+            if (place.id == placeId)
+                return place;
+
+        return null;
+    }
+
     public static class FullParkModelViewHolder extends RecyclerView.ViewHolder {
 
         FullParkItemBinding binding;
