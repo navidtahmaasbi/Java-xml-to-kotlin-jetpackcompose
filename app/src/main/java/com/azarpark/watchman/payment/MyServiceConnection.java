@@ -24,4 +24,8 @@ public class MyServiceConnection implements ServiceConnection {
         service = null;
         Log.i("---------->", "onServiceDisconnected(): Disconnected");
     }
+
+    public IProxy getService() {
+        return service;
+    }
 }

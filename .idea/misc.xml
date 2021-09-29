@@ -102,10 +102,16 @@
         <entry key="..\:/azarpark/android/app/src/main/res/layout/single_select_item.xml" value="0.36666666666666664" />
         <entry key="..\:/azarpark/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.22135416666666666" />
         <entry key="..\:/azarpark/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.22135416666666666" />
+        <entry key="app/src/main/res/drawable/black_border.xml" value="0.29794871794871797" />
+        <entry key="app/src/main/res/drawable/white_bg_5.xml" value="0.29794871794871797" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.27239583333333334" />
+        <entry key="app/src/main/res/layout/free_park_item.xml" value="0.27239583333333334" />
+        <entry key="app/src/main/res/layout/park_info_dialog.xml" value="0.27239583333333334" />
+        <entry key="app/src/main/res/layout/print_template.xml" value="0.2405484348810404" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

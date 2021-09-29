@@ -12,4 +12,6 @@ public interface OnGetInfoClicked {
     public void removeExitRequest(Place place);
 
     public void charge(PlateType plateType, String tag1, String tag2, String tag3, String tag4);
+
+    public void print(String startTime, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID);
 }
