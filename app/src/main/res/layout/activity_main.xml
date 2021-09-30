@@ -76,6 +76,8 @@
                 android:id="@+id/exit_requests"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/_45sdp"
+                android:paddingRight="@dimen/_5sdp"
+                android:paddingLeft="@dimen/_5sdp"
                 android:layout_toRightOf="@+id/refresh"
                 android:gravity="center_vertical"
                 android:onClick="onExitRequestIconClicked">
@@ -143,14 +145,33 @@
             android:padding="@dimen/_3sdp"
             android:textSize="@dimen/_13sdp" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            app:spanCount="3"
-            tools:itemCount="40"
-            tools:listitem="@layout/full_park_item" />
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="3"
+                tools:itemCount="40"
+                tools:listitem="@layout/full_park_item" />
+
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/placeholder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:fontFamily="@font/iran_sans"
+                android:text="موردی یافت نشد"
+                android:textColor="@color/white" />
+
+
+        </RelativeLayout>
+
+
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

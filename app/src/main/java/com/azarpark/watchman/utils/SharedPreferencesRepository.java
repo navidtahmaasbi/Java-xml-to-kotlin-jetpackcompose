@@ -24,8 +24,15 @@ public class SharedPreferencesRepository {
             PLACE_ID = "PLACE_ID",
             TRANSACTION_ID = "TRANSACTION_ID",
             REF_NUM = "REF_NUM",
-            SUB_DOMAIN = "SUB_DOMAIN"
-                    ;
+            SUB_DOMAIN = "SUB_DOMAIN";
+    public static String qr_url = "qr_url";
+    public static String refresh_time="refresh_time";
+    public static String telephone ="telephone";
+    public static String pricing="pricing";
+    public static String sms_number="sms_number";
+    public static String rules_url="rules_url";
+    public static String about_us_url="about_us_url";
+    public static String guide_url="guide_url";
 
     public SharedPreferencesRepository(Context context) {
 
@@ -47,7 +54,7 @@ public class SharedPreferencesRepository {
 
     }
 
-    public String getString(String key,String defaultString) {
+    public String getString(String key, String defaultString) {
 
 
         return prefs.getString(key, defaultString);

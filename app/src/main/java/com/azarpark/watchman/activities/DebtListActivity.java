@@ -2,6 +2,7 @@ package com.azarpark.watchman.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -16,6 +17,7 @@ import com.azarpark.watchman.models.DebtModel;
 import com.azarpark.watchman.models.Park;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.responses.DebtHistoryResponse;
+import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
 import java.net.HttpURLConnection;
@@ -31,6 +33,7 @@ public class DebtListActivity extends AppCompatActivity {
     LoadingBar loadingBar;
     DebtListAdapter adapter = new DebtListAdapter();
     ConfirmDialog confirmDialog;
+    Activity activity = this;
 
 
     @Override
@@ -74,47 +77,23 @@ public class DebtListActivity extends AppCompatActivity {
                         System.out.println("--------> url : " + response.raw().request().url());
 
                         loadingBar.dismiss();
-                        if (response.code() == HttpURLConnection.HTTP_OK) {
+                        if (response.isSuccessful()) {
 
                             if (response.body().getSuccess() == 1) {
 
                                 adapter.addItems(response.body().items);
 
 
-                            } else if (response.body().getSuccess() == 0) {
-
+                            } else
                                 Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
 
-                            }
-
-                        } else {
-
-                            Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
-
-                        }
+                        } else APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(),activity, response, () -> getCarDebtHistory(plateType,tag1,tag2,tag3,tag4,limit,offset));
                     }
 
                     @Override
                     public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
                         loadingBar.dismiss();
-                        confirmDialog = new ConfirmDialog(
-                                getResources().getString(R.string.retry_title),
-                                getResources().getString(R.string.retry_text),
-                                getResources().getString(R.string.retry_confirm_button),
-                                getResources().getString(R.string.retry_cancel_button),
-                                new ConfirmDialog.ConfirmButtonClicks() {
-                                    @Override
-                                    public void onConfirmClicked() {
-                                        confirmDialog.dismiss();
-                                        getCarDebtHistory(plateType,tag1,tag2,tag3,tag4, limit,offset);
-                                    }
-
-                                    @Override
-                                    public void onCancelClicked() {
-                                        confirmDialog.dismiss();
-                                    }
-                                }
-                        );
+                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(),t, () -> getCarDebtHistory(plateType,tag1,tag2,tag3,tag4,limit,offset));
                     }
                 });
 

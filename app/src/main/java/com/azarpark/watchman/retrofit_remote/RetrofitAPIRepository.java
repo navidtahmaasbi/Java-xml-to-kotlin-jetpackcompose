@@ -13,6 +13,7 @@ import com.azarpark.watchman.retrofit_remote.interfaces.GetPlaces;
 import com.azarpark.watchman.retrofit_remote.interfaces.Login;
 import com.azarpark.watchman.retrofit_remote.interfaces.Logout;
 import com.azarpark.watchman.retrofit_remote.interfaces.Park;
+import com.azarpark.watchman.retrofit_remote.interfaces.Splash;
 import com.azarpark.watchman.retrofit_remote.interfaces.VerifyTransaction;
 import com.azarpark.watchman.retrofit_remote.responses.DebtHistoryResponse;
 import com.azarpark.watchman.retrofit_remote.responses.DeleteExitRequestResponse;
@@ -24,6 +25,7 @@ import com.azarpark.watchman.retrofit_remote.responses.LoginResponse;
 import com.azarpark.watchman.retrofit_remote.responses.LogoutResponse;
 import com.azarpark.watchman.retrofit_remote.responses.ParkResponse;
 import com.azarpark.watchman.retrofit_remote.responses.PlacesResponse;
+import com.azarpark.watchman.retrofit_remote.responses.SplashResponse;
 import com.azarpark.watchman.retrofit_remote.responses.TestResponse;
 import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse;
 
@@ -51,6 +53,14 @@ public class RetrofitAPIRepository {
     public void getCities(String token, Callback<GetCitiesResponse> responseCallback) {
 
         GetCities request = RetrofitAPIClient.getInitialClient().create(GetCities.class);
+
+        request.get(token).enqueue(responseCallback);
+
+    }
+
+    public void getSplashData(String token, Callback<SplashResponse> responseCallback) {
+
+        Splash request = RetrofitAPIClient.getInitialClient().create(Splash.class);
 
         request.get(token).enqueue(responseCallback);
 

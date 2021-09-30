@@ -4,6 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -33,6 +34,8 @@ import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.bodies.ParkBody;
 import com.azarpark.watchman.retrofit_remote.responses.DebtHistoryResponse;
 import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse;
+import com.azarpark.watchman.utils.APIErrorHandler;
+import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
 import java.net.HttpURLConnection;
@@ -56,12 +59,14 @@ public class CarNumberChargeActivity extends AppCompatActivity {
     SharedPreferencesRepository sh_r;
     ChargeItemListAdapter adapter;
     ConfirmDialog confirmDialog;
+    Activity activity = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityCarNumberChargeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        Assistant assistant = new Assistant();
 
         binding.plateSimpleTag1.requestFocus();
 
@@ -94,20 +99,25 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
         binding.submit.setOnClickListener(view -> {
 
-            if (selectedTab == PlateType.simple &&
-                    (binding.plateSimpleTag1.getText().toString().isEmpty() ||
-                            binding.plateSimpleTag2.getText().toString().isEmpty() ||
-                            binding.plateSimpleTag3.getText().toString().isEmpty() ||
-                            binding.plateSimpleTag4.getText().toString().isEmpty()))
-                Toast.makeText(getApplicationContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
+            String s = binding.amount.getText().toString().replace(",","");
+            int price = Integer.parseInt(s);
 
+            if (selectedTab == PlateType.simple &&
+                    (binding.plateSimpleTag1.getText().toString().length() != 2 ||
+                            binding.plateSimpleTag2.getText().toString().length() != 1 ||
+                            binding.plateSimpleTag3.getText().toString().length() != 3 ||
+                            binding.plateSimpleTag4.getText().toString().length() != 2))
+                Toast.makeText(getApplicationContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
+            else if (selectedTab == PlateType.simple &&
+                    !assistant.isPersianAlphabet(binding.plateSimpleTag2.getText().toString()))
+                Toast.makeText(getApplicationContext(), "حرف وسط پلاک باید فارسی باشد", Toast.LENGTH_SHORT).show();
             else if (selectedTab == PlateType.old_aras &&
-                    binding.plateOldAras.getText().toString().isEmpty())
+                    binding.plateOldAras.getText().toString().length() != 5)
                 Toast.makeText(getApplicationContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
 
             else if (selectedTab == PlateType.new_aras &&
-                    (binding.plateNewArasTag1.getText().toString().isEmpty() ||
-                            binding.plateNewArasTag2.getText().toString().isEmpty()))
+                    (binding.plateNewArasTag1.getText().toString().length() != 5 ||
+                            binding.plateNewArasTag2.getText().toString().length() != 2))
                 Toast.makeText(getApplicationContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
             else if (selectedTab == PlateType.simple)
                 charge(
@@ -122,6 +132,8 @@ public class CarNumberChargeActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "مبلغ شارژ را وارد کنید", Toast.LENGTH_SHORT).show();
             else if (!isNumber(binding.amount.getText().toString()))
                 Toast.makeText(getApplicationContext(), "مبلغ شارژ را درست وارد کنید", Toast.LENGTH_SHORT).show();
+            else if (price < 1000)
+                Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید کمتر از 1000 تومان باشد", Toast.LENGTH_SHORT).show();
             else if (selectedTab == PlateType.old_aras)
                 charge(
                         binding.amount.getText().toString(),
@@ -306,7 +318,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 //
 //                            if (response.body().getSuccess() == 1) {
 //
-//                                binding.balanceTitle.setText(response.body().balance >= 0 ? "اعتبار شما" : "بدهی شما");
+//                                binding.balanceTitle.setText(response.body().balance >= 0 ? "اعتبار پلاک" : "بدهی پلاک");
 //
 //                                binding.debtAmount.setText(response.body().balance + " تومان");
 //
@@ -532,6 +544,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         amount = Integer.toString((Integer.parseInt(amount) / 10));
 
         String finalAmount = amount;
+        String finalAmount1 = amount;
         repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
                 plateType, tag1, tag2, tag3, tag4, amount, transaction_id, placeID, new Callback<VerifyTransactionResponse>() {
                     @Override
@@ -540,45 +553,17 @@ public class CarNumberChargeActivity extends AppCompatActivity {
                         System.out.println("--------> url : " + response.raw().request().url());
 
                         loadingBar.dismiss();
-                        if (response.code() == HttpURLConnection.HTTP_OK) {
-
-//                            if (response.body().getSuccess() == 1)
-//                                parkInfoDialog.dismiss();
+                        if (response.isSuccessful())
 
                             Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
 
-
-                        } else {
-
-                            Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
-
-                        }
+                         else APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(),activity, response, () -> verifyTransaction(plateType,tag1,tag2,tag3,tag4, finalAmount1,transaction_id,placeID));
                     }
 
                     @Override
                     public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
                         loadingBar.dismiss();
-                        confirmDialog = new ConfirmDialog(
-                                getResources().getString(R.string.retry_title),
-                                getResources().getString(R.string.retry_text),
-                                getResources().getString(R.string.retry_confirm_button),
-                                getResources().getString(R.string.retry_cancel_button),
-                                new ConfirmDialog.ConfirmButtonClicks() {
-                                    @Override
-                                    public void onConfirmClicked() {
-                                        confirmDialog.dismiss();
-                                        verifyTransaction(plateType,tag1,tag2,tag3,tag4, finalAmount,transaction_id,placeID);
-                                    }
-
-                                    @Override
-                                    public void onCancelClicked() {
-                                        confirmDialog.dismiss();
-                                    }
-                                }
-                        );
-
-                        if (!confirmDialog.isAdded())
-                            confirmDialog.show(getSupportFragmentManager(), "tag");
+                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(),t, () -> verifyTransaction(plateType,tag1,tag2,tag3,tag4, finalAmount1,transaction_id,placeID));
                     }
                 });
 

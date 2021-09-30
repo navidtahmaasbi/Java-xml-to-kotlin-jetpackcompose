@@ -5,6 +5,7 @@ import static android.content.ContentValues.TAG;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -39,6 +40,8 @@ import com.azarpark.watchman.retrofit_remote.responses.DebtHistoryResponse;
 import com.azarpark.watchman.retrofit_remote.responses.ExitRequestResponse;
 import com.azarpark.watchman.retrofit_remote.responses.ParkResponse;
 import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse;
+import com.azarpark.watchman.utils.APIErrorHandler;
+import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
 import java.net.HttpURLConnection;
@@ -65,6 +68,7 @@ public class DebtCheckActivity extends AppCompatActivity {
     SharedPreferencesRepository sh_r;
 
     ConfirmDialog confirmDialog;
+    Activity activity = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -242,27 +246,30 @@ public class DebtCheckActivity extends AppCompatActivity {
 
     private void loadData(boolean isLazyLoad) {
 
+        Assistant assistant = new Assistant();
+
         if (!isLazyLoad) {
 
             adapter.setItems(new ArrayList<>());
             binding.debtArea.setVisibility(View.GONE);
         }
 
-
         if (selectedTab == PlateType.simple &&
-                (binding.plateSimpleTag1.getText().toString().isEmpty() ||
-                        binding.plateSimpleTag2.getText().toString().isEmpty() ||
-                        binding.plateSimpleTag3.getText().toString().isEmpty() ||
-                        binding.plateSimpleTag4.getText().toString().isEmpty()))
+                (binding.plateSimpleTag1.getText().toString().length() != 2 ||
+                        binding.plateSimpleTag2.getText().toString().length() != 1 ||
+                        binding.plateSimpleTag3.getText().toString().length() != 3 ||
+                        binding.plateSimpleTag4.getText().toString().length() != 2))
             Toast.makeText(getApplicationContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
-
+        else if (selectedTab == PlateType.simple &&
+                !assistant.isPersianAlphabet(binding.plateSimpleTag2.getText().toString()))
+            Toast.makeText(getApplicationContext(), "حرف وسط پلاک باید فارسی باشد", Toast.LENGTH_SHORT).show();
         else if (selectedTab == PlateType.old_aras &&
-                binding.plateOldAras.getText().toString().isEmpty())
+                binding.plateOldAras.getText().toString().length() != 5)
             Toast.makeText(getApplicationContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
 
         else if (selectedTab == PlateType.new_aras &&
-                (binding.plateNewArasTag1.getText().toString().isEmpty() ||
-                        binding.plateNewArasTag2.getText().toString().isEmpty()))
+                (binding.plateNewArasTag1.getText().toString().length() != 5 ||
+                        binding.plateNewArasTag2.getText().toString().length() != 2))
             Toast.makeText(getApplicationContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
         else if (selectedTab == PlateType.simple)
             getCarDebtHistory(
@@ -309,14 +316,14 @@ public class DebtCheckActivity extends AppCompatActivity {
                         System.out.println("--------> url : " + response.raw().request().url());
 
                         loadingBar.dismiss();
-                        if (response.code() == HttpURLConnection.HTTP_OK) {
+                        if (response.isSuccessful()) {
 
                             if (response.body().getSuccess() == 1) {
 
                                 if (response.body().balance < 0 )
                                  debt = response.body().balance * -1;
 
-                                binding.balanceTitle.setText(response.body().balance >= 0 ? "اعتبار شما" : "بدهی شما");
+                                binding.balanceTitle.setText(response.body().balance >= 0 ? "اعتبار پلاک" : "بدهی پلاک");
                                 binding.payment.setVisibility(response.body().balance < 0 ? View.VISIBLE : View.GONE);
 
                                 binding.debtAmount.setText(response.body().balance + " تومان");
@@ -325,40 +332,17 @@ public class DebtCheckActivity extends AppCompatActivity {
                                 adapter.addItems(response.body().items);
 
 
-                            } else if (response.body().getSuccess() == 0) {
-
+                            } else
                                 Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
 
-                            }
 
-                        } else {
-
-                            Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
-
-                        }
+                        } else APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(),activity, response, () -> getCarDebtHistory(plateType,tag1,tag2,tag3,tag4,limit,offset));
                     }
 
                     @Override
                     public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
                         loadingBar.dismiss();
-                        confirmDialog = new ConfirmDialog(
-                                getResources().getString(R.string.retry_title),
-                                getResources().getString(R.string.retry_text),
-                                getResources().getString(R.string.retry_confirm_button),
-                                getResources().getString(R.string.retry_cancel_button),
-                                new ConfirmDialog.ConfirmButtonClicks() {
-                                    @Override
-                                    public void onConfirmClicked() {
-                                        confirmDialog.dismiss();
-                                        getCarDebtHistory(plateType,tag1,tag2,tag3,tag4, limit,offset);
-                                    }
-
-                                    @Override
-                                    public void onCancelClicked() {
-                                        confirmDialog.dismiss();
-                                    }
-                                }
-                        );
+                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(),t, () -> getCarDebtHistory(plateType,tag1,tag2,tag3,tag4,limit,offset));
                     }
                 });
 
@@ -573,41 +557,20 @@ public class DebtCheckActivity extends AppCompatActivity {
                         System.out.println("--------> url : " + response.raw().request().url());
 
                         loadingBar.dismiss();
-                        if (response.code() == HttpURLConnection.HTTP_OK) {
+                        if (response.isSuccessful()) {
 
                             Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
 
                             onBackPressed();
 
 
-                        } else {
-
-                            Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
-
-                        }
+                        } else APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(),activity, response, () -> verifyTransaction(plateType,tag1,tag2,tag3,tag4, finalAmount,transaction_id,placeID));
                     }
 
                     @Override
                     public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
                         loadingBar.dismiss();
-                        confirmDialog = new ConfirmDialog(
-                                getResources().getString(R.string.retry_title),
-                                getResources().getString(R.string.retry_text),
-                                getResources().getString(R.string.retry_confirm_button),
-                                getResources().getString(R.string.retry_cancel_button),
-                                new ConfirmDialog.ConfirmButtonClicks() {
-                                    @Override
-                                    public void onConfirmClicked() {
-                                        confirmDialog.dismiss();
-                                        verifyTransaction(plateType,tag1,tag2,tag3,tag4,finalAmount,transaction_id,placeID);
-                                    }
-
-                                    @Override
-                                    public void onCancelClicked() {
-                                        confirmDialog.dismiss();
-                                    }
-                                }
-                        );
+                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(),t, () -> verifyTransaction(plateType,tag1,tag2,tag3,tag4, finalAmount,transaction_id,placeID));
                     }
                 });
 

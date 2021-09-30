@@ -2,6 +2,7 @@ package com.azarpark.watchman.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 
@@ -10,6 +11,7 @@ import com.azarpark.watchman.databinding.ActivityWebViewBinding;
 public class WebViewActivity extends AppCompatActivity {
 
     ActivityWebViewBinding binding;
+    Activity activity = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

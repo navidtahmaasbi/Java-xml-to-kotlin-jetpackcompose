@@ -57,10 +57,15 @@ import com.azarpark.watchman.retrofit_remote.responses.LogoutResponse;
 import com.azarpark.watchman.retrofit_remote.responses.ParkResponse;
 import com.azarpark.watchman.retrofit_remote.responses.PlacesResponse;
 import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse;
+import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.google.zxing.WriterException;
 
 import java.net.HttpURLConnection;
+import java.sql.Time;
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 import androidmads.library.qrgenearator.QRGContents;
@@ -90,10 +95,11 @@ public class MainActivity extends AppCompatActivity {
     IProxy service;
     SharedPreferencesRepository sh_r;
     PlateChargeDialog plateChargeDialog;
-    boolean placesLoadedForFirstTime = false;
-    String qr_url;
+    boolean placesLoadedForFirstTime = true;
+    Activity activity = this;
     int refresh_time = 10;
-    Handler handler ;
+    String qr_url, telephone, pricing, sms_number, rules_url, about_us_url, guide_url;
+    Timer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +109,15 @@ public class MainActivity extends AppCompatActivity {
         setupUI(binding.getRoot());
 
         sh_r = new SharedPreferencesRepository(getApplicationContext());
+
+//        qr_url = sh_r.getString(SharedPreferencesRepository.qr_url, "");
+//        refresh_time = Integer.parseInt(sh_r.getString(SharedPreferencesRepository.refresh_time, "10"));
+//        telephone = sh_r.getString(SharedPreferencesRepository.telephone, "");
+//        pricing = sh_r.getString(SharedPreferencesRepository.pricing, "");
+//        sms_number = sh_r.getString(SharedPreferencesRepository.sms_number, "");
+//        rules_url = sh_r.getString(SharedPreferencesRepository.rules_url, "");
+//        about_us_url = sh_r.getString(SharedPreferencesRepository.about_us_url, "");
+//        guide_url = sh_r.getString(SharedPreferencesRepository.guide_url, "");
 
         initService();
 
@@ -124,8 +139,8 @@ public class MainActivity extends AppCompatActivity {
         adapter = new ParkListAdapter(place -> {
 
             if (place.status.equals(PlaceStatus.free.toString()) ||
-                place.status.equals(PlaceStatus.free_by_user.toString()) ||
-                place.status.equals(PlaceStatus.free_by_watchman.toString())) {
+                    place.status.equals(PlaceStatus.free_by_user.toString()) ||
+                    place.status.equals(PlaceStatus.free_by_watchman.toString())) {
 
                 openParkDialog(place);
 
@@ -144,47 +159,54 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        System.out.println("--------> refresh_time : " + refresh_time);
 
-        if (handler == null){
-            handler = new Handler();
-            handler.postDelayed(() -> {
 
-                getPlaces(false);
-
-            }, (refresh_time* 1000));
-        }
-
-        getPlaces(!placesLoadedForFirstTime);
-
+        Log.e("getPlaces", "onResume");
+        getPlaces();
     }
 
-    private void getPlaces(boolean showLoadingBar) {
 
-        System.out.println("----------> getPlaces");
+
+    private void setTimer(){
+        if (timer == null){
+            timer = new Timer();
+            timer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    MainActivity.this.runOnUiThread(() -> getPlaces());
+                }
+            }, 0, refresh_time * 1000);
+        }
+    }
+
+    private void getPlaces() {
+
+
+        Log.e("getPlaces", "sending ... ");
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository();
         LoadingBar loadingBar = new LoadingBar(MainActivity.this);
-        if (showLoadingBar)
+        if (placesLoadedForFirstTime)
             loadingBar.show();
 
         repository.getPlaces("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), new Callback<PlacesResponse>() {
             @Override
             public void onResponse(Call<PlacesResponse> call, Response<PlacesResponse> response) {
 
-                System.out.println("---------> places response");
+                Log.e("getPlaces", "Response : " + response.code());
 
-                if (showLoadingBar)
+                if (placesLoadedForFirstTime)
                     loadingBar.dismiss();
-                if (response.code() == HttpURLConnection.HTTP_OK) {
+                if (response.isSuccessful()) {
 
-                    placesLoadedForFirstTime = true;
-
-                    System.out.println("---------> ");
+                    placesLoadedForFirstTime = false;
 
                     qr_url = response.body().qr_url;
                     refresh_time = response.body().refresh_time;
+                    telephone = response.body().telephone;
+                    pricing = response.body().pricing;
+                    sms_number = response.body().sms_number;
 
                     if (!updatePopUpIsShowed && version != 0 && response.body().update.last_version > version) {
 
@@ -201,63 +223,46 @@ public class MainActivity extends AppCompatActivity {
 
                         }
 
-
                     } else {
 
                         if (watchManName != null)
                             watchManName.setText(response.body().watchman.name);
 
                         exitRequestCount = 0;
-                        //todo set placeholder to empty street or places list
+
+                        ArrayList<Place> myPlaces = new ArrayList<>();
+
                         for (Street street : response.body().watchman.streets) {
 
-                            adapter.setItems(street.places);
+                            myPlaces.addAll(street.places);
                             for (Place place : street.places)
                                 if (place.exit_request != null)
                                     exitRequestCount++;
 
                         }
 
+                        adapter.setItems(myPlaces);
+
+                        binding.placeholder.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
+
                         binding.exitRequestCount.setText(Integer.toString(exitRequestCount));
 
                     }
+                    setTimer();
 
-                } else {
+                } else
+                    APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> getPlaces());
 
-                    System.out.println("---------> msg : " + response.raw().toString());
-
-                    Toast.makeText(getApplicationContext(), "error : " + response.code(), Toast.LENGTH_SHORT).show();
-
-                }
             }
 
             @Override
             public void onFailure(Call<PlacesResponse> call, Throwable t) {
-                if (showLoadingBar)
+                if (placesLoadedForFirstTime)
                     loadingBar.dismiss();
 
+                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> getPlaces());
 
-                confirmDialog = new ConfirmDialog(
-                    getResources().getString(R.string.retry_title),
-                    getResources().getString(R.string.retry_text),
-                    getResources().getString(R.string.retry_confirm_button),
-                    getResources().getString(R.string.retry_cancel_button),
-                    new ConfirmDialog.ConfirmButtonClicks() {
-                        @Override
-                        public void onConfirmClicked() {
-                            confirmDialog.dismiss();
-                            getPlaces(showLoadingBar);
-                        }
 
-                        @Override
-                        public void onCancelClicked() {
-                            confirmDialog.dismiss();
-                        }
-                    }
-                );
-
-                if (!confirmDialog.isAdded())
-                    confirmDialog.show(getSupportFragmentManager(), "tag");
             }
         });
 
@@ -283,47 +288,25 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<ParkResponse> call, Response<ParkResponse> response) {
 
                 loadingBar.dismiss();
-                if (response.code() == HttpURLConnection.HTTP_OK) {
+                if (response.isSuccessful()) {
 
                     if (response.body().getSuccess() == 1) {
 
                         Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
                         parkDialog.dismiss();
-                        getPlaces(true);
-                    } else if (response.body().getSuccess() == 0) {
+                        getPlaces();
 
+                    } else
                         Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
 
-                    }
-
-                } else {
-
-                    Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
-
-                }
+                } else
+                    APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> parkCar(parkBody));
             }
 
             @Override
             public void onFailure(Call<ParkResponse> call, Throwable t) {
                 loadingBar.dismiss();
-                confirmDialog = new ConfirmDialog(
-                        getResources().getString(R.string.retry_title),
-                        getResources().getString(R.string.retry_text),
-                        getResources().getString(R.string.retry_confirm_button),
-                        getResources().getString(R.string.retry_cancel_button),
-                        new ConfirmDialog.ConfirmButtonClicks() {
-                            @Override
-                            public void onConfirmClicked() {
-                                confirmDialog.dismiss();
-                                parkCar(parkBody);
-                            }
-
-                            @Override
-                            public void onCancelClicked() {
-                                confirmDialog.dismiss();
-                            }
-                        }
-                );
+                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> parkCar(parkBody));
             }
         });
 
@@ -380,14 +363,16 @@ public class MainActivity extends AppCompatActivity {
             public void print(String startTime, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
 
 
-                PrintTemplateBinding printTemplateBinding = PrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()),binding.printArea,true);
+                PrintTemplateBinding printTemplateBinding = PrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
 
-                printTemplateBinding.placeId.setText(placeID+"");
+                printTemplateBinding.placeId.setText(placeID + "");
 
 //                String time = startTime.split(" ")[]
 
                 printTemplateBinding.startTime.setText(startTime);
-                printTemplateBinding.description.setText("در صورت عدم حضور پارکیار عدد " + placeID + " را به شماره ۱۰۰۰۴۴۰۸۸ ارسال کنید");
+                printTemplateBinding.prices.setText(pricing);
+                printTemplateBinding.supportPhone.setText(telephone);
+                printTemplateBinding.description.setText("در صورت عدم حضور پارکیار عدد " + placeID + " را به شماره " + sms_number + " ارسال کنید");
 
                 printTemplateBinding.qrcode.setImageBitmap(QRGenerator(qr_url + placeID));
 
@@ -428,7 +413,7 @@ public class MainActivity extends AppCompatActivity {
 
                     connection.print(getViewBitmap(printTemplateBinding.getRoot()));
 
-                },1000);
+                }, 1000);
 
             }
         }, place);
@@ -463,46 +448,26 @@ public class MainActivity extends AppCompatActivity {
 
 
                 loadingBar.dismiss();
-                if (response.code() == HttpURLConnection.HTTP_OK) {
+                if (response.isSuccessful()) {
 
                     if (response.body().getSuccess() == 1) {
 
                         parkInfoDialog.dismiss();
-                        getPlaces(true);
-                    } else if (response.body().getSuccess() == 0) {
-
-                        Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
+                        getPlaces();
 
                     }
+                        Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_LONG).show();
 
-                } else {
 
-                    Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
 
-                }
+                } else
+                    APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> exitPark(placeID));
             }
 
             @Override
             public void onFailure(Call<ExitParkResponse> call, Throwable t) {
                 loadingBar.dismiss();
-                confirmDialog = new ConfirmDialog(
-                        getResources().getString(R.string.retry_title),
-                        getResources().getString(R.string.retry_text),
-                        getResources().getString(R.string.retry_confirm_button),
-                        getResources().getString(R.string.retry_cancel_button),
-                        new ConfirmDialog.ConfirmButtonClicks() {
-                            @Override
-                            public void onConfirmClicked() {
-                                confirmDialog.dismiss();
-                                exitPark(placeID);
-                            }
-
-                            @Override
-                            public void onCancelClicked() {
-                                confirmDialog.dismiss();
-                            }
-                        }
-                );
+                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> exitPark(placeID));
             }
         });
 
@@ -510,12 +475,12 @@ public class MainActivity extends AppCompatActivity {
 
     public static void hideSoftKeyboard(Activity activity) {
         InputMethodManager inputMethodManager =
-            (InputMethodManager) activity.getSystemService(
-                Activity.INPUT_METHOD_SERVICE);
+                (InputMethodManager) activity.getSystemService(
+                        Activity.INPUT_METHOD_SERVICE);
         if (inputMethodManager.isAcceptingText()) {
             inputMethodManager.hideSoftInputFromWindow(
-                activity.getCurrentFocus().getWindowToken(),
-                0
+                    activity.getCurrentFocus().getWindowToken(),
+                    0
             );
         }
     }
@@ -543,7 +508,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void listeners() {
 
-        binding.refresh.setOnClickListener(view -> getPlaces(true));
+        binding.refresh.setOnClickListener(view -> getPlaces());
 
         binding.filterEdittext.addTextChangedListener(new TextWatcher() {
             @Override
@@ -639,7 +604,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
     }
 
     private void deleteExitRequest(int place_id) {
@@ -649,34 +613,33 @@ public class MainActivity extends AppCompatActivity {
         loadingBar.show();
 
         repository.deleteExitRequest("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-            place_id, new Callback<DeleteExitRequestResponse>() {
-                @Override
-                public void onResponse(Call<DeleteExitRequestResponse> call, Response<DeleteExitRequestResponse> response) {
+                place_id, new Callback<DeleteExitRequestResponse>() {
+                    @Override
+                    public void onResponse(Call<DeleteExitRequestResponse> call, Response<DeleteExitRequestResponse> response) {
 
-                    System.out.println("--------> url : " + response.raw().request().url());
+                        System.out.println("--------> url : " + response.raw().request().url());
 
-                    loadingBar.dismiss();
-                    if (response.code() == HttpURLConnection.HTTP_OK) {
+                        loadingBar.dismiss();
+                        if (response.isSuccessful()) {
 
-                        getPlaces(true);
-                        if (parkInfoDialog != null)
-                            parkInfoDialog.dismiss();
+                            getPlaces();
+                            if (parkInfoDialog != null)
+                                parkInfoDialog.dismiss();
 
-                    } else {
-
-                        Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
-
+                        } else
+                            APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> deleteExitRequest(place_id));
                     }
-                }
 
-                @Override
-                public void onFailure(Call<DeleteExitRequestResponse> call, Throwable t) {
-                    loadingBar.dismiss();
-                    Toast.makeText(getApplicationContext(), "onFailure", Toast.LENGTH_SHORT).show();
-                }
-            });
+                    @Override
+                    public void onFailure(Call<DeleteExitRequestResponse> call, Throwable t) {
+                        loadingBar.dismiss();
+                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> deleteExitRequest(place_id));
+                    }
+                });
 
     }
+
+
 
     private void logout() {
 
@@ -688,28 +651,26 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<LogoutResponse> call, Response<LogoutResponse> response) {
 
-                System.out.println("--------> url : " + response.raw().request().url());
 
                 loadingBar.dismiss();
-                if (response.code() == HttpURLConnection.HTTP_OK) {
+                if (response.isSuccessful()) {
 
                     SharedPreferencesRepository sh_p = new SharedPreferencesRepository(getApplicationContext());
                     sh_p.saveString(SharedPreferencesRepository.ACCESS_TOKEN, "");
                     sh_p.saveString(SharedPreferencesRepository.REFRESH_TOKEN, "");
+                    sh_p.saveString(SharedPreferencesRepository.SUB_DOMAIN, "");
+                    startActivity(new Intent(MainActivity.this, SplashActivity.class));
                     MainActivity.this.finish();
                     confirmDialog.dismiss();
 
-                } else {
-
-                    Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
-
-                }
+                } else
+                    APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> logout());
             }
 
             @Override
             public void onFailure(Call<LogoutResponse> call, Throwable t) {
                 loadingBar.dismiss();
-                Toast.makeText(getApplicationContext(), "onFailure", Toast.LENGTH_SHORT).show();
+                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> logout());
             }
         });
 
@@ -724,9 +685,17 @@ public class MainActivity extends AppCompatActivity {
 
     public void onExitRequestIconClicked(View view) {
 
-        if (exitRequestCount > 0)
+        if (exitRequestCount > 0) {
+
             adapter.showExitRequestItems(!adapter.isShowExitRequestItems());
-        else
+
+
+            if (adapter.isShowExitRequestItems())
+                binding.exitRequests.setBackgroundColor(getResources().getColor(R.color.red));
+            else
+                binding.exitRequests.setBackgroundColor(getResources().getColor(R.color.transparent));
+
+        } else
             Toast.makeText(getApplicationContext(), "درخواست خروج ندارید", Toast.LENGTH_SHORT).show();
     }
 
@@ -734,7 +703,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = new Intent();
         intent.setComponent(new ComponentName("ir.sep.android.smartpos",
-            "ir.sep.android.smartpos.ScannerActivity"));
+                "ir.sep.android.smartpos.ScannerActivity"));
         startActivityForResult(intent, 2);
     }
 
@@ -769,6 +738,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         releaseService();
+        if (timer != null)
+            timer.cancel();
+        timer = null;
     }
 
     public void paymentRequest(int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
@@ -873,14 +845,14 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(), "Purchase did sucssessful....", Toast.LENGTH_LONG).show();
 
                 verifyTransaction(
-                    PlateType.valueOf(sh_r.getString(SharedPreferencesRepository.PLATE_TYPE)),
-                    sh_r.getString(SharedPreferencesRepository.TAG1),
-                    sh_r.getString(SharedPreferencesRepository.TAG2, "0"),
-                    sh_r.getString(SharedPreferencesRepository.TAG3, "0"),
-                    sh_r.getString(SharedPreferencesRepository.TAG4, "0"),
-                    sh_r.getString(SharedPreferencesRepository.AMOUNT),
-                    refNum,
-                    Integer.parseInt(sh_r.getString(SharedPreferencesRepository.PLACE_ID))
+                        PlateType.valueOf(sh_r.getString(SharedPreferencesRepository.PLATE_TYPE)),
+                        sh_r.getString(SharedPreferencesRepository.TAG1),
+                        sh_r.getString(SharedPreferencesRepository.TAG2, "0"),
+                        sh_r.getString(SharedPreferencesRepository.TAG3, "0"),
+                        sh_r.getString(SharedPreferencesRepository.TAG4, "0"),
+                        sh_r.getString(SharedPreferencesRepository.AMOUNT),
+                        refNum,
+                        Integer.parseInt(sh_r.getString(SharedPreferencesRepository.PLACE_ID))
                 );
 
 
@@ -890,7 +862,7 @@ public class MainActivity extends AppCompatActivity {
         } else if (resultCode == RESULT_OK && requestCode == 2) {
 
             String url = data.getStringExtra("ScannerResult");
-            int placeId = Integer.parseInt(url.split("=")[url.split("=").length-1]);
+            int placeId = Integer.parseInt(url.split("=")[url.split("=").length - 1]);
 
             Place place = adapter.getItemWithID(placeId);
 
@@ -952,37 +924,35 @@ public class MainActivity extends AppCompatActivity {
 
         amount = Integer.toString((Integer.parseInt(amount) / 10));
 
+        String finalAmount = amount;
         repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-            plateType, tag1, tag2, tag3, tag4, amount, transaction_id, placeID, new Callback<VerifyTransactionResponse>() {
-                @Override
-                public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
+                plateType, tag1, tag2, tag3, tag4, amount, transaction_id, placeID, new Callback<VerifyTransactionResponse>() {
+                    @Override
+                    public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
 
-                    System.out.println("--------> url : " + response.raw().request().url());
+                        System.out.println("--------> url : " + response.raw().request().url());
 
-                    loadingBar.dismiss();
-                    if (response.code() == HttpURLConnection.HTTP_OK) {
+                        loadingBar.dismiss();
+                        if (response.isSuccessful()) {
 
-                        if (response.body().getSuccess() == 1)
-                            parkInfoDialog.dismiss();
+                            if (response.body().getSuccess() == 1)
+                                parkInfoDialog.dismiss();
 
-                        Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
 
-                        getPlaces(true);
+                            getPlaces();
 
 
-                    } else {
-
-                        Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
-
+                        } else
+                            APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> verifyTransaction(plateType, tag1, tag2, tag3, tag4, finalAmount, transaction_id, placeID));
                     }
-                }
 
-                @Override
-                public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
-                    loadingBar.dismiss();
-                    Toast.makeText(getApplicationContext(), "onFailure", Toast.LENGTH_SHORT).show();
-                }
-            });
+                    @Override
+                    public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
+                        loadingBar.dismiss();
+                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> verifyTransaction(plateType, tag1, tag2, tag3, tag4, finalAmount, transaction_id, placeID));
+                    }
+                });
 
     }
 

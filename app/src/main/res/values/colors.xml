@@ -13,6 +13,7 @@
     <color name="unselected_gray">#C6C6C6</color>
     <color name="text_gray">#3C3C3C</color>
     <color name="red">#d14b4a</color>
+    <color name="transparent">#00000000</color>
     <color name="popup_background">#FAFFFFFF</color>
     <color name="green">#1ab99b</color>
     <color name="dark_green">#12776D</color>

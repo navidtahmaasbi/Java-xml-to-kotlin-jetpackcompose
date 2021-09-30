@@ -11,5 +11,8 @@ public class PlacesResponse {
     public Update update;
     public String qr_url;
     public int refresh_time;
+    public String telephone;
+    public String pricing;
+    public String sms_number;
 
 }

@@ -25,6 +25,7 @@ import com.azarpark.watchman.interfaces.OnGetInfoClicked;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.responses.EstimateParkPriceResponse;
+import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
 import java.net.HttpURLConnection;
@@ -208,7 +209,7 @@ public class ParkInfoDialog extends DialogFragment {
 
                     }
 
-                    if (response.code() == HttpURLConnection.HTTP_OK) {
+                    if (response.isSuccessful()) {
 
                         if (response.body().getSuccess() == 1) {
 
@@ -253,7 +254,7 @@ public class ParkInfoDialog extends DialogFragment {
 
                             } else {
 
-                                binding.carBalanceTitle.setText("اعتبار شما");
+                                binding.carBalanceTitle.setText("اعتبار پلاک");
                                 binding.carBalance.setText(NumberFormat.getNumberInstance(Locale.US).format(carBalance) + " تومان");
 
                                 binding.showDebtList.setVisibility(View.GONE);
@@ -300,21 +301,15 @@ public class ParkInfoDialog extends DialogFragment {
 
                             }
 
-                        } else if (response.body().getSuccess() == 0) {
-
+                        } else
                             Toast.makeText(getContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
 
-                        }
-
-                    } else {
-
-                        Toast.makeText(getContext(), "error", Toast.LENGTH_SHORT).show();
-
-                    }
+                    } else APIErrorHandler.orResponseErrorHandler(getParentFragmentManager(),getActivity(), response, () -> getParkData(place));
 
                 }catch (Exception e){
 
                     System.out.println("---------> popup is closed");
+                    APIErrorHandler.orResponseErrorHandler(getParentFragmentManager(),getActivity(), response, () -> getParkData(place));
 
                 }
 
@@ -322,13 +317,7 @@ public class ParkInfoDialog extends DialogFragment {
             }
             @Override
             public void onFailure(Call<EstimateParkPriceResponse> call, Throwable t) {
-                try {
-
-                    Toast.makeText(getContext(), "onFailure", Toast.LENGTH_SHORT).show();
-
-                }catch (Exception e){
-                    System.out.println("---------> popup is closed");
-                }
+                APIErrorHandler.onFailureErrorHandler(getParentFragmentManager(),t, () -> getParkData(place));
 
             }
         });

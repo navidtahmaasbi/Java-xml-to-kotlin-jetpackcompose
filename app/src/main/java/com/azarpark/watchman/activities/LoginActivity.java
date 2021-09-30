@@ -1,5 +1,6 @@
 package com.azarpark.watchman.activities;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -37,6 +38,8 @@ public class LoginActivity extends AppCompatActivity {
 
     ActivityLoginBinding binding;
     ConfirmDialog confirmDialog;
+    Activity activity = this;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
 
                 } else
-                    APIErrorHandler.orResponseErrorHandler(response, () -> login(username, password));
+                    APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(),activity, response, () -> login(username, password));
 
             }
 
@@ -94,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
                 loadingBar.dismiss();
                 t.printStackTrace();
 
-                APIErrorHandler.onFailureErrorHandler(t, () -> login(username, password));
+                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(),t, () -> login(username, password));
 
 
             }

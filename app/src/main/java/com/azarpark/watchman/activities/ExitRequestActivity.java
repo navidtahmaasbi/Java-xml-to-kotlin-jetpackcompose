@@ -2,6 +2,7 @@ package com.azarpark.watchman.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
@@ -16,6 +17,8 @@ import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.responses.DeleteExitRequestResponse;
 import com.azarpark.watchman.retrofit_remote.responses.ExitRequestResponse;
+import com.azarpark.watchman.utils.APIErrorHandler;
+import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
 import java.net.HttpURLConnection;
@@ -30,6 +33,7 @@ public class ExitRequestActivity extends AppCompatActivity {
     LoadingBar loadingBar;
     MessageDialog messageDialog;
     private PlateType selectedTab = PlateType.simple;
+    Activity activity = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,13 +113,17 @@ public class ExitRequestActivity extends AppCompatActivity {
 
     public void onSubmitClicked(View view){
 
+        Assistant assistant = new Assistant();
+
         if (selectedTab == PlateType.simple &&
                 (binding.plateSimpleTag1.getText().toString().isEmpty() ||
                         binding.plateSimpleTag2.getText().toString().isEmpty() ||
                         binding.plateSimpleTag3.getText().toString().isEmpty() ||
                         binding.plateSimpleTag4.getText().toString().isEmpty()))
             Toast.makeText(getApplicationContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
-
+        else if (selectedTab == PlateType.simple &&
+                !assistant.isPersianAlphabet(binding.plateSimpleTag2.getText().toString()))
+            Toast.makeText(getApplicationContext(), "حرف وسط پلاک باید فارسی باشد", Toast.LENGTH_SHORT).show();
         else if (selectedTab == PlateType.old_aras &&
                 binding.plateOldAras.getText().toString().isEmpty())
             Toast.makeText(getApplicationContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
@@ -163,7 +171,7 @@ public class ExitRequestActivity extends AppCompatActivity {
                         System.out.println("--------> url : " + response.raw().request().url());
 
                         loadingBar.dismiss();
-                        if (response.code() == HttpURLConnection.HTTP_OK) {
+                        if (response.isSuccessful()) {
 
 
                             messageDialog = new MessageDialog("درخواست خروج", response.body().getDescription(), "تایید", () -> {
@@ -174,17 +182,13 @@ public class ExitRequestActivity extends AppCompatActivity {
                             messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
 
 
-                        } else {
-
-                            Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
-
-                        }
+                        } else APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(),activity, response, () -> exitRequest(plateType,tag1,tag2,tag3,tag4));
                     }
 
                     @Override
                     public void onFailure(Call<ExitRequestResponse> call, Throwable t) {
                         loadingBar.dismiss();
-                        Toast.makeText(getApplicationContext(), "onFailure", Toast.LENGTH_SHORT).show();
+                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(),t, () -> exitRequest(plateType,tag1,tag2,tag3,tag4));
                     }
                 });
 

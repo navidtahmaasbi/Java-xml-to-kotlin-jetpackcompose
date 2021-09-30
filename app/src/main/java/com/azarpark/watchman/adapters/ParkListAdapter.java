@@ -29,6 +29,7 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     OnItemClicked onItemClicked;
     int VIEW_TYPE_FREE = 0, VIEW_TYPE_FUll = 1;
     boolean showExitRequestItems = false;
+    String filterText = "";
 
     public ParkListAdapter(OnItemClicked onItemClicked) {
         items = new ArrayList<>();
@@ -118,7 +119,7 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         this.items = items;
         filteredItems = items;
-        notifyDataSetChanged();
+        filterItems(filterText);
 
     }
 
@@ -138,16 +139,30 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public void filterItems(String filterText) {
 
+        this.filterText = filterText;
+
         filteredItems = new ArrayList<>();
 
         for (Place place : items)
             if (Integer.toString(place.number).contains(filterText) ||
-                    (place.tag1 != null && place.tag1.contains(filterText)) ||
-                    (place.tag2 != null && place.tag2.contains(filterText)) ||
-                    (place.tag3 != null && place.tag3.contains(filterText)) ||
-                    (place.tag4 != null && place.tag4.contains(filterText))
+                    (place.tag1 != null && place.tag1.contains(this.filterText)) ||
+                    (place.tag2 != null && place.tag2.contains(this.filterText)) ||
+                    (place.tag3 != null && place.tag3.contains(this.filterText)) ||
+                    (place.tag4 != null && place.tag4.contains(this.filterText))
             )
                 filteredItems.add(place);
+
+        if (showExitRequestItems) {
+
+            ArrayList<Place> arr = filteredItems;
+            filteredItems = new ArrayList<>();
+
+            for (Place place : arr)
+                if (place.exit_request != null) {
+                    filteredItems.add(place);
+                }
+
+        }
 
         notifyDataSetChanged();
 

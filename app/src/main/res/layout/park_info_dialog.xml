@@ -457,7 +457,7 @@
                     android:fontFamily="@font/iran_sans"
                     android:gravity="center"
                     android:padding="@dimen/_5sdp"
-                    android:text="اعتبار شما "
+                    android:text="اعتبار پلاک "
                     android:textColor="@color/text_gray"
                     android:textSize="@dimen/_11sdp" />
 
@@ -524,45 +524,55 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/increase_balance"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:background="@drawable/blue_bg_5"
-            android:fontFamily="@font/iran_sans_bold"
-            android:gravity="center"
-            android:padding="@dimen/_5sdp"
-            android:text="افزایش شارژ"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_13sdp" />
-
-        <LinearLayout
-            android:id="@+id/print"
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="@dimen/_30sdp"
-            android:layout_marginTop="@dimen/_5sdp"
-            android:gravity="right|center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/_10sdp">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_marginRight="@dimen/_2sdp"
+                android:id="@+id/increase_balance"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="match_parent"
-                android:fontFamily="@font/iran_sans"
+                android:background="@drawable/blue_bg_5"
+                android:fontFamily="@font/iran_sans_bold"
                 android:gravity="center"
-                android:padding="@dimen/_5sdp"
-                android:text="پرینت قبض"
-                android:textColor="@color/text_gray"
+                android:text="افزایش شارژ"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_13sdp" />
 
-                android:textSize="@dimen/_11sdp" />
+            <LinearLayout
 
-            <ImageView
-                android:layout_width="@dimen/_15sdp"
-                android:layout_height="@dimen/_15sdp"
-                android:src="@drawable/ic_print"
-                app:tint="@color/dark_green" />
+                android:id="@+id/print"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:gravity="right|center_vertical"
+                android:orientation="horizontal">
 
-        </LinearLayout>
+                <TextView
+                    android:layout_marginRight="@dimen/_5sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/iran_sans"
+                    android:gravity="center"
+                    android:text="پرینت قبض"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_11sdp" />
+
+                <ImageView
+                    android:layout_width="@dimen/_15sdp"
+                    android:layout_height="@dimen/_15sdp"
+                    android:src="@drawable/ic_print"
+                    app:tint="@color/dark_green" />
+
+            </LinearLayout>
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/payment_area"

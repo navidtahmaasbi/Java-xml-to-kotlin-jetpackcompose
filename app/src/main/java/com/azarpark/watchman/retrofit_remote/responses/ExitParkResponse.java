@@ -4,6 +4,15 @@ public class ExitParkResponse {
 
     int success;
     String msg;
+    String description;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public int getSuccess() {
         return success;

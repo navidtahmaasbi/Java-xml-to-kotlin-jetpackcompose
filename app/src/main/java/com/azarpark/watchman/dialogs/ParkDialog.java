@@ -25,6 +25,7 @@ import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnParkClicked;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.retrofit_remote.bodies.ParkBody;
+import com.azarpark.watchman.utils.Assistant;
 
 public class ParkDialog extends DialogFragment {
 
@@ -45,6 +46,7 @@ public class ParkDialog extends DialogFragment {
         binding = ParkDialogBinding.inflate(LayoutInflater.from(getContext()));
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(binding.getRoot());
+        Assistant assistant= new Assistant();
 
         binding.placeNumber.setText(place.number+"");
 
@@ -71,19 +73,23 @@ public class ParkDialog extends DialogFragment {
         binding.submit.setOnClickListener(view -> {
 
             if (selectedTab == PlateType.simple &&
-                    (binding.plateSimpleTag1.getText().toString().isEmpty() ||
-                            binding.plateSimpleTag2.getText().toString().isEmpty() ||
-                            binding.plateSimpleTag3.getText().toString().isEmpty() ||
-                            binding.plateSimpleTag4.getText().toString().isEmpty()))
+                    (binding.plateSimpleTag1.getText().toString().length() != 2 ||
+                            binding.plateSimpleTag2.getText().toString().length() != 1 ||
+                            binding.plateSimpleTag3.getText().toString().length() != 3 ||
+                            binding.plateSimpleTag4.getText().toString().length() != 2))
                 Toast.makeText(getContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
 
+            else if (selectedTab == PlateType.simple &&
+                    !assistant.isPersianAlphabet(binding.plateSimpleTag2.getText().toString()))
+                Toast.makeText(getContext(), "حرف وسط پلاک باید فارسی باشد", Toast.LENGTH_SHORT).show();
+
             else if (selectedTab == PlateType.old_aras &&
-                    binding.plateOldAras.getText().toString().isEmpty())
+                    binding.plateOldAras.getText().toString().length() != 5)
                 Toast.makeText(getContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
 
             else if (selectedTab == PlateType.new_aras &&
-                    (binding.plateNewArasTag1.getText().toString().isEmpty() ||
-                            binding.plateNewArasTag2.getText().toString().isEmpty()))
+                    (binding.plateNewArasTag1.getText().toString().length() != 5 ||
+                            binding.plateNewArasTag2.getText().toString().length() != 2))
                 Toast.makeText(getContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
             else if (selectedTab == PlateType.simple)
                 onParkClicked.clicked(new ParkBody(
