@@ -797,8 +797,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-
     /**
      * Draw the view into a bitmap.
      */

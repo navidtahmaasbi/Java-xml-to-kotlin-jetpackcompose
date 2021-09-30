@@ -11,6 +11,7 @@ import com.azarpark.watchman.retrofit_remote.RetrofitAPIClient;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.bodies.LoginBody;
 import com.azarpark.watchman.retrofit_remote.responses.LoginResponse;
+import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.Assistant;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +23,9 @@ import android.widget.Toast;
 import com.azarpark.watchman.databinding.ActivityLoginBinding;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
+import org.xml.sax.ErrorHandler;
+
+import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 
 import retrofit2.Call;
@@ -70,21 +74,18 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
 
                 loadingBar.dismiss();
-                if (response.code() == HttpURLConnection.HTTP_OK) {
+                if (response.isSuccessful()) {
 
-                    SharedPreferencesRepository sharedPreferencesRepository = new SharedPreferencesRepository(getApplicationContext());
+                    SharedPreferencesRepository sh_p = new SharedPreferencesRepository(getApplicationContext());
 
-                    sharedPreferencesRepository.saveString(SharedPreferencesRepository.ACCESS_TOKEN, response.body().access_token);
-                    sharedPreferencesRepository.saveString(SharedPreferencesRepository.REFRESH_TOKEN, response.body().refresh_token);
+                    sh_p.saveString(SharedPreferencesRepository.ACCESS_TOKEN, response.body().access_token);
+                    sh_p.saveString(SharedPreferencesRepository.REFRESH_TOKEN, response.body().refresh_token);
 
                     LoginActivity.this.finish();
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
 
-                } else {
-
-                    Toast.makeText(getApplicationContext(), "error " + response.code(), Toast.LENGTH_SHORT).show();
-
-                }
+                } else
+                    APIErrorHandler.orResponseErrorHandler(response, () -> login(username, password));
 
             }
 
@@ -93,27 +94,8 @@ public class LoginActivity extends AppCompatActivity {
                 loadingBar.dismiss();
                 t.printStackTrace();
 
+                APIErrorHandler.onFailureErrorHandler(t, () -> login(username, password));
 
-                 confirmDialog = new ConfirmDialog(
-                        getResources().getString(R.string.retry_title),
-                        getResources().getString(R.string.retry_text),
-                        getResources().getString(R.string.retry_confirm_button),
-                        getResources().getString(R.string.retry_cancel_button),
-                        new ConfirmDialog.ConfirmButtonClicks() {
-                            @Override
-                            public void onConfirmClicked() {
-                                login(username,password);
-                            }
-
-                            @Override
-                            public void onCancelClicked() {
-                                confirmDialog.dismiss();
-                            }
-                        }
-                );
-
-
-                confirmDialog.show(getSupportFragmentManager(),"tag");
 
             }
         });
