@@ -3,7 +3,6 @@ package com.azarpark.watchman.activities;
 import static android.content.ContentValues.TAG;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -19,32 +18,24 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.adapters.DebtListAdapter;
 import com.azarpark.watchman.databinding.ActivityDebtCheckBinding;
-import com.azarpark.watchman.databinding.ActivityDebtListBinding;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.dialogs.MessageDialog;
-import com.azarpark.watchman.dialogs.ParkDialog;
 import com.azarpark.watchman.enums.PlateType;
-import com.azarpark.watchman.models.DebtModel;
-import com.azarpark.watchman.payment.MyServiceConnection;
+import com.azarpark.watchman.payment.saman.MyServiceConnection;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
-import com.azarpark.watchman.retrofit_remote.bodies.ParkBody;
 import com.azarpark.watchman.retrofit_remote.responses.DebtHistoryResponse;
-import com.azarpark.watchman.retrofit_remote.responses.ExitRequestResponse;
-import com.azarpark.watchman.retrofit_remote.responses.ParkResponse;
 import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse;
 import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.UUID;
 

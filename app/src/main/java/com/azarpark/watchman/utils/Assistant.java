@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
 
 public class Assistant {
 
+    public static int SAMAN = 1, PASRIAN = 2 , SELECTED_PAYMENT = 1;
+
     public boolean isMobile(String mobile) {
 
         return mobile.matches("^09\\d{9}$");

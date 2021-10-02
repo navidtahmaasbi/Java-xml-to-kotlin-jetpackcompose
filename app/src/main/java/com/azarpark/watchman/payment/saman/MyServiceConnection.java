@@ -1,4 +1,4 @@
-package com.azarpark.watchman.payment;
+package com.azarpark.watchman.payment.saman;
 
 import android.content.ComponentName;
 import android.content.ServiceConnection;

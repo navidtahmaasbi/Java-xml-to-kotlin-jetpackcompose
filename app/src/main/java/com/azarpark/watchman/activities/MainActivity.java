@@ -48,7 +48,9 @@ import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnGetInfoClicked;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.models.Street;
-import com.azarpark.watchman.payment.MyServiceConnection;
+import com.azarpark.watchman.payment.saman.MyServiceConnection;
+import com.azarpark.watchman.payment.parsian.ParsianPayment;
+import com.azarpark.watchman.payment.saman.SamanPayment;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.bodies.ParkBody;
 import com.azarpark.watchman.retrofit_remote.responses.DeleteExitRequestResponse;
@@ -58,11 +60,9 @@ import com.azarpark.watchman.retrofit_remote.responses.ParkResponse;
 import com.azarpark.watchman.retrofit_remote.responses.PlacesResponse;
 import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse;
 import com.azarpark.watchman.utils.APIErrorHandler;
+import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
-import com.google.zxing.WriterException;
 
-import java.net.HttpURLConnection;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -91,8 +91,6 @@ public class MainActivity extends AppCompatActivity {
     TextView watchManName;
     boolean updatePopUpIsShowed = false;
     int version = 0;
-    MyServiceConnection connection;
-    IProxy service;
     SharedPreferencesRepository sh_r;
     PlateChargeDialog plateChargeDialog;
     boolean placesLoadedForFirstTime = true;
@@ -100,6 +98,8 @@ public class MainActivity extends AppCompatActivity {
     int refresh_time = 10;
     String qr_url, telephone, pricing, sms_number, rules_url, about_us_url, guide_url;
     Timer timer;
+    ParsianPayment parsianPayment;
+    SamanPayment samanPayment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +108,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         setupUI(binding.getRoot());
 
+        parsianPayment = new ParsianPayment(getApplicationContext());
+        samanPayment = new SamanPayment(getApplicationContext(), MainActivity.this, new SamanPayment.SamanPaymentCallBack() {
+            @Override
+            public void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id, int placeID) {
+                MainActivity.this.verifyTransaction(plateType, tag1, tag2, tag3, tag4, amount, transaction_id, placeID);
+            }
+        });
         sh_r = new SharedPreferencesRepository(getApplicationContext());
 
 //        qr_url = sh_r.getString(SharedPreferencesRepository.qr_url, "");
@@ -119,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
 //        about_us_url = sh_r.getString(SharedPreferencesRepository.about_us_url, "");
 //        guide_url = sh_r.getString(SharedPreferencesRepository.guide_url, "");
 
-        initService();
+//        initService();
 
         try {
             PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -160,15 +167,13 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
 
-
         Log.e("getPlaces", "onResume");
         getPlaces();
     }
 
 
-
-    private void setTimer(){
-        if (timer == null){
+    private void setTimer() {
+        if (timer == null) {
             timer = new Timer();
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
@@ -273,6 +278,7 @@ public class MainActivity extends AppCompatActivity {
         parkDialog = new ParkDialog(this::parkCar, place);
         parkDialog.show(getSupportFragmentManager(), ParkDialog.TAG);
 
+        showSoftKeyboard();
 
     }
 
@@ -325,7 +331,10 @@ public class MainActivity extends AppCompatActivity {
                 else if (place.tag3 == null || place.tag3.isEmpty())
                     selectedPlateType = PlateType.new_aras;
 
-                paymentRequest(price, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id);
+                if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
+                    parsianPayment.paymentRequest(price, UUID.randomUUID().toString(), MainActivity.this, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id);
+                else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
+                    samanPayment.paymentRequest(price, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id);
 
             }
 
@@ -350,7 +359,12 @@ public class MainActivity extends AppCompatActivity {
 
                 plateChargeDialog = new PlateChargeDialog(amount -> {
 
-                    paymentRequest(amount, plateType, tag1, tag2, tag3, tag4, -1);
+
+                    if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
+                        parsianPayment.paymentRequest(amount, UUID.randomUUID().toString(), MainActivity.this, plateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id);
+                    else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
+                        samanPayment.paymentRequest(amount, plateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id);
+
                     plateChargeDialog.dismiss();
 
                 }, place);
@@ -411,9 +425,12 @@ public class MainActivity extends AppCompatActivity {
 
                 new Handler().postDelayed(() -> {
 
-                    connection.print(getViewBitmap(printTemplateBinding.getRoot()));
+                    if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
+                        parsianPayment.printParkInfo(startTime, place.tag1, place.tag2, place.tag3, place.tag4, place.id, binding.printArea, pricing, telephone, sms_number, qr_url);
+                    else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
+                        samanPayment.printParkInfo(startTime, place.tag1, place.tag2, place.tag3, place.tag4, place.id, binding.printArea, pricing, telephone, sms_number, qr_url);
 
-                }, 1000);
+                }, 500);
 
             }
         }, place);
@@ -456,8 +473,7 @@ public class MainActivity extends AppCompatActivity {
                         getPlaces();
 
                     }
-                        Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_LONG).show();
-
+                    Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_LONG).show();
 
 
                 } else
@@ -473,16 +489,16 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public static void hideSoftKeyboard(Activity activity) {
-        InputMethodManager inputMethodManager =
-                (InputMethodManager) activity.getSystemService(
-                        Activity.INPUT_METHOD_SERVICE);
+    public void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         if (inputMethodManager.isAcceptingText()) {
-            inputMethodManager.hideSoftInputFromWindow(
-                    activity.getCurrentFocus().getWindowToken(),
-                    0
-            );
+            inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
         }
+    }
+
+    public void showSoftKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
     }
 
     public void setupUI(View view) {
@@ -639,8 +655,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-
     private void logout() {
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
@@ -716,203 +730,23 @@ public class MainActivity extends AppCompatActivity {
             super.onBackPressed();
     }
 
-    //---------------------------------------------------------------
-
-    private void initService() {
-
-        Log.i("TAG", "initService()");
-        connection = new MyServiceConnection(service);
-        Intent i = new Intent();
-        i.setClassName("ir.sep.android.smartpos", "ir.sep.android.Service.Proxy");
-        boolean ret = bindService(i, connection, Context.BIND_AUTO_CREATE);
-        Log.i("TAG", "initService() bound value: " + ret);
-    }
-
-    private void releaseService() {
-        unbindService(connection);
-        connection = null;
-        Log.d(TAG, "releaseService(): unbound.");
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        releaseService();
+        if (samanPayment != null)
+            samanPayment.releaseService();
         if (timer != null)
             timer.cancel();
         timer = null;
     }
 
-    public void paymentRequest(int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
-
-        amount *= 10;
-        System.out.println("---------> amount : " + amount);
-
-        sh_r.saveString(SharedPreferencesRepository.PLATE_TYPE, plateType.toString());
-        sh_r.saveString(SharedPreferencesRepository.TAG1, tag1);
-        sh_r.saveString(SharedPreferencesRepository.TAG2, tag2);
-        sh_r.saveString(SharedPreferencesRepository.TAG3, tag3);
-        sh_r.saveString(SharedPreferencesRepository.TAG4, tag4);
-        sh_r.saveString(SharedPreferencesRepository.TAG4, tag4);
-        sh_r.saveString(SharedPreferencesRepository.AMOUNT, String.valueOf(amount));
-        sh_r.saveString(SharedPreferencesRepository.PLACE_ID, Integer.toString(placeID));
-
-        Intent intent = new Intent();
-        intent.putExtra("TransType", 1);
-        intent.putExtra("Amount", String.valueOf(amount));
-        intent.putExtra("ResNum", UUID.randomUUID().toString());
-        intent.putExtra("AppId", String.valueOf(0));
-
-        intent.setComponent(new ComponentName("ir.sep.android.smartpos", "ir.sep.android.smartpos.ThirdPartyActivity"));
-
-        startActivityForResult(intent, 1);
-
-    }
-
-    /**
-     * Draw the view into a bitmap.
-     */
-    public static Bitmap getViewBitmap(View v) {
-        v.clearFocus();
-        v.setPressed(false);
-
-        boolean willNotCache = v.willNotCacheDrawing();
-        v.setWillNotCacheDrawing(false);
-
-        // Reset the drawing cache background color to fully transparent
-        // for the duration of this operation
-        int color = v.getDrawingCacheBackgroundColor();
-        v.setDrawingCacheBackgroundColor(0);
-
-        if (color != 0) {
-            v.destroyDrawingCache();
-        }
-        v.buildDrawingCache();
-        Bitmap cacheBitmap = v.getDrawingCache();
-        if (cacheBitmap == null) {
-            Log.e(TAG, "failed getViewBitmap(" + v + ")", new RuntimeException());
-            return null;
-        }
-
-        Bitmap bitmap = Bitmap.createBitmap(cacheBitmap);
-
-        // Restore the view
-        v.destroyDrawingCache();
-        v.setWillNotCacheDrawing(willNotCache);
-        v.setDrawingCacheBackgroundColor(color);
-
-        return bitmap;
-    }
-
-    //    int result= service.PrintByBitmap(getBitmapFromView(root));
-    private Bitmap getBitmapFromView(View view) {
-        //Define a bitmap with the same size as the view
-        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
-        //Bind a canvas to it
-        Canvas canvas = new Canvas(returnedBitmap);
-        //Get the view's background
-        Drawable bgDrawable = view.getBackground();
-        if (bgDrawable != null) {
-            //has background drawable, then draw it on the canvas
-            bgDrawable.draw(canvas);
-        } else {
-            //does not have background drawable, then draw white background on the canvas
-            canvas.drawColor(Color.WHITE);
-        }
-        // draw the view on the canvas
-        view.draw(canvas);
-        //return the bitmap
-        return returnedBitmap;
-    }
-
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == RESULT_OK && requestCode == 1) {
+        parsianPayment.handleResult(requestCode, resultCode, data);
 
-            int state = data.getIntExtra("State", -1); // Response Code Switch
+        samanPayment.handleResult(requestCode, resultCode, data);
 
-            String refNum = data.getStringExtra("RefNum"); // Reference number
-            String resNum = data.getStringExtra("ResNum");
-
-            sh_r.saveString(SharedPreferencesRepository.REF_NUM, refNum);
-            // you should store the resNum variable and then call verify method
-            System.out.println("--------> state : " + state);
-            System.out.println("--------> refNum : " + refNum);
-            System.out.println("--------> resNum : " + resNum);
-            if (state == 0) // successful
-            {
-                Toast.makeText(getBaseContext(), "Purchase did sucssessful....", Toast.LENGTH_LONG).show();
-
-                verifyTransaction(
-                        PlateType.valueOf(sh_r.getString(SharedPreferencesRepository.PLATE_TYPE)),
-                        sh_r.getString(SharedPreferencesRepository.TAG1),
-                        sh_r.getString(SharedPreferencesRepository.TAG2, "0"),
-                        sh_r.getString(SharedPreferencesRepository.TAG3, "0"),
-                        sh_r.getString(SharedPreferencesRepository.TAG4, "0"),
-                        sh_r.getString(SharedPreferencesRepository.AMOUNT),
-                        refNum,
-                        Integer.parseInt(sh_r.getString(SharedPreferencesRepository.PLACE_ID))
-                );
-
-
-            } else
-                Toast.makeText(getBaseContext(), "Purchase did failed....", Toast.LENGTH_LONG).show();
-
-        } else if (resultCode == RESULT_OK && requestCode == 2) {
-
-            String url = data.getStringExtra("ScannerResult");
-            int placeId = Integer.parseInt(url.split("=")[url.split("=").length - 1]);
-
-            Place place = adapter.getItemWithID(placeId);
-
-            if (place != null)
-                openParkInfoDialog(place);
-            else {
-
-                confirmDialog = new ConfirmDialog("درخواست خروج", " آیا برای درخواست خروج اطمینان دارید؟", "بله", "خیر", new ConfirmDialog.ConfirmButtonClicks() {
-                    @Override
-                    public void onConfirmClicked() {
-
-                        exitPark(placeId);
-
-                    }
-
-                    @Override
-                    public void onCancelClicked() {
-
-                        confirmDialog.dismiss();
-
-                    }
-                });
-
-                confirmDialog.show(getSupportFragmentManager(), ConfirmDialog.TAG);
-
-            }
-
-            System.out.println("---------> ScannerResult : " + url);//https://irana.app/how?qr=090YK6
-            System.out.println("---------> placeId : " + placeId);
-        }
-    }
-
-    public void verify(String refNum, String resNum) {
-
-        try {
-            int verifyResult = service.VerifyTransaction(0, refNum, resNum);
-            if (verifyResult == 0) // sucsess
-            {
-                Toast.makeText(getBaseContext(), "Purchase did sucssessful....", Toast.LENGTH_LONG).show();
-            } else if (verifyResult == 1)//sucsess but print is faild
-            {
-                Toast.makeText(getBaseContext(), "Purchase did sucssessful....", Toast.LENGTH_LONG).show();
-                int r = service.PrintByRefNum(refNum);
-            } else // faild
-            {
-                Toast.makeText(getBaseContext(), "Purchase did faild....", Toast.LENGTH_LONG).show();
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
 
     }
 
