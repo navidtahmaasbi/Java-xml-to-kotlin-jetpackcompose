@@ -1,5 +1,7 @@
 package com.azarpark.watchman.retrofit_remote;
 
+import android.content.Context;
+
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.retrofit_remote.bodies.LoginBody;
 import com.azarpark.watchman.retrofit_remote.bodies.ParkBody;
@@ -34,9 +36,15 @@ import retrofit2.Callback;
 
 public class RetrofitAPIRepository {
 
+    Context context;
+
+    public RetrofitAPIRepository(Context context) {
+        this.context = context;
+    }
+
     public void login(LoginBody body, Callback<LoginResponse> responseCallback) {
 
-        Login request = RetrofitAPIClient.getClient().create(Login.class);
+        Login request = RetrofitAPIClient.getClient(context).create(Login.class);
 
         request.login(body).enqueue(responseCallback);
 
@@ -44,7 +52,7 @@ public class RetrofitAPIRepository {
 
     public void getPlaces(String token, Callback<PlacesResponse> responseCallback) {
 
-        GetPlaces request = RetrofitAPIClient.getClient().create(GetPlaces.class);
+        GetPlaces request = RetrofitAPIClient.getClient(context).create(GetPlaces.class);
 
         request.get(token).enqueue(responseCallback);
 
@@ -68,7 +76,7 @@ public class RetrofitAPIRepository {
 
     public void park(String token, ParkBody body, Callback<ParkResponse> responseCallback) {
 
-        Park request = RetrofitAPIClient.getClient().create(Park.class);
+        Park request = RetrofitAPIClient.getClient(context).create(Park.class);
 
         request.park(token, body).enqueue(responseCallback);
 
@@ -76,7 +84,7 @@ public class RetrofitAPIRepository {
 
     public void estimateParkPrice(String token, int placeID, Callback<EstimateParkPriceResponse> responseCallback) {
 
-        EstimateParkPrice request = RetrofitAPIClient.getClient().create(EstimateParkPrice.class);
+        EstimateParkPrice request = RetrofitAPIClient.getClient(context).create(EstimateParkPrice.class);
 
         request.get(token,placeID).enqueue(responseCallback);
 
@@ -84,7 +92,7 @@ public class RetrofitAPIRepository {
 
     public void exitPark(String token, int placeID, Callback<ExitParkResponse> responseCallback) {
 
-        ExitPark request = RetrofitAPIClient.getClient().create(ExitPark.class);
+        ExitPark request = RetrofitAPIClient.getClient(context).create(ExitPark.class);
 
         request.exit(token,placeID).enqueue(responseCallback);
 
@@ -92,7 +100,7 @@ public class RetrofitAPIRepository {
 
     public void getCarDebtHistory(String token, PlateType plateType,String tag1,String tag2,String tag3,String tag4,int limit, int offset , Callback<DebtHistoryResponse> responseCallback) {
 
-        CarDebtHistory request = RetrofitAPIClient.getClient().create(CarDebtHistory.class);
+        CarDebtHistory request = RetrofitAPIClient.getClient(context).create(CarDebtHistory.class);
 
         request.get(token,plateType.toString(),tag1,tag2,tag3,tag4,limit,offset).enqueue(responseCallback);
 
@@ -100,7 +108,7 @@ public class RetrofitAPIRepository {
 
     public void verifyTransaction(String token, PlateType plateType,String tag1,String tag2,String tag3,String tag4,String amount, String transaction_id, int placeID , Callback<VerifyTransactionResponse> responseCallback) {
 
-        VerifyTransaction request = RetrofitAPIClient.getClient().create(VerifyTransaction.class);
+        VerifyTransaction request = RetrofitAPIClient.getClient(context).create(VerifyTransaction.class);
 
         request.verify(token,plateType.toString(),tag1,tag2,tag3,tag4,amount,transaction_id,placeID).enqueue(responseCallback);
 
@@ -108,7 +116,7 @@ public class RetrofitAPIRepository {
 
     public void exitRequest(String token, PlateType plateType,String tag1,String tag2,String tag3,String tag4 , Callback<ExitRequestResponse> responseCallback) {
 
-        ExitRequest request = RetrofitAPIClient.getClient().create(ExitRequest.class);
+        ExitRequest request = RetrofitAPIClient.getClient(context).create(ExitRequest.class);
 
         request.submit(token,plateType.toString(),tag1,tag2,tag3,tag4).enqueue(responseCallback);
 
@@ -116,7 +124,7 @@ public class RetrofitAPIRepository {
 
     public void deleteExitRequest(String token, int place_id , Callback<DeleteExitRequestResponse> responseCallback) {
 
-        DeleteExitRequest request = RetrofitAPIClient.getClient().create(DeleteExitRequest.class);
+        DeleteExitRequest request = RetrofitAPIClient.getClient(context).create(DeleteExitRequest.class);
 
         request.delete(token,place_id).enqueue(responseCallback);
 
@@ -124,7 +132,7 @@ public class RetrofitAPIRepository {
 
     public void logout(String token, Callback<LogoutResponse> responseCallback) {
 
-        Logout request = RetrofitAPIClient.getClient().create(Logout.class);
+        Logout request = RetrofitAPIClient.getClient(context).create(Logout.class);
 
         request.submit(token).enqueue(responseCallback);
 

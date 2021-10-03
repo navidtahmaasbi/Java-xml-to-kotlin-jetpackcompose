@@ -27,7 +27,9 @@ import com.azarpark.watchman.databinding.ActivityCarNumberChargeBinding;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.enums.PlateType;
+import com.azarpark.watchman.payment.parsian.ParsianPayment;
 import com.azarpark.watchman.payment.saman.MyServiceConnection;
+import com.azarpark.watchman.payment.saman.SamanPayment;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse;
 import com.azarpark.watchman.utils.APIErrorHandler;
@@ -48,27 +50,42 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
     ActivityCarNumberChargeBinding binding;
     private PlateType selectedTab = PlateType.simple;
-    MyServiceConnection connection;
-    IProxy service;
     LoadingBar loadingBar;
     SharedPreferencesRepository sh_r;
     ChargeItemListAdapter adapter;
-    ConfirmDialog confirmDialog;
     Activity activity = this;
+    ParsianPayment parsianPayment;
+    SamanPayment samanPayment;
+    Assistant assistant;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityCarNumberChargeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        Assistant assistant = new Assistant();
 
+        assistant = new Assistant();
+        parsianPayment = new ParsianPayment(getApplicationContext(),new ParsianPayment.ParsianPaymentCallBack() {
+            @Override
+            public void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id, int placeID) {
+                CarNumberChargeActivity.this.verifyTransaction(plateType, tag1, tag2, tag3, tag4, amount, transaction_id, placeID);
+            }
+
+            @Override
+            public void getScannerData(int placeID) {
+
+            }
+        });
+        samanPayment = new SamanPayment(getApplicationContext(), CarNumberChargeActivity.this, new SamanPayment.SamanPaymentCallBack() {
+            @Override
+            public void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id, int placeID) {
+                CarNumberChargeActivity.this.verifyTransaction(plateType, tag1, tag2, tag3, tag4, amount, transaction_id, placeID);
+            }
+        });
         binding.plateSimpleTag1.requestFocus();
 
         sh_r = new SharedPreferencesRepository(getApplicationContext());
         loadingBar = new LoadingBar(CarNumberChargeActivity.this);
-
-        initService();
 
         binding.plateSimpleTag1.requestFocus();
 
@@ -94,7 +111,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
         binding.submit.setOnClickListener(view -> {
 
-            String s = binding.amount.getText().toString().replace(",","");
+            String s = binding.amount.getText().toString().replace(",", "");
             int price = Integer.parseInt(s);
 
             if (selectedTab == PlateType.simple &&
@@ -125,10 +142,10 @@ public class CarNumberChargeActivity extends AppCompatActivity {
                 );
             else if (binding.amount.getText().toString().isEmpty())
                 Toast.makeText(getApplicationContext(), "مبلغ شارژ را وارد کنید", Toast.LENGTH_SHORT).show();
-            else if (!isNumber(binding.amount.getText().toString()))
+            else if (!assistant.isNumber(binding.amount.getText().toString()))
                 Toast.makeText(getApplicationContext(), "مبلغ شارژ را درست وارد کنید", Toast.LENGTH_SHORT).show();
-            else if (price < 1000)
-                Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید کمتر از 1000 تومان باشد", Toast.LENGTH_SHORT).show();
+            else if (price < assistant.MIN_PRICE_FOR_PAYMENT)
+                Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید کمتر از " + assistant.MIN_PRICE_FOR_PAYMENT + " تومان باشد", Toast.LENGTH_SHORT).show();
             else if (selectedTab == PlateType.old_aras)
                 charge(
                         binding.amount.getText().toString(),
@@ -259,7 +276,6 @@ public class CarNumberChargeActivity extends AppCompatActivity {
             }
         });
 
-
         adapter = new ChargeItemListAdapter(amount -> {
 
             binding.amount.setText(NumberFormat.getNumberInstance(Locale.US).format(amount));
@@ -268,6 +284,8 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         binding.recyclerView.setAdapter(adapter);
 
         ArrayList<Integer> items = new ArrayList<>();
+        items.add(100);
+        items.add(1000);
         items.add(10000);
         items.add(20000);
         items.add(30000);
@@ -276,72 +294,22 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
     }
 
-    private boolean isNumber(String amount) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-        amount = amount.replace(",", "");
+        parsianPayment.handleResult(requestCode, resultCode, data);
 
-        try {
-
-            int a = Integer.parseInt(amount);
-        } catch (Exception e) {
-
-            return false;
-        }
-
-        return true;
+        samanPayment.handleResult(requestCode, resultCode, data);
     }
 
-    private void charge(String amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4) {
-
-        amount = amount.replace(",", "");
-
-        paymentRequest(Integer.parseInt(amount), plateType, tag1, tag2, tag3, tag4, -1);
-
-//        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-//        RetrofitAPIRepository repository = new RetrofitAPIRepository();
-//        loadingBar.show();
-//
-//        repository.getCarDebtHistory("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-//                plateType, tag1, tag2, tag3, tag4, limit, offset, new Callback<DebtHistoryResponse>() {
-//                    @Override
-//                    public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
-//
-//                        System.out.println("--------> url : " + response.raw().request().url());
-//
-//                        loadingBar.dismiss();
-//                        if (response.code() == HttpURLConnection.HTTP_OK) {
-//
-//                            if (response.body().getSuccess() == 1) {
-//
-//                                binding.balanceTitle.setText(response.body().balance >= 0 ? "اعتبار پلاک" : "بدهی پلاک");
-//
-//                                binding.debtAmount.setText(response.body().balance + " تومان");
-//
-//                                binding.debtArea.setVisibility(View.VISIBLE);
-//                                adapter.addItems(response.body().items);
-//
-//
-//                            } else if (response.body().getSuccess() == 0) {
-//
-//                                Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
-//
-//                            }
-//
-//                        } else {
-//
-//                            Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
-//
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
-//                        loadingBar.dismiss();
-//                        Toast.makeText(getApplicationContext(), "onFailure", Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (samanPayment != null)
+            samanPayment.releaseService();
     }
+
+    //------------------------------------------------------------------ view
 
     private void setSelectedTab(PlateType selectedTab) {
 
@@ -402,143 +370,29 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
     }
 
-    //------------------------------------------------------------------
+    //------------------------------------------------------------------ api calls
 
-    private void initService() {
+    private void charge(String amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4) {
 
-        Log.i("TAG", "initService()");
-        connection = new MyServiceConnection(service);
-        Intent i = new Intent();
-        i.setClassName("ir.sep.android.smartpos", "ir.sep.android.Service.Proxy");
-        boolean ret = bindService(i, connection, Context.BIND_AUTO_CREATE);
-        Log.i("TAG", "initService() bound value: " + ret);
-    }
+        amount = amount.replace(",", "");
 
-    private void releaseService() {
-        unbindService(connection);
-        connection = null;
-        Log.d(TAG, "releaseService(): unbound.");
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        releaseService();
-    }
-
-    public void paymentRequest(int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
-
-        amount *= 10;
-        System.out.println("---------> amount : " + amount);
-
-        sh_r.saveString(SharedPreferencesRepository.PLATE_TYPE, plateType.toString());
-        sh_r.saveString(SharedPreferencesRepository.TAG1, tag1);
-        sh_r.saveString(SharedPreferencesRepository.TAG2, tag2);
-        sh_r.saveString(SharedPreferencesRepository.TAG3, tag3);
-        sh_r.saveString(SharedPreferencesRepository.TAG4, tag4);
-        sh_r.saveString(SharedPreferencesRepository.TAG4, tag4);
-        sh_r.saveString(SharedPreferencesRepository.AMOUNT, String.valueOf(amount));
-        sh_r.saveString(SharedPreferencesRepository.PLACE_ID, Integer.toString(placeID));
-
-        Intent intent = new Intent();
-        intent.putExtra("TransType", 1);
-        intent.putExtra("Amount", String.valueOf(amount));
-        intent.putExtra("ResNum", UUID.randomUUID().toString());
-        intent.putExtra("AppId", String.valueOf(0));
-
-        intent.setComponent(new ComponentName("ir.sep.android.smartpos", "ir.sep.android.smartpos.ThirdPartyActivity"));
-
-        startActivityForResult(intent, 1);
-
-    }
-
-    //    int result= service.PrintByBitmap(getBitmapFromView(root));
-    private Bitmap getBitmapFromView(View view) {
-        //Define a bitmap with the same size as the view
-        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
-        //Bind a canvas to it
-        Canvas canvas = new Canvas(returnedBitmap);
-        //Get the view's background
-        Drawable bgDrawable = view.getBackground();
-        if (bgDrawable != null) {
-            //has background drawable, then draw it on the canvas
-            bgDrawable.draw(canvas);
-        } else {
-            //does not have background drawable, then draw white background on the canvas
-            canvas.drawColor(Color.WHITE);
-        }
-        // draw the view on the canvas
-        view.draw(canvas);
-        //return the bitmap
-        return returnedBitmap;
-    }
-
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_OK && requestCode == 1) {
-
-            int state = data.getIntExtra("State", -1); // Response Code Switch
-
-            String refNum = data.getStringExtra("RefNum"); // Reference number
-            String resNum = data.getStringExtra("ResNum");
-            // you should store the resNum variable and then call verify method
-            System.out.println("--------> state : " + state);
-            System.out.println("--------> refNum : " + refNum);
-            System.out.println("--------> resNum : " + resNum);
-            if (state == 0) // successful
-            {
-                Toast.makeText(getBaseContext(), "Purchase did sucssessful....", Toast.LENGTH_LONG).show();
-
-                verifyTransaction(
-                        PlateType.valueOf(sh_r.getString(SharedPreferencesRepository.PLATE_TYPE)),
-                        sh_r.getString(SharedPreferencesRepository.TAG1),
-                        sh_r.getString(SharedPreferencesRepository.TAG2, "0"),
-                        sh_r.getString(SharedPreferencesRepository.TAG3, "0"),
-                        sh_r.getString(SharedPreferencesRepository.TAG4, "0"),
-                        sh_r.getString(SharedPreferencesRepository.AMOUNT),
-                        refNum,
-                        Integer.parseInt(sh_r.getString(SharedPreferencesRepository.PLACE_ID))
-                );
-            } else
-                Toast.makeText(getBaseContext(), "Purchase did faild....", Toast.LENGTH_LONG).show();
-
-        } else if (resultCode == RESULT_OK && requestCode == 2) {
-            Toast.makeText(CarNumberChargeActivity.this, data.getStringExtra("ScannerResult"), Toast.LENGTH_LONG).show();
-            System.out.println("---------> ScannerResult :" + data.getStringExtra("ScannerResult"));//https://irana.app/how?qr=090YK6
-        }
-    }
-
-    public void verify(String refNum, String resNum) {
-
-        try {
-            int verifyResult = service.VerifyTransaction(0, refNum, resNum);
-            if (verifyResult == 0) // sucsess
-            {
-                Toast.makeText(getBaseContext(), "Purchase did sucssessful....", Toast.LENGTH_LONG).show();
-            } else if (verifyResult == 1)//sucsess but print is faild
-            {
-                Toast.makeText(getBaseContext(), "Purchase did sucssessful....", Toast.LENGTH_LONG).show();
-                int r = service.PrintByRefNum(refNum);
-            } else // faild
-            {
-                Toast.makeText(getBaseContext(), "Purchase did faild....", Toast.LENGTH_LONG).show();
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
+            parsianPayment.paymentRequest(Integer.parseInt(amount), UUID.randomUUID().toString(), CarNumberChargeActivity.this, plateType, tag1, tag2, tag3, tag4, -1);
+        else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
+            samanPayment.paymentRequest(UUID.randomUUID().toString(),Integer.parseInt(amount), plateType, tag1, tag2, tag3, tag4, -1);
 
     }
 
     private void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id, int placeID) {
 
+        Log.d("-------->","verifyTransaction");
+
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository();
+        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
         loadingBar.show();
 
         amount = Integer.toString((Integer.parseInt(amount) / 10));
 
-        String finalAmount = amount;
         String finalAmount1 = amount;
         repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
                 plateType, tag1, tag2, tag3, tag4, amount, transaction_id, placeID, new Callback<VerifyTransactionResponse>() {
@@ -552,13 +406,14 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
                             Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
 
-                         else APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(),activity, response, () -> verifyTransaction(plateType,tag1,tag2,tag3,tag4, finalAmount1,transaction_id,placeID));
+                        else
+                            APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> verifyTransaction(plateType, tag1, tag2, tag3, tag4, finalAmount1, transaction_id, placeID));
                     }
 
                     @Override
                     public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
                         loadingBar.dismiss();
-                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(),t, () -> verifyTransaction(plateType,tag1,tag2,tag3,tag4, finalAmount1,transaction_id,placeID));
+                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> verifyTransaction(plateType, tag1, tag2, tag3, tag4, finalAmount1, transaction_id, placeID));
                     }
                 });
 

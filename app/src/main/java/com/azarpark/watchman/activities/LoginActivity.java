@@ -47,9 +47,6 @@ public class LoginActivity extends AppCompatActivity {
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        System.out.println("--------> bass url : " + RetrofitAPIClient.getClient().baseUrl());
-        System.out.println("--------> bass url : " + RetrofitAPIClient.BASE_URL);
-
     }
 
     public void onLoginClicked(View view) {
@@ -68,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void login(String username, String password) {
 
-        RetrofitAPIRepository repository = new RetrofitAPIRepository();
+        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
         LoadingBar loadingBar = new LoadingBar(LoginActivity.this);
         loadingBar.show();
 

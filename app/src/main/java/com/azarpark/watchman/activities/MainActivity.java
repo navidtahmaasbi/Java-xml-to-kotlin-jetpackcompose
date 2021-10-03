@@ -1,7 +1,5 @@
 package com.azarpark.watchman.activities;
 
-import static android.content.ContentValues.TAG;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -10,14 +8,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.RemoteException;
+import android.print.PrintManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -26,12 +20,12 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.adapters.ParkListAdapter;
@@ -48,7 +42,6 @@ import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnGetInfoClicked;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.models.Street;
-import com.azarpark.watchman.payment.saman.MyServiceConnection;
 import com.azarpark.watchman.payment.parsian.ParsianPayment;
 import com.azarpark.watchman.payment.saman.SamanPayment;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
@@ -68,9 +61,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-import androidmads.library.qrgenearator.QRGContents;
-import androidmads.library.qrgenearator.QRGEncoder;
-import ir.sep.android.Service.IProxy;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -100,15 +90,27 @@ public class MainActivity extends AppCompatActivity {
     Timer timer;
     ParsianPayment parsianPayment;
     SamanPayment samanPayment;
+    Assistant assistant;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        setupUI(binding.getRoot());
+        setupUIForKeyboardHideOnOutsideTouch(binding.getRoot());
 
-        parsianPayment = new ParsianPayment(getApplicationContext());
+        assistant = new Assistant();
+        parsianPayment = new ParsianPayment(getApplicationContext(), new ParsianPayment.ParsianPaymentCallBack() {
+            @Override
+            public void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id, int placeID) {
+                MainActivity.this.verifyTransaction(plateType, tag1, tag2, tag3, tag4, amount, transaction_id, placeID);
+            }
+
+            @Override
+            public void getScannerData(int placeID) {
+                handleScannedPlaceID(placeID);
+            }
+        });
         samanPayment = new SamanPayment(getApplicationContext(), MainActivity.this, new SamanPayment.SamanPaymentCallBack() {
             @Override
             public void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id, int placeID) {
@@ -171,6 +173,111 @@ public class MainActivity extends AppCompatActivity {
         getPlaces();
     }
 
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        parsianPayment.handleResult(requestCode, resultCode, data);
+
+        samanPayment.handleResult(requestCode, resultCode, data);
+
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (menuIsOpen) {
+            menuIsOpen = false;
+            popupWindow.dismiss();
+        } else
+            super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (samanPayment != null)
+            samanPayment.releaseService();
+        if (timer != null)
+            timer.cancel();
+        timer = null;
+    }
+
+    //-------------------------------------------------------- initialize
+
+    private void initMenuPopup() {
+
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        popupView = inflater.inflate(R.layout.menu_popup_window03, null);
+        int width = LinearLayout.LayoutParams.MATCH_PARENT;
+        int height = LinearLayout.LayoutParams.MATCH_PARENT;
+        boolean focusable = false; // lets taps outside the popup also dismiss it
+        popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+        popupView.findViewById(R.id.exit_request).setOnClickListener(view -> {
+            startActivity(new Intent(MainActivity.this, ExitRequestActivity.class));
+            popupWindow.dismiss();
+        });
+        popupView.findViewById(R.id.debt_inquiry).setOnClickListener(view -> {
+            startActivity(new Intent(MainActivity.this, DebtCheckActivity.class));
+            popupWindow.dismiss();
+        });
+        popupView.findViewById(R.id.car_number_charge).setOnClickListener(view -> {
+            startActivity(new Intent(MainActivity.this, CarNumberChargeActivity.class));
+            popupWindow.dismiss();
+        });
+        popupView.findViewById(R.id.help).setOnClickListener(view -> {
+
+            Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
+//            intent.putExtra("url","");
+            startActivity(intent);
+            popupWindow.dismiss();
+
+        });
+        watchManName = popupView.findViewById(R.id.name);
+        popupView.findViewById(R.id.about_us).setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
+//            intent.putExtra("url","");
+            startActivity(intent);
+            popupWindow.dismiss();
+        });
+        popupView.findViewById(R.id.rules).setOnClickListener(view -> {
+
+            Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
+//            intent.putExtra("url","");
+            startActivity(intent);
+            popupWindow.dismiss();
+
+        });
+        popupView.findViewById(R.id.root).setOnClickListener(view -> {
+
+            popupWindow.dismiss();
+
+        });
+        popupView.findViewById(R.id.logout).setOnClickListener(view -> {
+
+            confirmDialog = new ConfirmDialog("خروج", "ایا اطمینان دارید؟", "خروج", "لغو", new ConfirmDialog.ConfirmButtonClicks() {
+                @Override
+                public void onConfirmClicked() {
+
+                    logout();
+
+                }
+
+                @Override
+                public void onCancelClicked() {
+
+                    confirmDialog.dismiss();
+                }
+            });
+
+            confirmDialog.show(getSupportFragmentManager(), ConfirmDialog.TAG);
+
+            popupWindow.dismiss();
+
+        });
+
+
+    }
 
     private void setTimer() {
         if (timer == null) {
@@ -184,13 +291,262 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void setupUIForKeyboardHideOnOutsideTouch(View view) {
+
+        // Set up touch listener for non-text box views to hide keyboard.
+        if (!(view instanceof EditText)) {
+            view.setOnTouchListener(new View.OnTouchListener() {
+                public boolean onTouch(View v, MotionEvent event) {
+                    assistant.hideSoftKeyboard(MainActivity.this);
+                    return false;
+                }
+            });
+        }
+
+        //If a layout container, iterate over children and seed recursion.
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                View innerView = ((ViewGroup) view).getChildAt(i);
+                setupUIForKeyboardHideOnOutsideTouch(innerView);
+            }
+        }
+    }
+
+    //-------------------------------------------------------- listeners
+
+    private void listeners() {
+
+        binding.refresh.setOnClickListener(view -> getPlaces());
+
+        binding.filterEdittext.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                adapter.filterItems(charSequence.toString());
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+    }
+
+    public void onMenuToggleClicked(View view) {
+
+        popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+        menuIsOpen = true;
+
+    }
+
+    public void onExitRequestIconClicked(View view) {
+
+        if (exitRequestCount > 0) {
+
+            adapter.showExitRequestItems(!adapter.isShowExitRequestItems());
+
+
+            if (adapter.isShowExitRequestItems())
+                binding.exitRequests.setBackgroundColor(getResources().getColor(R.color.red));
+            else
+                binding.exitRequests.setBackgroundColor(getResources().getColor(R.color.transparent));
+
+        } else
+            Toast.makeText(getApplicationContext(), "درخواست خروج ندارید", Toast.LENGTH_SHORT).show();
+    }
+
+    public void onBarcodeIconClicked(View view) {
+
+        if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN) {
+
+            startActivityForResult(new Intent(MainActivity.this, QRScanerActivity.class), ParsianPayment.QR_SCANER_REQUEST_CODE);
+
+        } else {
+
+            Intent intent = new Intent();
+            intent.setComponent(new ComponentName("ir.sep.android.smartpos",
+                    "ir.sep.android.smartpos.ScannerActivity"));
+            startActivityForResult(intent, 2);
+        }
+    }
+
+    public void handleScannedPlaceID(int placeID) {
+
+        Place place = adapter.getItemWithID(placeID);
+        if (place != null)
+            openParkInfoDialog(place);
+        else {
+
+            confirmDialog = new ConfirmDialog("درخواست خروج", " آیا برای درخواست خروج اطمینان دارید؟", "بله", "خیر", new ConfirmDialog.ConfirmButtonClicks() {
+                @Override
+                public void onConfirmClicked() {
+
+                    exitPark(placeID);
+
+                }
+
+                @Override
+                public void onCancelClicked() {
+
+                    confirmDialog.dismiss();
+
+                }
+            });
+
+            confirmDialog.show(getSupportFragmentManager(), ConfirmDialog.TAG);
+
+        }
+
+    }
+
+    //-------------------------------------------------------- dialogs
+
+    private void openParkDialog(Place place) {
+
+        parkDialog = new ParkDialog(this::parkCar, place);
+        parkDialog.show(getSupportFragmentManager(), ParkDialog.TAG);
+
+        assistant.showSoftKeyboard(MainActivity.this);
+
+    }
+
+    private void openParkInfoDialog(Place place) {
+
+        parkInfoDialog = new ParkInfoDialog(new OnGetInfoClicked() {
+            @Override
+            public void pay(int price, Place place) {
+
+                PlateType selectedPlateType = PlateType.simple;
+
+                if (place.tag2 == null || place.tag2.isEmpty())
+                    selectedPlateType = PlateType.old_aras;
+                else if (place.tag3 == null || place.tag3.isEmpty())
+                    selectedPlateType = PlateType.new_aras;
+
+                if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
+                    parsianPayment.paymentRequest(price, UUID.randomUUID().toString(), MainActivity.this, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id);
+                else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
+                    samanPayment.paymentRequest(UUID.randomUUID().toString(), price, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id);
+
+            }
+
+            @Override
+            public void payAsDebt(Place place) {
+
+                exitPark(place.id);
+
+            }
+
+            @Override
+            public void removeExitRequest(Place place1) {
+
+                deleteExitRequest(place1.id);
+
+            }
+
+            @Override
+            public void charge(PlateType plateType, String tag1, String tag2, String tag3, String tag4) {
+
+                parkInfoDialog.dismiss();
+
+                plateChargeDialog = new PlateChargeDialog(amount -> {
+
+
+                    if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
+                        parsianPayment.paymentRequest(amount, UUID.randomUUID().toString(), MainActivity.this, plateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id);
+                    else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
+                        samanPayment.paymentRequest(UUID.randomUUID().toString(), amount, plateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id);
+
+                    plateChargeDialog.dismiss();
+
+                }, place);
+
+                plateChargeDialog.show(getSupportFragmentManager(), PlateChargeDialog.TAG);
+
+            }
+
+            @Override
+            public void print(String startTime, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
+
+
+                PrintTemplateBinding printTemplateBinding = PrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
+
+                printTemplateBinding.placeId.setText(placeID + "");
+
+//                String time = startTime.split(" ")[]
+
+                printTemplateBinding.startTime.setText(startTime);
+                printTemplateBinding.prices.setText(pricing);
+                printTemplateBinding.supportPhone.setText(telephone);
+                printTemplateBinding.description.setText("در صورت عدم حضور پارکیار عدد " + placeID + " را به شماره " + sms_number + " ارسال کنید");
+
+                printTemplateBinding.qrcode.setImageBitmap(assistant.qrGenerator(qr_url + placeID));
+
+                if (place.tag4 != null && !place.tag4.isEmpty()) {
+
+                    printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
+                    printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
+                    printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
+
+                    printTemplateBinding.plateSimpleTag1.setText(place.tag1);
+                    printTemplateBinding.plateSimpleTag2.setText(place.tag2);
+                    printTemplateBinding.plateSimpleTag3.setText(place.tag3);
+                    printTemplateBinding.plateSimpleTag4.setText(place.tag4);
+
+                } else if (place.tag2 == null || place.tag2.isEmpty()) {
+
+                    printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
+                    printTemplateBinding.plateOldArasArea.setVisibility(View.VISIBLE);
+                    printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
+
+                    printTemplateBinding.plateOldArasTag1En.setText(place.tag1);
+                    printTemplateBinding.plateOldArasTag1Fa.setText(place.tag1);
+
+                } else {
+
+                    printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
+                    printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
+                    printTemplateBinding.plateNewArasArea.setVisibility(View.VISIBLE);
+
+                    printTemplateBinding.plateNewArasTag1En.setText(place.tag1);
+                    printTemplateBinding.plateNewArasTag1Fa.setText(place.tag1);
+                    printTemplateBinding.plateNewArasTag2En.setText(place.tag2);
+                    printTemplateBinding.plateNewArasTag2Fa.setText(place.tag2);
+
+                }
+
+                new Handler().postDelayed(() -> {
+
+                    if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
+                        parsianPayment.printParkInfo(startTime, place.tag1, place.tag2, place.tag3, place.tag4, place.id, binding.printArea, pricing, telephone, sms_number, qr_url);
+                    else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
+                        samanPayment.printParkInfo(startTime, place.tag1, place.tag2, place.tag3, place.tag4, place.id, binding.printArea, pricing, telephone, sms_number, qr_url);
+
+                }, 500);
+
+            }
+        }, place);
+        parkInfoDialog.show(getSupportFragmentManager(), ParkDialog.TAG);
+
+
+    }
+
+    //-------------------------------------------------------- API calls
+
     private void getPlaces() {
 
 
         Log.e("getPlaces", "sending ... ");
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository();
+        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
         LoadingBar loadingBar = new LoadingBar(MainActivity.this);
         if (placesLoadedForFirstTime)
             loadingBar.show();
@@ -273,19 +629,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void openParkDialog(Place place) {
-
-        parkDialog = new ParkDialog(this::parkCar, place);
-        parkDialog.show(getSupportFragmentManager(), ParkDialog.TAG);
-
-        showSoftKeyboard();
-
-    }
-
     private void parkCar(ParkBody parkBody) {
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository();
+        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
         LoadingBar loadingBar = new LoadingBar(MainActivity.this);
         loadingBar.show();
 
@@ -318,144 +665,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void openParkInfoDialog(Place place) {
-
-        parkInfoDialog = new ParkInfoDialog(new OnGetInfoClicked() {
-            @Override
-            public void pay(int price, Place place) {
-
-                PlateType selectedPlateType = PlateType.simple;
-
-                if (place.tag2 == null || place.tag2.isEmpty())
-                    selectedPlateType = PlateType.old_aras;
-                else if (place.tag3 == null || place.tag3.isEmpty())
-                    selectedPlateType = PlateType.new_aras;
-
-                if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-                    parsianPayment.paymentRequest(price, UUID.randomUUID().toString(), MainActivity.this, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id);
-                else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-                    samanPayment.paymentRequest(price, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id);
-
-            }
-
-            @Override
-            public void payAsDebt(Place place) {
-
-                exitPark(place.id);
-
-            }
-
-            @Override
-            public void removeExitRequest(Place place1) {
-
-                deleteExitRequest(place1.id);
-
-            }
-
-            @Override
-            public void charge(PlateType plateType, String tag1, String tag2, String tag3, String tag4) {
-
-                parkInfoDialog.dismiss();
-
-                plateChargeDialog = new PlateChargeDialog(amount -> {
-
-
-                    if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-                        parsianPayment.paymentRequest(amount, UUID.randomUUID().toString(), MainActivity.this, plateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id);
-                    else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-                        samanPayment.paymentRequest(amount, plateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id);
-
-                    plateChargeDialog.dismiss();
-
-                }, place);
-
-                plateChargeDialog.show(getSupportFragmentManager(), PlateChargeDialog.TAG);
-
-            }
-
-            @Override
-            public void print(String startTime, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
-
-
-                PrintTemplateBinding printTemplateBinding = PrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
-
-                printTemplateBinding.placeId.setText(placeID + "");
-
-//                String time = startTime.split(" ")[]
-
-                printTemplateBinding.startTime.setText(startTime);
-                printTemplateBinding.prices.setText(pricing);
-                printTemplateBinding.supportPhone.setText(telephone);
-                printTemplateBinding.description.setText("در صورت عدم حضور پارکیار عدد " + placeID + " را به شماره " + sms_number + " ارسال کنید");
-
-                printTemplateBinding.qrcode.setImageBitmap(QRGenerator(qr_url + placeID));
-
-                if (place.tag4 != null && !place.tag4.isEmpty()) {
-
-                    printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
-                    printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
-                    printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
-
-                    printTemplateBinding.plateSimpleTag1.setText(place.tag1);
-                    printTemplateBinding.plateSimpleTag2.setText(place.tag2);
-                    printTemplateBinding.plateSimpleTag3.setText(place.tag3);
-                    printTemplateBinding.plateSimpleTag4.setText(place.tag4);
-
-                } else if (place.tag2 == null || place.tag2.isEmpty()) {
-
-                    printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
-                    printTemplateBinding.plateOldArasArea.setVisibility(View.VISIBLE);
-                    printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
-
-                    printTemplateBinding.plateOldArasTag1En.setText(place.tag1);
-                    printTemplateBinding.plateOldArasTag1Fa.setText(place.tag1);
-
-                } else {
-
-                    printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
-                    printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
-                    printTemplateBinding.plateNewArasArea.setVisibility(View.VISIBLE);
-
-                    printTemplateBinding.plateNewArasTag1En.setText(place.tag1);
-                    printTemplateBinding.plateNewArasTag1Fa.setText(place.tag1);
-                    printTemplateBinding.plateNewArasTag2En.setText(place.tag2);
-                    printTemplateBinding.plateNewArasTag2Fa.setText(place.tag2);
-
-                }
-
-                new Handler().postDelayed(() -> {
-
-                    if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-                        parsianPayment.printParkInfo(startTime, place.tag1, place.tag2, place.tag3, place.tag4, place.id, binding.printArea, pricing, telephone, sms_number, qr_url);
-                    else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-                        samanPayment.printParkInfo(startTime, place.tag1, place.tag2, place.tag3, place.tag4, place.id, binding.printArea, pricing, telephone, sms_number, qr_url);
-
-                }, 500);
-
-            }
-        }, place);
-        parkInfoDialog.show(getSupportFragmentManager(), ParkDialog.TAG);
-
-
-    }
-
-    public Bitmap QRGenerator(String value) {
-
-        // Initializing the QR Encoder with your value to be encoded, type you required and Dimension
-        QRGEncoder qrgEncoder = new QRGEncoder(value, null, QRGContents.Type.TEXT, 512);
-        qrgEncoder.setColorBlack(Color.BLACK);
-        qrgEncoder.setColorWhite(Color.WHITE);
-        Bitmap bitmap = qrgEncoder.getBitmap();
-
-        return bitmap;
-
-
-    }
-
     private void exitPark(int placeID) {
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository();
+        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
         LoadingBar loadingBar = new LoadingBar(MainActivity.this);
         loadingBar.show();
 
@@ -469,7 +682,8 @@ public class MainActivity extends AppCompatActivity {
 
                     if (response.body().getSuccess() == 1) {
 
-                        parkInfoDialog.dismiss();
+                        if (parkInfoDialog != null)
+                            parkInfoDialog.dismiss();
                         getPlaces();
 
                     }
@@ -489,143 +703,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void hideSoftKeyboard(Activity activity) {
-        InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        if (inputMethodManager.isAcceptingText()) {
-            inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
-        }
-    }
-
-    public void showSoftKeyboard() {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-    }
-
-    public void setupUI(View view) {
-
-        // Set up touch listener for non-text box views to hide keyboard.
-        if (!(view instanceof EditText)) {
-            view.setOnTouchListener(new View.OnTouchListener() {
-                public boolean onTouch(View v, MotionEvent event) {
-                    hideSoftKeyboard(MainActivity.this);
-                    return false;
-                }
-            });
-        }
-
-        //If a layout container, iterate over children and seed recursion.
-        if (view instanceof ViewGroup) {
-            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
-                View innerView = ((ViewGroup) view).getChildAt(i);
-                setupUI(innerView);
-            }
-        }
-    }
-
-    private void listeners() {
-
-        binding.refresh.setOnClickListener(view -> getPlaces());
-
-        binding.filterEdittext.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                adapter.filterItems(charSequence.toString());
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
-    }
-
-    private void initMenuPopup() {
-
-        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        popupView = inflater.inflate(R.layout.menu_popup_window03, null);
-        int width = LinearLayout.LayoutParams.MATCH_PARENT;
-        int height = LinearLayout.LayoutParams.MATCH_PARENT;
-        boolean focusable = false; // lets taps outside the popup also dismiss it
-        popupWindow = new PopupWindow(popupView, width, height, focusable);
-
-        popupView.findViewById(R.id.exit_request).setOnClickListener(view -> {
-            startActivity(new Intent(MainActivity.this, ExitRequestActivity.class));
-            popupWindow.dismiss();
-        });
-        popupView.findViewById(R.id.debt_inquiry).setOnClickListener(view -> {
-            startActivity(new Intent(MainActivity.this, DebtCheckActivity.class));
-            popupWindow.dismiss();
-        });
-        popupView.findViewById(R.id.car_number_charge).setOnClickListener(view -> {
-            startActivity(new Intent(MainActivity.this, CarNumberChargeActivity.class));
-            popupWindow.dismiss();
-        });
-        popupView.findViewById(R.id.help).setOnClickListener(view -> {
-
-            Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
-//            intent.putExtra("url","");
-            startActivity(intent);
-            popupWindow.dismiss();
-
-        });
-        watchManName = popupView.findViewById(R.id.name);
-        popupView.findViewById(R.id.about_us).setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
-//            intent.putExtra("url","");
-            startActivity(intent);
-            popupWindow.dismiss();
-        });
-        popupView.findViewById(R.id.rules).setOnClickListener(view -> {
-
-            Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
-//            intent.putExtra("url","");
-            startActivity(intent);
-            popupWindow.dismiss();
-
-        });
-        popupView.findViewById(R.id.root).setOnClickListener(view -> {
-
-            popupWindow.dismiss();
-
-        });
-        popupView.findViewById(R.id.logout).setOnClickListener(view -> {
-
-            confirmDialog = new ConfirmDialog("خروج", "ایا اطمینان دارید؟", "خروج", "لغو", new ConfirmDialog.ConfirmButtonClicks() {
-                @Override
-                public void onConfirmClicked() {
-
-                    logout();
-
-                }
-
-                @Override
-                public void onCancelClicked() {
-
-                    confirmDialog.dismiss();
-                }
-            });
-
-            confirmDialog.show(getSupportFragmentManager(), ConfirmDialog.TAG);
-
-            popupWindow.dismiss();
-
-        });
-
-
-    }
-
     private void deleteExitRequest(int place_id) {
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository();
+        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
         loadingBar.show();
 
         repository.deleteExitRequest("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
@@ -655,105 +736,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void logout() {
-
-        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository();
-        loadingBar.show();
-
-        repository.logout("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), new Callback<LogoutResponse>() {
-            @Override
-            public void onResponse(Call<LogoutResponse> call, Response<LogoutResponse> response) {
-
-
-                loadingBar.dismiss();
-                if (response.isSuccessful()) {
-
-                    SharedPreferencesRepository sh_p = new SharedPreferencesRepository(getApplicationContext());
-                    sh_p.saveString(SharedPreferencesRepository.ACCESS_TOKEN, "");
-                    sh_p.saveString(SharedPreferencesRepository.REFRESH_TOKEN, "");
-                    sh_p.saveString(SharedPreferencesRepository.SUB_DOMAIN, "");
-                    startActivity(new Intent(MainActivity.this, SplashActivity.class));
-                    MainActivity.this.finish();
-                    confirmDialog.dismiss();
-
-                } else
-                    APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> logout());
-            }
-
-            @Override
-            public void onFailure(Call<LogoutResponse> call, Throwable t) {
-                loadingBar.dismiss();
-                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> logout());
-            }
-        });
-
-    }
-
-    public void onMenuToggleClicked(View view) {
-
-        popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
-        menuIsOpen = true;
-
-    }
-
-    public void onExitRequestIconClicked(View view) {
-
-        if (exitRequestCount > 0) {
-
-            adapter.showExitRequestItems(!adapter.isShowExitRequestItems());
-
-
-            if (adapter.isShowExitRequestItems())
-                binding.exitRequests.setBackgroundColor(getResources().getColor(R.color.red));
-            else
-                binding.exitRequests.setBackgroundColor(getResources().getColor(R.color.transparent));
-
-        } else
-            Toast.makeText(getApplicationContext(), "درخواست خروج ندارید", Toast.LENGTH_SHORT).show();
-    }
-
-    public void onBarcodeIconClicked(View view) {
-
-        Intent intent = new Intent();
-        intent.setComponent(new ComponentName("ir.sep.android.smartpos",
-                "ir.sep.android.smartpos.ScannerActivity"));
-        startActivityForResult(intent, 2);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (menuIsOpen) {
-            menuIsOpen = false;
-            popupWindow.dismiss();
-        } else
-            super.onBackPressed();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (samanPayment != null)
-            samanPayment.releaseService();
-        if (timer != null)
-            timer.cancel();
-        timer = null;
-    }
-
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        parsianPayment.handleResult(requestCode, resultCode, data);
-
-        samanPayment.handleResult(requestCode, resultCode, data);
-
-
-    }
-
     private void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id, int placeID) {
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository();
+        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
         loadingBar.show();
 
         amount = Integer.toString((Integer.parseInt(amount) / 10));
@@ -790,5 +776,39 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void logout() {
+
+        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
+        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
+        loadingBar.show();
+
+        repository.logout("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), new Callback<LogoutResponse>() {
+            @Override
+            public void onResponse(Call<LogoutResponse> call, Response<LogoutResponse> response) {
+
+
+                loadingBar.dismiss();
+                if (response.isSuccessful()) {
+
+                    SharedPreferencesRepository sh_p = new SharedPreferencesRepository(getApplicationContext());
+                    sh_p.saveString(SharedPreferencesRepository.ACCESS_TOKEN, "");
+                    sh_p.saveString(SharedPreferencesRepository.REFRESH_TOKEN, "");
+                    sh_p.saveString(SharedPreferencesRepository.SUB_DOMAIN, "");
+                    startActivity(new Intent(MainActivity.this, SplashActivity.class));
+                    MainActivity.this.finish();
+                    confirmDialog.dismiss();
+
+                } else
+                    APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> logout());
+            }
+
+            @Override
+            public void onFailure(Call<LogoutResponse> call, Throwable t) {
+                loadingBar.dismiss();
+                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> logout());
+            }
+        });
+
+    }
 
 }

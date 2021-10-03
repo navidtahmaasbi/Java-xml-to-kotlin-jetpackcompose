@@ -28,7 +28,9 @@ import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.enums.PlateType;
+import com.azarpark.watchman.payment.parsian.ParsianPayment;
 import com.azarpark.watchman.payment.saman.MyServiceConnection;
+import com.azarpark.watchman.payment.saman.SamanPayment;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.responses.DebtHistoryResponse;
 import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse;
@@ -50,16 +52,13 @@ public class DebtCheckActivity extends AppCompatActivity {
     private PlateType selectedTab = PlateType.simple;
     DebtListAdapter adapter;
     LoadingBar loadingBar;
-    MessageDialog messageDialog;
     private int LIMIT = 20;
     int debt = 0;
-
-    MyServiceConnection connection;
-    IProxy service;
     SharedPreferencesRepository sh_r;
-
-    ConfirmDialog confirmDialog;
     Activity activity = this;
+    ParsianPayment parsianPayment;
+    SamanPayment samanPayment;
+    Assistant assistant;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +66,24 @@ public class DebtCheckActivity extends AppCompatActivity {
         binding = ActivityDebtCheckBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        assistant = new Assistant();
+        parsianPayment = new ParsianPayment(getApplicationContext(),new ParsianPayment.ParsianPaymentCallBack() {
+            @Override
+            public void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id, int placeID) {
+                DebtCheckActivity.this.verifyTransaction(plateType, tag1, tag2, tag3, tag4, amount, transaction_id, placeID);
+            }
+
+            @Override
+            public void getScannerData(int placeID) {
+
+            }
+        });
+        samanPayment = new SamanPayment(getApplicationContext(), DebtCheckActivity.this, new SamanPayment.SamanPaymentCallBack() {
+            @Override
+            public void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id, int placeID) {
+                DebtCheckActivity.this.verifyTransaction(plateType, tag1, tag2, tag3, tag4, amount, transaction_id, placeID);
+            }
+        });
         sh_r = new SharedPreferencesRepository(getApplicationContext());
 
         binding.plateSimpleTag1.requestFocus();
@@ -92,20 +109,6 @@ public class DebtCheckActivity extends AppCompatActivity {
             setSelectedTab(PlateType.new_aras);
 
         });
-
-//        binding.scrollView.getViewTreeObserver()
-//                .addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-//                    @Override
-//                    public void onScrollChanged() {
-//                        if (binding.scrollView.getChildAt(0).getBottom()
-//                                <= (binding.scrollView.getHeight() + binding.scrollView.getScrollY())) {
-//                            System.out.println("--------> end");
-//                            loadData(true);
-//                        } else {
-//                            //scroll view is not at bottom
-//                        }
-//                    }
-//                });
 
         binding.submit.setOnClickListener(view -> loadData(false));
 
@@ -235,6 +238,83 @@ public class DebtCheckActivity extends AppCompatActivity {
 
     }
 
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        parsianPayment.handleResult(requestCode, resultCode, data);
+
+        samanPayment.handleResult(requestCode, resultCode, data);
+    }
+
+    public void myOnBackPressed(View view) {
+
+        onBackPressed();
+
+        View v = this.getCurrentFocus();
+        if (v != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        }
+
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (samanPayment != null)
+            samanPayment.releaseService();
+    }
+
+    //------------------------------------------------------------ view
+
+    private void setSelectedTab(PlateType selectedTab) {
+
+        this.selectedTab = selectedTab;
+
+        if (selectedTab == PlateType.simple) {
+
+            binding.plateSimpleSelector.setBackgroundResource(R.drawable.selected_tab);
+            binding.plateOldArasSelector.setBackgroundResource(R.drawable.unselected_tab);
+            binding.plateNewArasSelector.setBackgroundResource(R.drawable.unselected_tab);
+
+            binding.plateSimpleTitle.setTextColor(getResources().getColor(R.color.white));
+            binding.plateOldArasTitle.setTextColor(getResources().getColor(R.color.black));
+            binding.plateNewArasTitle.setTextColor(getResources().getColor(R.color.black));
+
+            binding.plateSimpleArea.setVisibility(View.VISIBLE);
+            binding.plateOldAras.setVisibility(View.GONE);
+            binding.plateNewArasArea.setVisibility(View.GONE);
+        } else if (selectedTab == PlateType.old_aras) {
+
+            binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_tab);
+            binding.plateOldArasSelector.setBackgroundResource(R.drawable.selected_tab);
+            binding.plateNewArasSelector.setBackgroundResource(R.drawable.unselected_tab);
+
+            binding.plateSimpleTitle.setTextColor(getResources().getColor(R.color.black));
+            binding.plateOldArasTitle.setTextColor(getResources().getColor(R.color.white));
+            binding.plateNewArasTitle.setTextColor(getResources().getColor(R.color.black));
+
+            binding.plateSimpleArea.setVisibility(View.GONE);
+            binding.plateOldAras.setVisibility(View.VISIBLE);
+            binding.plateNewArasArea.setVisibility(View.GONE);
+        } else if (selectedTab == PlateType.new_aras) {
+
+            binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_tab);
+            binding.plateOldArasSelector.setBackgroundResource(R.drawable.unselected_tab);
+            binding.plateNewArasSelector.setBackgroundResource(R.drawable.selected_tab);
+
+            binding.plateSimpleTitle.setTextColor(getResources().getColor(R.color.black));
+            binding.plateOldArasTitle.setTextColor(getResources().getColor(R.color.black));
+            binding.plateNewArasTitle.setTextColor(getResources().getColor(R.color.white));
+
+            binding.plateSimpleArea.setVisibility(View.GONE);
+            binding.plateOldAras.setVisibility(View.GONE);
+            binding.plateNewArasArea.setVisibility(View.VISIBLE);
+        }
+
+    }
+
+    //------------------------------------------------------------ api calls
+
     private void loadData(boolean isLazyLoad) {
 
         Assistant assistant = new Assistant();
@@ -296,7 +376,7 @@ public class DebtCheckActivity extends AppCompatActivity {
     private void getCarDebtHistory(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset) {
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository();
+        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
         loadingBar.show();
 
         repository.getCarDebtHistory("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
@@ -339,207 +419,27 @@ public class DebtCheckActivity extends AppCompatActivity {
 
     }
 
-    private void setSelectedTab(PlateType selectedTab) {
-
-        this.selectedTab = selectedTab;
-
-        if (selectedTab == PlateType.simple) {
-
-            binding.plateSimpleSelector.setBackgroundResource(R.drawable.selected_tab);
-            binding.plateOldArasSelector.setBackgroundResource(R.drawable.unselected_tab);
-            binding.plateNewArasSelector.setBackgroundResource(R.drawable.unselected_tab);
-
-            binding.plateSimpleTitle.setTextColor(getResources().getColor(R.color.white));
-            binding.plateOldArasTitle.setTextColor(getResources().getColor(R.color.black));
-            binding.plateNewArasTitle.setTextColor(getResources().getColor(R.color.black));
-
-            binding.plateSimpleArea.setVisibility(View.VISIBLE);
-            binding.plateOldAras.setVisibility(View.GONE);
-            binding.plateNewArasArea.setVisibility(View.GONE);
-        } else if (selectedTab == PlateType.old_aras) {
-
-            binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_tab);
-            binding.plateOldArasSelector.setBackgroundResource(R.drawable.selected_tab);
-            binding.plateNewArasSelector.setBackgroundResource(R.drawable.unselected_tab);
-
-            binding.plateSimpleTitle.setTextColor(getResources().getColor(R.color.black));
-            binding.plateOldArasTitle.setTextColor(getResources().getColor(R.color.white));
-            binding.plateNewArasTitle.setTextColor(getResources().getColor(R.color.black));
-
-            binding.plateSimpleArea.setVisibility(View.GONE);
-            binding.plateOldAras.setVisibility(View.VISIBLE);
-            binding.plateNewArasArea.setVisibility(View.GONE);
-        } else if (selectedTab == PlateType.new_aras) {
-
-            binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_tab);
-            binding.plateOldArasSelector.setBackgroundResource(R.drawable.unselected_tab);
-            binding.plateNewArasSelector.setBackgroundResource(R.drawable.selected_tab);
-
-            binding.plateSimpleTitle.setTextColor(getResources().getColor(R.color.black));
-            binding.plateOldArasTitle.setTextColor(getResources().getColor(R.color.black));
-            binding.plateNewArasTitle.setTextColor(getResources().getColor(R.color.white));
-
-            binding.plateSimpleArea.setVisibility(View.GONE);
-            binding.plateOldAras.setVisibility(View.GONE);
-            binding.plateNewArasArea.setVisibility(View.VISIBLE);
-        }
-
-    }
-
-    public void myOnBackPressed(View view) {
-
-        onBackPressed();
-
-        View v = this.getCurrentFocus();
-        if (v != null) {
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-        }
-
-    }
-
-    //-----------------------------------------------------------------------------
-
-
-    private void initService() {
-
-        Log.i("TAG", "initService()");
-        connection = new MyServiceConnection(service);
-        Intent i = new Intent();
-        i.setClassName("ir.sep.android.smartpos", "ir.sep.android.Service.Proxy");
-        boolean ret = bindService(i, connection, Context.BIND_AUTO_CREATE);
-        Log.i("TAG", "initService() bound value: " + ret);
-    }
-
-    private void releaseService() {
-        if (connection != null)
-        unbindService(connection);
-        connection = null;
-        Log.d(TAG, "releaseService(): unbound.");
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        releaseService();
-    }
-
     public void paymentRequest(int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
 
         amount *= 10;
-        System.out.println("---------> amount : " + amount);
 
-        sh_r.saveString(SharedPreferencesRepository.PLATE_TYPE, plateType.toString());
-        sh_r.saveString(SharedPreferencesRepository.TAG1, tag1);
-        sh_r.saveString(SharedPreferencesRepository.TAG2, tag2);
-        sh_r.saveString(SharedPreferencesRepository.TAG3, tag3);
-        sh_r.saveString(SharedPreferencesRepository.TAG4, tag4);
-        sh_r.saveString(SharedPreferencesRepository.TAG4, tag4);
-        sh_r.saveString(SharedPreferencesRepository.AMOUNT, String.valueOf(amount));
-        sh_r.saveString(SharedPreferencesRepository.PLACE_ID, Integer.toString(placeID));
-
-        Intent intent = new Intent();
-        intent.putExtra("TransType", 1);
-        intent.putExtra("Amount", String.valueOf(amount));
-        intent.putExtra("ResNum", UUID.randomUUID().toString());
-        intent.putExtra("AppId", String.valueOf(0));
-
-        intent.setComponent(new ComponentName("ir.sep.android.smartpos", "ir.sep.android.smartpos.ThirdPartyActivity"));
-
-        startActivityForResult(intent, 1);
-
-    }
-
-    //    int result= service.PrintByBitmap(getBitmapFromView(root));
-    private Bitmap getBitmapFromView(View view) {
-        //Define a bitmap with the same size as the view
-        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
-        //Bind a canvas to it
-        Canvas canvas = new Canvas(returnedBitmap);
-        //Get the view's background
-        Drawable bgDrawable = view.getBackground();
-        if (bgDrawable != null) {
-            //has background drawable, then draw it on the canvas
-            bgDrawable.draw(canvas);
-        } else {
-            //does not have background drawable, then draw white background on the canvas
-            canvas.drawColor(Color.WHITE);
-        }
-        // draw the view on the canvas
-        view.draw(canvas);
-        //return the bitmap
-        return returnedBitmap;
-    }
-
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_OK && requestCode == 1) {
-
-            int state = data.getIntExtra("State", -1); // Response Code Switch
-
-            String refNum = data.getStringExtra("RefNum"); // Reference number
-            String resNum = data.getStringExtra("ResNum");
-
-            sh_r.saveString(SharedPreferencesRepository.REF_NUM, refNum);
-            // you should store the resNum variable and then call verify method
-            System.out.println("--------> state : " + state);
-            System.out.println("--------> refNum : " + refNum);
-            System.out.println("--------> resNum : " + resNum);
-            if (state == 0) // successful
-            {
-                Toast.makeText(getBaseContext(), "Purchase did sucssessful....", Toast.LENGTH_LONG).show();
-
-                verifyTransaction(
-                        PlateType.valueOf(sh_r.getString(SharedPreferencesRepository.PLATE_TYPE)),
-                        sh_r.getString(SharedPreferencesRepository.TAG1),
-                        sh_r.getString(SharedPreferencesRepository.TAG2, "0"),
-                        sh_r.getString(SharedPreferencesRepository.TAG3, "0"),
-                        sh_r.getString(SharedPreferencesRepository.TAG4, "0"),
-                        sh_r.getString(SharedPreferencesRepository.AMOUNT),
-                        refNum,
-                        Integer.parseInt(sh_r.getString(SharedPreferencesRepository.PLACE_ID))
-                );
-
-
-            } else
-                Toast.makeText(getBaseContext(), "Purchase did faild....", Toast.LENGTH_LONG).show();
-
-        } else if (resultCode == RESULT_OK && requestCode == 2) {
-            System.out.println("---------> ScannerResult :" + data.getStringExtra("ScannerResult"));//https://irana.app/how?qr=090YK6
-        }
-    }
-
-    public void verify(String refNum, String resNum) {
-
-        try {
-            int verifyResult = service.VerifyTransaction(0, refNum, resNum);
-            if (verifyResult == 0) // sucsess
-            {
-                Toast.makeText(getBaseContext(), "Purchase did sucssessful....", Toast.LENGTH_LONG).show();
-            } else if (verifyResult == 1)//sucsess but print is faild
-            {
-                Toast.makeText(getBaseContext(), "Purchase did sucssessful....", Toast.LENGTH_LONG).show();
-                int r = service.PrintByRefNum(refNum);
-            } else // faild
-            {
-                Toast.makeText(getBaseContext(), "Purchase did faild....", Toast.LENGTH_LONG).show();
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
+            parsianPayment.paymentRequest(amount, UUID.randomUUID().toString(), DebtCheckActivity.this, plateType, tag1, tag2, tag3, tag4, placeID);
+        else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
+            samanPayment.paymentRequest(UUID.randomUUID().toString(),amount, plateType, tag1, tag2, tag3, tag4, placeID);
 
     }
 
     private void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id, int placeID) {
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository();
+        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
         loadingBar.show();
 
         amount = Integer.toString((Integer.parseInt(amount) / 10));
 
         String finalAmount = amount;
+        String finalAmount1 = amount;
         repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
                 plateType, tag1, tag2, tag3, tag4, amount, transaction_id, placeID, new Callback<VerifyTransactionResponse>() {
                     @Override
@@ -548,23 +448,19 @@ public class DebtCheckActivity extends AppCompatActivity {
                         System.out.println("--------> url : " + response.raw().request().url());
 
                         loadingBar.dismiss();
-                        if (response.isSuccessful()) {
+                        if (response.isSuccessful())
 
                             Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
 
-                            onBackPressed();
-
-
-                        } else APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(),activity, response, () -> verifyTransaction(plateType,tag1,tag2,tag3,tag4, finalAmount,transaction_id,placeID));
+                        else APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(),activity, response, () -> verifyTransaction(plateType,tag1,tag2,tag3,tag4, finalAmount1,transaction_id,placeID));
                     }
 
                     @Override
                     public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
                         loadingBar.dismiss();
-                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(),t, () -> verifyTransaction(plateType,tag1,tag2,tag3,tag4, finalAmount,transaction_id,placeID));
+                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(),t, () -> verifyTransaction(plateType,tag1,tag2,tag3,tag4, finalAmount1,transaction_id,placeID));
                     }
                 });
 
     }
-
 }

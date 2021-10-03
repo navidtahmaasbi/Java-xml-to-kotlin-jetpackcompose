@@ -71,10 +71,9 @@ public class SamanPayment {
         Log.i("TAG", "initService() bound value: " + ret);
     }
 
-    public void paymentRequest(int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
+    public void paymentRequest(String resNum,int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
 
         amount *= 10;
-        System.out.println("---------> amount : " + amount);
 
         sh_r.saveString(SharedPreferencesRepository.PLATE_TYPE, plateType.toString());
         sh_r.saveString(SharedPreferencesRepository.TAG1, tag1);
@@ -88,8 +87,15 @@ public class SamanPayment {
         Intent intent = new Intent();
         intent.putExtra("TransType", 1);
         intent.putExtra("Amount", String.valueOf(amount));
-        intent.putExtra("ResNum", UUID.randomUUID().toString());
-        intent.putExtra("AppId", String.valueOf(0));
+        intent.putExtra("ResNum", resNum);
+        intent.putExtra("AppId", "0");
+
+//        for (String key:intent.getExtras().keySet()) {
+            Log.d("-----> TransType" , String.valueOf(intent.getExtras().getInt("TransType")));
+            Log.d("-----> Amount" , intent.getExtras().getString("Amount"));
+            Log.d("-----> ResNum" , intent.getExtras().getString("ResNum"));
+            Log.d("-----> AppId" , intent.getExtras().getString("AppId"));
+//        }
 
         intent.setComponent(new ComponentName("ir.sep.android.smartpos", "ir.sep.android.smartpos.ThirdPartyActivity"));
 
@@ -112,17 +118,16 @@ public class SamanPayment {
             {
                 Log.e("saman payment", "Purchase did successful....");
 
-                //add interface and call method to verify
-//                verifyTransaction(
-//                        PlateType.valueOf(sh_r.getString(SharedPreferencesRepository.PLATE_TYPE)),
-//                        sh_r.getString(SharedPreferencesRepository.TAG1),
-//                        sh_r.getString(SharedPreferencesRepository.TAG2, "0"),
-//                        sh_r.getString(SharedPreferencesRepository.TAG3, "0"),
-//                        sh_r.getString(SharedPreferencesRepository.TAG4, "0"),
-//                        sh_r.getString(SharedPreferencesRepository.AMOUNT),
-//                        refNum,
-//                        Integer.parseInt(sh_r.getString(SharedPreferencesRepository.PLACE_ID))
-//                );
+                samanPaymentCallBack.verifyTransaction(
+                        PlateType.valueOf(sh_r.getString(SharedPreferencesRepository.PLATE_TYPE)),
+                        sh_r.getString(SharedPreferencesRepository.TAG1),
+                        sh_r.getString(SharedPreferencesRepository.TAG2, "0"),
+                        sh_r.getString(SharedPreferencesRepository.TAG3, "0"),
+                        sh_r.getString(SharedPreferencesRepository.TAG4, "0"),
+                        sh_r.getString(SharedPreferencesRepository.AMOUNT),
+                        refNum,
+                        Integer.parseInt(sh_r.getString(SharedPreferencesRepository.PLACE_ID))
+                );
 
 
             } else

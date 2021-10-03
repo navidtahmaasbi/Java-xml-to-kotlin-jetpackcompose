@@ -82,7 +82,7 @@ public class SplashActivity extends AppCompatActivity {
     private void getCities() {
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository();
+        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
 
         repository.getCities("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), new Callback<GetCitiesResponse>() {
             @Override
@@ -108,7 +108,7 @@ public class SplashActivity extends AppCompatActivity {
     private void getSplash() {
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository();
+        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
 
         repository.getSplashData("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), new Callback<SplashResponse>() {
             @Override

@@ -82,7 +82,8 @@ public class APIErrorHandler {
             @Override
             public void onCancelClicked() {
                 Log.d("---------> ", "dismiss");
-                confirmDialog.dismiss();
+                if (confirmDialog != null)
+                    confirmDialog.dismiss();
                 onfailureDialogIsShowing = false;
 
             }

@@ -25,23 +25,29 @@ public class ParsianPayment {
 
     public static int PAYMENT_REQUEST_CODE = 103;
     String PLATE_TYPE = "plate_type";
+    public static String QR_DATA = "qr_data";
     String TAG1 = "tag1";
     String TAG2 = "tag2";
     String TAG3 = "tag3";
     String TAG4 = "tag4";
     String PLACE_ID = "place_id";
+    public static int QR_SCANER_REQUEST_CODE = 350;
 
     Context context;
+    ParsianPaymentCallBack parsianPaymentCallBack;
 
-    public ParsianPayment(Context context) {
+    public ParsianPayment(Context context, ParsianPaymentCallBack parsianPaymentCallBack) {
         this.context = context;
+        this.parsianPaymentCallBack = parsianPaymentCallBack;
     }
 
     public void paymentRequest(int amount, String res_num, Activity activity, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
 
+//        amount *= amount;
+
         Intent intent = new Intent("ir.totan.pos.view.cart.TXN");
         intent.putExtra("type", 3);
-        intent.putExtra("amount", "1000");
+        intent.putExtra("amount", Integer.toString(amount));
         intent.putExtra("res_num", res_num);
         intent.putExtra(PLATE_TYPE, plateType.toString());
         intent.putExtra(TAG1, tag1);
@@ -55,24 +61,58 @@ public class ParsianPayment {
 
     public void handleResult(int requestCode, int resultCode, Intent data) {
 
+        System.out.println("----------> aaaaa11111");
+
         if (requestCode == PAYMENT_REQUEST_CODE) {
 
             if (resultCode == Activity.RESULT_OK) {
 
+                System.out.println("----------> aaaaaw2222");
+
                 Bundle b = data.getBundleExtra("response");
                 Log.d("bundle data", getBundleString(b));
+
+                long amount = b.getLong("amount");
+                String result = b.getString("result");
+                String pan = b.getString("pan");
+                String rrn = b.getString("rrn");
+                Long date = b.getLong("date");
+                int trace = b.getInt("trace");
+                String message = b.getString("message");
+                String res_num = b.getString("res_num");
+
+                 PlateType plateType = PlateType.valueOf(b.getString(PLATE_TYPE));
+                 String tag1 = b.getString(TAG1);
+                 String tag2 = b.getString(TAG2);
+                 String tag3 = b.getString(TAG3);
+                 String tag4 = b.getString(TAG4);
+                 int placeID = b.getInt(PLACE_ID);
+
+                System.out.println("----------> aaaaaw3333");
+
+                parsianPaymentCallBack.verifyTransaction(plateType,tag1,tag2,tag3,tag4,Long.toString(amount),res_num,placeID);
 
             } else if (resultCode == Activity.RESULT_CANCELED)
                 Log.d("Parsian Payment", "result canceled");
             else
                 Log.d("Parsian Payment", "unknown result : " + resultCode);
 
-        } else
+        } else if (requestCode == QR_SCANER_REQUEST_CODE){
+
+            String scannedData = data.getExtras().getString(QR_DATA);
+
+            int placeId = Integer.parseInt(scannedData.split("=")[scannedData.split("=").length - 1]);
+
+            System.out.println("---------> scannedData : " + scannedData);
+            System.out.println("---------> placeId : " + placeId);
+
+            parsianPaymentCallBack.getScannerData(placeId);
+
+        }
+        else
             Log.d("Parsian Payment", "result is not for parsaian payment");
 
     }
-
-
 
     private String getBundleString(Bundle b) {
 
@@ -104,8 +144,6 @@ public class ParsianPayment {
         return sb.toString();
 
     }
-
-
 
     public void printParkInfo (String startTime, String tag1, String tag2, String tag3, String tag4,
                                int placeID, ViewGroup viewGroupForBindFactor, String pricing, String telephone, String sms_number,
@@ -205,6 +243,14 @@ public class ParsianPayment {
 
         return bitmap;
 
+
+    }
+
+    public interface ParsianPaymentCallBack{
+
+        public void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id, int placeID);
+
+        public void getScannerData(int placeID);
 
     }
 

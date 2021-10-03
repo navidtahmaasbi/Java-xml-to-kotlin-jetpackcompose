@@ -3,7 +3,8 @@
     package="com.azarpark.watchman">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -13,22 +14,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Watchman">
         <activity
+            android:name=".activities.QRScanerActivity"
+            android:exported="true" />
+        <activity
             android:name=".activities.WebViewActivity"
             android:exported="true" />
         <activity
             android:name=".activities.CarNumberChargeActivity"
             android:exported="true"
-            android:windowSoftInputMode="stateVisible">
-
-        </activity>
+            android:windowSoftInputMode="stateVisible"></activity>
         <activity
             android:name=".activities.DebtCheckActivity"
             android:exported="true"
-            android:windowSoftInputMode="stateVisible"/>
+            android:windowSoftInputMode="stateVisible" />
         <activity
             android:name=".activities.ExitRequestActivity"
             android:exported="true"
-            android:windowSoftInputMode="stateVisible"/>
+            android:windowSoftInputMode="stateVisible" />
         <activity
             android:name=".activities.DebtListActivity"
             android:exported="true" />
@@ -38,9 +40,7 @@
         <activity
             android:name=".activities.MainActivity"
             android:exported="true"
-            android:windowSoftInputMode="stateHidden">
-
-        </activity>
+            android:windowSoftInputMode="stateHidden"></activity>
         <activity
             android:name=".activities.LoginActivity"
             android:exported="true"
@@ -48,8 +48,7 @@
             android:theme="@style/Theme.Watchman.NoActionBar" />
         <activity
             android:name=".activities.SplashActivity"
-            android:exported="true"
-            >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

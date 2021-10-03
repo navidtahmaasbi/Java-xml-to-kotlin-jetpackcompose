@@ -160,7 +160,7 @@ public class ExitRequestActivity extends AppCompatActivity {
     private void exitRequest(PlateType plateType, String tag1, String tag2, String tag3, String tag4) {
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository();
+        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
         loadingBar.show();
 
         repository.exitRequest("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),

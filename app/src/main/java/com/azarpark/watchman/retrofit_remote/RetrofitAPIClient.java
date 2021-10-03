@@ -1,5 +1,9 @@
 package com.azarpark.watchman.retrofit_remote;
 
+import android.content.Context;
+
+import com.azarpark.watchman.utils.SharedPreferencesRepository;
+
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -21,7 +25,11 @@ public class RetrofitAPIClient {
         return initialRetrofit;
 
     }
-    public static Retrofit getClient(){
+    public static Retrofit getClient(Context context){
+
+        SharedPreferencesRepository sh_p = new SharedPreferencesRepository(context);
+
+        BASE_URL = "https://" + sh_p.getString(SharedPreferencesRepository.SUB_DOMAIN) + ".backend.iranademo.ir";
 
         if (retrofit == null)
             retrofit = new Retrofit.Builder()

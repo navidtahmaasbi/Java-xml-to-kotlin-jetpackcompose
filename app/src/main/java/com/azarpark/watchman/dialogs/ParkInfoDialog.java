@@ -187,7 +187,7 @@ public class ParkInfoDialog extends DialogFragment {
     private void getParkData(Place place) {
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository();
+        RetrofitAPIRepository repository = new RetrofitAPIRepository(getContext());
         LoadingBar loadingBar = new LoadingBar(getActivity());
 
         repository.estimateParkPrice("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), place.id, new Callback<EstimateParkPriceResponse>() {
