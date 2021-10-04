@@ -100,14 +100,14 @@ public class ParkDialog extends DialogFragment {
                         "simple",
                         place.id,
                         place.street_id
-                        ));
+                        ),binding.printCheckbox.isChecked());
             else if (selectedTab == PlateType.old_aras)
                 onParkClicked.clicked(new ParkBody(
                         binding.plateOldAras.getText().toString(),
                         "old_aras",
                         place.id,
                         place.street_id
-                ));
+                ),binding.printCheckbox.isChecked());
             else
                 onParkClicked.clicked(new ParkBody(
                         binding.plateNewArasTag1.getText().toString(),
@@ -115,7 +115,7 @@ public class ParkDialog extends DialogFragment {
                         "new_aras",
                         place.id,
                         place.street_id
-                ));
+                ),binding.printCheckbox.isChecked());
         });
 
         binding.plateSimpleTag1.addTextChangedListener(new TextWatcher() {

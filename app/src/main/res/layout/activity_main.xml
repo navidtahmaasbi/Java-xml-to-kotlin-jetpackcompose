@@ -11,8 +11,9 @@
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/print_area">
+        android:layout_height="wrap_content"
+        android:id="@+id/print_area"
+        android:paddingBottom="@dimen/_10sdp">
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -147,7 +148,8 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:id="@+id/aaabbb">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view"

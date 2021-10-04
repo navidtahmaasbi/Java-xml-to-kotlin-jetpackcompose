@@ -74,6 +74,8 @@ public class APIErrorHandler {
             @Override
             public void onConfirmClicked() {
 
+                if (confirmDialog != null)
+                    confirmDialog.dismiss();
                 onfailureDialogIsShowing = false;
                 onResponseErrorAction.refresh();
 

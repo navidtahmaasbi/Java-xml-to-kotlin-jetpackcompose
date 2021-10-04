@@ -65,21 +65,26 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         assistant = new Assistant();
-        parsianPayment = new ParsianPayment(getApplicationContext(),new ParsianPayment.ParsianPaymentCallBack() {
+        parsianPayment = new ParsianPayment(getApplicationContext(),activity,new ParsianPayment.ParsianPaymentCallBack() {
             @Override
-            public void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id, int placeID) {
-                CarNumberChargeActivity.this.verifyTransaction(plateType, tag1, tag2, tag3, tag4, amount, transaction_id, placeID);
+            public void verifyTransaction(String amount, String our_token, String bank_token, int placeID) {
+                CarNumberChargeActivity.this.verifyTransaction(amount, our_token, bank_token, placeID);
             }
 
             @Override
             public void getScannerData(int placeID) {
-
+                //dont need to do any thing in CarNumberActivity
             }
-        });
+        },getSupportFragmentManager());
         samanPayment = new SamanPayment(getApplicationContext(), CarNumberChargeActivity.this, new SamanPayment.SamanPaymentCallBack() {
             @Override
-            public void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id, int placeID) {
-                CarNumberChargeActivity.this.verifyTransaction(plateType, tag1, tag2, tag3, tag4, amount, transaction_id, placeID);
+            public void verifyTransaction(String amount, String our_token, String bank_token, int placeID) {
+                CarNumberChargeActivity.this.verifyTransaction(amount, our_token, bank_token, placeID);
+            }
+
+            @Override
+            public void getScannerData(int placeID) {
+                //don't need to do anything in CarNumberCharge Activity
             }
         });
         binding.plateSimpleTag1.requestFocus();
@@ -376,16 +381,18 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
         amount = amount.replace(",", "");
 
+        long res_num = Assistant.generateResNum();
+
         if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-            parsianPayment.paymentRequest(Integer.parseInt(amount), UUID.randomUUID().toString(), CarNumberChargeActivity.this, plateType, tag1, tag2, tag3, tag4, -1);
+            parsianPayment.paymentRequest(Integer.parseInt(amount), res_num, CarNumberChargeActivity.this, plateType, tag1, tag2, tag3, tag4, -1);
         else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
             samanPayment.paymentRequest(UUID.randomUUID().toString(),Integer.parseInt(amount), plateType, tag1, tag2, tag3, tag4, -1);
 
     }
 
-    private void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id, int placeID) {
+    private void verifyTransaction(String amount, String our_token, String bank_token, int placeID) {
 
-        Log.d("-------->","verifyTransaction");
+        Log.d("verifyTransaction", "started ...");
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
@@ -393,27 +400,27 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
         amount = Integer.toString((Integer.parseInt(amount) / 10));
 
-        String finalAmount1 = amount;
+        String finalAmount = amount;
         repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-                plateType, tag1, tag2, tag3, tag4, amount, transaction_id, placeID, new Callback<VerifyTransactionResponse>() {
+                amount, our_token, bank_token, placeID, new Callback<VerifyTransactionResponse>() {
                     @Override
                     public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
 
-                        System.out.println("--------> url : " + response.raw().request().url());
-
+                        loadingBar.dismiss();
                         loadingBar.dismiss();
                         if (response.isSuccessful())
 
                             Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
 
                         else
-                            APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> verifyTransaction(plateType, tag1, tag2, tag3, tag4, finalAmount1, transaction_id, placeID));
+                            APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> verifyTransaction(finalAmount, our_token, bank_token, placeID));
                     }
 
                     @Override
                     public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
                         loadingBar.dismiss();
-                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> verifyTransaction(plateType, tag1, tag2, tag3, tag4, finalAmount1, transaction_id, placeID));
+                        t.printStackTrace();
+                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> verifyTransaction(finalAmount, our_token, bank_token, placeID));
                     }
                 });
 

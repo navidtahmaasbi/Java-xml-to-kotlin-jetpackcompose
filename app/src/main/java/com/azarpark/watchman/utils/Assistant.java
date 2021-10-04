@@ -19,6 +19,12 @@ public class Assistant {
     public static int SAMAN = 1, PASRIAN = 2 , SELECTED_PAYMENT = 2;
     public static int MIN_PRICE_FOR_PAYMENT = 100;
 
+    public static long generateResNum(){
+
+        return System.currentTimeMillis();
+
+    }
+
     public boolean isMobile(String mobile) {
 
         return mobile.matches("^09\\d{9}$");

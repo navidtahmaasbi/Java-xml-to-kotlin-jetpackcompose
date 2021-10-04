@@ -4,5 +4,5 @@ import com.azarpark.watchman.retrofit_remote.bodies.ParkBody;
 
 public interface OnParkClicked {
 
-    public void clicked(ParkBody parkBody);
+    public void clicked(ParkBody parkBody, boolean printFactor);
 }

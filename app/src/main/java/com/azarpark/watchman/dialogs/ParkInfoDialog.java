@@ -201,6 +201,8 @@ public class ParkInfoDialog extends DialogFragment {
 
                         binding.exitRequestArea.setVisibility(View.VISIBLE);
                         binding.paymentArea.setVisibility(View.GONE);
+                        binding.chargeArea.setVisibility(View.GONE);
+                        binding.pay.setVisibility(View.GONE);
 
                     } else {
 
@@ -263,12 +265,14 @@ public class ParkInfoDialog extends DialogFragment {
 
 
 
-                                if (carBalance > parkPrice){
+                                if (carBalance >= parkPrice){
 
                                     totalPrice = 0 ;
 
                                     binding.pay.setBackgroundDrawable(getResources().getDrawable(R.drawable.green_5_bg));
                                     binding.pay.setText("پرداخت از اعتبار");
+
+
 
                                     binding.payAsDebt.setVisibility(View.GONE);
 

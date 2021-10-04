@@ -1,5 +1,7 @@
 package com.azarpark.watchman.activities;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -8,9 +10,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.RemoteException;
 import android.print.PrintManager;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -100,10 +107,21 @@ public class MainActivity extends AppCompatActivity {
         setupUIForKeyboardHideOnOutsideTouch(binding.getRoot());
 
         assistant = new Assistant();
-        parsianPayment = new ParsianPayment(getApplicationContext(), new ParsianPayment.ParsianPaymentCallBack() {
+        parsianPayment = new ParsianPayment(getApplicationContext(),activity, new ParsianPayment.ParsianPaymentCallBack() {
             @Override
-            public void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id, int placeID) {
-                MainActivity.this.verifyTransaction(plateType, tag1, tag2, tag3, tag4, amount, transaction_id, placeID);
+            public void verifyTransaction(String amount, String our_token, String bank_token, int placeID) {
+                MainActivity.this.verifyTransaction(amount, our_token, bank_token, placeID);
+            }
+
+            @Override
+            public void getScannerData(int placeID) {
+                handleScannedPlaceID(placeID);
+            }
+        }, getSupportFragmentManager());
+        samanPayment = new SamanPayment(getApplicationContext(), MainActivity.this, new SamanPayment.SamanPaymentCallBack() {
+            @Override
+            public void verifyTransaction(String amount, String our_token, String bank_token, int placeID) {
+                MainActivity.this.verifyTransaction(amount, our_token, bank_token, placeID);
             }
 
             @Override
@@ -111,24 +129,26 @@ public class MainActivity extends AppCompatActivity {
                 handleScannedPlaceID(placeID);
             }
         });
-        samanPayment = new SamanPayment(getApplicationContext(), MainActivity.this, new SamanPayment.SamanPaymentCallBack() {
-            @Override
-            public void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id, int placeID) {
-                MainActivity.this.verifyTransaction(plateType, tag1, tag2, tag3, tag4, amount, transaction_id, placeID);
-            }
-        });
         sh_r = new SharedPreferencesRepository(getApplicationContext());
 
-//        qr_url = sh_r.getString(SharedPreferencesRepository.qr_url, "");
-//        refresh_time = Integer.parseInt(sh_r.getString(SharedPreferencesRepository.refresh_time, "10"));
-//        telephone = sh_r.getString(SharedPreferencesRepository.telephone, "");
-//        pricing = sh_r.getString(SharedPreferencesRepository.pricing, "");
-//        sms_number = sh_r.getString(SharedPreferencesRepository.sms_number, "");
-//        rules_url = sh_r.getString(SharedPreferencesRepository.rules_url, "");
-//        about_us_url = sh_r.getString(SharedPreferencesRepository.about_us_url, "");
-//        guide_url = sh_r.getString(SharedPreferencesRepository.guide_url, "");
+        qr_url = sh_r.getString(SharedPreferencesRepository.qr_url, "");
+        refresh_time = Integer.parseInt(sh_r.getString(SharedPreferencesRepository.refresh_time, "10"));
+        telephone = sh_r.getString(SharedPreferencesRepository.telephone, "");
+        pricing = sh_r.getString(SharedPreferencesRepository.pricing, "");
+        sms_number = sh_r.getString(SharedPreferencesRepository.sms_number, "");
+        rules_url = sh_r.getString(SharedPreferencesRepository.rules_url, "");
+        about_us_url = sh_r.getString(SharedPreferencesRepository.about_us_url, "");
+        guide_url = sh_r.getString(SharedPreferencesRepository.guide_url, "");
 
-//        initService();
+
+        System.out.println("----------> qr_url : " + qr_url);
+        System.out.println("----------> refresh_time : " + refresh_time);
+        System.out.println("----------> telephone : " + telephone);
+        System.out.println("----------> pricing : " + pricing);
+        System.out.println("----------> sms_number : " + sms_number);
+        System.out.println("----------> rules_url : " + rules_url);
+        System.out.println("----------> about_us_url : " + about_us_url);
+        System.out.println("----------> guide_url : " + guide_url);
 
         try {
             PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -430,8 +450,10 @@ public class MainActivity extends AppCompatActivity {
                 else if (place.tag3 == null || place.tag3.isEmpty())
                     selectedPlateType = PlateType.new_aras;
 
+                long res_num = Assistant.generateResNum();
+
                 if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-                    parsianPayment.paymentRequest(price, UUID.randomUUID().toString(), MainActivity.this, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id);
+                    parsianPayment.paymentRequest(price, res_num, MainActivity.this, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id);
                 else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
                     samanPayment.paymentRequest(UUID.randomUUID().toString(), price, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id);
 
@@ -458,11 +480,12 @@ public class MainActivity extends AppCompatActivity {
 
                 plateChargeDialog = new PlateChargeDialog(amount -> {
 
+                    System.out.println("---------> PlateChargeDialog : " + amount);
 
                     if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-                        parsianPayment.paymentRequest(amount, UUID.randomUUID().toString(), MainActivity.this, plateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id);
+                        parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1);
                     else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-                        samanPayment.paymentRequest(UUID.randomUUID().toString(), amount, plateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id);
+                        samanPayment.createTransaction(plateType, tag1, tag2, tag3, tag4,amount, -1);
 
                     plateChargeDialog.dismiss();
 
@@ -527,7 +550,9 @@ public class MainActivity extends AppCompatActivity {
                     if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
                         parsianPayment.printParkInfo(startTime, place.tag1, place.tag2, place.tag3, place.tag4, place.id, binding.printArea, pricing, telephone, sms_number, qr_url);
                     else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-                        samanPayment.printParkInfo(startTime, place.tag1, place.tag2, place.tag3, place.tag4, place.id, binding.printArea, pricing, telephone, sms_number, qr_url);
+                        samanPayment.printParkInfo(startTime, place.tag1, place.tag2, place.tag3, place.tag4, place.id, binding.aaabbb, pricing, telephone, sms_number, qr_url);
+
+//                    printParkInfo(startTime, tag1, tag2, tag3, tag4, placeID, binding.printArea, pricing, telephone, sms_number, qr_url);
 
                 }, 500);
 
@@ -543,7 +568,7 @@ public class MainActivity extends AppCompatActivity {
     private void getPlaces() {
 
 
-        Log.e("getPlaces", "sending ... ");
+//        Log.e("getPlaces", "sending ... ");
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
@@ -555,7 +580,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<PlacesResponse> call, Response<PlacesResponse> response) {
 
-                Log.e("getPlaces", "Response : " + response.code());
+//                Log.e("getPlaces", "Response : " + response.code());
 
                 if (placesLoadedForFirstTime)
                     loadingBar.dismiss();
@@ -563,11 +588,11 @@ public class MainActivity extends AppCompatActivity {
 
                     placesLoadedForFirstTime = false;
 
-                    qr_url = response.body().qr_url;
-                    refresh_time = response.body().refresh_time;
-                    telephone = response.body().telephone;
-                    pricing = response.body().pricing;
-                    sms_number = response.body().sms_number;
+//                    qr_url = response.body().qr_url;
+//                    refresh_time = response.body().refresh_time;
+//                    telephone = response.body().telephone;
+//                    pricing = response.body().pricing;
+//                    sms_number = response.body().sms_number;
 
                     if (!updatePopUpIsShowed && version != 0 && response.body().update.last_version > version) {
 
@@ -629,7 +654,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void parkCar(ParkBody parkBody) {
+    private void parkCar(ParkBody parkBody, boolean printFactor) {
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
@@ -647,19 +672,29 @@ public class MainActivity extends AppCompatActivity {
 
                         Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
                         parkDialog.dismiss();
+
+//                        PersianDateFormat pdformater = new PersianDateFormat();
+//                        pdformater.format(pdate);
+
+                        if (printFactor)
+                            if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
+                                parsianPayment.printParkInfo("19:20", parkBody.getTag1(), parkBody.getTag2(), parkBody.getTag3(), parkBody.getTag4(), parkBody.getPlace_id(), binding.printArea, pricing, telephone, sms_number, qr_url);
+                            else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
+                                samanPayment.printParkInfo("19:20", parkBody.getTag1(), parkBody.getTag2(), parkBody.getTag3(), parkBody.getTag4(), parkBody.getPlace_id(), binding.aaabbb, pricing, telephone, sms_number, qr_url);
+
                         getPlaces();
 
                     } else
                         Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
 
                 } else
-                    APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> parkCar(parkBody));
+                    APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> parkCar(parkBody,printFactor));
             }
 
             @Override
             public void onFailure(Call<ParkResponse> call, Throwable t) {
                 loadingBar.dismiss();
-                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> parkCar(parkBody));
+                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> parkCar(parkBody,printFactor));
             }
         });
 
@@ -736,7 +771,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id, int placeID) {
+    private void verifyTransaction(String amount, String our_token, String bank_token, int placeID) {
+
+        Log.d("verifyTransaction", "started ...");
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
@@ -746,7 +783,7 @@ public class MainActivity extends AppCompatActivity {
 
         String finalAmount = amount;
         repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-                plateType, tag1, tag2, tag3, tag4, amount, transaction_id, placeID, new Callback<VerifyTransactionResponse>() {
+                amount, our_token, bank_token, placeID, new Callback<VerifyTransactionResponse>() {
                     @Override
                     public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
 
@@ -755,7 +792,7 @@ public class MainActivity extends AppCompatActivity {
                         loadingBar.dismiss();
                         if (response.isSuccessful()) {
 
-                            if (response.body().getSuccess() == 1)
+                            if (parkInfoDialog != null)
                                 parkInfoDialog.dismiss();
 
                             Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
@@ -764,13 +801,14 @@ public class MainActivity extends AppCompatActivity {
 
 
                         } else
-                            APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> verifyTransaction(plateType, tag1, tag2, tag3, tag4, finalAmount, transaction_id, placeID));
+                            APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> verifyTransaction(finalAmount, our_token, bank_token, placeID));
                     }
 
                     @Override
                     public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
                         loadingBar.dismiss();
-                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> verifyTransaction(plateType, tag1, tag2, tag3, tag4, finalAmount, transaction_id, placeID));
+                        t.printStackTrace();
+                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> verifyTransaction(finalAmount, our_token, bank_token, placeID));
                     }
                 });
 
@@ -810,5 +848,111 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+    public void printParkInfo(String startTime, String tag1, String tag2, String tag3, String tag4,
+                              int placeID, ViewGroup viewGroupForBindFactor, String pricing, String telephone, String sms_number,
+                              String qr_url) {
+
+
+        PrintTemplateBinding printTemplateBinding = PrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), viewGroupForBindFactor, true);
+
+        printTemplateBinding.placeId.setText(placeID + "");
+
+//                String time = startTime.split(" ")[]
+
+        printTemplateBinding.startTime.setText(startTime);
+        printTemplateBinding.prices.setText(pricing);
+        printTemplateBinding.supportPhone.setText(telephone);
+        printTemplateBinding.description.setText("در صورت عدم حضور پارکیار عدد " + placeID + " را به شماره " + sms_number + " ارسال کنید");
+
+        printTemplateBinding.qrcode.setImageBitmap(assistant.qrGenerator(qr_url + placeID));
+
+        if (tag4 != null && !tag4.isEmpty()) {
+
+            printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
+            printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
+            printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
+
+            printTemplateBinding.plateSimpleTag1.setText(tag1);
+            printTemplateBinding.plateSimpleTag2.setText(tag2);
+            printTemplateBinding.plateSimpleTag3.setText(tag3);
+            printTemplateBinding.plateSimpleTag4.setText(tag4);
+
+        } else if (tag2 == null || tag2.isEmpty()) {
+
+            printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
+            printTemplateBinding.plateOldArasArea.setVisibility(View.VISIBLE);
+            printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
+
+            printTemplateBinding.plateOldArasTag1En.setText(tag1);
+            printTemplateBinding.plateOldArasTag1Fa.setText(tag1);
+
+        } else {
+
+            printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
+            printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
+            printTemplateBinding.plateNewArasArea.setVisibility(View.VISIBLE);
+
+            printTemplateBinding.plateNewArasTag1En.setText(tag1);
+            printTemplateBinding.plateNewArasTag1Fa.setText(tag1);
+            printTemplateBinding.plateNewArasTag2En.setText(tag2);
+            printTemplateBinding.plateNewArasTag2Fa.setText(tag2);
+
+        }
+
+        try {
+
+            samanPayment.connection.print(getViewBitmap(binding.printArea));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public static Bitmap getViewBitmap(View view) {
+
+        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(returnedBitmap);
+        Drawable bgDrawable = view.getBackground();
+        if (bgDrawable != null)
+            bgDrawable.draw(canvas);
+        else
+            canvas.drawColor(Color.WHITE);
+        view.draw(canvas);
+        return returnedBitmap;
+
+//        v.clearFocus();
+//        v.setPressed(false);
+//
+//        boolean willNotCache = v.willNotCacheDrawing();
+//        v.setWillNotCacheDrawing(false);
+//
+//        // Reset the drawing cache background color to fully transparent
+//        // for the duration of this operation
+//        int color = v.getDrawingCacheBackgroundColor();
+//        v.setDrawingCacheBackgroundColor(0);
+//
+//        if (color != 0) {
+//            v.destroyDrawingCache();
+//        }
+//        v.buildDrawingCache();
+//        Bitmap cacheBitmap = v.getDrawingCache();
+//        if (cacheBitmap == null) {
+//            Log.e(TAG, "failed getViewBitmap(" + v + ")", new RuntimeException());
+//            return null;
+//        }
+//
+//        Bitmap bitmap = Bitmap.createBitmap(cacheBitmap);
+//
+//        // Restore the view
+//        v.destroyDrawingCache();
+//        v.setWillNotCacheDrawing(willNotCache);
+//        v.setDrawingCacheBackgroundColor(color);
+//
+//        return bitmap;
+    }
+
 
 }

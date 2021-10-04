@@ -9,7 +9,7 @@ import retrofit2.http.Header;
 
 public interface Splash {
 
-    @GET("/api/splash")
+    @GET("/api/watchman/splash")
     Call<SplashResponse> get(@Header("Authorization") String authToken);
 
 }

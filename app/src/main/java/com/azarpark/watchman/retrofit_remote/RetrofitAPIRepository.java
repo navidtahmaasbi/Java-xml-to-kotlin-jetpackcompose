@@ -6,6 +6,7 @@ import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.retrofit_remote.bodies.LoginBody;
 import com.azarpark.watchman.retrofit_remote.bodies.ParkBody;
 import com.azarpark.watchman.retrofit_remote.interfaces.CarDebtHistory;
+import com.azarpark.watchman.retrofit_remote.interfaces.CreateTransaction;
 import com.azarpark.watchman.retrofit_remote.interfaces.DeleteExitRequest;
 import com.azarpark.watchman.retrofit_remote.interfaces.EstimateParkPrice;
 import com.azarpark.watchman.retrofit_remote.interfaces.ExitPark;
@@ -17,6 +18,7 @@ import com.azarpark.watchman.retrofit_remote.interfaces.Logout;
 import com.azarpark.watchman.retrofit_remote.interfaces.Park;
 import com.azarpark.watchman.retrofit_remote.interfaces.Splash;
 import com.azarpark.watchman.retrofit_remote.interfaces.VerifyTransaction;
+import com.azarpark.watchman.retrofit_remote.responses.CreateTransactionResponse;
 import com.azarpark.watchman.retrofit_remote.responses.DebtHistoryResponse;
 import com.azarpark.watchman.retrofit_remote.responses.DeleteExitRequestResponse;
 import com.azarpark.watchman.retrofit_remote.responses.EstimateParkPriceResponse;
@@ -68,9 +70,17 @@ public class RetrofitAPIRepository {
 
     public void getSplashData(String token, Callback<SplashResponse> responseCallback) {
 
-        Splash request = RetrofitAPIClient.getInitialClient().create(Splash.class);
+        Splash request = RetrofitAPIClient.getClient(context).create(Splash.class);
 
         request.get(token).enqueue(responseCallback);
+
+    }
+
+    public void createTransaction(String token, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, Callback<CreateTransactionResponse> responseCallback) {
+
+        CreateTransaction request = RetrofitAPIClient.getClient(context).create(CreateTransaction.class);
+
+        request.create(token, plateType.toString(), tag1, tag2, tag3, tag4, amount).enqueue(responseCallback);
 
     }
 
@@ -86,7 +96,7 @@ public class RetrofitAPIRepository {
 
         EstimateParkPrice request = RetrofitAPIClient.getClient(context).create(EstimateParkPrice.class);
 
-        request.get(token,placeID).enqueue(responseCallback);
+        request.get(token, placeID).enqueue(responseCallback);
 
     }
 
@@ -94,39 +104,39 @@ public class RetrofitAPIRepository {
 
         ExitPark request = RetrofitAPIClient.getClient(context).create(ExitPark.class);
 
-        request.exit(token,placeID).enqueue(responseCallback);
+        request.exit(token, placeID).enqueue(responseCallback);
 
     }
 
-    public void getCarDebtHistory(String token, PlateType plateType,String tag1,String tag2,String tag3,String tag4,int limit, int offset , Callback<DebtHistoryResponse> responseCallback) {
+    public void getCarDebtHistory(String token, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset, Callback<DebtHistoryResponse> responseCallback) {
 
         CarDebtHistory request = RetrofitAPIClient.getClient(context).create(CarDebtHistory.class);
 
-        request.get(token,plateType.toString(),tag1,tag2,tag3,tag4,limit,offset).enqueue(responseCallback);
+        request.get(token, plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(responseCallback);
 
     }
 
-    public void verifyTransaction(String token, PlateType plateType,String tag1,String tag2,String tag3,String tag4,String amount, String transaction_id, int placeID , Callback<VerifyTransactionResponse> responseCallback) {
+    public void verifyTransaction(String token, String amount, String our_token, String bank_token, int placeID, Callback<VerifyTransactionResponse> responseCallback) {
 
         VerifyTransaction request = RetrofitAPIClient.getClient(context).create(VerifyTransaction.class);
 
-        request.verify(token,plateType.toString(),tag1,tag2,tag3,tag4,amount,transaction_id,placeID).enqueue(responseCallback);
+        request.verify(token, amount, our_token, bank_token, placeID).enqueue(responseCallback);
 
     }
 
-    public void exitRequest(String token, PlateType plateType,String tag1,String tag2,String tag3,String tag4 , Callback<ExitRequestResponse> responseCallback) {
+    public void exitRequest(String token, PlateType plateType, String tag1, String tag2, String tag3, String tag4, Callback<ExitRequestResponse> responseCallback) {
 
         ExitRequest request = RetrofitAPIClient.getClient(context).create(ExitRequest.class);
 
-        request.submit(token,plateType.toString(),tag1,tag2,tag3,tag4).enqueue(responseCallback);
+        request.submit(token, plateType.toString(), tag1, tag2, tag3, tag4).enqueue(responseCallback);
 
     }
 
-    public void deleteExitRequest(String token, int place_id , Callback<DeleteExitRequestResponse> responseCallback) {
+    public void deleteExitRequest(String token, int place_id, Callback<DeleteExitRequestResponse> responseCallback) {
 
         DeleteExitRequest request = RetrofitAPIClient.getClient(context).create(DeleteExitRequest.class);
 
-        request.delete(token,place_id).enqueue(responseCallback);
+        request.delete(token, place_id).enqueue(responseCallback);
 
     }
 

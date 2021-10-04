@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,11 +15,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.fragment.app.FragmentManager;
+
 import com.azarpark.watchman.databinding.PrintTemplateBinding;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
+import com.azarpark.watchman.dialogs.LoadingBar;
+import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
+import com.azarpark.watchman.retrofit_remote.responses.CreateTransactionResponse;
 import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse;
 import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
@@ -39,9 +45,12 @@ public class SamanPayment {
     Context context;
     int PAYMENT_REQUEST_CODE = 1003;
     int QR_SCANNER_REQUEST_CODE = 1004;
-    IProxy service;
-    MyServiceConnection connection;
+    public IProxy service;
+    public MyServiceConnection connection;
     SamanPaymentCallBack samanPaymentCallBack;
+    MessageDialog messageDialog;
+    LoadingBar loadingBar;
+    FragmentManager fragmentManager;
 
     private String STATE = "State",
             REF_NUM = "RefNum",
@@ -57,6 +66,8 @@ public class SamanPayment {
         this.context = context;
         this.samanPaymentCallBack = samanPaymentCallBack;
 
+        loadingBar = new LoadingBar(activity);
+
         initService();
 
     }
@@ -71,7 +82,7 @@ public class SamanPayment {
         Log.i("TAG", "initService() bound value: " + ret);
     }
 
-    public void paymentRequest(String resNum,int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
+    public void paymentRequest(String resNum, int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
 
         amount *= 10;
 
@@ -83,6 +94,7 @@ public class SamanPayment {
         sh_r.saveString(SharedPreferencesRepository.TAG4, tag4);
         sh_r.saveString(SharedPreferencesRepository.AMOUNT, String.valueOf(amount));
         sh_r.saveString(SharedPreferencesRepository.PLACE_ID, Integer.toString(placeID));
+        sh_r.saveString(SharedPreferencesRepository.OUR_TOKEN, resNum);
 
         Intent intent = new Intent();
         intent.putExtra("TransType", 1);
@@ -91,10 +103,10 @@ public class SamanPayment {
         intent.putExtra("AppId", "0");
 
 //        for (String key:intent.getExtras().keySet()) {
-            Log.d("-----> TransType" , String.valueOf(intent.getExtras().getInt("TransType")));
-            Log.d("-----> Amount" , intent.getExtras().getString("Amount"));
-            Log.d("-----> ResNum" , intent.getExtras().getString("ResNum"));
-            Log.d("-----> AppId" , intent.getExtras().getString("AppId"));
+        Log.d("-----> TransType", String.valueOf(intent.getExtras().getInt("TransType")));
+        Log.d("-----> Amount", intent.getExtras().getString("Amount"));
+        Log.d("-----> ResNum", intent.getExtras().getString("ResNum"));
+        Log.d("-----> AppId", intent.getExtras().getString("AppId"));
 //        }
 
         intent.setComponent(new ComponentName("ir.sep.android.smartpos", "ir.sep.android.smartpos.ThirdPartyActivity"));
@@ -102,6 +114,44 @@ public class SamanPayment {
         activity.startActivityForResult(intent, PAYMENT_REQUEST_CODE);
 
     }
+
+    public void createTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID) {
+
+        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(context);
+        RetrofitAPIRepository repository = new RetrofitAPIRepository(context);
+        loadingBar.show();
+
+        repository.createTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
+                plateType,
+                tag1,
+                tag2,
+                tag3,
+                tag4,
+                amount,
+                new Callback<CreateTransactionResponse>() {
+                    @Override
+                    public void onResponse(Call<CreateTransactionResponse> call, Response<CreateTransactionResponse> response) {
+
+                        loadingBar.dismiss();
+                        if (response.isSuccessful()) {
+
+                            long our_token = response.body().our_token;
+
+                            paymentRequest(Long.toString(our_token), amount, plateType, tag1, tag2, tag3, tag4, placeID);
+
+                        } else
+                            APIErrorHandler.orResponseErrorHandler(fragmentManager, activity, response, () -> createTransaction(plateType, tag1, tag2, tag3, tag4, amount, placeID));
+                    }
+
+                    @Override
+                    public void onFailure(Call<CreateTransactionResponse> call, Throwable t) {
+                        loadingBar.dismiss();
+                        APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> createTransaction(plateType, tag1, tag2, tag3, tag4, amount,placeID));
+                    }
+                });
+
+    }
+
 
     public void handleResult(int requestCode, int resultCode, Intent data) {
 
@@ -118,20 +168,31 @@ public class SamanPayment {
             {
                 Log.e("saman payment", "Purchase did successful....");
 
+                String tag1 = sh_r.getString(SharedPreferencesRepository.TAG1, "0");
+                String tag2 = sh_r.getString(SharedPreferencesRepository.TAG2, "0");
+                String tag3 = sh_r.getString(SharedPreferencesRepository.TAG3, "0");
+                String tag4 = sh_r.getString(SharedPreferencesRepository.TAG4, "0");
+
+                if (tag2 == null) tag2 = "null";
+                if (tag3 == null) tag3 = "null";
+                if (tag4 == null) tag4 = "null";
+
                 samanPaymentCallBack.verifyTransaction(
-                        PlateType.valueOf(sh_r.getString(SharedPreferencesRepository.PLATE_TYPE)),
-                        sh_r.getString(SharedPreferencesRepository.TAG1),
-                        sh_r.getString(SharedPreferencesRepository.TAG2, "0"),
-                        sh_r.getString(SharedPreferencesRepository.TAG3, "0"),
-                        sh_r.getString(SharedPreferencesRepository.TAG4, "0"),
                         sh_r.getString(SharedPreferencesRepository.AMOUNT),
                         refNum,
+                        resNum,
                         Integer.parseInt(sh_r.getString(SharedPreferencesRepository.PLACE_ID))
                 );
 
 
-            } else
+            } else {
+
                 Log.e("saman payment", "Purchase did failed....");
+                messageDialog = new MessageDialog("خطا ی" + state, "خطایی رخ داده است", "خروج", () -> {
+                    if (messageDialog != null)
+                        messageDialog.dismiss();
+                });
+            }
 
         } else if (resultCode == Activity.RESULT_OK && requestCode == QR_SCANNER_REQUEST_CODE) {
 
@@ -168,9 +229,9 @@ public class SamanPayment {
 
     }
 
-    public void printParkInfo (String startTime, String tag1, String tag2, String tag3, String tag4,
-                               int placeID, ViewGroup viewGroupForBindFactor,String pricing,String telephone,String sms_number,
-                               String qr_url){
+    public void printParkInfo(String startTime, String tag1, String tag2, String tag3, String tag4,
+                              int placeID, ViewGroup viewGroupForBindFactor, String pricing, String telephone, String sms_number,
+                              String qr_url) {
 
 
         PrintTemplateBinding printTemplateBinding = PrintTemplateBinding.inflate(LayoutInflater.from(context), viewGroupForBindFactor, true);
@@ -225,6 +286,7 @@ public class SamanPayment {
     }
 
     public static Bitmap getViewBitmap(View v) {
+
         v.clearFocus();
         v.setPressed(false);
 
@@ -269,11 +331,11 @@ public class SamanPayment {
 
     }
 
-    public interface SamanPaymentCallBack{
+    public interface SamanPaymentCallBack {
 
-        public void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id, int placeID);
+        public void verifyTransaction(String amount, String our_token, String bank_token, int placeID);
 
-
+        public void getScannerData(int placeID);
     }
 
     public void releaseService() {
@@ -281,7 +343,6 @@ public class SamanPayment {
         connection = null;
         Log.d(TAG, "releaseService(): unbound.");
     }
-
 
 
 }

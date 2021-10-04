@@ -67,21 +67,25 @@ public class DebtCheckActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         assistant = new Assistant();
-        parsianPayment = new ParsianPayment(getApplicationContext(),new ParsianPayment.ParsianPaymentCallBack() {
+        parsianPayment = new ParsianPayment(getApplicationContext(),activity,new ParsianPayment.ParsianPaymentCallBack() {
             @Override
-            public void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id, int placeID) {
-                DebtCheckActivity.this.verifyTransaction(plateType, tag1, tag2, tag3, tag4, amount, transaction_id, placeID);
+            public void verifyTransaction(String amount, String our_token, String bank_token, int placeID) {
+                DebtCheckActivity.this.verifyTransaction(amount, our_token, bank_token, placeID);
             }
-
             @Override
             public void getScannerData(int placeID) {
 
             }
-        });
+        },getSupportFragmentManager());
         samanPayment = new SamanPayment(getApplicationContext(), DebtCheckActivity.this, new SamanPayment.SamanPaymentCallBack() {
             @Override
-            public void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id, int placeID) {
-                DebtCheckActivity.this.verifyTransaction(plateType, tag1, tag2, tag3, tag4, amount, transaction_id, placeID);
+            public void verifyTransaction(String amount, String our_token, String bank_token, int placeID) {
+                DebtCheckActivity.this.verifyTransaction(amount, our_token, bank_token, placeID);
+            }
+
+            @Override
+            public void getScannerData(int placeID) {
+                //don't need to do anything in DebtCheck Activity
             }
         });
         sh_r = new SharedPreferencesRepository(getApplicationContext());
@@ -423,14 +427,18 @@ public class DebtCheckActivity extends AppCompatActivity {
 
         amount *= 10;
 
+        long res_num = Assistant.generateResNum();
+
         if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-            parsianPayment.paymentRequest(amount, UUID.randomUUID().toString(), DebtCheckActivity.this, plateType, tag1, tag2, tag3, tag4, placeID);
+            parsianPayment.paymentRequest(amount, res_num, DebtCheckActivity.this, plateType, tag1, tag2, tag3, tag4, -1);
         else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-            samanPayment.paymentRequest(UUID.randomUUID().toString(),amount, plateType, tag1, tag2, tag3, tag4, placeID);
+            samanPayment.paymentRequest(UUID.randomUUID().toString(),amount, plateType, tag1, tag2, tag3, tag4, -1);
 
     }
 
-    private void verifyTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String amount, String transaction_id, int placeID) {
+    private void verifyTransaction(String amount, String our_token, String bank_token, int placeID) {
+
+        Log.d("verifyTransaction", "started ...");
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
@@ -439,9 +447,8 @@ public class DebtCheckActivity extends AppCompatActivity {
         amount = Integer.toString((Integer.parseInt(amount) / 10));
 
         String finalAmount = amount;
-        String finalAmount1 = amount;
         repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-                plateType, tag1, tag2, tag3, tag4, amount, transaction_id, placeID, new Callback<VerifyTransactionResponse>() {
+                amount, our_token, bank_token, placeID, new Callback<VerifyTransactionResponse>() {
                     @Override
                     public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
 
@@ -452,13 +459,14 @@ public class DebtCheckActivity extends AppCompatActivity {
 
                             Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
 
-                        else APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(),activity, response, () -> verifyTransaction(plateType,tag1,tag2,tag3,tag4, finalAmount1,transaction_id,placeID));
+                        else APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(),activity, response, () -> verifyTransaction(finalAmount,our_token,bank_token,placeID));
                     }
 
                     @Override
                     public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
                         loadingBar.dismiss();
-                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(),t, () -> verifyTransaction(plateType,tag1,tag2,tag3,tag4, finalAmount1,transaction_id,placeID));
+                        t.printStackTrace();
+                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> verifyTransaction(finalAmount, our_token, bank_token, placeID));
                     }
                 });
 

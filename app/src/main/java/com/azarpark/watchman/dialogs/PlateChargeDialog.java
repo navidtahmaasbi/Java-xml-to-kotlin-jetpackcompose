@@ -23,6 +23,7 @@ import com.azarpark.watchman.databinding.PlateChargeDialogBinding;
 import com.azarpark.watchman.databinding.SingleSelectDialogBinding;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.Place;
+import com.azarpark.watchman.utils.Assistant;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -90,7 +91,7 @@ public class PlateChargeDialog extends DialogFragment {
         items.add(100);
         items.add(1000);
         items.add(2000);
-        items.add(3000);
+//        items.add(3000);
 
         adapter.setItems(items);
 
@@ -103,8 +104,8 @@ public class PlateChargeDialog extends DialogFragment {
                 Toast.makeText(getContext(), "مبلغ شارژ را وارد کنید", Toast.LENGTH_SHORT).show();
             else if (!isNumber(binding.amount.getText().toString()))
                 Toast.makeText(getContext(), "مبلغ شارژ را درست وارد کنید", Toast.LENGTH_SHORT).show();
-            else if (price < 1000)
-                Toast.makeText(getContext(), "مبلغ شارژ نباید کمتر از 1000 تومان باشد", Toast.LENGTH_SHORT).show();
+            else if (price < Assistant.MIN_PRICE_FOR_PAYMENT)
+                Toast.makeText(getContext(), "مبلغ شارژ نباید کمتر از "+Assistant.MIN_PRICE_FOR_PAYMENT+" تومان باشد", Toast.LENGTH_SHORT).show();
             else{
 
                 String amount = binding.amount.getText().toString();

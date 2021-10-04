@@ -10,16 +10,12 @@ import retrofit2.http.Path;
 
 public interface VerifyTransaction {
 
-    @GET("/api/watchman/verify/{plate_type}/{tag1}/{tag2}/{tag3}/{tag4}/{amount}/{transaction_id}/{place_id}")
+    @GET("/api/watchman/verify/{amount}/{our_token}/{bank_token}/{place_id}")
     Call<VerifyTransactionResponse> verify(@Header("Authorization") String authToken,
-                                        @Path("plate_type") String plateType,
-                                        @Path("tag1") String tag1,
-                                        @Path("tag2") String tag2,
-                                        @Path("tag3") String tag3,
-                                        @Path("tag4") String tag4,
-                                        @Path("amount") String amount,
-                                        @Path("transaction_id") String transaction_id,
-                                        @Path("place_id") int place_id
+                                           @Path("amount") String amount,
+                                           @Path("our_token") String our_token,
+                                           @Path("bank_token") String bank_token,
+                                           @Path("place_id") int place_id
     );
 
 }

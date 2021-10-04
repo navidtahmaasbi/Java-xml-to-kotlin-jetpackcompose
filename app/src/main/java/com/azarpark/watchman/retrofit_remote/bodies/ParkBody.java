@@ -29,4 +29,40 @@ public class ParkBody {
         this.place_id = place_id;
         this.street_id = street_id;
     }
+
+    public String getTag1() {
+        return tag1;
+    }
+
+    public String getTag2() {
+        return tag2;
+    }
+
+    public String getTag3() {
+        return tag3;
+    }
+
+    public String getTag4() {
+        return tag4;
+    }
+
+    public String getTag_type() {
+        return tag_type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public int getPlace_id() {
+        return place_id;
+    }
+
+    public int getStreet_id() {
+        return street_id;
+    }
 }

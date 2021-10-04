@@ -22,6 +22,7 @@ public class SharedPreferencesRepository {
             TAG4 = "TAG4",
             AMOUNT = "AMOUNT",
             PLACE_ID = "PLACE_ID",
+            OUR_TOKEN = "our_token",
             TRANSACTION_ID = "TRANSACTION_ID",
             REF_NUM = "REF_NUM",
             SUB_DOMAIN = "SUB_DOMAIN";

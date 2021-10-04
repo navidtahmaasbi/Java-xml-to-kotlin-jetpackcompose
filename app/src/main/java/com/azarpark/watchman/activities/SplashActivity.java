@@ -21,6 +21,7 @@ import com.azarpark.watchman.dialogs.SingleSelectDialog;
 import com.azarpark.watchman.models.City;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIClient;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
+import com.azarpark.watchman.retrofit_remote.responses.CreateTransactionResponse;
 import com.azarpark.watchman.retrofit_remote.responses.GetCitiesResponse;
 import com.azarpark.watchman.retrofit_remote.responses.SplashResponse;
 import com.azarpark.watchman.utils.APIErrorHandler;
@@ -58,24 +59,25 @@ public class SplashActivity extends AppCompatActivity {
         if (sh_p.getString(SharedPreferencesRepository.SUB_DOMAIN).isEmpty())
             getCities();
         else
-            new Handler().postDelayed(() -> {
+            getSplash();
+//            new Handler().postDelayed(() -> {
+//
+//                RetrofitAPIClient.setBaseUrl("https://" + sh_p.getString(SharedPreferencesRepository.SUB_DOMAIN) + ".backend.iranademo.ir");
+//
+//                SplashActivity.this.finish();
+//                if (sh_p.getString(SharedPreferencesRepository.ACCESS_TOKEN).isEmpty()){
+//                    Log.e("startActivity" , "11111");
+//                    startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+//                }
+//                else{
+//                    Log.e("startActivity" , "22222");
+//                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
+//                    overridePendingTransition(0, 0);
+//                }
+//
+//
+//            }, 500);
 
-                RetrofitAPIClient.setBaseUrl("https://" + sh_p.getString(SharedPreferencesRepository.SUB_DOMAIN) + ".backend.iranademo.ir");
-
-                SplashActivity.this.finish();
-                if (sh_p.getString(SharedPreferencesRepository.ACCESS_TOKEN).isEmpty()){
-                    Log.e("startActivity" , "11111");
-                    startActivity(new Intent(SplashActivity.this, LoginActivity.class));
-                }
-                else{
-                    Log.e("startActivity" , "22222");
-                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                    overridePendingTransition(0, 0);
-                }
-
-
-            }, 500);
-//        getSplash();
 
     }
 
@@ -114,19 +116,20 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<SplashResponse> call, Response<SplashResponse> response) {
 
+                System.out.println("---------> splash response : " + response.raw().toString());
+
                 binding.loadingBar.setVisibility(View.INVISIBLE);
                 if (response.isSuccessful()) {
 
                     sh_r.saveString(SharedPreferencesRepository.qr_url, response.body().qr_url);
-                    sh_r.saveString(SharedPreferencesRepository.qr_url, Integer.toString(response.body().refresh_time));
-                    sh_r.saveString(SharedPreferencesRepository.qr_url, response.body().telephone);
-                    sh_r.saveString(SharedPreferencesRepository.qr_url, response.body().pricing);
-                    sh_r.saveString(SharedPreferencesRepository.qr_url, response.body().sms_number);
-                    sh_r.saveString(SharedPreferencesRepository.qr_url, response.body().rules_url);
-                    sh_r.saveString(SharedPreferencesRepository.qr_url, response.body().about_us_url);
-                    sh_r.saveString(SharedPreferencesRepository.qr_url, response.body().guide_url);
+                    sh_r.saveString(SharedPreferencesRepository.refresh_time, Integer.toString(response.body().refresh_time));
+                    sh_r.saveString(SharedPreferencesRepository.telephone, response.body().telephone);
+                    sh_r.saveString(SharedPreferencesRepository.pricing, response.body().pricing);
+                    sh_r.saveString(SharedPreferencesRepository.sms_number, response.body().sms_number);
+                    sh_r.saveString(SharedPreferencesRepository.rules_url, response.body().rules_url);
+                    sh_r.saveString(SharedPreferencesRepository.about_us_url, response.body().about_us_url);
+                    sh_r.saveString(SharedPreferencesRepository.guide_url, response.body().guide_url);
 
-                    Log.e("startActivity" , "33333");
                     startActivity(new Intent(SplashActivity.this, MainActivity.class));
                     SplashActivity.this.finish();
 
@@ -136,6 +139,7 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<SplashResponse> call, Throwable t) {
                 binding.loadingBar.setVisibility(View.INVISIBLE);
+                t.printStackTrace();
                 APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(),t, () -> getSplash());
             }
         });
