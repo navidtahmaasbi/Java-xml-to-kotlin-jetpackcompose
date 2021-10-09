@@ -78,7 +78,16 @@ public class RetrofitAPIRepository {
 
     public void createTransaction(String token, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, Callback<CreateTransactionResponse> responseCallback) {
 
+        System.out.println("---------> createTransaction in repo");
+
         CreateTransaction request = RetrofitAPIClient.getClient(context).create(CreateTransaction.class);
+
+        if (tag2 == null)
+            tag2 = "null";
+        if (tag3 == null)
+            tag3 = "null";
+        if (tag4 == null)
+            tag4 = "null";
 
         request.create(token, plateType.toString(), tag1, tag2, tag3, tag4, amount).enqueue(responseCallback);
 

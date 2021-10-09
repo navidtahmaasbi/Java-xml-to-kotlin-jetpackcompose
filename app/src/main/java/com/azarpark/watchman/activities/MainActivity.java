@@ -140,16 +140,6 @@ public class MainActivity extends AppCompatActivity {
         about_us_url = sh_r.getString(SharedPreferencesRepository.about_us_url, "");
         guide_url = sh_r.getString(SharedPreferencesRepository.guide_url, "");
 
-
-        System.out.println("----------> qr_url : " + qr_url);
-        System.out.println("----------> refresh_time : " + refresh_time);
-        System.out.println("----------> telephone : " + telephone);
-        System.out.println("----------> pricing : " + pricing);
-        System.out.println("----------> sms_number : " + sms_number);
-        System.out.println("----------> rules_url : " + rules_url);
-        System.out.println("----------> about_us_url : " + about_us_url);
-        System.out.println("----------> guide_url : " + guide_url);
-
         try {
             PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             version = pInfo.versionCode;
@@ -550,7 +540,7 @@ public class MainActivity extends AppCompatActivity {
                     if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
                         parsianPayment.printParkInfo(startTime, place.tag1, place.tag2, place.tag3, place.tag4, place.id, binding.printArea, pricing, telephone, sms_number, qr_url);
                     else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-                        samanPayment.printParkInfo(startTime, place.tag1, place.tag2, place.tag3, place.tag4, place.id, binding.aaabbb, pricing, telephone, sms_number, qr_url);
+                        samanPayment.printParkInfo(startTime, place.tag1, place.tag2, place.tag3, place.tag4, place.id, binding.printArea, pricing, telephone, sms_number, qr_url);
 
 //                    printParkInfo(startTime, tag1, tag2, tag3, tag4, placeID, binding.printArea, pricing, telephone, sms_number, qr_url);
 
@@ -772,8 +762,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void verifyTransaction(String amount, String our_token, String bank_token, int placeID) {
-
-        Log.d("verifyTransaction", "started ...");
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());

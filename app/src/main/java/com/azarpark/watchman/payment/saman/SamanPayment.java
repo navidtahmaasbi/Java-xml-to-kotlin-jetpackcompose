@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,7 @@ import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse
 import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
+import java.util.Set;
 import java.util.UUID;
 
 import androidmads.library.qrgenearator.QRGContents;
@@ -84,6 +86,8 @@ public class SamanPayment {
 
     public void paymentRequest(String resNum, int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
 
+        System.out.println("---------> saman paymentRequest");
+
         amount *= 10;
 
         sh_r.saveString(SharedPreferencesRepository.PLATE_TYPE, plateType.toString());
@@ -117,6 +121,8 @@ public class SamanPayment {
 
     public void createTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID) {
 
+        System.out.println("---------> createTransaction");
+
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(context);
         RetrofitAPIRepository repository = new RetrofitAPIRepository(context);
         loadingBar.show();
@@ -132,6 +138,8 @@ public class SamanPayment {
                     @Override
                     public void onResponse(Call<CreateTransactionResponse> call, Response<CreateTransactionResponse> response) {
 
+                        System.out.println("---------> createTransaction onResponse");
+
                         loadingBar.dismiss();
                         if (response.isSuccessful()) {
 
@@ -146,14 +154,16 @@ public class SamanPayment {
                     @Override
                     public void onFailure(Call<CreateTransactionResponse> call, Throwable t) {
                         loadingBar.dismiss();
-                        APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> createTransaction(plateType, tag1, tag2, tag3, tag4, amount,placeID));
+                        t.printStackTrace();
+                        APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> createTransaction(plateType, tag1, tag2, tag3, tag4, amount, placeID));
                     }
                 });
 
     }
 
-
     public void handleResult(int requestCode, int resultCode, Intent data) {
+
+        System.out.println("---------> saman handleResult");
 
         if (resultCode == Activity.RESULT_OK && requestCode == PAYMENT_REQUEST_CODE) {
 
@@ -161,6 +171,31 @@ public class SamanPayment {
 
             String refNum = data.getStringExtra(REF_NUM);
             String resNum = data.getStringExtra(RES_NUM);
+
+            System.out.println(getBundleString(data.getExtras()));
+
+//            AdditionalData :
+//            --State : 55
+//            ++RefNum : 819972850538
+//            ++ResNum : 8019291329
+//            ++Amount : 1000.0
+//            ++Pan : 622106-fdaffd-8750
+//            ++DateTime : 211009182155
+//            ++TraceNumber : 598994
+//            ++result : رمز اشتباه واردشده است
+//            --TerminalId : 00002280
+//            --AmountAffective : 1000.0
+
+
+//        --result : (succeed / unsucceed)
+//        ++rrn : 801663199541
+//        ++res_num : -1 (our_token)
+//        ++amount : 000000001000
+//        ++pan : 589210***2557
+//        ++date : 23732049000
+//        ++trace : 000015
+//        ++message :    (this will have value if there is an error)
+
 
             sh_r.saveString(SharedPreferencesRepository.REF_NUM, refNum);
 
@@ -280,7 +315,7 @@ public class SamanPayment {
 
         }
 
-        connection.print(getViewBitmap(printTemplateBinding.getRoot()));
+        connection.print(getViewBitmap(viewGroupForBindFactor));
 
 
     }
@@ -342,6 +377,37 @@ public class SamanPayment {
         activity.unbindService(connection);
         connection = null;
         Log.d(TAG, "releaseService(): unbound.");
+    }
+
+    private String getBundleString(Bundle b) {
+
+//        sample
+//        amount : 000000001000
+//        result : (succeed / unsucceed)
+//        pan : 589210***2557
+//        rrn : 801663199541
+//        date : 23732049000
+//        trace : 000015
+//        message :    (this will have value if there is an error)
+//        res_num : -1 (our_token)
+//        charge_pin : null
+
+        Set<String> keys = b.keySet();
+
+        StringBuffer sb = new StringBuffer();
+
+        for (String key : keys) {
+            sb.append(key);
+            sb.append(" : ");
+            if (key.equals("State"))
+                sb.append(b.getInt(key));
+            else
+                sb.append(b.getString(key));
+            sb.append("\n");
+        }
+
+        return sb.toString();
+
     }
 
 

@@ -5,6 +5,15 @@ import static android.content.Context.MODE_PRIVATE;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.NonNull;
+
+import com.azarpark.watchman.models.Transaction;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class SharedPreferencesRepository {
 
     private String MY_PREFS_NAME = "app_needs";
@@ -35,6 +44,8 @@ public class SharedPreferencesRepository {
     public static String about_us_url="about_us_url";
     public static String guide_url="guide_url";
 
+    private String  UNSYCNCED_RES_NUMS = "unsynced_res_nums";
+
     public SharedPreferencesRepository(Context context) {
 
         editor = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
@@ -61,4 +72,29 @@ public class SharedPreferencesRepository {
         return prefs.getString(key, defaultString);
 
     }
+
+    public void addToTransactions(Transaction transaction){
+
+        String arrayString = getString(UNSYCNCED_RES_NUMS,"[]");
+        Gson gson = new Gson();
+        ArrayList<Transaction> transactions = gson.fromJson(arrayString, new TypeToken<List<Transaction>>(){}.getType());
+
+        transactions.add(transaction);
+
+        saveString(UNSYCNCED_RES_NUMS,gson.toJson(transactions));
+
+    }
+
+    public void removeFromTransactions(Transaction transaction){
+
+        String arrayString = getString(UNSYCNCED_RES_NUMS,"[]");
+        Gson gson = new Gson();
+        ArrayList<Transaction> transactions = gson.fromJson(arrayString, new TypeToken<List<Transaction>>(){}.getType());
+
+        transactions.remove(transaction);
+
+        saveString(UNSYCNCED_RES_NUMS,gson.toJson(transactions));
+
+    }
+
 }

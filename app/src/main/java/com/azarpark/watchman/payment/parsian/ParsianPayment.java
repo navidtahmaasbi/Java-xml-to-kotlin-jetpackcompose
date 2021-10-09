@@ -101,8 +101,6 @@ public class ParsianPayment {
 
     public void createTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount,int placeID) {
 
-        System.out.println("---------> createTransaction");
-
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(context);
         RetrofitAPIRepository repository = new RetrofitAPIRepository(context);
         loadingBar.show();
@@ -125,8 +123,6 @@ public class ParsianPayment {
             @Override
             public void onResponse(Call<CreateTransactionResponse> call, Response<CreateTransactionResponse> response) {
 
-                System.out.println("----------> " + response.raw().toString());
-//                System.out.println("----------> " + response.body().toString());
 
                 loadingBar.dismiss();
                 if (response.isSuccessful()) {
@@ -216,8 +212,6 @@ public class ParsianPayment {
 
             int placeId = Integer.parseInt(scannedData.split("=")[scannedData.split("=").length - 1]);
 
-            System.out.println("---------> scannedData : " + scannedData);
-            System.out.println("---------> placeId : " + placeId);
 
             parsianPaymentCallBack.getScannerData(placeId);
 
@@ -230,13 +224,13 @@ public class ParsianPayment {
 
 //        sample
 //        amount : 000000001000
-//        result : succeed
+//        result : (succeed / unsucceed)
 //        pan : 589210***2557
 //        rrn : 801663199541
 //        date : 23732049000
 //        trace : 000015
-//        message :          this will have value if there is an error
-//        res_num : -1
+//        message :    (this will have value if there is an error)
+//        res_num : -1 (our_token)
 //        charge_pin : null
 
         Set<String> keys = b.keySet();
@@ -348,7 +342,6 @@ public class ParsianPayment {
 //
 //        return bitmap;
 //    }
-
 
     public void printParkInfo(String startTime, String tag1, String tag2, String tag3, String tag4,
                               int placeID, ViewGroup viewGroupForBindFactor, String pricing, String telephone, String sms_number,
