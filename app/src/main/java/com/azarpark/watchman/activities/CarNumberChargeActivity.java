@@ -27,6 +27,7 @@ import com.azarpark.watchman.databinding.ActivityCarNumberChargeBinding;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.enums.PlateType;
+import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.payment.parsian.ParsianPayment;
 import com.azarpark.watchman.payment.saman.MyServiceConnection;
 import com.azarpark.watchman.payment.saman.SamanPayment;
@@ -67,8 +68,8 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         assistant = new Assistant();
         parsianPayment = new ParsianPayment(getApplicationContext(),activity,new ParsianPayment.ParsianPaymentCallBack() {
             @Override
-            public void verifyTransaction(String amount, String our_token, String bank_token, int placeID) {
-                CarNumberChargeActivity.this.verifyTransaction(amount, our_token, bank_token, placeID);
+            public void verifyTransaction(Transaction transaction) {
+                CarNumberChargeActivity.this.verifyTransaction(transaction);
             }
 
             @Override
@@ -78,8 +79,8 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         },getSupportFragmentManager());
         samanPayment = new SamanPayment(getApplicationContext(), CarNumberChargeActivity.this, new SamanPayment.SamanPaymentCallBack() {
             @Override
-            public void verifyTransaction(String amount, String our_token, String bank_token, int placeID) {
-                CarNumberChargeActivity.this.verifyTransaction(amount, our_token, bank_token, placeID);
+            public void verifyTransaction(Transaction transaction) {
+                CarNumberChargeActivity.this.verifyTransaction(transaction);
             }
 
             @Override
@@ -390,7 +391,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
     }
 
-    private void verifyTransaction(String amount, String our_token, String bank_token, int placeID) {
+    private void verifyTransaction(Transaction transaction) {
 
         Log.d("verifyTransaction", "started ...");
 
@@ -398,29 +399,30 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
         loadingBar.show();
 
-        amount = Integer.toString((Integer.parseInt(amount) / 10));
-
-        String finalAmount = amount;
+        transaction.devideAmountByTen();
         repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-                amount, our_token, bank_token, placeID, new Callback<VerifyTransactionResponse>() {
+                transaction, new Callback<VerifyTransactionResponse>() {
                     @Override
                     public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
 
                         loadingBar.dismiss();
                         loadingBar.dismiss();
-                        if (response.isSuccessful())
+                        if (response.isSuccessful()){
+
+                            sh_r.removeFromTransactions(transaction);
 
                             Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
+                        }
 
                         else
-                            APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> verifyTransaction(finalAmount, our_token, bank_token, placeID));
+                            APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> verifyTransaction(transaction));
                     }
 
                     @Override
                     public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
                         loadingBar.dismiss();
                         t.printStackTrace();
-                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> verifyTransaction(finalAmount, our_token, bank_token, placeID));
+                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> verifyTransaction(transaction));
                     }
                 });
 

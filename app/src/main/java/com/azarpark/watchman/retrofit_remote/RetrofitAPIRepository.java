@@ -3,8 +3,10 @@ package com.azarpark.watchman.retrofit_remote;
 import android.content.Context;
 
 import com.azarpark.watchman.enums.PlateType;
+import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.retrofit_remote.bodies.LoginBody;
 import com.azarpark.watchman.retrofit_remote.bodies.ParkBody;
+import com.azarpark.watchman.retrofit_remote.bodies.VerifyTransactionBody;
 import com.azarpark.watchman.retrofit_remote.interfaces.CarDebtHistory;
 import com.azarpark.watchman.retrofit_remote.interfaces.CreateTransaction;
 import com.azarpark.watchman.retrofit_remote.interfaces.DeleteExitRequest;
@@ -125,11 +127,11 @@ public class RetrofitAPIRepository {
 
     }
 
-    public void verifyTransaction(String token, String amount, String our_token, String bank_token, int placeID, Callback<VerifyTransactionResponse> responseCallback) {
+    public void verifyTransaction(String token, Transaction transaction, Callback<VerifyTransactionResponse> responseCallback) {
 
         VerifyTransaction request = RetrofitAPIClient.getClient(context).create(VerifyTransaction.class);
 
-        request.verify(token, amount, our_token, bank_token, placeID).enqueue(responseCallback);
+        request.verify(token,transaction.getAmount(), transaction.getOur_token(), transaction.getBank_token(), transaction.getPlaceID(), transaction.getStatus(), transaction.getBank_type(), transaction.getState(), transaction.getCard_number(), transaction.getBank_datetime(), transaction.getTrace_number(), transaction.getResult_message()).enqueue(responseCallback);
 
     }
 

@@ -24,6 +24,7 @@ import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.Place;
+import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.responses.CreateTransactionResponse;
 import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse;
@@ -56,6 +57,7 @@ public class SamanPayment {
 
     private String STATE = "State",
             REF_NUM = "RefNum",
+            SAMAN = "saman",
             SCANNER_RESULT = "ScannerResult",
             RES_NUM = "ResNum";
 
@@ -169,13 +171,10 @@ public class SamanPayment {
 
             int state = data.getIntExtra(STATE, -1);
 
-            String refNum = data.getStringExtra(REF_NUM);
-            String resNum = data.getStringExtra(RES_NUM);
-
             System.out.println(getBundleString(data.getExtras()));
 
 //            AdditionalData :
-//            --State : 55
+//            ++State : 55
 //            ++RefNum : 819972850538
 //            ++ResNum : 8019291329
 //            ++Amount : 1000.0
@@ -187,7 +186,7 @@ public class SamanPayment {
 //            --AmountAffective : 1000.0
 
 
-//        --result : (succeed / unsucceed)
+//        ++result : (succeed / unsucceed)
 //        ++rrn : 801663199541
 //        ++res_num : -1 (our_token)
 //        ++amount : 000000001000
@@ -197,7 +196,6 @@ public class SamanPayment {
 //        ++message :    (this will have value if there is an error)
 
 
-            sh_r.saveString(SharedPreferencesRepository.REF_NUM, refNum);
 
             if (state == STATE_SUCCESSFUL) // successful
             {
@@ -212,22 +210,55 @@ public class SamanPayment {
                 if (tag3 == null) tag3 = "null";
                 if (tag4 == null) tag4 = "null";
 
-                samanPaymentCallBack.verifyTransaction(
-                        sh_r.getString(SharedPreferencesRepository.AMOUNT),
-                        refNum,
+                int status = state == 0 ? 1 : -1;
+                String refNum = data.getExtras().getString("RefNum","");
+                String resNum = data.getExtras().getString("ResNum","");
+                String amount = data.getExtras().getString("Amount","0");
+                String pan = data.getExtras().getString("Pan","");
+                String dateTime = data.getExtras().getString("DateTime","0");
+                String traceNumber = data.getExtras().getString("TraceNumber","");
+                String result = data.getExtras().getString("result","");
+
+                System.out.println("--------> amount : " + amount);
+
+                Transaction transaction = new Transaction(
+                        amount,
                         resNum,
-                        Integer.parseInt(sh_r.getString(SharedPreferencesRepository.PLACE_ID))
+                        refNum,
+                        Integer.parseInt(sh_r.getString(SharedPreferencesRepository.PLACE_ID)),
+                        status,
+                        SAMAN,
+                        Integer.toString(state),
+                        pan,
+                        dateTime,
+                        traceNumber,
+                        result);
+
+
+                sh_r.addToTransactions(transaction);
+
+                samanPaymentCallBack.verifyTransaction(
+                        transaction
                 );
 
 
             } else {
+
+                String result = data.getExtras().getString("result","");
+
+                if (!result.isEmpty())
+                    Toast.makeText(context, result, Toast.LENGTH_LONG).show();
 
                 Log.e("saman payment", "Purchase did failed....");
                 messageDialog = new MessageDialog("خطا ی" + state, "خطایی رخ داده است", "خروج", () -> {
                     if (messageDialog != null)
                         messageDialog.dismiss();
                 });
+
+                messageDialog.show(fragmentManager,MessageDialog.TAG);
             }
+
+
 
         } else if (resultCode == Activity.RESULT_OK && requestCode == QR_SCANNER_REQUEST_CODE) {
 
@@ -368,7 +399,7 @@ public class SamanPayment {
 
     public interface SamanPaymentCallBack {
 
-        public void verifyTransaction(String amount, String our_token, String bank_token, int placeID);
+        public void verifyTransaction(Transaction transaction);
 
         public void getScannerData(int placeID);
     }

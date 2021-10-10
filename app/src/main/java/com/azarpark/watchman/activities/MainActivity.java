@@ -49,6 +49,7 @@ import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnGetInfoClicked;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.models.Street;
+import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.payment.parsian.ParsianPayment;
 import com.azarpark.watchman.payment.saman.SamanPayment;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
@@ -107,10 +108,10 @@ public class MainActivity extends AppCompatActivity {
         setupUIForKeyboardHideOnOutsideTouch(binding.getRoot());
 
         assistant = new Assistant();
-        parsianPayment = new ParsianPayment(getApplicationContext(),activity, new ParsianPayment.ParsianPaymentCallBack() {
+        parsianPayment = new ParsianPayment(getApplicationContext(), activity, new ParsianPayment.ParsianPaymentCallBack() {
             @Override
-            public void verifyTransaction(String amount, String our_token, String bank_token, int placeID) {
-                MainActivity.this.verifyTransaction(amount, our_token, bank_token, placeID);
+            public void verifyTransaction(Transaction transaction) {
+                MainActivity.this.verifyTransaction(transaction,true);
             }
 
             @Override
@@ -120,8 +121,8 @@ public class MainActivity extends AppCompatActivity {
         }, getSupportFragmentManager());
         samanPayment = new SamanPayment(getApplicationContext(), MainActivity.this, new SamanPayment.SamanPaymentCallBack() {
             @Override
-            public void verifyTransaction(String amount, String our_token, String bank_token, int placeID) {
-                MainActivity.this.verifyTransaction(amount, our_token, bank_token, placeID);
+            public void verifyTransaction(Transaction transaction) {
+                MainActivity.this.verifyTransaction(transaction,true);
             }
 
             @Override
@@ -171,6 +172,10 @@ public class MainActivity extends AppCompatActivity {
 
         });
         binding.recyclerView.setAdapter(adapter);
+
+        for (Transaction transaction : sh_r.getTransactions())
+            verifyTransaction(transaction, false);
+
 
     }
 
@@ -475,7 +480,7 @@ public class MainActivity extends AppCompatActivity {
                     if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
                         parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1);
                     else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-                        samanPayment.createTransaction(plateType, tag1, tag2, tag3, tag4,amount, -1);
+                        samanPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1);
 
                     plateChargeDialog.dismiss();
 
@@ -608,14 +613,10 @@ public class MainActivity extends AppCompatActivity {
 
                         ArrayList<Place> myPlaces = new ArrayList<>();
 
-                        for (Street street : response.body().watchman.streets) {
-
-                            myPlaces.addAll(street.places);
-                            for (Place place : street.places)
-                                if (place.exit_request != null)
-                                    exitRequestCount++;
-
-                        }
+                        myPlaces.addAll(response.body().watchman.places);
+                        for (Place place : response.body().watchman.places)
+                            if (place.exit_request != null)
+                                exitRequestCount++;
 
                         adapter.setItems(myPlaces);
 
@@ -678,13 +679,13 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
 
                 } else
-                    APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> parkCar(parkBody,printFactor));
+                    APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> parkCar(parkBody, printFactor));
             }
 
             @Override
             public void onFailure(Call<ParkResponse> call, Throwable t) {
                 loadingBar.dismiss();
-                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> parkCar(parkBody,printFactor));
+                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> parkCar(parkBody, printFactor));
             }
         });
 
@@ -761,42 +762,52 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void verifyTransaction(String amount, String our_token, String bank_token, int placeID) {
+    //todo verify unverified transactions
+    private void verifyTransaction(Transaction transaction, boolean showdialogs) {
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-        loadingBar.show();
+        if (showdialogs)
+            loadingBar.show();
 
-        amount = Integer.toString((Integer.parseInt(amount) / 10));
 
-        String finalAmount = amount;
+        transaction.devideAmountByTen();
+
         repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-                amount, our_token, bank_token, placeID, new Callback<VerifyTransactionResponse>() {
+                transaction, new Callback<VerifyTransactionResponse>() {
                     @Override
                     public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
 
                         System.out.println("--------> url : " + response.raw().request().url());
 
-                        loadingBar.dismiss();
+                        if (showdialogs)
+                            loadingBar.dismiss();
                         if (response.isSuccessful()) {
 
                             if (parkInfoDialog != null)
                                 parkInfoDialog.dismiss();
 
-                            Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
+                            if (showdialogs)
+                                sh_r.removeFromTransactions(transaction);
 
-                            getPlaces();
+                            if (showdialogs)
+                                Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
+
+                            if (showdialogs)
+                                getPlaces();
 
 
-                        } else
-                            APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> verifyTransaction(finalAmount, our_token, bank_token, placeID));
+                        } else if (showdialogs)
+                            APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> verifyTransaction(transaction, showdialogs));
                     }
 
                     @Override
                     public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
-                        loadingBar.dismiss();
+                        if (showdialogs)
+                            loadingBar.dismiss();
                         t.printStackTrace();
-                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> verifyTransaction(finalAmount, our_token, bank_token, placeID));
+                        if (showdialogs)
+                            APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> verifyTransaction(transaction, showdialogs));
                     }
                 });
 

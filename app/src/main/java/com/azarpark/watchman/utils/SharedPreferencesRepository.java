@@ -97,4 +97,14 @@ public class SharedPreferencesRepository {
 
     }
 
+    public ArrayList<Transaction> getTransactions(){
+
+        String arrayString = getString(UNSYCNCED_RES_NUMS,"[]");
+        Gson gson = new Gson();
+        ArrayList<Transaction> transactions = gson.fromJson(arrayString, new TypeToken<List<Transaction>>(){}.getType());
+
+        return transactions;
+
+    }
+
 }

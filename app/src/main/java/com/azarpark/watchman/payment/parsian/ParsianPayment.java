@@ -22,6 +22,7 @@ import com.azarpark.watchman.databinding.PrintTemplateBinding;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.enums.PlateType;
+import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.responses.CreateTransactionResponse;
 import com.azarpark.watchman.utils.APIErrorHandler;
@@ -45,6 +46,7 @@ public class ParsianPayment {
     String TAG3 = "tag3";
     String TAG4 = "tag4";
     String PLACE_ID = "place_id";
+    String PARSIAN = "parsian";
     public static int QR_SCANER_REQUEST_CODE = 350;
     MessageDialog messageDialog;
     PlateType plateType;
@@ -155,22 +157,38 @@ public class ParsianPayment {
 
                     Log.d("bundle data", getBundleString(b));
 
-                    int amount = Integer.parseInt(b.getString("amount"));
+
+                    int amount = Integer.parseInt(b.getString("amount","0"));
                     String result = b.getString("result");
                     String pan = b.getString("pan");
                     String rrn = b.getString("rrn");
                     Long date = b.getLong("date");
                     String trace = b.getString("trace");
-                    String errorMessage = b.getString("message");
+                    String errorMessage = b.getString("message","");
                     Long res_num = b.getLong("res_num");
-                    String our_token = sh_p.getString(SharedPreferencesRepository.OUR_TOKEN,"123456");
+                    int status = errorMessage.isEmpty()?1:-1;
 
                     if (tag2 == null)tag2 = "null";
                     if (tag3 == null)tag3 = "null";
                     if (tag4 == null)tag4 = "null";
 
+                    Transaction transaction = new Transaction(
+                            Integer.toString(amount),
+                            Long.toString(res_num),
+                            rrn,
+                            placeID,
+                            status,
+                            PARSIAN,
+                            result.equals("succeed")?"1":"-1",
+                            pan,
+                            Long.toString(date),
+                            trace,
+                            result);
+
                     if (errorMessage.isEmpty())
-                        parsianPaymentCallBack.verifyTransaction(Long.toString(amount),our_token, trace, placeID);
+                        parsianPaymentCallBack.verifyTransaction(
+                                transaction
+                                );
                     else {
 
                         messageDialog = new MessageDialog("خطا", errorMessage, "خروج", () -> {
@@ -180,6 +198,9 @@ public class ParsianPayment {
 
                         messageDialog.show(fragmentManager, MessageDialog.TAG);
                     }
+
+
+
 
                 } else {
                     messageDialog = new MessageDialog("خطا", "تراکنش ناموفق", "خروج", () -> {
@@ -468,7 +489,7 @@ public class ParsianPayment {
 
     public interface ParsianPaymentCallBack {
 
-        public void verifyTransaction(String amount, String our_token, String bank_token, int placeID);
+        public void verifyTransaction(Transaction transaction);
 
         public void getScannerData(int placeID);
 

@@ -7,5 +7,5 @@ public class Watchman {
     public int id;
     public String phone;
     public String name;
-    public List<Street> streets;
+    public List<Place> places;
 }
