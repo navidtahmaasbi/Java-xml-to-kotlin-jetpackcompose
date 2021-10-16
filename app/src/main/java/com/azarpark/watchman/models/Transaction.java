@@ -20,7 +20,7 @@ public class Transaction {
     public Transaction(String amount, String our_token, String bank_token, int placeID, int status, String bank_type, String state, String card_number, String bank_datetime, String trace_number, String result_message) {
 
         if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-            amount = amount.replace(".0","");
+            amount = amount.replace(".0", "");
 
         this.amount = amount;
         this.our_token = our_token;
@@ -85,9 +85,14 @@ public class Transaction {
 
     public void devideAmountByTen() {
 
-        amount.replace(",", "");
+        if (amount != null) {
 
-        amount = Integer.toString((Integer.parseInt(amount) / 10));
+            if (amount.contains(","))
+                amount.replace(",", "");
+            else if (amount.contains("."))
+                amount.replace(".0", "");
+            amount = Integer.toString((Integer.parseInt(amount) / 10));
+        }
 
     }
 }

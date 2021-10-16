@@ -47,8 +47,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         binding = ActivitySplashBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -60,24 +59,6 @@ public class SplashActivity extends AppCompatActivity {
             getCities();
         else
             getSplash();
-//            new Handler().postDelayed(() -> {
-//
-//                RetrofitAPIClient.setBaseUrl("https://" + sh_p.getString(SharedPreferencesRepository.SUB_DOMAIN) + ".backend.iranademo.ir");
-//
-//                SplashActivity.this.finish();
-//                if (sh_p.getString(SharedPreferencesRepository.ACCESS_TOKEN).isEmpty()){
-//                    Log.e("startActivity" , "11111");
-//                    startActivity(new Intent(SplashActivity.this, LoginActivity.class));
-//                }
-//                else{
-//                    Log.e("startActivity" , "22222");
-//                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
-//                    overridePendingTransition(0, 0);
-//                }
-//
-//
-//            }, 500);
-
 
     }
 
@@ -162,11 +143,9 @@ public class SplashActivity extends AppCompatActivity {
 //
             SplashActivity.this.finish();
             if (sh_p.getString(SharedPreferencesRepository.ACCESS_TOKEN).isEmpty()){
-                Log.e("startActivity" , "44444");
                 startActivity(new Intent(SplashActivity.this, LoginActivity.class));
             }
             else{
-                Log.e("startActivity" , "55555");
                 startActivity(new Intent(SplashActivity.this, MainActivity.class));
                 overridePendingTransition(0, 0);
             }

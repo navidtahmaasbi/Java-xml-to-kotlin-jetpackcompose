@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         parsianPayment = new ParsianPayment(getApplicationContext(), activity, new ParsianPayment.ParsianPaymentCallBack() {
             @Override
             public void verifyTransaction(Transaction transaction) {
-                MainActivity.this.verifyTransaction(transaction,true);
+                MainActivity.this.verifyTransaction(transaction, true);
             }
 
             @Override
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
         samanPayment = new SamanPayment(getApplicationContext(), MainActivity.this, new SamanPayment.SamanPaymentCallBack() {
             @Override
             public void verifyTransaction(Transaction transaction) {
-                MainActivity.this.verifyTransaction(transaction,true);
+                MainActivity.this.verifyTransaction(transaction, true);
             }
 
             @Override
@@ -173,9 +173,8 @@ public class MainActivity extends AppCompatActivity {
         });
         binding.recyclerView.setAdapter(adapter);
 
-        for (Transaction transaction : sh_r.getTransactions())
-            verifyTransaction(transaction, false);
-
+//        for (Transaction transaction : sh_r.getTransactions())
+//            verifyTransaction(transaction, false);
 
     }
 
@@ -203,6 +202,11 @@ public class MainActivity extends AppCompatActivity {
         if (menuIsOpen) {
             menuIsOpen = false;
             popupWindow.dismiss();
+        } else if (adapter.isShowExitRequestItems()) {
+
+            adapter.showExitRequestItems(!adapter.isShowExitRequestItems());
+            binding.exitRequests.setBackgroundColor(getResources().getColor(R.color.transparent));
+
         } else
             super.onBackPressed();
     }
@@ -363,18 +367,17 @@ public class MainActivity extends AppCompatActivity {
 
     public void onExitRequestIconClicked(View view) {
 
-        if (exitRequestCount > 0) {
+//        if (exitRequestCount > 0) {
 
-            adapter.showExitRequestItems(!adapter.isShowExitRequestItems());
+        adapter.showExitRequestItems(!adapter.isShowExitRequestItems());
 
+        if (adapter.isShowExitRequestItems())
+            binding.exitRequests.setBackgroundColor(getResources().getColor(R.color.red));
+        else
+            binding.exitRequests.setBackgroundColor(getResources().getColor(R.color.transparent));
 
-            if (adapter.isShowExitRequestItems())
-                binding.exitRequests.setBackgroundColor(getResources().getColor(R.color.red));
-            else
-                binding.exitRequests.setBackgroundColor(getResources().getColor(R.color.transparent));
-
-        } else
-            Toast.makeText(getApplicationContext(), "درخواست خروج ندارید", Toast.LENGTH_SHORT).show();
+//        } else
+//            Toast.makeText(getApplicationContext(), "درخواست خروج ندارید", Toast.LENGTH_SHORT).show();
     }
 
     public void onBarcodeIconClicked(View view) {
@@ -702,7 +705,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ExitParkResponse> call, Response<ExitParkResponse> response) {
 
-
                 loadingBar.dismiss();
                 if (response.isSuccessful()) {
 
@@ -723,6 +725,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ExitParkResponse> call, Throwable t) {
                 loadingBar.dismiss();
+                t.printStackTrace();
                 APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> exitPark(placeID));
             }
         });

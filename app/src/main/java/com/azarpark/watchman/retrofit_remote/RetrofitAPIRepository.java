@@ -37,7 +37,6 @@ import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse
 
 import retrofit2.Callback;
 
-
 public class RetrofitAPIRepository {
 
     Context context;
