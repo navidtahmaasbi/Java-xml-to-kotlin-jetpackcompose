@@ -264,15 +264,27 @@ public class ParkInfoDialog extends DialogFragment {
                                 binding.carBalance.setTextColor(getResources().getColor(R.color.dark_green));
 
 
+                                if (parkPrice == 0){
 
-                                if (carBalance >= parkPrice){
-
-                                    totalPrice = 0 ;
+                                    totalPrice = parkPrice ;
 
                                     binding.pay.setBackgroundDrawable(getResources().getDrawable(R.drawable.green_5_bg));
-                                    binding.pay.setText("پرداخت از اعتبار");
+                                    binding.pay.setText("خروج از پارک");
 
+                                    binding.payAsDebt.setVisibility(View.GONE);
 
+                                    binding.pay.setOnClickListener(view -> Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
+                                    binding.pay.setOnLongClickListener(view -> {
+                                        onGetInfoClicked.payAsDebt(place);
+                                        return false;
+                                    });
+
+                                } else if (carBalance >= parkPrice){
+
+                                    totalPrice = parkPrice ;
+
+                                    binding.pay.setBackgroundDrawable(getResources().getDrawable(R.drawable.green_5_bg));
+                                    binding.pay.setText("کسر از اعتبار");
 
                                     binding.payAsDebt.setVisibility(View.GONE);
 

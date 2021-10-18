@@ -42,6 +42,7 @@ public class SplashActivity extends AppCompatActivity {
     SharedPreferencesRepository sh_p;
     ConfirmDialog confirmDialog;
     Activity activity = this;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,13 +77,14 @@ public class SplashActivity extends AppCompatActivity {
 
                     openCitiesDialog(response.body().items);
 
-                } else APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(),activity, response, () -> getCities());
+                } else
+                    APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> getCities());
             }
 
             @Override
             public void onFailure(Call<GetCitiesResponse> call, Throwable t) {
                 binding.loadingBar.setVisibility(View.INVISIBLE);
-                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(),t, () -> getCities());
+                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> getCities());
             }
         });
 
@@ -114,14 +116,15 @@ public class SplashActivity extends AppCompatActivity {
                     startActivity(new Intent(SplashActivity.this, MainActivity.class));
                     SplashActivity.this.finish();
 
-                } else APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(),activity, response, () -> getCities());
+                } else
+                    APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> getCities());
             }
 
             @Override
             public void onFailure(Call<SplashResponse> call, Throwable t) {
                 binding.loadingBar.setVisibility(View.INVISIBLE);
                 t.printStackTrace();
-                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(),t, () -> getSplash());
+                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> getSplash());
             }
         });
 
@@ -142,17 +145,17 @@ public class SplashActivity extends AppCompatActivity {
             RetrofitAPIClient.setBaseUrl("https://" + cities.get(position).subdomain + ".backend.iranademo.ir");
 //
             SplashActivity.this.finish();
-            if (sh_p.getString(SharedPreferencesRepository.ACCESS_TOKEN).isEmpty()){
+            if (sh_p.getString(SharedPreferencesRepository.ACCESS_TOKEN).isEmpty()) {
                 startActivity(new Intent(SplashActivity.this, LoginActivity.class));
-            }
-            else{
+            } else {
                 startActivity(new Intent(SplashActivity.this, MainActivity.class));
                 overridePendingTransition(0, 0);
             }
 
         });
 
-        citySelectDialog.show(getSupportFragmentManager(),SingleSelectDialog.TAG);
+        if (citySelectDialog != null)
+            citySelectDialog.show(getSupportFragmentManager(), SingleSelectDialog.TAG);
 
     }
 }

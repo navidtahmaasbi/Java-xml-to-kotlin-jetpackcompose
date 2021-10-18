@@ -267,7 +267,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:fontFamily="@font/iran_sans"
-                android:gravity="right"
+                android:gravity="center"
                 android:text="مبلغ شارژ را وارد کنید و یا یکی از مبلغ های زیر را انتخاب نمایید"
                 android:textColor="@color/black" />
 

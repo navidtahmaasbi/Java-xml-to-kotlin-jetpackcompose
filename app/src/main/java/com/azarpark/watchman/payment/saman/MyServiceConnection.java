@@ -31,6 +31,7 @@ public class MyServiceConnection implements ServiceConnection {
 
     public void print(Bitmap bitmap){
 
+
         try {
             service.PrintByBitmap(bitmap);
         } catch (RemoteException e) {

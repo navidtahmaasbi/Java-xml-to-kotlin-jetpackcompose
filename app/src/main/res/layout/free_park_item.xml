@@ -15,13 +15,11 @@
         android:background="@drawable/green_number_bg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/_10sdp"
-        android:layout_marginRight="@dimen/_10sdp"
         android:fontFamily="@font/iran_sans_fa_num_bold"
         android:letterSpacing="0.2"
         android:text="756"
         android:textColor="@color/white"
-        android:textSize="@dimen/_25sdp"
+        android:textSize="@dimen/_22sdp"
         android:layout_marginBottom="@dimen/_5sdp"/>
 
     <TextView

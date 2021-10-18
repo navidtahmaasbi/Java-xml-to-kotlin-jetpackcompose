@@ -91,4 +91,9 @@ public class Assistant {
         return true;
     }
 
+    public String getTime() {
+
+
+        return  "19:20";
+    }
 }

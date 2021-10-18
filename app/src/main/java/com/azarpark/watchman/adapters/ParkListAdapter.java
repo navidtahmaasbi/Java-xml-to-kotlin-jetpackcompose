@@ -60,6 +60,8 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             if (place.estimate_price.price > 0)
                 viewHolder.binding.paymentStatus.setText(NumberFormat.getNumberInstance(Locale.US).format(place.estimate_price.price) +"");
+            else
+                viewHolder.binding.paymentStatus.setText("رایگان");
 
             if (place.tag4 != null && !place.tag4.isEmpty()) {
 

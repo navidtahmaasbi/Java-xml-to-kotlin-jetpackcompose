@@ -398,7 +398,7 @@
             <ImageView
                 android:layout_width="@dimen/_15sdp"
                 android:layout_height="@dimen/_15sdp"
-                android:src="@drawable/ic_clock"
+                android:src="@drawable/ic_baseline_receipt_long_24"
                 app:tint="@color/dark_green" />
 
         </LinearLayout>
@@ -465,7 +465,7 @@
                     android:id="@+id/balance_icon"
                     android:layout_width="@dimen/_15sdp"
                     android:layout_height="@dimen/_15sdp"
-                    android:src="@drawable/ic_clock"
+                    android:src="@drawable/ic_baseline_account_balance_wallet_24"
                     app:tint="@color/dark_green" />
 
                 <CheckBox
@@ -519,7 +519,7 @@
             <ImageView
                 android:layout_width="@dimen/_15sdp"
                 android:layout_height="@dimen/_15sdp"
-                android:src="@drawable/ic_clock"
+                android:src="@drawable/ic_baseline_monetization_on_24"
                 app:tint="@color/dark_green" />
 
         </LinearLayout>
@@ -566,7 +566,7 @@
                 <ImageView
                     android:layout_width="@dimen/_15sdp"
                     android:layout_height="@dimen/_15sdp"
-                    android:src="@drawable/ic_print"
+                    android:src="@drawable/ic_baseline_print_24"
                     app:tint="@color/dark_green" />
 
             </LinearLayout>

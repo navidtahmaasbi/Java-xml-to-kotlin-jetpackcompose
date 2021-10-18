@@ -13,7 +13,7 @@
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_100sdp"
+            android:layout_height="@dimen/_130sdp"
             android:orientation="horizontal">
 
             <ImageView
@@ -47,7 +47,7 @@
                 android:gravity="left"
                 android:lineSpacingExtra="@dimen/_1sdp"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_9sdp"
+                android:textSize="@dimen/_11sdp"
                 android:text="1234"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -70,7 +70,7 @@
                 android:gravity="right"
                 android:lineSpacingExtra="@dimen/_1sdp"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_9sdp"
+                android:textSize="@dimen/_11sdp"
                 android:text="جایگاه"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -356,7 +356,7 @@
                 android:gravity="right"
                 android:lineSpacingExtra="@dimen/_1sdp"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_9sdp"
+                android:textSize="@dimen/_11sdp"
                 android:text="پلاک"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -397,13 +397,51 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="0dp"
+                android:id="@+id/debt"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:lineSpacingExtra="@dimen/_1sdp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_11sdp"
+                android:text="0 تومان"
+                app:fontFamily="@font/sahel_fa_num_semi_bold" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:lineSpacingExtra="@dimen/_1sdp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_11sdp"
+                android:text="بدهی پیشین"
+                app:fontFamily="@font/sahel_fa_num_semi_bold" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_1sdp"
+            android:background="@color/text_gray"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/_2sdp"
+            android:layout_marginBottom="@dimen/_1sdp"/>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="0dp"
                 android:id="@+id/start_time"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="right"
                 android:lineSpacingExtra="@dimen/_1sdp"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_9sdp"
+                android:textSize="@dimen/_11sdp"
                 android:text="1400-07-05 13:30"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -414,7 +452,7 @@
                 android:gravity="right"
                 android:lineSpacingExtra="@dimen/_1sdp"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_9sdp"
+                android:textSize="@dimen/_11sdp"
                 android:text="شروع پارک"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -441,7 +479,7 @@
                 android:gravity="right"
                 android:lineSpacingExtra="@dimen/_1sdp"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_9sdp"
+                android:textSize="@dimen/_11sdp"
                 android:text="1300-1800-3200 تومان"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -452,7 +490,7 @@
                 android:gravity="right"
                 android:lineSpacingExtra="@dimen/_1sdp"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_9sdp"
+                android:textSize="@dimen/_11sdp"
                 android:text="تعرفه هر ساعت"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -479,7 +517,7 @@
                 android:gravity="right"
                 android:lineSpacingExtra="@dimen/_1sdp"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_9sdp"
+                android:textSize="@dimen/_11sdp"
                 android:text="04135555555"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -490,7 +528,7 @@
                 android:gravity="right"
                 android:lineSpacingExtra="@dimen/_1sdp"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_9sdp"
+                android:textSize="@dimen/_11sdp"
                 android:text="شماره پشتیبانی"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -511,7 +549,7 @@
                 android:gravity="right"
                 android:lineSpacingExtra="@dimen/_1sdp"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_9sdp"
+                android:textSize="@dimen/_11sdp"
                 android:text="پرداخت نقدی ممنوع"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -531,12 +569,13 @@
             android:gravity="right">
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/description2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="right"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_9sdp"
+                android:textSize="@dimen/_11sdp"
                 android:text="شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -562,7 +601,7 @@
                 android:layout_weight="1"
                 android:gravity="right"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_9sdp"
+                android:textSize="@dimen/_11sdp"
                 android:id="@+id/description"
                 android:text="در صورت عدم حضور پارکبان عدد ۱۰۱۰ را به شماره ۱۰۰۰۴۴۰۸۸ ارسال کنید"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />

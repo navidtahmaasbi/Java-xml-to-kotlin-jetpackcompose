@@ -27,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -247,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
         popupView.findViewById(R.id.help).setOnClickListener(view -> {
 
             Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
-//            intent.putExtra("url","");
+            intent.putExtra("url", sh_r.getString(SharedPreferencesRepository.guide_url));
             startActivity(intent);
             popupWindow.dismiss();
 
@@ -255,14 +256,14 @@ public class MainActivity extends AppCompatActivity {
         watchManName = popupView.findViewById(R.id.name);
         popupView.findViewById(R.id.about_us).setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
-//            intent.putExtra("url","");
+            intent.putExtra("url", sh_r.getString(SharedPreferencesRepository.about_us_url));
             startActivity(intent);
             popupWindow.dismiss();
         });
         popupView.findViewById(R.id.rules).setOnClickListener(view -> {
 
             Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
-//            intent.putExtra("url","");
+            intent.putExtra("url", sh_r.getString(SharedPreferencesRepository.rules_url));
             startActivity(intent);
             popupWindow.dismiss();
 
@@ -506,7 +507,8 @@ public class MainActivity extends AppCompatActivity {
                 printTemplateBinding.startTime.setText(startTime);
                 printTemplateBinding.prices.setText(pricing);
                 printTemplateBinding.supportPhone.setText(telephone);
-                printTemplateBinding.description.setText("در صورت عدم حضور پارکیار عدد " + placeID + " را به شماره " + sms_number + " ارسال کنید");
+                printTemplateBinding.description.setText("در صورت عدم حضور پارکیار برای خروج عدد " + placeID + " را به شماره " + sms_number + " ارسال کنید");
+                printTemplateBinding.description2.setText("شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد");
 
                 printTemplateBinding.qrcode.setImageBitmap(assistant.qrGenerator(qr_url + placeID));
 
@@ -618,8 +620,10 @@ public class MainActivity extends AppCompatActivity {
 
                         myPlaces.addAll(response.body().watchman.places);
                         for (Place place : response.body().watchman.places)
-                            if (place.exit_request != null)
+                            if (place.exit_request != null) {
                                 exitRequestCount++;
+                            }
+
 
                         adapter.setItems(myPlaces);
 
@@ -650,6 +654,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void parkCar(ParkBody parkBody, boolean printFactor) {
 
+        assistant.hideSoftKeyboard(activity);
+
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
         LoadingBar loadingBar = new LoadingBar(MainActivity.this);
@@ -658,6 +664,17 @@ public class MainActivity extends AppCompatActivity {
         repository.park("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), parkBody, new Callback<ParkResponse>() {
             @Override
             public void onResponse(Call<ParkResponse> call, Response<ParkResponse> response) {
+
+                System.out.println("---------> keeeyboard");
+
+                InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+                //Find the currently focused view, so we can grab the correct window token from it.
+                View view = activity.getCurrentFocus();
+                //If no view currently has focus, create a new one, just so we can grab a window token from it
+                if (view == null) {
+                    view = new View(activity);
+                }
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
                 loadingBar.dismiss();
                 if (response.isSuccessful()) {
@@ -670,11 +687,25 @@ public class MainActivity extends AppCompatActivity {
 //                        PersianDateFormat pdformater = new PersianDateFormat();
 //                        pdformater.format(pdate);
 
-                        if (printFactor)
-                            if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-                                parsianPayment.printParkInfo("19:20", parkBody.getTag1(), parkBody.getTag2(), parkBody.getTag3(), parkBody.getTag4(), parkBody.getPlace_id(), binding.printArea, pricing, telephone, sms_number, qr_url);
-                            else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-                                samanPayment.printParkInfo("19:20", parkBody.getTag1(), parkBody.getTag2(), parkBody.getTag3(), parkBody.getTag4(), parkBody.getPlace_id(), binding.aaabbb, pricing, telephone, sms_number, qr_url);
+//                        if (printFactor)
+//                            if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
+//                                parsianPayment.printParkInfo(assistant.getTime(), parkBody.getTag1(), parkBody.getTag2(), parkBody.getTag3(), parkBody.getTag4(), parkBody.getPlace_id(), binding.printArea, pricing, telephone, sms_number, qr_url);
+//                            else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
+//                                samanPayment.printParkInfo(assistant.getTime(), parkBody.getTag1(), parkBody.getTag2(), parkBody.getTag3(), parkBody.getTag4(), parkBody.getPlace_id(), binding.printArea, pricing, telephone, sms_number, qr_url);
+
+
+                        new Handler().postDelayed(() -> {
+
+
+                            if (printFactor)
+                                if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
+                                    parsianPayment.printParkInfo(assistant.getTime(), parkBody.getTag1(), parkBody.getTag2(), parkBody.getTag3(), parkBody.getTag4(), parkBody.getPlace_id(), binding.printArea, pricing, telephone, sms_number, qr_url);
+                                else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
+                                    samanPayment.printParkInfo(assistant.getTime(), parkBody.getTag1(), parkBody.getTag2(), parkBody.getTag3(), parkBody.getTag4(), parkBody.getPlace_id(), binding.printArea, pricing, telephone, sms_number, qr_url);
+
+
+                        }, 500);
+
 
                         getPlaces();
 

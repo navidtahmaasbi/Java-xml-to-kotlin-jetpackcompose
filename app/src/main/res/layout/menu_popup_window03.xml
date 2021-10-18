@@ -37,7 +37,8 @@
                 android:layout_width="@dimen/_15sdp"
                 android:layout_height="@dimen/_15sdp"
                 android:src="@drawable/logout"
-                app:tint="@color/red" />
+                app:tint="@color/red"
+                android:visibility="gone"/>
 
             <TextView
                 android:id="@+id/name"
@@ -128,7 +129,7 @@
                     <ImageView
                         android:layout_width="@dimen/_35sdp"
                         android:layout_height="@dimen/_35sdp"
-                        android:src="@drawable/list"
+                        android:src="@drawable/ic_baseline_exit_to_app_24"
                         app:tint="@color/red" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
@@ -180,7 +181,7 @@
                     <ImageView
                         android:layout_width="@dimen/_35sdp"
                         android:layout_height="@dimen/_35sdp"
-                        android:src="@drawable/logout"
+                        android:src="@drawable/ic_baseline_receipt_long_24"
                         app:tint="@color/red" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
@@ -232,7 +233,7 @@
                     <ImageView
                         android:layout_width="@dimen/_35sdp"
                         android:layout_height="@dimen/_35sdp"
-                        android:src="@drawable/ic_wallet"
+                        android:src="@drawable/ic_baseline_account_balance_wallet_24"
                         app:tint="@color/red" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
@@ -263,7 +264,7 @@
                     android:layout_width="@dimen/_35sdp"
                     android:layout_height="@dimen/_35sdp"
                     android:padding="@dimen/_8sdp"
-                    android:src="@drawable/list"
+                    android:src="@drawable/ic_baseline_privacy_tip_24"
                     app:tint="@color/white" />
 
                 <TextView
