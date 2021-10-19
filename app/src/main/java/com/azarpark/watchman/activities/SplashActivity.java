@@ -1,33 +1,28 @@
 package com.azarpark.watchman.activities;
 
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Toast;
 
-import com.azarpark.watchman.R;
 import com.azarpark.watchman.databinding.ActivitySplashBinding;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
-import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.dialogs.SingleSelectDialog;
 import com.azarpark.watchman.models.City;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIClient;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
-import com.azarpark.watchman.retrofit_remote.responses.CreateTransactionResponse;
 import com.azarpark.watchman.retrofit_remote.responses.GetCitiesResponse;
 import com.azarpark.watchman.retrofit_remote.responses.SplashResponse;
 import com.azarpark.watchman.utils.APIErrorHandler;
+import com.azarpark.watchman.utils.DownloadController;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
 import retrofit2.Call;
@@ -42,10 +37,16 @@ public class SplashActivity extends AppCompatActivity {
     SharedPreferencesRepository sh_p;
     ConfirmDialog confirmDialog;
     Activity activity = this;
+    DownloadController downloadController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
+        String apkUrl = "http://iranademo.ir/apks/wahtchman_00_07_27.apk";
+
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -58,8 +59,12 @@ public class SplashActivity extends AppCompatActivity {
 
         if (sh_p.getString(SharedPreferencesRepository.SUB_DOMAIN).isEmpty())
             getCities();
-        else
+        else{
+
+
+//                    "http://iranademo.ir/apks/wahtchman_00_07_27.apk"
             getSplash();
+        }
 
     }
 
@@ -158,4 +163,5 @@ public class SplashActivity extends AppCompatActivity {
             citySelectDialog.show(getSupportFragmentManager(), SingleSelectDialog.TAG);
 
     }
+
 }

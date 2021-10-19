@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
     ParsianPayment parsianPayment;
     SamanPayment samanPayment;
     Assistant assistant;
+    int debt = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
 
         binding.filterEdittext.clearFocus();
 
-        adapter = new ParkListAdapter(place -> {
+        adapter = new ParkListAdapter(getApplicationContext(),place -> {
 
             if (place.status.equals(PlaceStatus.free.toString()) ||
                     place.status.equals(PlaceStatus.free_by_user.toString()) ||
@@ -495,7 +496,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void print(String startTime, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
+            public void print(String startTime, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID, int debt) {
 
 
                 PrintTemplateBinding printTemplateBinding = PrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
@@ -507,6 +508,7 @@ public class MainActivity extends AppCompatActivity {
                 printTemplateBinding.startTime.setText(startTime);
                 printTemplateBinding.prices.setText(pricing);
                 printTemplateBinding.supportPhone.setText(telephone);
+                printTemplateBinding.debt.setText(debt + "تومان");
                 printTemplateBinding.description.setText("در صورت عدم حضور پارکیار برای خروج عدد " + placeID + " را به شماره " + sms_number + " ارسال کنید");
                 printTemplateBinding.description2.setText("شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد");
 
@@ -550,7 +552,7 @@ public class MainActivity extends AppCompatActivity {
                     if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
                         parsianPayment.printParkInfo(startTime, place.tag1, place.tag2, place.tag3, place.tag4, place.id, binding.printArea, pricing, telephone, sms_number, qr_url);
                     else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-                        samanPayment.printParkInfo(startTime, place.tag1, place.tag2, place.tag3, place.tag4, place.id, binding.printArea, pricing, telephone, sms_number, qr_url);
+                        samanPayment.printParkInfo(startTime, place.tag1, place.tag2, place.tag3, place.tag4, place.id, binding.printArea, pricing, telephone, sms_number, qr_url,debt);
 
 //                    printParkInfo(startTime, tag1, tag2, tag3, tag4, placeID, binding.printArea, pricing, telephone, sms_number, qr_url);
 
@@ -665,8 +667,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ParkResponse> call, Response<ParkResponse> response) {
 
-                System.out.println("---------> keeeyboard");
-
                 InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
                 //Find the currently focused view, so we can grab the correct window token from it.
                 View view = activity.getCurrentFocus();
@@ -684,15 +684,8 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
                         parkDialog.dismiss();
 
-//                        PersianDateFormat pdformater = new PersianDateFormat();
-//                        pdformater.format(pdate);
-
-//                        if (printFactor)
-//                            if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-//                                parsianPayment.printParkInfo(assistant.getTime(), parkBody.getTag1(), parkBody.getTag2(), parkBody.getTag3(), parkBody.getTag4(), parkBody.getPlace_id(), binding.printArea, pricing, telephone, sms_number, qr_url);
-//                            else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-//                                samanPayment.printParkInfo(assistant.getTime(), parkBody.getTag1(), parkBody.getTag2(), parkBody.getTag3(), parkBody.getTag4(), parkBody.getPlace_id(), binding.printArea, pricing, telephone, sms_number, qr_url);
-
+                        if (response.body().getCar().balance < 0)
+                            debt = response.body().getCar().balance;
 
                         new Handler().postDelayed(() -> {
 
@@ -701,7 +694,7 @@ public class MainActivity extends AppCompatActivity {
                                 if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
                                     parsianPayment.printParkInfo(assistant.getTime(), parkBody.getTag1(), parkBody.getTag2(), parkBody.getTag3(), parkBody.getTag4(), parkBody.getPlace_id(), binding.printArea, pricing, telephone, sms_number, qr_url);
                                 else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-                                    samanPayment.printParkInfo(assistant.getTime(), parkBody.getTag1(), parkBody.getTag2(), parkBody.getTag3(), parkBody.getTag4(), parkBody.getPlace_id(), binding.printArea, pricing, telephone, sms_number, qr_url);
+                                    samanPayment.printParkInfo(assistant.getTime(), parkBody.getTag1(), parkBody.getTag2(), parkBody.getTag3(), parkBody.getTag4(), parkBody.getPlace_id(), binding.printArea, pricing, telephone, sms_number, qr_url,debt);
 
 
                         }, 500);

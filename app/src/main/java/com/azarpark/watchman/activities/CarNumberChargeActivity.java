@@ -35,6 +35,7 @@ import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse;
 import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.Assistant;
+import com.azarpark.watchman.utils.NumberTextWatcher;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
 import java.text.NumberFormat;
@@ -272,7 +273,15 @@ public class CarNumberChargeActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
+                System.out.println("---------> text");
                 adapter.clearSelectedItem();
+
+                binding.amount.removeTextChangedListener(this);
+                String amount = charSequence.toString();
+                amount = amount.replace(",","");
+                binding.amount.setText(assistant.formatAmount(Integer.parseInt(amount)));
+
+                binding.amount.addTextChangedListener(this);
 
             }
 
@@ -290,11 +299,11 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         binding.recyclerView.setAdapter(adapter);
 
         ArrayList<Integer> items = new ArrayList<>();
-        items.add(100);
-        items.add(1000);
+
         items.add(10000);
         items.add(20000);
         items.add(30000);
+        items.add(50000);
 
         adapter.setItems(items);
 

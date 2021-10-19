@@ -297,7 +297,7 @@ public class SamanPayment {
 
     public void printParkInfo(String startTime, String tag1, String tag2, String tag3, String tag4,
                               int placeID, ViewGroup viewGroupForBindFactor, String pricing, String telephone, String sms_number,
-                              String qr_url) {
+                              String qr_url, int debt) {
 
 
         PrintTemplateBinding printTemplateBinding = PrintTemplateBinding.inflate(LayoutInflater.from(context), viewGroupForBindFactor, true);

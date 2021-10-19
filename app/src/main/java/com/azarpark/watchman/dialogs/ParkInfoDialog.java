@@ -43,6 +43,7 @@ public class ParkInfoDialog extends DialogFragment {
     private OnGetInfoClicked onGetInfoClicked;
     private Place place;
     int totalPrice = 0;
+    int debt = 0;
 
     @Nullable
     @Override
@@ -177,7 +178,9 @@ public class ParkInfoDialog extends DialogFragment {
             else if (place.tag3 == null || place.tag3.isEmpty())
                 selectedPlateType = PlateType.new_aras;
 
-            onGetInfoClicked.print(place.start,selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id);
+            //??????
+
+            onGetInfoClicked.print(place.start,selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id,debt);
 
         });
 
@@ -225,6 +228,8 @@ public class ParkInfoDialog extends DialogFragment {
                             binding.paymentArea.setVisibility(View.VISIBLE);
 
                             if (carBalance < 0) {
+
+                                debt = -carBalance;
 
                                 binding.carBalanceTitle.setText("بدهی شما");
                                 binding.carBalance.setText(NumberFormat.getNumberInstance(Locale.US).format(-carBalance) + " تومان");

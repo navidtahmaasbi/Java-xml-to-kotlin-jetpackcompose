@@ -8,6 +8,8 @@ import android.service.autofill.RegexValidator;
 import android.view.inputmethod.InputMethodManager;
 
 import java.net.HttpURLConnection;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -95,5 +97,14 @@ public class Assistant {
 
 
         return  "19:20";
+    }
+
+    public String formatAmount(int num)
+    {
+        DecimalFormat decimalFormat = new DecimalFormat();
+        DecimalFormatSymbols decimalFormateSymbol = new DecimalFormatSymbols();
+        decimalFormateSymbol.setGroupingSeparator(',');
+        decimalFormat.setDecimalFormatSymbols(decimalFormateSymbol);
+        return decimalFormat.format(num);
     }
 }

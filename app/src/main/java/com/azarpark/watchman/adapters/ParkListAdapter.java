@@ -2,6 +2,7 @@ package com.azarpark.watchman.adapters;
 
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,11 +31,13 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     int VIEW_TYPE_FREE = 0, VIEW_TYPE_FUll = 1;
     boolean showExitRequestItems = false;
     String filterText = "";
+    Context context;
 
-    public ParkListAdapter(OnItemClicked onItemClicked) {
+    public ParkListAdapter(Context context,OnItemClicked onItemClicked) {
         items = new ArrayList<>();
         filteredItems = new ArrayList<>();
         this.onItemClicked = onItemClicked;
+        this.context = context;
     }
 
     @NonNull
@@ -57,6 +60,8 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             viewHolder.binding.placeNumber.setText(Integer.toString(place.number));
 
             viewHolder.binding.placeStatus.setText(place.status.equals(PlaceStatus.full_by_watchman.toString()) ? "پارکبان" : "شهروند");
+
+            viewHolder.binding.placeStatus.setBackgroundColor(place.status.equals(PlaceStatus.full_by_user.toString()) ? context.getResources().getColor(R.color.orange) : context.getResources().getColor(R.color.dark_blue));
 
             if (place.estimate_price.price > 0)
                 viewHolder.binding.paymentStatus.setText(NumberFormat.getNumberInstance(Locale.US).format(place.estimate_price.price) +"");
