@@ -303,6 +303,7 @@ public class SamanPayment {
         PrintTemplateBinding printTemplateBinding = PrintTemplateBinding.inflate(LayoutInflater.from(context), viewGroupForBindFactor, true);
 
         printTemplateBinding.placeId.setText(placeID + "");
+        printTemplateBinding.debt.setText(debt + " تومان");
 
 //                String time = startTime.split(" ")[]
 

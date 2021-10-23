@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:paddingRight="@dimen/_150sdp"
+    android:layout_height="@dimen/_350sdp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white">
 
@@ -13,14 +14,15 @@
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_130sdp"
-            android:orientation="horizontal">
+            android:layout_height="@dimen/_90sdp"
+            android:orientation="horizontal"
+            >
 
             <ImageView
                 android:id="@+id/qrcode"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1.6"
+                android:layout_weight="1.2"
                 android:src="@drawable/qr"/>
 
             <ImageView
@@ -47,7 +49,7 @@
                 android:gravity="left"
                 android:lineSpacingExtra="@dimen/_1sdp"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_11sdp"
+                android:textSize="@dimen/_8sdp"
                 android:text="1234"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -70,7 +72,7 @@
                 android:gravity="right"
                 android:lineSpacingExtra="@dimen/_1sdp"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_11sdp"
+                android:textSize="@dimen/_8sdp"
                 android:text="جایگاه"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -117,7 +119,6 @@
                 android:orientation="vertical">
 
                 <RelativeLayout
-
                     android:id="@+id/plate_simple_area"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_15sdp"
@@ -196,7 +197,7 @@
                 <RelativeLayout
                     android:id="@+id/plate_old_aras_area"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_40sdp"
+                    android:layout_height="@dimen/_25sdp"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginBottom="@dimen/_5sdp"
                     android:visibility="gone">
@@ -233,7 +234,7 @@
                                 android:textStyle="bold"
                                 android:text="12345"
                                 android:textColor="@color/black"
-                                android:textSize="@dimen/_12sdp" />
+                                android:textSize="@dimen/_8sdp" />
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/plate_old_aras_tag1_fa"
@@ -244,7 +245,7 @@
                                 android:gravity="center"
                                 android:text="12345"
                                 android:textColor="@color/black"
-                                android:textSize="@dimen/_12sdp" />
+                                android:textSize="@dimen/_8sdp" />
 
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -257,7 +258,7 @@
                 <RelativeLayout
                     android:id="@+id/plate_new_aras_area"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_40sdp"
+                    android:layout_height="@dimen/_25sdp"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginBottom="@dimen/_5sdp"
                     android:visibility="gone">
@@ -294,7 +295,7 @@
                                 android:gravity="center"
                                 android:text="12345"
                                 android:textColor="@color/black"
-                                android:textSize="@dimen/_12sdp" />
+                                android:textSize="@dimen/_8sdp" />
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/plate_new_aras_tag1_fa"
@@ -305,7 +306,7 @@
                                 android:gravity="center"
                                 android:text="12345"
                                 android:textColor="@color/black"
-                                android:textSize="@dimen/_12sdp" />
+                                android:textSize="@dimen/_8sdp" />
 
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -325,7 +326,7 @@
                                 android:textStyle="bold"
                                 android:text="22"
                                 android:textColor="@color/black"
-                                android:textSize="@dimen/_12sdp" />
+                                android:textSize="@dimen/_8sdp" />
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:paddingBottom="@dimen/_3sdp"
@@ -337,7 +338,7 @@
                                 android:gravity="center"
                                 android:text="22"
                                 android:textColor="@color/black"
-                                android:textSize="@dimen/_12sdp" />
+                                android:textSize="@dimen/_8sdp" />
 
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -356,7 +357,7 @@
                 android:gravity="right"
                 android:lineSpacingExtra="@dimen/_1sdp"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_11sdp"
+                android:textSize="@dimen/_9sdp"
                 android:text="پلاک"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -403,7 +404,7 @@
                 android:gravity="right"
                 android:lineSpacingExtra="@dimen/_1sdp"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_11sdp"
+                android:textSize="@dimen/_9sdp"
                 android:text="0 تومان"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -414,7 +415,7 @@
                 android:gravity="right"
                 android:lineSpacingExtra="@dimen/_1sdp"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_11sdp"
+                android:textSize="@dimen/_9sdp"
                 android:text="بدهی پیشین"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -437,11 +438,11 @@
                 android:layout_width="0dp"
                 android:id="@+id/start_time"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="1.2"
                 android:gravity="right"
                 android:lineSpacingExtra="@dimen/_1sdp"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_11sdp"
+                android:textSize="@dimen/_9sdp"
                 android:text="1400-07-05 13:30"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -452,7 +453,7 @@
                 android:gravity="right"
                 android:lineSpacingExtra="@dimen/_1sdp"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_11sdp"
+                android:textSize="@dimen/_9sdp"
                 android:text="شروع پارک"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -479,7 +480,7 @@
                 android:gravity="right"
                 android:lineSpacingExtra="@dimen/_1sdp"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_11sdp"
+                android:textSize="@dimen/_8sdp"
                 android:text="1300-1800-3200 تومان"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -490,7 +491,7 @@
                 android:gravity="right"
                 android:lineSpacingExtra="@dimen/_1sdp"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_11sdp"
+                android:textSize="@dimen/_9sdp"
                 android:text="تعرفه هر ساعت"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -517,7 +518,7 @@
                 android:gravity="right"
                 android:lineSpacingExtra="@dimen/_1sdp"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_11sdp"
+                android:textSize="@dimen/_9sdp"
                 android:text="04135555555"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -528,7 +529,7 @@
                 android:gravity="right"
                 android:lineSpacingExtra="@dimen/_1sdp"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_11sdp"
+                android:textSize="@dimen/_9sdp"
                 android:text="شماره پشتیبانی"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -549,7 +550,7 @@
                 android:gravity="right"
                 android:lineSpacingExtra="@dimen/_1sdp"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_11sdp"
+                android:textSize="@dimen/_9sdp"
                 android:text="پرداخت نقدی ممنوع"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -575,7 +576,7 @@
                 android:layout_weight="1"
                 android:gravity="right"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_11sdp"
+                android:textSize="@dimen/_9sdp"
                 android:text="شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -601,7 +602,7 @@
                 android:layout_weight="1"
                 android:gravity="right"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_11sdp"
+                android:textSize="@dimen/_9sdp"
                 android:id="@+id/description"
                 android:text="در صورت عدم حضور پارکبان عدد ۱۰۱۰ را به شماره ۱۰۰۰۴۴۰۸۸ ارسال کنید"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />

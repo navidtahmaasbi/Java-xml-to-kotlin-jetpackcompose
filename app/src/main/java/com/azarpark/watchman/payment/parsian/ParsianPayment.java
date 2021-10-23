@@ -61,9 +61,9 @@ public class ParsianPayment {
     ParsianPaymentCallBack parsianPaymentCallBack;
     FragmentManager fragmentManager;
     LoadingBar loadingBar;
-    SharedPreferencesRepository sh_p ;
+    SharedPreferencesRepository sh_p;
 
-    public ParsianPayment(Context context,Activity activity, ParsianPaymentCallBack parsianPaymentCallBack,FragmentManager fragmentManager) {
+    public ParsianPayment(Context context, Activity activity, ParsianPaymentCallBack parsianPaymentCallBack, FragmentManager fragmentManager) {
         this.context = context;
         this.parsianPaymentCallBack = parsianPaymentCallBack;
         this.fragmentManager = fragmentManager;
@@ -74,6 +74,9 @@ public class ParsianPayment {
 
     public void paymentRequest(int amount, Long res_num, Activity activity, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
 
+        amount *= 10;
+
+        System.out.println("----------> 2 our_token : " + res_num);
 
         sh_p.saveString(SharedPreferencesRepository.PLATE_TYPE, plateType.toString());
         sh_p.saveString(SharedPreferencesRepository.TAG1, tag1);
@@ -85,7 +88,6 @@ public class ParsianPayment {
         sh_p.saveString(SharedPreferencesRepository.PLACE_ID, Integer.toString(placeID));
         sh_p.saveString(SharedPreferencesRepository.OUR_TOKEN, Long.toString(res_num));
 
-        amount *= 10;
 
         Intent intent = new Intent("ir.totan.pos.view.cart.TXN");
         intent.putExtra("type", 3);
@@ -101,15 +103,15 @@ public class ParsianPayment {
 
     }
 
-    public void createTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount,int placeID) {
+    public void createTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID) {
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(context);
         RetrofitAPIRepository repository = new RetrofitAPIRepository(context);
         loadingBar.show();
 
         if (tag2 == null) tag2 = "null";
-        if (tag3 == null)tag3 = "null";
-        if (tag4 == null)tag4 = "null";
+        if (tag3 == null) tag3 = "null";
+        if (tag4 == null) tag4 = "null";
 
         String finalTag = tag2;
         String finalTag1 = tag3;
@@ -122,27 +124,30 @@ public class ParsianPayment {
                 tag4,
                 amount,
                 new Callback<CreateTransactionResponse>() {
-            @Override
-            public void onResponse(Call<CreateTransactionResponse> call, Response<CreateTransactionResponse> response) {
+                    @Override
+                    public void onResponse(Call<CreateTransactionResponse> call, Response<CreateTransactionResponse> response) {
 
 
-                loadingBar.dismiss();
-                if (response.isSuccessful()) {
+                        loadingBar.dismiss();
+                        if (response.isSuccessful()) {
 
-                    long our_token = response.body().our_token;
+                            long our_token = response.body().our_token;
 
-                    paymentRequest(amount, our_token, activity,plateType,tag1, finalTag, finalTag1, finalTag2,placeID);
+                            System.out.println("----------> 1 our_token : " + our_token);
 
-                } else APIErrorHandler.orResponseErrorHandler(fragmentManager,activity, response, () -> createTransaction(plateType, tag1, finalTag, finalTag1, finalTag2, amount, placeID));
-            }
+                            paymentRequest(amount, our_token, activity, plateType, tag1, finalTag, finalTag1, finalTag2, placeID);
 
-            @Override
-            public void onFailure(Call<CreateTransactionResponse> call, Throwable t) {
-                loadingBar.dismiss();
-                t.printStackTrace();
-                APIErrorHandler.onFailureErrorHandler(fragmentManager,t, () -> createTransaction(plateType, tag1, finalTag, finalTag1, finalTag2, amount,placeID));
-            }
-        });
+                        } else
+                            APIErrorHandler.orResponseErrorHandler(fragmentManager, activity, response, () -> createTransaction(plateType, tag1, finalTag, finalTag1, finalTag2, amount, placeID));
+                    }
+
+                    @Override
+                    public void onFailure(Call<CreateTransactionResponse> call, Throwable t) {
+                        loadingBar.dismiss();
+                        t.printStackTrace();
+                        APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> createTransaction(plateType, tag1, finalTag, finalTag1, finalTag2, amount, placeID));
+                    }
+                });
 
     }
 
@@ -158,19 +163,21 @@ public class ParsianPayment {
                     Log.d("bundle data", getBundleString(b));
 
 
-                    int amount = Integer.parseInt(b.getString("amount","0"));
+                    int amount = Integer.parseInt(b.getString("amount", "0"));
                     String result = b.getString("result");
                     String pan = b.getString("pan");
                     String rrn = b.getString("rrn");
                     Long date = b.getLong("date");
                     String trace = b.getString("trace");
-                    String errorMessage = b.getString("message","");
+                    String errorMessage = b.getString("message", "");
                     Long res_num = b.getLong("res_num");
-                    int status = errorMessage.isEmpty()?1:-1;
+                    int status = errorMessage.isEmpty() ? 1 : -1;
 
-                    if (tag2 == null)tag2 = "null";
-                    if (tag3 == null)tag3 = "null";
-                    if (tag4 == null)tag4 = "null";
+                    System.out.println("----------> 4 our_token : " + res_num);
+
+                    if (tag2 == null) tag2 = "null";
+                    if (tag3 == null) tag3 = "null";
+                    if (tag4 == null) tag4 = "null";
 
                     Transaction transaction = new Transaction(
                             Integer.toString(amount),
@@ -179,16 +186,16 @@ public class ParsianPayment {
                             placeID,
                             status,
                             PARSIAN,
-                            result.equals("succeed")?"1":"-1",
+                            result.equals("succeed") ? "1" : "-1",
                             pan,
                             Long.toString(date),
                             trace,
                             result);
 
+                    sh_p.addToTransactions(transaction);
+
                     if (errorMessage.isEmpty())
-                        parsianPaymentCallBack.verifyTransaction(
-                                transaction
-                                );
+                        parsianPaymentCallBack.verifyTransaction(transaction);
                     else {
 
                         messageDialog = new MessageDialog("خطا", errorMessage, "خروج", () -> {
@@ -198,8 +205,6 @@ public class ParsianPayment {
 
                         messageDialog.show(fragmentManager, MessageDialog.TAG);
                     }
-
-
 
 
                 } else {
@@ -229,12 +234,14 @@ public class ParsianPayment {
 
         } else if (requestCode == QR_SCANER_REQUEST_CODE) {
 
-            String scannedData = data.getExtras().getString(QR_DATA);
+            if (data != null) {
 
-            int placeId = Integer.parseInt(scannedData.split("=")[scannedData.split("=").length - 1]);
+                String scannedData = data.getExtras().getString(QR_DATA);
 
+                int placeId = Integer.parseInt(scannedData.split("=")[scannedData.split("=").length - 1]);
 
-            parsianPaymentCallBack.getScannerData(placeId);
+                parsianPaymentCallBack.getScannerData(placeId);
+            }
 
         } else
             Log.d("Parsian Payment", "result is not for parsaian payment");
@@ -265,7 +272,7 @@ public class ParsianPayment {
                 sb.append(b.getLong(key));
             else
                 sb.append(b.getString(key));
-            sb.append("\n");
+            sb.append(" - ");
         }
 
         return sb.toString();
@@ -366,13 +373,12 @@ public class ParsianPayment {
 
     public void printParkInfo(String startTime, String tag1, String tag2, String tag3, String tag4,
                               int placeID, ViewGroup viewGroupForBindFactor, String pricing, String telephone, String sms_number,
-                              String qr_url) {
+                              String qr_url, int debt) {
 
         PrintTemplateBinding printTemplateBinding = PrintTemplateBinding.inflate(LayoutInflater.from(context), viewGroupForBindFactor, true);
 
         printTemplateBinding.placeId.setText(placeID + "");
-
-//                String time = startTime.split(" ")[]
+        printTemplateBinding.debt.setText(debt + " تومان");
 
         printTemplateBinding.startTime.setText(startTime);
         printTemplateBinding.prices.setText(pricing);
@@ -417,11 +423,17 @@ public class ParsianPayment {
         try {
 
 
-        PrinterManager printer = new PrinterManager();
-        int setupResult = printer.setupPage(-1,-1);
-        System.out.println("---------> setupResult : " + setupResult);
-        printer.drawBitmap(getViewBitmap(viewGroupForBindFactor),0,0);
-        printer.printPage(0);
+            viewGroupForBindFactor.post(() -> {
+
+                PrinterManager printer = new PrinterManager();
+                int setupResult = printer.setupPage(-1, -1);
+                System.out.println("---------> setupResult : " + setupResult);
+                printer.drawBitmap(getViewBitmap(viewGroupForBindFactor), 0, 0);
+                printer.printPage(0);
+
+                viewGroupForBindFactor.removeAllViews();
+            });
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -472,7 +484,6 @@ public class ParsianPayment {
 //
 //        return bitmap;
     }
-
 
     public Bitmap QRGenerator(String value) {
 

@@ -27,7 +27,7 @@ public class QRScanerActivity extends AppCompatActivity {
         CodeScannerView scannerView = findViewById(R.id.scanner_view);
         mCodeScanner = new CodeScanner(this, scannerView);
         mCodeScanner.setDecodeCallback(result -> runOnUiThread(() -> {
-            Toast.makeText(QRScanerActivity.this, result.getText(), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(QRScanerActivity.this, result.getText(), Toast.LENGTH_SHORT).show();
 
             Intent intent = new Intent();
             intent.putExtra(ParsianPayment.QR_DATA,result.getText());

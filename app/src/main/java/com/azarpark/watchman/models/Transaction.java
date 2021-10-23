@@ -95,4 +95,32 @@ public class Transaction {
         }
 
     }
+
+    public String string() {
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("amount : ");
+        sb.append(amount + " - ");
+        sb.append("our_token : ");
+        sb.append(our_token + " - ");
+        sb.append("bank_token : ");
+        sb.append(bank_token + " - ");
+        sb.append("placeID : ");
+        sb.append(placeID + " - ");
+        sb.append("status : ");
+        sb.append(status + " - ");
+        sb.append("card_number : ");
+        sb.append(card_number + " - ");
+        sb.append("bank_datetime : ");
+        sb.append(bank_datetime + " - ");
+        sb.append("trace_number : ");
+        sb.append(trace_number + " - ");
+        sb.append("result_message : ");
+        sb.append(result_message + " - ");
+
+
+        return sb.toString();
+
+    }
 }

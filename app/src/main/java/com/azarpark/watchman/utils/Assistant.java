@@ -18,7 +18,7 @@ import androidmads.library.qrgenearator.QRGEncoder;
 
 public class Assistant {
 
-    public static int SAMAN = 1, PASRIAN = 2 , SELECTED_PAYMENT = 1;
+    public static int SAMAN = 1, PASRIAN = 2 , SELECTED_PAYMENT = 2;
     public static int MIN_PRICE_FOR_PAYMENT = 100;
 
     public static long generateResNum(){

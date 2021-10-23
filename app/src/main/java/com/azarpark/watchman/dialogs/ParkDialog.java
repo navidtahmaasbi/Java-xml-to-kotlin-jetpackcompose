@@ -20,6 +20,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.azarpark.watchman.R;
+import com.azarpark.watchman.activities.MainActivity;
 import com.azarpark.watchman.databinding.ParkDialogBinding;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnParkClicked;
@@ -72,6 +73,8 @@ public class ParkDialog extends DialogFragment {
 
         binding.submit.setOnClickListener(view -> {
 
+            assistant.hideSoftKeyboard(getActivity());
+
             if (selectedTab == PlateType.simple &&
                     (binding.plateSimpleTag1.getText().toString().length() != 2 ||
                             binding.plateSimpleTag2.getText().toString().length() != 1 ||
@@ -91,7 +94,10 @@ public class ParkDialog extends DialogFragment {
                     (binding.plateNewArasTag1.getText().toString().length() != 5 ||
                             binding.plateNewArasTag2.getText().toString().length() != 2))
                 Toast.makeText(getContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
-            else if (selectedTab == PlateType.simple)
+            else if (selectedTab == PlateType.simple){
+
+                assistant.hideSoftKeyboard(getActivity());
+
                 onParkClicked.clicked(new ParkBody(
                         binding.plateSimpleTag1.getText().toString(),
                         binding.plateSimpleTag2.getText().toString(),
@@ -100,15 +106,23 @@ public class ParkDialog extends DialogFragment {
                         "simple",
                         place.id,
                         place.street_id
-                        ),binding.printCheckbox.isChecked());
-            else if (selectedTab == PlateType.old_aras)
+                ),binding.printCheckbox.isChecked());
+            }
+            else if (selectedTab == PlateType.old_aras) {
+
+                assistant.hideSoftKeyboard(getActivity());
+
                 onParkClicked.clicked(new ParkBody(
-                        binding.plateOldAras.getText().toString(),
-                        "old_aras",
+                binding.plateOldAras.getText().toString(),
+                "old_aras",
                         place.id,
                         place.street_id
                 ),binding.printCheckbox.isChecked());
-            else
+            }
+            else{
+
+                assistant.hideSoftKeyboard(getActivity());
+
                 onParkClicked.clicked(new ParkBody(
                         binding.plateNewArasTag1.getText().toString(),
                         binding.plateNewArasTag2.getText().toString(),
@@ -116,6 +130,7 @@ public class ParkDialog extends DialogFragment {
                         place.id,
                         place.street_id
                 ),binding.printCheckbox.isChecked());
+            }
         });
 
         binding.plateSimpleTag1.addTextChangedListener(new TextWatcher() {

@@ -400,6 +400,7 @@ public class DebtCheckActivity extends AppCompatActivity {
                                  debt = response.body().balance * -1;
 
                                 binding.balanceTitle.setText(response.body().balance >= 0 ? "اعتبار پلاک" : "بدهی پلاک");
+                                binding.debtAmount.setTextColor(getResources().getColor(response.body().balance >= 0 ?R.color.green:R.color.red));
                                 binding.payment.setVisibility(response.body().balance < 0 ? View.VISIBLE : View.GONE);
 
                                 binding.debtAmount.setText(response.body().balance + " تومان");
@@ -425,8 +426,6 @@ public class DebtCheckActivity extends AppCompatActivity {
     }
 
     public void paymentRequest(int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
-
-        amount *= 10;
 
         long res_num = Assistant.generateResNum();
 

@@ -276,12 +276,17 @@ public class CarNumberChargeActivity extends AppCompatActivity {
                 System.out.println("---------> text");
                 adapter.clearSelectedItem();
 
-                binding.amount.removeTextChangedListener(this);
-                String amount = charSequence.toString();
-                amount = amount.replace(",","");
-                binding.amount.setText(assistant.formatAmount(Integer.parseInt(amount)));
+                if (!charSequence.toString().isEmpty()){
 
-                binding.amount.addTextChangedListener(this);
+                    binding.amount.removeTextChangedListener(this);
+                    String amount = charSequence.toString();
+                    amount = amount.replace(",","");
+                    binding.amount.setText(assistant.formatAmount(Integer.parseInt(amount)));
+
+                    binding.amount.setSelection(binding.amount.getText().length());
+
+                    binding.amount.addTextChangedListener(this);
+                }
 
             }
 
@@ -391,18 +396,17 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
         amount = amount.replace(",", "");
 
-        long res_num = Assistant.generateResNum();
 
         if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-            parsianPayment.paymentRequest(Integer.parseInt(amount), res_num, CarNumberChargeActivity.this, plateType, tag1, tag2, tag3, tag4, -1);
+            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4,Integer.parseInt(amount), -1);
         else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-            samanPayment.paymentRequest(UUID.randomUUID().toString(),Integer.parseInt(amount), plateType, tag1, tag2, tag3, tag4, -1);
-
+            samanPayment.createTransaction( plateType, tag1, tag2, tag3, tag4,Integer.parseInt(amount), -1);
     }
 
     private void verifyTransaction(Transaction transaction) {
 
         Log.d("verifyTransaction", "started ...");
+        System.out.println("----------> 3 our_token : " + transaction.getOur_token());
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());

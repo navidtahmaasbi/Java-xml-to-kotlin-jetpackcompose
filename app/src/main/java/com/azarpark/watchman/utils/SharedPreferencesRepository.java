@@ -36,15 +36,15 @@ public class SharedPreferencesRepository {
             REF_NUM = "REF_NUM",
             SUB_DOMAIN = "SUB_DOMAIN";
     public static String qr_url = "qr_url";
-    public static String refresh_time="refresh_time";
-    public static String telephone ="telephone";
-    public static String pricing="pricing";
-    public static String sms_number="sms_number";
-    public static String rules_url="rules_url";
-    public static String about_us_url="about_us_url";
-    public static String guide_url="guide_url";
+    public static String refresh_time = "refresh_time";
+    public static String telephone = "telephone";
+    public static String pricing = "pricing";
+    public static String sms_number = "sms_number";
+    public static String rules_url = "rules_url";
+    public static String about_us_url = "about_us_url";
+    public static String guide_url = "guide_url";
 
-    private String  UNSYCNCED_RES_NUMS = "unsynced_res_nums";
+    private String UNSYCNCED_RES_NUMS = "unsynced_res_nums";
 
     public SharedPreferencesRepository(Context context) {
 
@@ -73,35 +73,41 @@ public class SharedPreferencesRepository {
 
     }
 
-    public void addToTransactions(Transaction transaction){
+    public void addToTransactions(Transaction transaction) {
 
-        String arrayString = getString(UNSYCNCED_RES_NUMS,"[]");
+        String arrayString = getString(UNSYCNCED_RES_NUMS, "[]");
         Gson gson = new Gson();
-        ArrayList<Transaction> transactions = gson.fromJson(arrayString, new TypeToken<List<Transaction>>(){}.getType());
+        ArrayList<Transaction> transactions = gson.fromJson(arrayString, new TypeToken<List<Transaction>>() {
+        }.getType());
 
         transactions.add(transaction);
 
-        saveString(UNSYCNCED_RES_NUMS,gson.toJson(transactions));
+        saveString(UNSYCNCED_RES_NUMS, gson.toJson(transactions));
 
     }
 
-    public void removeFromTransactions(Transaction transaction){
+    public void removeFromTransactions(Transaction transaction) {
 
-        String arrayString = getString(UNSYCNCED_RES_NUMS,"[]");
+        String arrayString = getString(UNSYCNCED_RES_NUMS, "[]");
         Gson gson = new Gson();
-        ArrayList<Transaction> transactions = gson.fromJson(arrayString, new TypeToken<List<Transaction>>(){}.getType());
+        ArrayList<Transaction> transactions = gson.fromJson(arrayString, new TypeToken<List<Transaction>>() {
+        }.getType());
 
-        transactions.remove(transaction);
+        if (transactions.size() != 0)
+            for (int i = 0; i < transactions.size(); i++)
+                if (transactions.get(i).getOur_token() == transaction.getOur_token())
+                    transactions.remove(i);
 
-        saveString(UNSYCNCED_RES_NUMS,gson.toJson(transactions));
+        saveString(UNSYCNCED_RES_NUMS, gson.toJson(transactions));
 
     }
 
-    public ArrayList<Transaction> getTransactions(){
+    public ArrayList<Transaction> getTransactions() {
 
-        String arrayString = getString(UNSYCNCED_RES_NUMS,"[]");
+        String arrayString = getString(UNSYCNCED_RES_NUMS, "[]");
         Gson gson = new Gson();
-        ArrayList<Transaction> transactions = gson.fromJson(arrayString, new TypeToken<List<Transaction>>(){}.getType());
+        ArrayList<Transaction> transactions = gson.fromJson(arrayString, new TypeToken<List<Transaction>>() {
+        }.getType());
 
         return transactions;
 
