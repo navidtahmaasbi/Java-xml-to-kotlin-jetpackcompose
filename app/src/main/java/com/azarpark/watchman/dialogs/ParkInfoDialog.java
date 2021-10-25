@@ -26,6 +26,7 @@ import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.responses.EstimateParkPriceResponse;
 import com.azarpark.watchman.utils.APIErrorHandler;
+import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
 import java.net.HttpURLConnection;
@@ -43,7 +44,8 @@ public class ParkInfoDialog extends DialogFragment {
     private OnGetInfoClicked onGetInfoClicked;
     private Place place;
     int totalPrice = 0;
-    int debt = 0;
+    int debt = 0, balance = 0;
+    Assistant assistant;
 
     @Nullable
     @Override
@@ -69,6 +71,8 @@ public class ParkInfoDialog extends DialogFragment {
         binding = ParkInfoDialogBinding.inflate(LayoutInflater.from(getContext()));
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(binding.getRoot());
+
+        assistant = new Assistant();
 
         getParkData(place);
 
@@ -178,9 +182,8 @@ public class ParkInfoDialog extends DialogFragment {
             else if (place.tag3 == null || place.tag3.isEmpty())
                 selectedPlateType = PlateType.new_aras;
 
-            //??????
 
-            onGetInfoClicked.print(place.start,selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id,debt);
+            onGetInfoClicked.print(place.start,selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id,debt, balance);
 
         });
 
@@ -224,6 +227,7 @@ public class ParkInfoDialog extends DialogFragment {
 
                             int parkPrice = parkPriceResponse.getPrice();
                             int carBalance = parkPriceResponse.getCar_balance();
+                            balance = carBalance;
 
                             binding.paymentArea.setVisibility(View.VISIBLE);
 

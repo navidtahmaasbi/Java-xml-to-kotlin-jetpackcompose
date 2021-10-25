@@ -73,7 +73,7 @@ public class ParkDialog extends DialogFragment {
 
         binding.submit.setOnClickListener(view -> {
 
-            assistant.hideSoftKeyboard(getActivity());
+//            assistant.hideSoftKeyboard(getActivity());
 
             if (selectedTab == PlateType.simple &&
                     (binding.plateSimpleTag1.getText().toString().length() != 2 ||
@@ -96,7 +96,6 @@ public class ParkDialog extends DialogFragment {
                 Toast.makeText(getContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
             else if (selectedTab == PlateType.simple){
 
-                assistant.hideSoftKeyboard(getActivity());
 
                 onParkClicked.clicked(new ParkBody(
                         binding.plateSimpleTag1.getText().toString(),
@@ -110,7 +109,6 @@ public class ParkDialog extends DialogFragment {
             }
             else if (selectedTab == PlateType.old_aras) {
 
-                assistant.hideSoftKeyboard(getActivity());
 
                 onParkClicked.clicked(new ParkBody(
                 binding.plateOldAras.getText().toString(),
@@ -121,7 +119,6 @@ public class ParkDialog extends DialogFragment {
             }
             else{
 
-                assistant.hideSoftKeyboard(getActivity());
 
                 onParkClicked.clicked(new ParkBody(
                         binding.plateNewArasTag1.getText().toString(),

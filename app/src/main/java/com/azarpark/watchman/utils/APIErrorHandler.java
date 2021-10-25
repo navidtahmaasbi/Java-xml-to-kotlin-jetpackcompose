@@ -27,33 +27,36 @@ public class APIErrorHandler {
 
         }
 
-        String title = " خطای " + response.code();
-        String description = " خطایی رخ داده ";
-        String confirmTitle = " تلاش دوباره";
-        String cancelTitle = "انصراف";
-        confirmDialog = new ConfirmDialog(title, description, confirmTitle, cancelTitle, new ConfirmDialog.ConfirmButtonClicks() {
-            @Override
-            public void onConfirmClicked() {
-
-                onResponseErrorDialogIsShowing = false;
-                onResponseErrorAction.refresh();
-
-            }
-
-            @Override
-            public void onCancelClicked() {
-
-                onResponseErrorDialogIsShowing = false;
-                confirmDialog.dismiss();
-
-            }
-        });
-
         try {
 
 
             if (!onResponseErrorDialogIsShowing) {
                 onResponseErrorDialogIsShowing = true;
+
+
+                String title = " خطای " + response.code();
+                String description = " خطایی رخ داده ";
+                String confirmTitle = " تلاش دوباره";
+                String cancelTitle = "انصراف";
+                confirmDialog = new ConfirmDialog(title, description, confirmTitle, cancelTitle, new ConfirmDialog.ConfirmButtonClicks() {
+                    @Override
+                    public void onConfirmClicked() {
+
+                        onResponseErrorDialogIsShowing = false;
+                        onResponseErrorAction.refresh();
+
+                    }
+
+                    @Override
+                    public void onCancelClicked() {
+
+                        onResponseErrorDialogIsShowing = false;
+                        confirmDialog.dismiss();
+
+                    }
+                });
+
+
                 confirmDialog.show(fragmentManager, ConfirmDialog.TAG);
             }
 
@@ -66,35 +69,36 @@ public class APIErrorHandler {
 
     public static void onFailureErrorHandler(FragmentManager fragmentManager, Throwable t, OnResponseErrorAction onResponseErrorAction) {
 
-        String title = " خطای اینترنت";
-        String description = "اتصال اینترنت خود را بررسی کنید";
-        String confirmTitle = " تلاش دوباره";
-        String cancelTitle = "انصراف";
-        confirmDialog = new ConfirmDialog(title, description, confirmTitle, cancelTitle, new ConfirmDialog.ConfirmButtonClicks() {
-            @Override
-            public void onConfirmClicked() {
-
-                if (confirmDialog != null)
-                    confirmDialog.dismiss();
-                onfailureDialogIsShowing = false;
-                onResponseErrorAction.refresh();
-
-            }
-
-            @Override
-            public void onCancelClicked() {
-                Log.d("---------> ", "dismiss");
-                if (confirmDialog != null)
-                    confirmDialog.dismiss();
-                onfailureDialogIsShowing = false;
-
-            }
-        });
-
         try {
 
             if (!onfailureDialogIsShowing) {
                 onfailureDialogIsShowing = true;
+
+                String title = " خطای اینترنت";
+                String description = "اتصال اینترنت خود را بررسی کنید";
+                String confirmTitle = " تلاش دوباره";
+                String cancelTitle = "انصراف";
+                confirmDialog = new ConfirmDialog(title, description, confirmTitle, cancelTitle, new ConfirmDialog.ConfirmButtonClicks() {
+                    @Override
+                    public void onConfirmClicked() {
+
+                        if (confirmDialog != null)
+                            confirmDialog.dismiss();
+                        onfailureDialogIsShowing = false;
+                        onResponseErrorAction.refresh();
+
+                    }
+
+                    @Override
+                    public void onCancelClicked() {
+                        Log.d("---------> ", "dismiss");
+                        if (confirmDialog != null)
+                            confirmDialog.dismiss();
+                        onfailureDialogIsShowing = false;
+
+                    }
+                });
+
                 confirmDialog.show(fragmentManager, ConfirmDialog.TAG);
             }
 

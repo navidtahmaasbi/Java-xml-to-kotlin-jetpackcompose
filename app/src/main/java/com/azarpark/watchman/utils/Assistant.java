@@ -10,18 +10,21 @@ import android.view.inputmethod.InputMethodManager;
 import java.net.HttpURLConnection;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
+import saman.zamani.persiandate.PersianDate;
+import saman.zamani.persiandate.PersianDateFormat;
 
 public class Assistant {
 
-    public static int SAMAN = 1, PASRIAN = 2 , SELECTED_PAYMENT = 2;
+    public static int SAMAN = 1, PASRIAN = 2, SELECTED_PAYMENT = 2;
     public static int MIN_PRICE_FOR_PAYMENT = 100;
 
-    public static long generateResNum(){
+    public static long generateResNum() {
 
         return System.currentTimeMillis();
 
@@ -95,12 +98,49 @@ public class Assistant {
 
     public String getTime() {
 
+        PersianDate pdate = new PersianDate();
 
-        return  "19:20";
+        StringBuilder sb = new StringBuilder();
+        sb.append(pdate.getShYear());
+        sb.append("-");
+        sb.append(pdate.getShMonth());
+        sb.append("-");
+        sb.append(pdate.getShDay());
+        sb.append(" ");
+        sb.append(pdate.getHour());
+        sb.append(":");
+        sb.append(pdate.getMinute());
+        sb.append(":");
+        sb.append(pdate.getSecond());
+        sb.append(":");
+
+        return sb.toString();
+
     }
 
-    public String formatAmount(int num)
-    {
+    public String toJalali(String date) {
+
+        int year = Integer.parseInt(date.substring(0, 4));
+        int month = Integer.parseInt(date.substring(5, 7));
+        int day = Integer.parseInt(date.substring(8, 10));
+        int hour = Integer.parseInt(date.substring(11, 13));
+        int minute = Integer.parseInt(date.substring(14, 16));
+        int second = Integer.parseInt(date.substring(17, 19));
+
+        PersianDate pdate = new PersianDate();
+
+        pdate.setGrgYear(year);
+        pdate.setGrgMonth(month);
+        pdate.setGrgDay(day);
+
+        String s =pdate.getShYear() + "-" + pdate.getShMonth() + "-" + pdate.getShDay() + " " + hour + ":" + minute + ":" + second;
+
+        PersianDateFormat pdformater = new PersianDateFormat("Y-m-t H-m-s");
+        return pdformater.format(pdate);
+
+    }
+
+    public String formatAmount(int num) {
         DecimalFormat decimalFormat = new DecimalFormat();
         DecimalFormatSymbols decimalFormateSymbol = new DecimalFormatSymbols();
         decimalFormateSymbol.setGroupingSeparator(',');

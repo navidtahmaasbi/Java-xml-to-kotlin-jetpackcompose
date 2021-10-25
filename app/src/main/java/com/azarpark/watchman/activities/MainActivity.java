@@ -3,6 +3,7 @@ package com.azarpark.watchman.activities;
 import static android.content.ContentValues.TAG;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -65,7 +66,10 @@ import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -367,9 +371,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        binding.refreshLayout.setOnRefreshListener(() -> {
+
+            getPlaces();
+
+        });
+
     }
 
     public void onMenuToggleClicked(View view) {
+
+        System.out.println("----------> time : " + assistant.getTime());
 
         popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
         menuIsOpen = true;
@@ -489,7 +501,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void print(String startTime, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID, int debt) {
+            public void print(String startTime, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID, int debt, int balance) {
 
 
                 PrintTemplateBinding printTemplateBinding = PrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
@@ -540,12 +552,14 @@ public class MainActivity extends AppCompatActivity {
 
                 }
 
+
+
                 new Handler().postDelayed(() -> {
 
                     if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-                        parsianPayment.printParkInfo(startTime, place.tag1, place.tag2, place.tag3, place.tag4, place.id, binding.printArea, pricing, telephone, sms_number, qr_url, debt);
+                        parsianPayment.printParkInfo(assistant.toJalali(startTime), place.tag1, place.tag2, place.tag3, place.tag4, place.id, binding.printArea, pricing, telephone, sms_number, qr_url, debt, balance);
                     else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-                        samanPayment.printParkInfo(startTime, place.tag1, place.tag2, place.tag3, place.tag4, place.id, binding.printArea, pricing, telephone, sms_number, qr_url, debt);
+                        samanPayment.printParkInfo(assistant.toJalali(startTime), place.tag1, place.tag2, place.tag3, place.tag4, place.id, binding.printArea, pricing, telephone, sms_number, qr_url, debt);
 
                 }, 500);
 
@@ -574,19 +588,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<PlacesResponse> call, Response<PlacesResponse> response) {
 
-//                Log.e("getPlaces", "Response : " + response.code());
+
+//                System.out.println("----------> places response : " + response.raw().toString());
+
+                binding.refreshLayout.setRefreshing(false);
 
                 if (placesLoadedForFirstTime)
                     loadingBar.dismiss();
                 if (response.isSuccessful()) {
 
                     placesLoadedForFirstTime = false;
-
-//                    qr_url = response.body().qr_url;
-//                    refresh_time = response.body().refresh_time;
-//                    telephone = response.body().telephone;
-//                    pricing = response.body().pricing;
-//                    sms_number = response.body().sms_number;
 
                     if (!updatePopUpIsShowed && version != 0 && response.body().update.last_version > version) {
 
@@ -635,14 +646,16 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<PlacesResponse> call, Throwable t) {
+                System.out.println("---------> onFailure");
                 if (placesLoadedForFirstTime)
                     loadingBar.dismiss();
-
+                binding.refreshLayout.setRefreshing(false);
                 APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> getPlaces());
-
 
             }
         });
+
+
 
     }
 
@@ -681,7 +694,7 @@ public class MainActivity extends AppCompatActivity {
                             new Handler().postDelayed(() -> {
 
                                 if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-                                    parsianPayment.printParkInfo(assistant.getTime(), parkBody.getTag1(), parkBody.getTag2(), parkBody.getTag3(), parkBody.getTag4(), parkBody.getPlace_id(), binding.printArea, pricing, telephone, sms_number, qr_url, debt);
+                                    parsianPayment.printParkInfo(assistant.getTime(), parkBody.getTag1(), parkBody.getTag2(), parkBody.getTag3(), parkBody.getTag4(), parkBody.getPlace_id(), binding.printArea, pricing, telephone, sms_number, qr_url, debt,response.body().getCar().balance);
                                 else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
                                     samanPayment.printParkInfo(assistant.getTime(), parkBody.getTag1(), parkBody.getTag2(), parkBody.getTag3(), parkBody.getTag4(), parkBody.getPlace_id(), binding.printArea, pricing, telephone, sms_number, qr_url, debt);
 

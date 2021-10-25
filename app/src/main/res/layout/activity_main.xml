@@ -150,14 +150,21 @@
             android:layout_height="match_parent"
             android:id="@+id/aaabbb">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view"
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/refresh_layout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                app:spanCount="3"
-                tools:itemCount="40"
-                tools:listitem="@layout/full_park_item" />
+                android:layout_height="match_parent">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="3"
+                    tools:itemCount="40"
+                    tools:listitem="@layout/full_park_item" />
+
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
             <TextView
                 android:visibility="gone"
@@ -171,8 +178,6 @@
 
 
         </RelativeLayout>
-
-
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

@@ -26,8 +26,12 @@ import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.responses.CreateTransactionResponse;
 import com.azarpark.watchman.utils.APIErrorHandler;
+import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Set;
 
 import androidmads.library.qrgenearator.QRGContents;
@@ -62,6 +66,7 @@ public class ParsianPayment {
     FragmentManager fragmentManager;
     LoadingBar loadingBar;
     SharedPreferencesRepository sh_p;
+    Assistant assistant;
 
     public ParsianPayment(Context context, Activity activity, ParsianPaymentCallBack parsianPaymentCallBack, FragmentManager fragmentManager) {
         this.context = context;
@@ -70,6 +75,7 @@ public class ParsianPayment {
         this.activity = activity;
         loadingBar = new LoadingBar(activity);
         sh_p = new SharedPreferencesRepository(context);
+        assistant = new Assistant();
     }
 
     public void paymentRequest(int amount, Long res_num, Activity activity, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
@@ -373,14 +379,36 @@ public class ParsianPayment {
 
     public void printParkInfo(String startTime, String tag1, String tag2, String tag3, String tag4,
                               int placeID, ViewGroup viewGroupForBindFactor, String pricing, String telephone, String sms_number,
-                              String qr_url, int debt) {
+                              String qr_url, int debt, int balance) {
 
         PrintTemplateBinding printTemplateBinding = PrintTemplateBinding.inflate(LayoutInflater.from(context), viewGroupForBindFactor, true);
+
+        if (balance > 0) {
+
+            printTemplateBinding.description2.setText("شهروند گرامی؛از این که جز مشتریان خوش حساب ما هستید سپاسگزاریم");
+
+        } else if (balance < 0) {
+
+            printTemplateBinding.description2.setText("اخطار: شهروند گرامی؛بدهی پلاک شما بیش از حد مجاز میباشد در صورت عدم پرداخت بدهی مشمول جریمه پارک ممنوع خواهید شد");
+
+        } else {
+
+            printTemplateBinding.description2.setText("شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد");
+
+        }
+
+        printTemplateBinding.debtArea.setVisibility(balance <= 0 ? View.VISIBLE : View.GONE);
 
         printTemplateBinding.placeId.setText(placeID + "");
         printTemplateBinding.debt.setText(debt + " تومان");
 
+        System.out.println("---------->inja111 " + startTime);
+        System.out.println("---------->inja222 " + printTemplateBinding.startTime.getText());
+
         printTemplateBinding.startTime.setText(startTime);
+
+        System.out.println("---------->inja333 " + printTemplateBinding.startTime.getText());
+
         printTemplateBinding.prices.setText(pricing);
         printTemplateBinding.supportPhone.setText(telephone);
         printTemplateBinding.description.setText("در صورت عدم حضور پارکیار عدد " + placeID + " را به شماره " + sms_number + " ارسال کنید");
