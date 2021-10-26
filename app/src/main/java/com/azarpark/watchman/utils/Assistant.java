@@ -62,10 +62,10 @@ public class Assistant {
     }
 
     public void hideSoftKeyboard(Activity activity) {
-        InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        if (inputMethodManager.isAcceptingText()) {
-            inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
-        }
+
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.HIDE_NOT_ALWAYS, 0);
+
     }
 
     public Bitmap qrGenerator(String value) {
@@ -110,9 +110,9 @@ public class Assistant {
         sb.append(pdate.getHour());
         sb.append(":");
         sb.append(pdate.getMinute());
-        sb.append(":");
-        sb.append(pdate.getSecond());
-        sb.append(":");
+//        sb.append(":");
+//        sb.append(pdate.getSecond());
+//        sb.append(":");
 
         return sb.toString();
 
@@ -135,7 +135,7 @@ public class Assistant {
 
         String s =pdate.getShYear() + "-" + pdate.getShMonth() + "-" + pdate.getShDay() + " " + hour + ":" + minute + ":" + second;
 
-        PersianDateFormat pdformater = new PersianDateFormat("Y-m-t H-m-s");
+        PersianDateFormat pdformater = new PersianDateFormat("Y-m-j g-i");
         return pdformater.format(pdate);
 
     }

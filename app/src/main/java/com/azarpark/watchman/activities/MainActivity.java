@@ -45,10 +45,12 @@ import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.dialogs.ParkDialog;
 import com.azarpark.watchman.dialogs.ParkInfoDialog;
+import com.azarpark.watchman.dialogs.ParkResponseDialog;
 import com.azarpark.watchman.dialogs.PlateChargeDialog;
 import com.azarpark.watchman.enums.PlaceStatus;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnGetInfoClicked;
+import com.azarpark.watchman.interfaces.OnSubmitClicked;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.models.Street;
 import com.azarpark.watchman.models.Transaction;
@@ -105,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
     SamanPayment samanPayment;
     Assistant assistant;
     int debt = 0;
+    ParkResponseDialog parkResponseDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -421,7 +424,7 @@ public class MainActivity extends AppCompatActivity {
     public void handleScannedPlaceID(int placeID) {
 
         Place place = adapter.getItemWithID(placeID);
-        if (place != null && (place.status.equals("full_by_user")||place.status.equals("full_by_watchman")||place.status.equals("full")))
+        if (place != null && (place.status.equals("full_by_user") || place.status.equals("full_by_watchman") || place.status.equals("full")))
             openParkInfoDialog(place);
         else {
 
@@ -510,12 +513,19 @@ public class MainActivity extends AppCompatActivity {
 
 //                String time = startTime.split(" ")[]
 
-                printTemplateBinding.startTime.setText(startTime);
+                printTemplateBinding.startTime.setText(assistant.toJalali(startTime));
                 printTemplateBinding.prices.setText(pricing);
                 printTemplateBinding.supportPhone.setText(telephone);
                 printTemplateBinding.debt.setText(debt + "تومان");
                 printTemplateBinding.description.setText("در صورت عدم حضور پارکیار برای خروج عدد " + placeID + " را به شماره " + sms_number + " ارسال کنید");
-                printTemplateBinding.description2.setText("شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد");
+                if (balance > 0)
+                    printTemplateBinding.description2.setText("شهروند گرامی؛از این که جز مشتریان خوش حساب ما هستید سپاسگزاریم");
+                else if (balance < 0)
+                    printTemplateBinding.description2.setText("اخطار: شهروند گرامی؛بدهی پلاک شما بیش از حد مجاز میباشد در صورت عدم پرداخت بدهی مشمول جریمه پارک ممنوع خواهید شد");
+                else
+                    printTemplateBinding.description2.setText("شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد");
+
+                printTemplateBinding.debtArea.setVisibility(balance <= 0 ? View.VISIBLE : View.GONE);
 
                 printTemplateBinding.qrcode.setImageBitmap(assistant.qrGenerator(qr_url + placeID));
 
@@ -553,7 +563,6 @@ public class MainActivity extends AppCompatActivity {
                 }
 
 
-
                 new Handler().postDelayed(() -> {
 
                     if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
@@ -566,7 +575,9 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }, place);
-        parkInfoDialog.show(getSupportFragmentManager(), ParkDialog.TAG);
+        parkInfoDialog.show(
+
+                getSupportFragmentManager(), ParkDialog.TAG);
 
 
     }
@@ -656,7 +667,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
     }
 
     private void parkCar(ParkBody parkBody, boolean printFactor) {
@@ -670,31 +680,32 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ParkResponse> call, Response<ParkResponse> response) {
 
-                InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-                //Find the currently focused view, so we can grab the correct window token from it.
-                View view = activity.getCurrentFocus();
-                //If no view currently has focus, create a new one, just so we can grab a window token from it
-                if (view == null) {
-                    view = new View(activity);
-                }
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                assistant.hideSoftKeyboard(activity);
 
                 loadingBar.dismiss();
                 if (response.isSuccessful()) {
 
                     if (response.body().getSuccess() == 1) {
 
+                        parkResponseDialog = new ParkResponseDialog(response.body().getInfo().number, response.body().getInfo().price, response.body().getInfo().car_balance, () -> {
+
+                            parkResponseDialog.dismiss();
+
+                        });
+
+                        parkResponseDialog.show(getSupportFragmentManager(),ParkResponseDialog.TAG);
+
                         Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
                         parkDialog.dismiss();
 
-                        if (response.body().getCar().balance < 0)
-                            debt = -response.body().getCar().balance;
+                        if (response.body().getInfo().car_balance < 0)
+                            debt = -response.body().getInfo().car_balance;
 
                         if (printFactor)
                             new Handler().postDelayed(() -> {
 
                                 if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-                                    parsianPayment.printParkInfo(assistant.getTime(), parkBody.getTag1(), parkBody.getTag2(), parkBody.getTag3(), parkBody.getTag4(), parkBody.getPlace_id(), binding.printArea, pricing, telephone, sms_number, qr_url, debt,response.body().getCar().balance);
+                                    parsianPayment.printParkInfo(assistant.getTime(), parkBody.getTag1(), parkBody.getTag2(), parkBody.getTag3(), parkBody.getTag4(), parkBody.getPlace_id(), binding.printArea, pricing, telephone, sms_number, qr_url, debt, response.body().getInfo().car_balance);
                                 else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
                                     samanPayment.printParkInfo(assistant.getTime(), parkBody.getTag1(), parkBody.getTag2(), parkBody.getTag3(), parkBody.getTag4(), parkBody.getPlace_id(), binding.printArea, pricing, telephone, sms_number, qr_url, debt);
 
@@ -895,8 +906,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void printParkInfo(String startTime, String tag1, String tag2, String tag3, String tag4,
-                              int placeID, ViewGroup viewGroupForBindFactor, String pricing, String telephone, String sms_number,
+    public void printParkInfo(String startTime, String tag1, String tag2, String tag3, String
+            tag4,
+                              int placeID, ViewGroup viewGroupForBindFactor, String pricing, String telephone, String
+                                      sms_number,
                               String qr_url) {
 
 

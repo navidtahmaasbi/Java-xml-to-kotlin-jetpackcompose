@@ -402,12 +402,8 @@ public class ParsianPayment {
         printTemplateBinding.placeId.setText(placeID + "");
         printTemplateBinding.debt.setText(debt + " تومان");
 
-        System.out.println("---------->inja111 " + startTime);
-        System.out.println("---------->inja222 " + printTemplateBinding.startTime.getText());
 
         printTemplateBinding.startTime.setText(startTime);
-
-        System.out.println("---------->inja333 " + printTemplateBinding.startTime.getText());
 
         printTemplateBinding.prices.setText(pricing);
         printTemplateBinding.supportPhone.setText(telephone);

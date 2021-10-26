@@ -1,19 +1,20 @@
 package com.azarpark.watchman.retrofit_remote.responses;
 
 import com.azarpark.watchman.models.Car;
+import com.azarpark.watchman.models.Info;
 
 public class ParkResponse {
 
     int success;
     String msg,description;
-    Car car;
+    Info info;
 
-    public Car getCar() {
-        return car;
+    public Info getInfo() {
+        return info;
     }
 
-    public void setCar(Car car) {
-        this.car = car;
+    public void setInfo(Info info) {
+        this.info = info;
     }
 
     public int getSuccess() {
