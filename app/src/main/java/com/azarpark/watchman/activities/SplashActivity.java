@@ -5,14 +5,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.azarpark.watchman.databinding.ActivitySplashBinding;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
+import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.dialogs.SingleSelectDialog;
 import com.azarpark.watchman.models.City;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIClient;
@@ -38,11 +44,11 @@ public class SplashActivity extends AppCompatActivity {
     ConfirmDialog confirmDialog;
     Activity activity = this;
     DownloadController downloadController;
+    MessageDialog messageDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
 
         String apkUrl = "http://iranademo.ir/apks/wahtchman_00_07_27.apk";
@@ -61,10 +67,16 @@ public class SplashActivity extends AppCompatActivity {
             getCities();
         else{
 
-
-//                    "http://iranademo.ir/apks/wahtchman_00_07_27.apk"
             getSplash();
         }
+
+
+    }
+
+    public void updateApp(Context context, String url) {
+
+        com.azarpark.watchman.download_utils.DownloadController downloadController = new com.azarpark.watchman.download_utils.DownloadController(context, url);
+        downloadController.enqueueDownload();
 
     }
 
@@ -118,8 +130,22 @@ public class SplashActivity extends AppCompatActivity {
                     sh_r.saveString(SharedPreferencesRepository.about_us_url, response.body().about_us_url);
                     sh_r.saveString(SharedPreferencesRepository.guide_url, response.body().guide_url);
 
-                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                    SplashActivity.this.finish();
+                    try {
+                        PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+                        int version = pInfo.versionCode;
+
+                        if (response.body().update.last_version > version)
+                            openUpdateDialog(response.body().update.update_link);
+                        else {
+
+                            startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                            SplashActivity.this.finish();
+                        }
+
+                    } catch (PackageManager.NameNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
 
                 } else
                     APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> getCities());
@@ -132,6 +158,22 @@ public class SplashActivity extends AppCompatActivity {
                 APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> getSplash());
             }
         });
+
+    }
+
+    private void openUpdateDialog( String url){
+
+        messageDialog = new MessageDialog("به روز رسانی",
+                "برای برنامه به روزرسانی وجود دارد. بدون به روز رسانی قادر به ادامه نخواهید بود",
+                "به روز رسانی",
+                () -> {
+                    updateApp(getApplicationContext(), url);
+                    messageDialog.dismiss();
+                    Toast.makeText(getApplicationContext(), "بعد از دانلود شدن برنامه آن را نصب کنید", Toast.LENGTH_LONG).show();
+                });
+
+        messageDialog.setCancelable(false);
+        messageDialog.show(getSupportFragmentManager(),MessageDialog.TAG);
 
     }
 
@@ -163,5 +205,6 @@ public class SplashActivity extends AppCompatActivity {
             citySelectDialog.show(getSupportFragmentManager(), SingleSelectDialog.TAG);
 
     }
+
 
 }

@@ -54,6 +54,7 @@ public class MessageDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(binding.getRoot());
 
+
         binding.title.setText(title);
         binding.message.setText(message);
         binding.confirm.setText(confirmButtonText);

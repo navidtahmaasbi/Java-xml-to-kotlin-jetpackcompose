@@ -82,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
                     sh_p.saveString(SharedPreferencesRepository.REFRESH_TOKEN, response.body().refresh_token);
 
                     LoginActivity.this.finish();
-                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    startActivity(new Intent(LoginActivity.this, SplashActivity.class));
 
                 } else
                     APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(),activity, response, () -> login(username, password));

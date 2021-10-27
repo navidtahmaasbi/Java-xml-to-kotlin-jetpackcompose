@@ -1,6 +1,7 @@
 package com.azarpark.watchman.retrofit_remote.responses;
 
 import com.azarpark.watchman.models.City;
+import com.azarpark.watchman.models.Update;
 
 import java.util.ArrayList;
 
@@ -14,4 +15,5 @@ public class SplashResponse {
     public String rules_url;
     public String about_us_url;
     public String guide_url;
+    public Update update;
 }

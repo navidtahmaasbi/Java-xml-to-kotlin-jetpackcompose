@@ -7,6 +7,8 @@ import android.graphics.Color;
 import android.service.autofill.RegexValidator;
 import android.view.inputmethod.InputMethodManager;
 
+import com.azarpark.watchman.download_utils.DownloadController;
+
 import java.net.HttpURLConnection;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -16,6 +18,7 @@ import java.util.regex.Pattern;
 
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
+import retrofit2.http.Url;
 import saman.zamani.persiandate.PersianDate;
 import saman.zamani.persiandate.PersianDateFormat;
 
@@ -133,7 +136,7 @@ public class Assistant {
         pdate.setGrgMonth(month);
         pdate.setGrgDay(day);
 
-        String s =pdate.getShYear() + "-" + pdate.getShMonth() + "-" + pdate.getShDay() + " " + hour + ":" + minute + ":" + second;
+        String s = pdate.getShYear() + "-" + pdate.getShMonth() + "-" + pdate.getShDay() + " " + hour + ":" + minute + ":" + second;
 
         PersianDateFormat pdformater = new PersianDateFormat("Y-m-j g-i");
         return pdformater.format(pdate);
@@ -147,4 +150,5 @@ public class Assistant {
         decimalFormat.setDecimalFormatSymbols(decimalFormateSymbol);
         return decimalFormat.format(num);
     }
+
 }

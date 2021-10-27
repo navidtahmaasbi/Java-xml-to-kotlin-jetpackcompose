@@ -47,6 +47,7 @@ import com.azarpark.watchman.dialogs.ParkDialog;
 import com.azarpark.watchman.dialogs.ParkInfoDialog;
 import com.azarpark.watchman.dialogs.ParkResponseDialog;
 import com.azarpark.watchman.dialogs.PlateChargeDialog;
+import com.azarpark.watchman.download_utils.DownloadController;
 import com.azarpark.watchman.enums.PlaceStatus;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnGetInfoClicked;
@@ -68,6 +69,7 @@ import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -108,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
     Assistant assistant;
     int debt = 0;
     ParkResponseDialog parkResponseDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -388,6 +391,7 @@ public class MainActivity extends AppCompatActivity {
 
         popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
         menuIsOpen = true;
+
 
     }
 
