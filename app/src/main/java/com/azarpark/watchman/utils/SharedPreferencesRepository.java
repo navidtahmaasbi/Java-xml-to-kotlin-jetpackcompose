@@ -88,14 +88,18 @@ public class SharedPreferencesRepository {
 
     public void removeFromTransactions(Transaction transaction) {
 
+        System.out.println("----------> removeFromTransactions");
+
         String arrayString = getString(UNSYCNCED_RES_NUMS, "[]");
         Gson gson = new Gson();
         ArrayList<Transaction> transactions = gson.fromJson(arrayString, new TypeToken<List<Transaction>>() {
         }.getType());
 
+        System.out.println("----------> removeFromTransactions size : " + transactions.size());
+
         if (transactions.size() != 0)
             for (int i = 0; i < transactions.size(); i++)
-                if (transactions.get(i).getOur_token() == transaction.getOur_token())
+                if (transactions.get(i).getOur_token().equals(transaction.getOur_token()))
                     transactions.remove(i);
 
         saveString(UNSYCNCED_RES_NUMS, gson.toJson(transactions));

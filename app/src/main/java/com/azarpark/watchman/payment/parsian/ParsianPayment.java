@@ -82,8 +82,6 @@ public class ParsianPayment {
 
         amount *= 10;
 
-        System.out.println("----------> 2 our_token : " + res_num);
-
         sh_p.saveString(SharedPreferencesRepository.PLATE_TYPE, plateType.toString());
         sh_p.saveString(SharedPreferencesRepository.TAG1, tag1);
         sh_p.saveString(SharedPreferencesRepository.TAG2, tag2);
@@ -168,7 +166,6 @@ public class ParsianPayment {
 
                     Log.d("bundle data", getBundleString(b));
 
-
                     int amount = Integer.parseInt(b.getString("amount", "0"));
                     String result = b.getString("result");
                     String pan = b.getString("pan");
@@ -176,6 +173,7 @@ public class ParsianPayment {
                     Long date = b.getLong("date");
                     String trace = b.getString("trace");
                     String errorMessage = b.getString("message", "");
+//                    Long res_num = Long.parseLong(sh_p.getString(SharedPreferencesRepository.OUR_TOKEN));
                     Long res_num = b.getLong("res_num");
                     int status = errorMessage.isEmpty() ? 1 : -1;
 

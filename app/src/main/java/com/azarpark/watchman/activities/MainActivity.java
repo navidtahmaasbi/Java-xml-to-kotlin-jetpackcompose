@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -24,10 +25,12 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -219,8 +222,9 @@ public class MainActivity extends AppCompatActivity {
             adapter.showExitRequestItems(!adapter.isShowExitRequestItems());
             binding.exitRequests.setBackgroundColor(getResources().getColor(R.color.transparent));
 
-        } else
-            super.onBackPressed();
+        }
+//        else
+//            super.onBackPressed();
     }
 
     @Override
@@ -233,7 +237,9 @@ public class MainActivity extends AppCompatActivity {
             timer.cancel();
             timer = null;
         }
+
     }
+
 
     //-------------------------------------------------------- initialize
 
@@ -529,7 +535,7 @@ public class MainActivity extends AppCompatActivity {
                 else
                     printTemplateBinding.description2.setText("شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد");
 
-                printTemplateBinding.debtArea.setVisibility(balance <= 0 ? View.VISIBLE : View.GONE);
+                printTemplateBinding.debtArea.setVisibility(balance < 0 ? View.VISIBLE : View.GONE);
 
                 printTemplateBinding.qrcode.setImageBitmap(assistant.qrGenerator(qr_url + placeID));
 
@@ -697,7 +703,7 @@ public class MainActivity extends AppCompatActivity {
 
                         });
 
-                        parkResponseDialog.show(getSupportFragmentManager(),ParkResponseDialog.TAG);
+                        parkResponseDialog.show(getSupportFragmentManager(), ParkResponseDialog.TAG);
 
                         Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
                         parkDialog.dismiss();
@@ -849,8 +855,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void verifyUnverifiedTransaction(Transaction transaction) {
 
-        System.out.println("----------+ transaction : " + transaction.string());
-
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
 
@@ -861,10 +865,12 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
 
-                        System.out.println("--------->> transaction " + transaction.getOur_token() + " - response : " + response.isSuccessful() + " - " + response.body().getDescription());
-
-                        if (response.isSuccessful())
+                        System.out.println("----------> transaction " + transaction.getOur_token() + " - response : " + response.code());
+                        System.out.println("----------> size : " + sh_r.getTransactions().size());
+//                        if (response.isSuccessful()) {
                             sh_r.removeFromTransactions(transaction);
+//                        }
+                        System.out.println("----------> size : " + sh_r.getTransactions().size());
                     }
 
                     @Override

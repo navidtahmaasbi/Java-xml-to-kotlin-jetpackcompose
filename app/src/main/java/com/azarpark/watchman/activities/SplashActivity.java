@@ -116,7 +116,6 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<SplashResponse> call, Response<SplashResponse> response) {
 
-                System.out.println("---------> splash response : " + response.raw().toString());
 
                 binding.loadingBar.setVisibility(View.INVISIBLE);
                 if (response.isSuccessful()) {
@@ -206,5 +205,8 @@ public class SplashActivity extends AppCompatActivity {
 
     }
 
-
+    @Override
+    public void onBackPressed() {
+//        super.onBackPressed();
+    }
 }
