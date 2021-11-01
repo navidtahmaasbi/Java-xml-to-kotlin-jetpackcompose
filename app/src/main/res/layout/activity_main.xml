@@ -76,11 +76,11 @@
                 android:id="@+id/exit_requests"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/_45sdp"
-                android:paddingRight="@dimen/_5sdp"
-                android:paddingLeft="@dimen/_5sdp"
                 android:layout_toRightOf="@+id/refresh"
                 android:gravity="center_vertical"
-                android:onClick="onExitRequestIconClicked">
+                android:onClick="onExitRequestIconClicked"
+                android:paddingLeft="@dimen/_5sdp"
+                android:paddingRight="@dimen/_5sdp">
 
                 <!--            <ImageView-->
                 <!--                android:layout_width="@dimen/_45sdp"-->
@@ -146,9 +146,9 @@
             android:textSize="@dimen/_13sdp" />
 
         <RelativeLayout
+            android:id="@+id/aaabbb"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/aaabbb">
+            android:layout_height="match_parent">
 
             <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:id="@+id/refresh_layout"
@@ -167,14 +167,14 @@
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
             <TextView
-                android:visibility="gone"
                 android:id="@+id/placeholder"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:fontFamily="@font/iran_sans"
                 android:text="موردی یافت نشد"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:visibility="gone" />
 
 
         </RelativeLayout>

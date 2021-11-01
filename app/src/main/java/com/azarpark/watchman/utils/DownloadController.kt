@@ -11,7 +11,6 @@ import android.os.Environment
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import com.azarpark.watchman.BuildConfig
-import com.azarpark.watchman.R
 import java.io.File
 
 class DownloadController(private val context: Context, private val url: String) {

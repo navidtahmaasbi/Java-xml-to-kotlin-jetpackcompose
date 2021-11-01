@@ -249,6 +249,8 @@ public class DebtCheckActivity extends AppCompatActivity {
         parsianPayment.handleResult(requestCode, resultCode, data);
 
         samanPayment.handleResult(requestCode, resultCode, data);
+
+        loadData(false);
     }
 
     public void myOnBackPressed(View view) {
@@ -430,9 +432,9 @@ public class DebtCheckActivity extends AppCompatActivity {
         long res_num = Assistant.generateResNum();
 
         if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-            parsianPayment.paymentRequest(amount, res_num, DebtCheckActivity.this, plateType, tag1, tag2, tag3, tag4, -1);
+            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4,amount, -1);
         else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-            samanPayment.paymentRequest(UUID.randomUUID().toString(),amount, plateType, tag1, tag2, tag3, tag4, -1);
+            samanPayment.createTransaction(plateType, tag1, tag2, tag3, tag4,amount, -1);
 
     }
 

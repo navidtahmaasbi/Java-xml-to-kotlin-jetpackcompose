@@ -3,6 +3,8 @@ package com.azarpark.watchman.activities;
 import static android.content.ContentValues.TAG;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.app.Activity;
@@ -120,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        setupUIForKeyboardHideOnOutsideTouch(binding.getRoot());
+//        setupUIForKeyboardHideOnOutsideTouch(binding.getRoot());
 
         sh_r = new SharedPreferencesRepository(getApplicationContext());
 
@@ -182,8 +184,10 @@ public class MainActivity extends AppCompatActivity {
 
                 openParkDialog(place);
 
-            } else
+            } else{
+
                 openParkInfoDialog(place);
+            }
 
             binding.filterEdittext.setText("");
 
@@ -196,7 +200,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
 
         Log.e("getPlaces", "onResume");
         getPlaces();
@@ -223,8 +226,8 @@ public class MainActivity extends AppCompatActivity {
             binding.exitRequests.setBackgroundColor(getResources().getColor(R.color.transparent));
 
         }
-//        else
-//            super.onBackPressed();
+        else
+            super.onBackPressed();
     }
 
     @Override
@@ -362,8 +365,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void listeners() {
 
-        binding.refresh.setOnClickListener(view -> getPlaces());
-
         binding.filterEdittext.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -392,8 +393,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onMenuToggleClicked(View view) {
-
-        System.out.println("----------> time : " + assistant.getTime());
 
         popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
         menuIsOpen = true;
@@ -609,8 +608,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<PlacesResponse> call, Response<PlacesResponse> response) {
 
-
-//                System.out.println("----------> places response : " + response.raw().toString());
 
                 binding.refreshLayout.setRefreshing(false);
 

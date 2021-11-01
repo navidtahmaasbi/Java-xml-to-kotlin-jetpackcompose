@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.StarterActivity"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/app"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="ادامه کار با برنامه"
+        android:gravity="center"
+        android:fontFamily="@font/iran_sans_fa_num_bold"
+        android:textColor="@color/white"
+        android:background="@color/red"/>
+
+    <TextView
+        android:id="@+id/exit"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="خروج از برنامه"
+        android:gravity="center"
+        android:fontFamily="@font/iran_sans_fa_num_bold"
+        android:textColor="@color/white"
+        android:background="@color/blue"/>
+
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>
