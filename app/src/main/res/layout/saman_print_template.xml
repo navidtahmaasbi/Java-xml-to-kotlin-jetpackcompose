@@ -28,7 +28,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:src="@drawable/ic_print_logo"/>
+                android:src="@drawable/ic_logo_type"/>
 
 
 
@@ -389,6 +389,37 @@
 <!--            android:layout_marginTop="@dimen/_5sdp"-->
 <!--            android:layout_marginBottom="@dimen/_5sdp"/>-->
 
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/debt_area"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="0dp"
+                android:id="@+id/debt"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:lineSpacingExtra="@dimen/_1sdp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_13sdp"
+                android:text="0 تومان"
+                app:fontFamily="@font/sahel_fa_num_semi_bold" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:lineSpacingExtra="@dimen/_1sdp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_13sdp"
+                android:text="بدهی پیشین"
+                app:fontFamily="@font/sahel_fa_num_semi_bold" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
@@ -535,6 +566,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="right"
+                android:id="@+id/description2"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_11sdp"
                 android:text="شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد"

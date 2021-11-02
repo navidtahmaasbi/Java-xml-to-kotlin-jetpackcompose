@@ -51,9 +51,6 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
 
-        String apkUrl = "http://iranademo.ir/apks/wahtchman_00_07_27.apk";
-
-
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
@@ -187,6 +184,7 @@ public class SplashActivity extends AppCompatActivity {
             citySelectDialog.dismiss();
 
             sh_p.saveString(SharedPreferencesRepository.SUB_DOMAIN, cities.get(position).subdomain);
+            sh_p.saveString(SharedPreferencesRepository.CITY_ID, cities.get(position).id+"");
 
             RetrofitAPIClient.setBaseUrl("https://" + cities.get(position).subdomain + ".backend.iranademo.ir");
 //

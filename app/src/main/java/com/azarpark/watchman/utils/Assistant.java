@@ -4,7 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.service.autofill.RegexValidator;
+import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 
 import com.azarpark.watchman.download_utils.DownloadController;
@@ -26,6 +30,7 @@ public class Assistant {
 
     public static int SAMAN = 1, PASRIAN = 2, SELECTED_PAYMENT = 2;
     public static int MIN_PRICE_FOR_PAYMENT = 100;
+    public static String NON_CHARGE_SHABA = "IR540550100470106230710001", CHARGE_SHABA = "IR270550100470106230710002";
 
     public static long generateResNum() {
 
@@ -149,6 +154,31 @@ public class Assistant {
         decimalFormateSymbol.setGroupingSeparator(',');
         decimalFormat.setDecimalFormatSymbols(decimalFormateSymbol);
         return decimalFormat.format(num);
+    }
+
+    public boolean VPNEnabled (Context mContext){
+
+        ConnectivityManager cm = (ConnectivityManager)mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        Network[] networks = cm.getAllNetworks();
+
+        boolean vpnIsOpen = false;
+
+        Log.i("TAG", "Network count: " + networks.length);
+        for(int i = 0; i < networks.length; i++) {
+
+            NetworkCapabilities caps = cm.getNetworkCapabilities(networks[i]);
+
+            Log.i("TAG", "Network " + i + ": " + networks[i].toString());
+            Log.i("TAG", "VPN transport is: " + caps.hasTransport(NetworkCapabilities.TRANSPORT_VPN));
+            Log.i("TAG", "NOT_VPN capability is: " + caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_VPN));
+
+            if (caps.hasTransport(NetworkCapabilities.TRANSPORT_VPN))
+                vpnIsOpen = true;
+
+        }
+
+        return  vpnIsOpen;
+
     }
 
 }

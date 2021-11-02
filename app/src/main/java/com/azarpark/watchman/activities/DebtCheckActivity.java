@@ -434,7 +434,7 @@ public class DebtCheckActivity extends AppCompatActivity {
         if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
             parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4,amount, -1);
         else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-            samanPayment.createTransaction(plateType, tag1, tag2, tag3, tag4,amount, -1);
+            samanPayment.createTransaction(Assistant.NON_CHARGE_SHABA,plateType, tag1, tag2, tag3, tag4,amount, -1);
 
     }
 

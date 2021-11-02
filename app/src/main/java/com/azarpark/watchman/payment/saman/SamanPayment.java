@@ -19,6 +19,7 @@ import android.widget.Toast;
 import androidx.fragment.app.FragmentManager;
 
 import com.azarpark.watchman.databinding.PrintTemplateBinding;
+import com.azarpark.watchman.databinding.SamanPrintTemplateBinding;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.dialogs.MessageDialog;
@@ -90,7 +91,6 @@ public class SamanPayment {
 
         System.out.println("---------> saman paymentRequest");
 
-        amount *= 10;
 
         sh_r.saveString(SharedPreferencesRepository.PLATE_TYPE, plateType.toString());
         sh_r.saveString(SharedPreferencesRepository.TAG1, tag1);
@@ -121,9 +121,48 @@ public class SamanPayment {
 
     }
 
-    public void createTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID) {
+    public void tashimPaymentRequest(String shaba, String resNum, int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
+
+        System.out.println("---------> saman tashim paymentRequest");
+
+        sh_r.saveString(SharedPreferencesRepository.PLATE_TYPE, plateType.toString());
+        sh_r.saveString(SharedPreferencesRepository.TAG1, tag1);
+        sh_r.saveString(SharedPreferencesRepository.TAG2, tag2);
+        sh_r.saveString(SharedPreferencesRepository.TAG3, tag3);
+        sh_r.saveString(SharedPreferencesRepository.TAG4, tag4);
+        sh_r.saveString(SharedPreferencesRepository.TAG4, tag4);
+        sh_r.saveString(SharedPreferencesRepository.AMOUNT, String.valueOf(amount));
+        sh_r.saveString(SharedPreferencesRepository.PLACE_ID, Integer.toString(placeID));
+        sh_r.saveString(SharedPreferencesRepository.OUR_TOKEN, resNum);
+
+        String[] param = new String[1];
+        param[0] = shaba;
+
+        Intent intent = new Intent();
+        intent.putExtra("TransType", 3);
+        intent.putExtra("Amount", String.valueOf(amount));
+        intent.putExtra("ResNum", resNum);
+        intent.putExtra("AppId", "0");
+        intent.putExtra("Tashim", param);
+
+//        for (String key:intent.getExtras().keySet()) {
+        Log.d("-----> TransType", String.valueOf(intent.getExtras().getInt("TransType")));
+        Log.d("-----> Amount", intent.getExtras().getString("Amount"));
+        Log.d("-----> ResNum", intent.getExtras().getString("ResNum"));
+        Log.d("-----> AppId", intent.getExtras().getString("AppId"));
+//        }
+
+        intent.setComponent(new ComponentName("ir.sep.android.smartpos", "ir.sep.android.smartpos.ThirdPartyActivity"));
+
+        activity.startActivityForResult(intent, PAYMENT_REQUEST_CODE);
+
+    }
+
+    public void createTransaction(String shaba, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID) {
 
         System.out.println("---------> createTransaction");
+
+        final int finalAmount = amount *= 10;
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(context);
         RetrofitAPIRepository repository = new RetrofitAPIRepository(context);
@@ -147,17 +186,20 @@ public class SamanPayment {
 
                             long our_token = response.body().our_token;
 
-                            paymentRequest(Long.toString(our_token), amount, plateType, tag1, tag2, tag3, tag4, placeID);
+
+
+//                            paymentRequest(Long.toString(our_token), amount, plateType, tag1, tag2, tag3, tag4, placeID);
+                            tashimPaymentRequest("0:" + finalAmount + ":"+shaba, Long.toString(our_token), finalAmount, plateType, tag1, tag2, tag3, tag4, placeID);
 
                         } else
-                            APIErrorHandler.orResponseErrorHandler(fragmentManager, activity, response, () -> createTransaction(plateType, tag1, tag2, tag3, tag4, amount, placeID));
+                            APIErrorHandler.orResponseErrorHandler(fragmentManager, activity, response, () -> createTransaction(shaba,plateType, tag1, tag2, tag3, tag4, finalAmount, placeID));
                     }
 
                     @Override
                     public void onFailure(Call<CreateTransactionResponse> call, Throwable t) {
                         loadingBar.dismiss();
                         t.printStackTrace();
-                        APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> createTransaction(plateType, tag1, tag2, tag3, tag4, amount, placeID));
+                        APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> createTransaction(shaba,plateType, tag1, tag2, tag3, tag4, finalAmount, placeID));
                     }
                 });
 
@@ -196,7 +238,6 @@ public class SamanPayment {
 //        ++message :    (this will have value if there is an error)
 
 
-
             if (state == STATE_SUCCESSFUL) // successful
             {
                 Log.e("saman payment", "Purchase did successful....");
@@ -211,13 +252,13 @@ public class SamanPayment {
                 if (tag4 == null) tag4 = "null";
 
                 int status = state == 0 ? 1 : -1;
-                String refNum = data.getExtras().getString("RefNum","");
-                String resNum = data.getExtras().getString("ResNum","");
-                String amount = data.getExtras().getString("Amount","0");
-                String pan = data.getExtras().getString("Pan","");
-                String dateTime = data.getExtras().getString("DateTime","0");
-                String traceNumber = data.getExtras().getString("TraceNumber","");
-                String result = data.getExtras().getString("result","");
+                String refNum = data.getExtras().getString("RefNum", "");
+                String resNum = data.getExtras().getString("ResNum", "");
+                String amount = data.getExtras().getString("Amount", "0");
+                String pan = data.getExtras().getString("Pan", "");
+                String dateTime = data.getExtras().getString("DateTime", "0");
+                String traceNumber = data.getExtras().getString("TraceNumber", "");
+                String result = data.getExtras().getString("result", "");
 
                 System.out.println("--------> amount : " + amount);
 
@@ -244,7 +285,7 @@ public class SamanPayment {
 
             } else {
 
-                String result = data.getExtras().getString("result","");
+                String result = data.getExtras().getString("result", "");
 
                 if (!result.isEmpty())
                     Toast.makeText(context, result, Toast.LENGTH_LONG).show();
@@ -255,9 +296,8 @@ public class SamanPayment {
                         messageDialog.dismiss();
                 });
 
-                messageDialog.show(fragmentManager,MessageDialog.TAG);
+                messageDialog.show(fragmentManager, MessageDialog.TAG);
             }
-
 
 
         } else if (resultCode == Activity.RESULT_OK && requestCode == QR_SCANNER_REQUEST_CODE) {
@@ -297,17 +337,32 @@ public class SamanPayment {
 
     public void printParkInfo(String startTime, String tag1, String tag2, String tag3, String tag4,
                               int placeID, ViewGroup viewGroupForBindFactor, String pricing, String telephone, String sms_number,
-                              String qr_url, int debt) {
+                              String qr_url, int debt, int balance) {
 
+        SamanPrintTemplateBinding printTemplateBinding = SamanPrintTemplateBinding.inflate(LayoutInflater.from(context), viewGroupForBindFactor, true);
 
-        PrintTemplateBinding printTemplateBinding = PrintTemplateBinding.inflate(LayoutInflater.from(context), viewGroupForBindFactor, true);
+        if (balance > 0) {
+
+            printTemplateBinding.description2.setText("شهروند گرامی؛از این که جز مشتریان خوش حساب ما هستید سپاسگزاریم");
+
+        } else if (balance < 0) {
+
+            printTemplateBinding.description2.setText("اخطار: شهروند گرامی؛بدهی پلاک شما بیش از حد مجاز میباشد در صورت عدم پرداخت بدهی مشمول جریمه پارک ممنوع خواهید شد");
+
+        } else {
+
+            printTemplateBinding.description2.setText("شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد");
+
+        }
+
+        printTemplateBinding.debtArea.setVisibility(balance <= 0 ? View.VISIBLE : View.GONE);
 
         printTemplateBinding.placeId.setText(placeID + "");
         printTemplateBinding.debt.setText(debt + " تومان");
 
-//                String time = startTime.split(" ")[]
 
         printTemplateBinding.startTime.setText(startTime);
+
         printTemplateBinding.prices.setText(pricing);
         printTemplateBinding.supportPhone.setText(telephone);
         printTemplateBinding.description.setText("در صورت عدم حضور پارکیار عدد " + placeID + " را به شماره " + sms_number + " ارسال کنید");

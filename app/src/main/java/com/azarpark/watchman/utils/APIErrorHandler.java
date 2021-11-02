@@ -20,7 +20,7 @@ public class APIErrorHandler {
 
     public static void orResponseErrorHandler(FragmentManager fragmentManager, Activity activity, Response response, OnResponseErrorAction onResponseErrorAction) {
 
-        if (response.code() > 400 && response.code() < 500) {
+        if (response.code() > 400 && response.code() < 420) {
 
             activity.startActivity(new Intent(activity, LoginActivity.class));
             activity.finish();

@@ -34,7 +34,8 @@ public class SharedPreferencesRepository {
             OUR_TOKEN = "our_token",
             TRANSACTION_ID = "TRANSACTION_ID",
             REF_NUM = "REF_NUM",
-            SUB_DOMAIN = "SUB_DOMAIN";
+            SUB_DOMAIN = "SUB_DOMAIN",
+            CITY_ID = "city_id";
     public static String qr_url = "qr_url";
     public static String refresh_time = "refresh_time";
     public static String telephone = "telephone";
