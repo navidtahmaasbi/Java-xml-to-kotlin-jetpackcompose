@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -26,6 +27,7 @@ import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.responses.GetCitiesResponse;
 import com.azarpark.watchman.retrofit_remote.responses.SplashResponse;
 import com.azarpark.watchman.utils.APIErrorHandler;
+import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.DownloadController;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
@@ -45,11 +47,13 @@ public class SplashActivity extends AppCompatActivity {
     Activity activity = this;
     DownloadController downloadController;
     MessageDialog messageDialog;
+    Assistant assistant;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        assistant = new Assistant();
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -60,7 +64,19 @@ public class SplashActivity extends AppCompatActivity {
 
         sh_p = new SharedPreferencesRepository(getApplicationContext());
 
-        if (sh_p.getString(SharedPreferencesRepository.SUB_DOMAIN).isEmpty())
+        if (assistant.VPNEnabled(getApplicationContext())){
+
+            messageDialog = new MessageDialog("عدم دسترسی",
+                    "برنامه اذرپارک در خارج از کشور قابل دسترسی نیست درصورت روشن بودن وی پی ان ان را خاموش کرده و دوباره وارد برنامه شوید",
+                    "خروج",
+                    () -> {
+                        SplashActivity.this.finish();
+                    });
+
+            messageDialog.setCancelable(false);
+            messageDialog.show(getSupportFragmentManager(),MessageDialog.TAG);
+
+        } else if (sh_p.getString(SharedPreferencesRepository.SUB_DOMAIN).isEmpty())
             getCities();
         else{
 
@@ -199,7 +215,9 @@ public class SplashActivity extends AppCompatActivity {
         });
 
         if (citySelectDialog != null)
-            citySelectDialog.show(getSupportFragmentManager(), SingleSelectDialog.TAG);
+            binding.getRoot().post(() -> citySelectDialog.show(getSupportFragmentManager(), SingleSelectDialog.TAG));
+
+
 
     }
 

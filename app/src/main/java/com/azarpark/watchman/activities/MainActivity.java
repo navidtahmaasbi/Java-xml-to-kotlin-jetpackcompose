@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ComponentName;
@@ -179,9 +180,7 @@ public class MainActivity extends AppCompatActivity {
 
         adapter = new ParkListAdapter(getApplicationContext(), place -> {
 
-            if (place.status.equals(PlaceStatus.free.toString()) ||
-                    place.status.equals(PlaceStatus.free_by_user.toString()) ||
-                    place.status.equals(PlaceStatus.free_by_watchman.toString())) {
+            if (place.status.contains(PlaceStatus.free.toString())) {
 
                 openParkDialog(place);
 
@@ -502,7 +501,7 @@ public class MainActivity extends AppCompatActivity {
                     if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
                         parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1);
                     else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-                        samanPayment.createTransaction(Assistant.NON_CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1);
+                        samanPayment.createTransaction(Assistant.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1);
 
                     plateChargeDialog.dismiss();
 
@@ -526,30 +525,31 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void printFactor(int placeID,String startTime,int balance, Place place ) {
+    @SuppressLint("SetTextI18n")
+    private void printFactor(int placeID, String startTime, int balance, Place place ) {
+
+        binding.printArea.removeAllViews();
 
         if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN){
 
 
             PrintTemplateBinding printTemplateBinding = PrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
 
-            printTemplateBinding.placeId.setText(placeID + "");
+            printTemplateBinding.placeId.setText(place.number + "");
 
             printTemplateBinding.startTime.setText(assistant.toJalali(startTime));
             printTemplateBinding.prices.setText(pricing);
             printTemplateBinding.supportPhone.setText(telephone);
-            printTemplateBinding.debt.setText(debt + "تومان");
+            printTemplateBinding.debt.setText((-1*balance) + "تومان");
             String cityID = sh_r.getString(SharedPreferencesRepository.CITY_ID);
 
-            StringBuilder sb = new StringBuilder();
-            sb.append("در صورت عدم حضور پارکیار برای خروج عدد ");
-            sb.append(cityID);
-            sb.append(sms_number);
-            sb.append(" را به شماره ");
-            sb.append(sms_number);
-            sb.append(" ارسال کنید");
-
-            printTemplateBinding.description.setText(sb.toString());
+            String sb = "در صورت عدم حضور پارکیار برای خروج عدد " +
+                    cityID +
+                    placeID +
+                    " را به شماره " +
+                    sms_number +
+                    " ارسال کنید";
+            printTemplateBinding.description.setText(sb);
             if (balance > 0)
                 printTemplateBinding.description2.setText("شهروند گرامی؛از این که جز مشتریان خوش حساب ما هستید سپاسگزاریم");
             else if (balance < 0)
@@ -561,7 +561,7 @@ public class MainActivity extends AppCompatActivity {
 
             printTemplateBinding.qrcode.setImageBitmap(assistant.qrGenerator(qr_url + placeID));
 
-            if (place.tag4 != null && !place.tag4.isEmpty()) {
+            if (assistant.getPlateType(place) == PlateType.simple) {
 
                 printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
                 printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
@@ -572,7 +572,7 @@ public class MainActivity extends AppCompatActivity {
                 printTemplateBinding.plateSimpleTag3.setText(place.tag3);
                 printTemplateBinding.plateSimpleTag4.setText(place.tag4);
 
-            } else if (place.tag2 == null || place.tag2.isEmpty()) {
+            } else if (assistant.getPlateType(place) == PlateType.old_aras) {
 
                 printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
                 printTemplateBinding.plateOldArasArea.setVisibility(View.VISIBLE);
@@ -608,23 +608,21 @@ public class MainActivity extends AppCompatActivity {
 
             SamanPrintTemplateBinding printTemplateBinding = SamanPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
 
-            printTemplateBinding.placeId.setText(placeID + "");
+            printTemplateBinding.placeId.setText(place.number + "");
 
             printTemplateBinding.startTime.setText(assistant.toJalali(startTime));
             printTemplateBinding.prices.setText(pricing);
             printTemplateBinding.supportPhone.setText(telephone);
-            printTemplateBinding.debt.setText(debt + "تومان");
+            printTemplateBinding.debt.setText((-1*balance) + "تومان");
             String cityID = sh_r.getString(SharedPreferencesRepository.CITY_ID);
 
-            StringBuilder sb = new StringBuilder();
-            sb.append("در صورت عدم حضور پارکیار برای خروج عدد ");
-            sb.append(cityID);
-            sb.append(placeID);
-            sb.append(" را به شماره ");
-            sb.append(sms_number);
-            sb.append(" ارسال کنید");
-
-            printTemplateBinding.description.setText(sb.toString());
+            String sb = "در صورت عدم حضور پارکیار برای خروج عدد " +
+                    cityID +
+                    placeID +
+                    " را به شماره " +
+                    sms_number +
+                    " ارسال کنید";
+            printTemplateBinding.description.setText(sb);
             if (balance > 0)
                 printTemplateBinding.description2.setText("شهروند گرامی؛از این که جز مشتریان خوش حساب ما هستید سپاسگزاریم");
             else if (balance < 0)
@@ -636,7 +634,7 @@ public class MainActivity extends AppCompatActivity {
 
             printTemplateBinding.qrcode.setImageBitmap(assistant.qrGenerator(qr_url + placeID));
 
-            if (place.tag4 != null && !place.tag4.isEmpty()) {
+            if (assistant.getPlateType(place) == PlateType.simple) {
 
                 printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
                 printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
@@ -647,7 +645,7 @@ public class MainActivity extends AppCompatActivity {
                 printTemplateBinding.plateSimpleTag3.setText(place.tag3);
                 printTemplateBinding.plateSimpleTag4.setText(place.tag4);
 
-            } else if (place.tag2 == null || place.tag2.isEmpty()) {
+            } else if (assistant.getPlateType(place) == PlateType.old_aras) {
 
                 printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
                 printTemplateBinding.plateOldArasArea.setVisibility(View.VISIBLE);

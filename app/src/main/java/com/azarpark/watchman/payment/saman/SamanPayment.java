@@ -162,11 +162,10 @@ public class SamanPayment {
 
         System.out.println("---------> createTransaction");
 
-        final int finalAmount = amount *= 10;
-
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(context);
         RetrofitAPIRepository repository = new RetrofitAPIRepository(context);
         loadingBar.show();
+
 
         repository.createTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
                 plateType,
@@ -186,20 +185,18 @@ public class SamanPayment {
 
                             long our_token = response.body().our_token;
 
-
-
 //                            paymentRequest(Long.toString(our_token), amount, plateType, tag1, tag2, tag3, tag4, placeID);
-                            tashimPaymentRequest("0:" + finalAmount + ":"+shaba, Long.toString(our_token), finalAmount, plateType, tag1, tag2, tag3, tag4, placeID);
+                            tashimPaymentRequest("0:" + (amount*10) + ":"+shaba, Long.toString(our_token), (amount*10), plateType, tag1, tag2, tag3, tag4, placeID);
 
                         } else
-                            APIErrorHandler.orResponseErrorHandler(fragmentManager, activity, response, () -> createTransaction(shaba,plateType, tag1, tag2, tag3, tag4, finalAmount, placeID));
+                            APIErrorHandler.orResponseErrorHandler(fragmentManager, activity, response, () -> createTransaction(shaba,plateType, tag1, tag2, tag3, tag4, amount, placeID));
                     }
 
                     @Override
                     public void onFailure(Call<CreateTransactionResponse> call, Throwable t) {
                         loadingBar.dismiss();
                         t.printStackTrace();
-                        APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> createTransaction(shaba,plateType, tag1, tag2, tag3, tag4, finalAmount, placeID));
+                        APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> createTransaction(shaba,plateType, tag1, tag2, tag3, tag4, amount, placeID));
                     }
                 });
 

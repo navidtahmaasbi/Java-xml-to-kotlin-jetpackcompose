@@ -364,7 +364,7 @@
                 android:background="@drawable/selected_background"
                 android:fontFamily="@font/iran_sans_fa_num"
                 android:gravity="center"
-                android:hint="مبلغ شارژ"
+                android:hint="مبلغ شارژ به تومان"
                 android:maxLength="9"
                 android:inputType="numberDecimal"
                 android:paddingTop="@dimen/_8sdp"

@@ -101,7 +101,7 @@ public class ParkInfoDialog extends DialogFragment {
         });
 
 
-        if (place.tag4 != null && !place.tag4.isEmpty()) {
+        if (assistant.getPlateType(place) == PlateType.simple) {
 
             binding.plateSimpleArea.setVisibility(View.VISIBLE);
             binding.plateOldArasArea.setVisibility(View.GONE);
@@ -112,7 +112,7 @@ public class ParkInfoDialog extends DialogFragment {
             binding.plateSimpleTag3.setText(place.tag3);
             binding.plateSimpleTag4.setText(place.tag4);
 
-        } else if (place.tag2 == null || place.tag2.isEmpty()) {
+        } else if (assistant.getPlateType(place) == PlateType.old_aras) {
 
             binding.plateSimpleArea.setVisibility(View.GONE);
             binding.plateOldArasArea.setVisibility(View.VISIBLE);

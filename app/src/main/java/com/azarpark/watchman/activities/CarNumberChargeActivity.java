@@ -406,7 +406,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
     private void verifyTransaction(Transaction transaction) {
 
         Log.d("verifyTransaction", "started ...");
-        System.out.println("----------> 3 our_token : " + transaction.getOur_token());
+        System.out.println("----------> 3 transaction : " + transaction.string());
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());

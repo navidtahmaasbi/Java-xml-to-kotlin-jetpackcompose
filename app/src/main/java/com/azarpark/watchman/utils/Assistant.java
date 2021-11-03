@@ -9,9 +9,12 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.service.autofill.RegexValidator;
 import android.util.Log;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.azarpark.watchman.download_utils.DownloadController;
+import com.azarpark.watchman.enums.PlateType;
+import com.azarpark.watchman.models.Place;
 
 import java.net.HttpURLConnection;
 import java.text.DecimalFormat;
@@ -178,6 +181,18 @@ public class Assistant {
         }
 
         return  vpnIsOpen;
+
+    }
+
+    public PlateType getPlateType(Place place){
+
+        if (place.tag2 == null || place.tag2.isEmpty()|| place.tag2.equals("0"))
+            return PlateType.old_aras;
+
+        if (place.tag3 == null || place.tag3.isEmpty()|| place.tag3.equals("0"))
+            return PlateType.new_aras;
+
+        return PlateType.simple;
 
     }
 

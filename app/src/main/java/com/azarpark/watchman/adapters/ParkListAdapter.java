@@ -14,7 +14,9 @@ import com.azarpark.watchman.R;
 import com.azarpark.watchman.databinding.FreeParkItemBinding;
 import com.azarpark.watchman.databinding.FullParkItemBinding;
 import com.azarpark.watchman.enums.PlaceStatus;
+import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.Place;
+import com.azarpark.watchman.utils.Assistant;
 
 import java.text.DateFormat;
 import java.text.NumberFormat;
@@ -32,12 +34,14 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     boolean showExitRequestItems = false;
     String filterText = "";
     Context context;
+    Assistant assistant;
 
     public ParkListAdapter(Context context,OnItemClicked onItemClicked) {
         items = new ArrayList<>();
         filteredItems = new ArrayList<>();
         this.onItemClicked = onItemClicked;
         this.context = context;
+        assistant = new Assistant();
     }
 
     @NonNull
@@ -68,7 +72,7 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             else
                 viewHolder.binding.paymentStatus.setText("رایگان");
 
-            if (place.tag4 != null && !place.tag4.isEmpty()) {
+            if (assistant.getPlateType(place) == PlateType.simple) {
 
                 viewHolder.binding.plateIrArea.setVisibility(View.VISIBLE);
                 viewHolder.binding.plateArasArea.setVisibility(View.GONE);
@@ -79,7 +83,7 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 viewHolder.binding.plateIrTag3.setText(place.tag3);
                 viewHolder.binding.plateIrTag4.setText(place.tag4);
 
-            } else if (place.tag2 == null || place.tag2.isEmpty()) {
+            } else if (assistant.getPlateType(place) == PlateType.old_aras) {
 
                 viewHolder.binding.plateIrArea.setVisibility(View.GONE);
                 viewHolder.binding.plateArasArea.setVisibility(View.VISIBLE);
