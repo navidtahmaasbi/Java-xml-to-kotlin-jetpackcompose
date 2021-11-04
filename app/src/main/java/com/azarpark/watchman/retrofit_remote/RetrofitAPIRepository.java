@@ -18,6 +18,7 @@ import com.azarpark.watchman.retrofit_remote.interfaces.GetPlaces;
 import com.azarpark.watchman.retrofit_remote.interfaces.Login;
 import com.azarpark.watchman.retrofit_remote.interfaces.Logout;
 import com.azarpark.watchman.retrofit_remote.interfaces.Park;
+import com.azarpark.watchman.retrofit_remote.interfaces.SendExitCode;
 import com.azarpark.watchman.retrofit_remote.interfaces.Splash;
 import com.azarpark.watchman.retrofit_remote.interfaces.VerifyTransaction;
 import com.azarpark.watchman.retrofit_remote.responses.CreateTransactionResponse;
@@ -31,6 +32,7 @@ import com.azarpark.watchman.retrofit_remote.responses.LoginResponse;
 import com.azarpark.watchman.retrofit_remote.responses.LogoutResponse;
 import com.azarpark.watchman.retrofit_remote.responses.ParkResponse;
 import com.azarpark.watchman.retrofit_remote.responses.PlacesResponse;
+import com.azarpark.watchman.retrofit_remote.responses.SendExitCodeResponse;
 import com.azarpark.watchman.retrofit_remote.responses.SplashResponse;
 import com.azarpark.watchman.retrofit_remote.responses.TestResponse;
 import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse;
@@ -139,6 +141,14 @@ public class RetrofitAPIRepository {
         ExitRequest request = RetrofitAPIClient.getClient(context).create(ExitRequest.class);
 
         request.submit(token, plateType.toString(), tag1, tag2, tag3, tag4).enqueue(responseCallback);
+
+    }
+
+    public void sendExitCode(String token, int code, Callback<SendExitCodeResponse> responseCallback) {
+
+        SendExitCode request = RetrofitAPIClient.getClient(context).create(SendExitCode.class);
+
+        request.send(token, code).enqueue(responseCallback);
 
     }
 

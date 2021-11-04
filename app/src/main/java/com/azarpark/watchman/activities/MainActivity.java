@@ -225,8 +225,12 @@ public class MainActivity extends AppCompatActivity {
             adapter.showExitRequestItems(!adapter.isShowExitRequestItems());
             binding.exitRequests.setBackgroundColor(getResources().getColor(R.color.transparent));
 
-        } else
-            super.onBackPressed();
+        }
+        else{
+            startActivity(new Intent(this,StarterActivity.class));
+            MainActivity.this.finish();
+        }
+//            super.onBackPressed();
     }
 
     @Override
@@ -806,8 +810,12 @@ public class MainActivity extends AppCompatActivity {
                             new Handler().postDelayed(() -> {
 
                                 if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-                                    parsianPayment.printParkInfo(assistant.getTime(), parkBody.getTag1(), parkBody.getTag2(), parkBody.getTag3(), parkBody.getTag4(), parkBody.getPlace_id(), binding.printArea, pricing, telephone, sms_number, qr_url, debt, response.body().getInfo().car_balance);
-                                else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
+                                    binding.printArea.post(() -> {
+
+                                        parsianPayment.printParkInfo(assistant.getTime(), parkBody.getTag1(), parkBody.getTag2(), parkBody.getTag3(), parkBody.getTag4(), parkBody.getPlace_id(), binding.printArea, pricing, telephone, sms_number, qr_url, debt, response.body().getInfo().car_balance);
+
+                                    });
+                                     else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
                                     samanPayment.printParkInfo(assistant.getTime(), parkBody.getTag1(), parkBody.getTag2(), parkBody.getTag3(), parkBody.getTag4(), parkBody.getPlace_id(), binding.printArea, pricing, telephone, sms_number, qr_url, debt, response.body().getInfo().car_balance);
 
                             }, 500);

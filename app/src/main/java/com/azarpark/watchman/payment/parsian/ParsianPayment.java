@@ -444,12 +444,10 @@ public class ParsianPayment {
 
         try {
 
-
             viewGroupForBindFactor.post(() -> {
 
                 PrinterManager printer = new PrinterManager();
                 int setupResult = printer.setupPage(-1, viewGroupForBindFactor.getHeight());
-                System.out.println("---------> setupResult : " + setupResult);
                 printer.drawBitmap(getViewBitmap(viewGroupForBindFactor), 0, 0);
                 printer.printPage(0);
 
@@ -461,20 +459,30 @@ public class ParsianPayment {
             e.printStackTrace();
         }
 
-
     }
 
     public static Bitmap getViewBitmap(View view) {
 
-        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(returnedBitmap);
-        Drawable bgDrawable = view.getBackground();
-        if (bgDrawable != null)
-            bgDrawable.draw(canvas);
-        else
-            canvas.drawColor(Color.WHITE);
-        view.draw(canvas);
-        return returnedBitmap;
+
+        view.setDrawingCacheEnabled(true);
+
+        view.buildDrawingCache();
+
+        return view.getDrawingCache();
+
+//        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+//        Canvas canvas = new Canvas(returnedBitmap);
+//        Drawable bgDrawable = view.getBackground();
+//        if (bgDrawable != null)
+//            bgDrawable.draw(canvas);
+//        else
+//            canvas.drawColor(Color.WHITE);
+//        view.draw(canvas);
+//        return returnedBitmap;
+
+
+
+
 
 //        v.clearFocus();
 //        v.setPressed(false);
