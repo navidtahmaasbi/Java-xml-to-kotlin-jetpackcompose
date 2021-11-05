@@ -36,7 +36,10 @@ public class APIErrorHandler {
 
                 String title = " خطای " + response.code();
                 String description = " خطایی رخ داده ";
+                if (response.code() == 400)
+                    description = "اطلاعات ورودی اشتباه است";
                 String confirmTitle = " تلاش دوباره";
+
                 String cancelTitle = "انصراف";
                 confirmDialog = new ConfirmDialog(title, description, confirmTitle, cancelTitle, new ConfirmDialog.ConfirmButtonClicks() {
                     @Override

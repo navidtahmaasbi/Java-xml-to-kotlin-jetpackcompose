@@ -89,7 +89,6 @@ public class SamanPayment {
 
     public void paymentRequest(String resNum, int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
 
-        System.out.println("---------> saman paymentRequest");
 
 
         sh_r.saveString(SharedPreferencesRepository.PLATE_TYPE, plateType.toString());
@@ -123,7 +122,6 @@ public class SamanPayment {
 
     public void tashimPaymentRequest(String shaba, String resNum, int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
 
-        System.out.println("---------> saman tashim paymentRequest");
 
         sh_r.saveString(SharedPreferencesRepository.PLATE_TYPE, plateType.toString());
         sh_r.saveString(SharedPreferencesRepository.TAG1, tag1);
@@ -160,7 +158,6 @@ public class SamanPayment {
 
     public void createTransaction(String shaba, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID) {
 
-        System.out.println("---------> createTransaction");
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(context);
         RetrofitAPIRepository repository = new RetrofitAPIRepository(context);
@@ -178,7 +175,6 @@ public class SamanPayment {
                     @Override
                     public void onResponse(Call<CreateTransactionResponse> call, Response<CreateTransactionResponse> response) {
 
-                        System.out.println("---------> createTransaction onResponse");
 
                         loadingBar.dismiss();
                         if (response.isSuccessful()) {
@@ -204,13 +200,10 @@ public class SamanPayment {
 
     public void handleResult(int requestCode, int resultCode, Intent data) {
 
-        System.out.println("---------> saman handleResult");
 
         if (resultCode == Activity.RESULT_OK && requestCode == PAYMENT_REQUEST_CODE) {
 
             int state = data.getIntExtra(STATE, -1);
-
-            System.out.println(getBundleString(data.getExtras()));
 
 //            AdditionalData :
 //            ++State : 55
@@ -257,7 +250,6 @@ public class SamanPayment {
                 String traceNumber = data.getExtras().getString("TraceNumber", "");
                 String result = data.getExtras().getString("result", "");
 
-                System.out.println("--------> amount : " + amount);
 
                 Transaction transaction = new Transaction(
                         amount,

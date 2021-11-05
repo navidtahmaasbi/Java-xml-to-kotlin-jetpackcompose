@@ -74,7 +74,6 @@ public class DebtListActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
 
-                        System.out.println("--------> url : " + response.raw().request().url());
 
                         loadingBar.dismiss();
                         if (response.isSuccessful()) {

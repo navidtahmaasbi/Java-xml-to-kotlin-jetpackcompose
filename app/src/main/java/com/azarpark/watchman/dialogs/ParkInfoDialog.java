@@ -173,7 +173,6 @@ public class ParkInfoDialog extends DialogFragment {
 
         binding.print.setOnClickListener(view -> {
 
-            System.out.println("----------> 1111");
 
             PlateType selectedPlateType = PlateType.simple;
 
@@ -333,7 +332,6 @@ public class ParkInfoDialog extends DialogFragment {
 
                 }catch (Exception e){
 
-                    System.out.println("---------> popup is closed");
                     APIErrorHandler.orResponseErrorHandler(getParentFragmentManager(),getActivity(), response, () -> getParkData(place));
 
                 }

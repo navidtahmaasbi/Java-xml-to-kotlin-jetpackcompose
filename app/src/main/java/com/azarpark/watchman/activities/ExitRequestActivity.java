@@ -263,7 +263,6 @@ public class ExitRequestActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<ExitRequestResponse> call, Response<ExitRequestResponse> response) {
 
-                        System.out.println("--------> url : " + response.raw().request().url());
 
                         loadingBar.dismiss();
                         if (response.isSuccessful()) {

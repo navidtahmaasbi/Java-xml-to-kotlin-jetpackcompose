@@ -391,7 +391,6 @@ public class DebtCheckActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
 
-                        System.out.println("--------> url : " + response.raw().request().url());
 
                         loadingBar.dismiss();
                         if (response.isSuccessful()) {
@@ -453,7 +452,6 @@ public class DebtCheckActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
 
-                        System.out.println("--------> url : " + response.raw().request().url());
 
                         loadingBar.dismiss();
                         if (response.isSuccessful()){

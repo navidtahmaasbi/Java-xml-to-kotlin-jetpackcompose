@@ -273,7 +273,6 @@ public class CarNumberChargeActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                System.out.println("---------> text");
                 adapter.clearSelectedItem();
 
                 if (!charSequence.toString().isEmpty()){
@@ -406,7 +405,6 @@ public class CarNumberChargeActivity extends AppCompatActivity {
     private void verifyTransaction(Transaction transaction) {
 
         Log.d("verifyTransaction", "started ...");
-        System.out.println("----------> 3 transaction : " + transaction.string());
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());

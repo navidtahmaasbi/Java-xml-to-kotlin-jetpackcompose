@@ -53,6 +53,7 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         assistant = new Assistant();
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -61,7 +62,6 @@ public class SplashActivity extends AppCompatActivity {
         binding = ActivitySplashBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-
         sh_p = new SharedPreferencesRepository(getApplicationContext());
 
         if (assistant.VPNEnabled(getApplicationContext())){
@@ -76,10 +76,10 @@ public class SplashActivity extends AppCompatActivity {
             messageDialog.setCancelable(false);
             messageDialog.show(getSupportFragmentManager(),MessageDialog.TAG);
 
-        } else if (sh_p.getString(SharedPreferencesRepository.SUB_DOMAIN).isEmpty())
+        }
+        else if (sh_p.getString(SharedPreferencesRepository.SUB_DOMAIN).isEmpty())
             getCities();
         else{
-
             getSplash();
         }
 
@@ -95,12 +95,14 @@ public class SplashActivity extends AppCompatActivity {
 
     private void getCities() {
 
+
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
 
         repository.getCities("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), new Callback<GetCitiesResponse>() {
             @Override
             public void onResponse(Call<GetCitiesResponse> call, Response<GetCitiesResponse> response) {
+
 
                 binding.loadingBar.setVisibility(View.INVISIBLE);
                 if (response.isSuccessful()) {
@@ -114,6 +116,7 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<GetCitiesResponse> call, Throwable t) {
                 binding.loadingBar.setVisibility(View.INVISIBLE);
+                t.printStackTrace();
                 APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> getCities());
             }
         });
@@ -129,6 +132,7 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<SplashResponse> call, Response<SplashResponse> response) {
 
+                System.out.println("----------> splash : " + response.raw().toString());
 
                 binding.loadingBar.setVisibility(View.INVISIBLE);
                 if (response.isSuccessful()) {

@@ -137,7 +137,6 @@ public class ParsianPayment {
 
                             long our_token = response.body().our_token;
 
-                            System.out.println("----------> 1 our_token : " + our_token);
 
                             paymentRequest(amount, our_token, activity, plateType, tag1, finalTag, finalTag1, finalTag2, placeID);
 
@@ -177,7 +176,6 @@ public class ParsianPayment {
                     Long res_num = b.getLong("res_num");
                     int status = errorMessage.isEmpty() ? 1 : -1;
 
-                    System.out.println("----------> 4 our_token : " + res_num);
 
                     if (tag2 == null) tag2 = "null";
                     if (tag3 == null) tag3 = "null";
@@ -336,7 +334,6 @@ public class ParsianPayment {
 //
 //        PrinterManager printer = new PrinterManager();
 //        int setupResult = printer.setupPage(-1,-1);
-//        System.out.println("---------> setupResult : " + setupResult);
 //        printer.drawBitmap(getViewBitmap(printTemplateBinding.getRoot()),0,0);
 //        printer.printPage(0);
 //

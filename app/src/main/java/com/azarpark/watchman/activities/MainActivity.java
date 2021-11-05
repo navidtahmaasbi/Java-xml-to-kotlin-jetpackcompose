@@ -500,7 +500,6 @@ public class MainActivity extends AppCompatActivity {
 
                 plateChargeDialog = new PlateChargeDialog(amount -> {
 
-                    System.out.println("---------> PlateChargeDialog : " + amount);
 
                     if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
                         parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1);
@@ -691,7 +690,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void getPlaces() {
 
-        System.out.println("-----------> getPlaces");
 
 //        Log.e("getPlaces", "sending ... ");
 
@@ -705,7 +703,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<PlacesResponse> call, Response<PlacesResponse> response) {
 
-                System.out.println("-----------> getPlaces response : " + response.raw().toString());
 
                 binding.refreshLayout.setRefreshing(false);
 
@@ -762,7 +759,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<PlacesResponse> call, Throwable t) {
-                System.out.println("---------> onFailure");
                 if (placesLoadedForFirstTime)
                     loadingBar.dismiss();
                 binding.refreshLayout.setRefreshing(false);
@@ -841,7 +837,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void exitPark(int placeID) {
 
-        System.out.println("----------> exit park");
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
@@ -852,7 +847,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ExitParkResponse> call, Response<ExitParkResponse> response) {
 
-                System.out.println("----------> exit park response : " + response.raw().toString());
 
                 loadingBar.dismiss();
                 if (response.isSuccessful()) {
@@ -892,7 +886,6 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<DeleteExitRequestResponse> call, Response<DeleteExitRequestResponse> response) {
 
-                        System.out.println("--------> url : " + response.raw().request().url());
 
                         loadingBar.dismiss();
                         if (response.isSuccessful()) {
@@ -928,7 +921,6 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
 
-                        System.out.println("--------> url : " + response.raw().request().url());
 
                         loadingBar.dismiss();
                         if (response.isSuccessful()) {
@@ -968,12 +960,9 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
 
-                        System.out.println("----------> transaction " + transaction.getOur_token() + " - response : " + response.code());
-                        System.out.println("----------> size : " + sh_r.getTransactions().size());
-//                        if (response.isSuccessful()) {
+                        if (response.isSuccessful()) {
                         sh_r.removeFromTransactions(transaction);
-//                        }
-                        System.out.println("----------> size : " + sh_r.getTransactions().size());
+                        }
                     }
 
                     @Override

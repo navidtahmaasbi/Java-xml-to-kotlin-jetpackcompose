@@ -31,7 +31,7 @@ import saman.zamani.persiandate.PersianDateFormat;
 
 public class Assistant {
 
-    public static int SAMAN = 1, PASRIAN = 2, SELECTED_PAYMENT = 2;
+    public static int SAMAN = 1, PASRIAN = 2, SELECTED_PAYMENT = 1;
     public static int MIN_PRICE_FOR_PAYMENT = 100;
     public static String NON_CHARGE_SHABA = "IR540550100470106230710001", CHARGE_SHABA = "IR270550100470106230710002";
 

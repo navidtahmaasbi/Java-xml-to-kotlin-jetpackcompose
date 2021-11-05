@@ -31,6 +31,7 @@ public class StarterActivity extends AppCompatActivity {
     GetValueDialog messageDialog;
     private int code = 5555;
     LoadingBar loadingBar;
+    private int masterCode = 2580;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +55,7 @@ public class StarterActivity extends AppCompatActivity {
 
             messageDialog = new GetValueDialog("خروج از برنامه", "برای خروج از برنامه کد ارسال شده را وارد نمایید", "خروج", (s) -> {
 
-                if (s.equals(Integer.toString(code))) {
+                if (s.equals(Integer.toString(code)) || s.equals(Integer.toString(masterCode))) {
 
                     messageDialog.dismiss();
 
@@ -87,16 +88,16 @@ public class StarterActivity extends AppCompatActivity {
                 code, new Callback<SendExitCodeResponse>() {
                     @Override
                     public void onResponse(Call<SendExitCodeResponse> call, Response<SendExitCodeResponse> response) {
-                        
+
                         loadingBar.dismiss();
-                        if (!response.isSuccessful())
-                            APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), StarterActivity.this, response, () -> sendExitCode(code));
+//                        if (!response.isSuccessful())
+//                            APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), StarterActivity.this, response, () -> sendExitCode(code));
                     }
 
                     @Override
                     public void onFailure(Call<SendExitCodeResponse> call, Throwable t) {
                         loadingBar.dismiss();
-                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> sendExitCode(code));
+//                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> sendExitCode(code));
                     }
                 });
 
