@@ -9,12 +9,24 @@
     android:layoutDirection="ltr"
     android:orientation="vertical">
 
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/print_area">
+    <ScrollView
 
-    </androidx.appcompat.widget.LinearLayoutCompat>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+
+            android:id="@+id/print_area">
+
+
+        </LinearLayout>
+
+
+    </ScrollView>
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
@@ -196,5 +208,7 @@
 
 
     </com.google.android.material.floatingactionbutton.FloatingActionButton>
+
+
 
 </RelativeLayout>

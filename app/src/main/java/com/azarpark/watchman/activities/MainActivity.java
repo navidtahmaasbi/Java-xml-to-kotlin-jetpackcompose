@@ -3,6 +3,7 @@ package com.azarpark.watchman.activities;
 import static android.content.ContentValues.TAG;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -75,6 +76,7 @@ import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse
 import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.text.ParseException;
@@ -225,9 +227,8 @@ public class MainActivity extends AppCompatActivity {
             adapter.showExitRequestItems(!adapter.isShowExitRequestItems());
             binding.exitRequests.setBackgroundColor(getResources().getColor(R.color.transparent));
 
-        }
-        else{
-            startActivity(new Intent(this,StarterActivity.class));
+        } else {
+            startActivity(new Intent(this, StarterActivity.class));
             MainActivity.this.finish();
         }
 //            super.onBackPressed();
@@ -400,7 +401,6 @@ public class MainActivity extends AppCompatActivity {
         popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
         menuIsOpen = true;
 
-
     }
 
     public void onExitRequestIconClicked(View view) {
@@ -517,97 +517,101 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void print(String startTime, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID, int debt, int balance) {
 
-                printFactor(placeID,startTime, balance,place);
+                printFactor(placeID, startTime, balance, place);
 
             }
         }, place);
-        parkInfoDialog.show(
-
-                getSupportFragmentManager(), ParkDialog.TAG);
+        parkInfoDialog.show(getSupportFragmentManager(), ParkDialog.TAG);
 
 
     }
 
     @SuppressLint("SetTextI18n")
-    private void printFactor(int placeID, String startTime, int balance, Place place ) {
+    private void printFactor(int placeID, String startTime, int balance, Place place) {
 
-        binding.printArea.removeAllViews();
+        if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN) {
 
-        if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN){
+//            binding.printArea.removeAllViews();
+//
+//            SamanPrintTemplateBinding printTemplateBinding = SamanPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
+//
+//            printTemplateBinding.placeId.setText(place.number + "");
+//
+//            printTemplateBinding.startTime.setText(assistant.toJalali(startTime));
+//            printTemplateBinding.prices.setText(pricing);
+//            printTemplateBinding.supportPhone.setText(telephone);
+//            printTemplateBinding.debt.setText((-1 * balance) + "تومان");
+//            String cityID = sh_r.getString(SharedPreferencesRepository.CITY_ID);
+//
+//            String sb = "در صورت عدم حضور پارکیار برای خروج عدد " +
+//                    cityID +
+//                    place.number +
+//                    " را به شماره " +
+//                    sms_number +
+//                    " ارسال کنید" +
+//                    "\n ." +
+//                    "\n .";
+//            printTemplateBinding.description.setText(sb);
+//            if (balance > 0)
+//                printTemplateBinding.description2.setText("شهروند گرامی؛از این که جز مشتریان خوش حساب ما هستید سپاسگزاریم");
+//            else if (balance < 0)
+//                printTemplateBinding.description2.setText("اخطار: شهروند گرامی؛بدهی پلاک شما بیش از حد مجاز میباشد در صورت عدم پرداخت بدهی مشمول جریمه پارک ممنوع خواهید شد");
+//            else
+//                printTemplateBinding.description2.setText("شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد");
+//
+//            printTemplateBinding.debtArea.setVisibility(balance < 0 ? View.VISIBLE : View.GONE);
+//
+//            printTemplateBinding.qrcode.setImageBitmap(assistant.qrGenerator(qr_url + placeID));
+//
+//            Gson gson = new Gson();
+//
+//            System.out.println("---------> placeee : " + gson.toJson(place));
+//
+//            if (assistant.getPlateType(place) == PlateType.simple) {
+//
+//                printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
+//                printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
+//                printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
+//
+//                printTemplateBinding.plateSimpleTag1.setText(place.tag1);
+//                printTemplateBinding.plateSimpleTag2.setText(place.tag2);
+//                printTemplateBinding.plateSimpleTag3.setText(place.tag3);
+//                printTemplateBinding.plateSimpleTag4.setText(place.tag4);
+//
+//            } else if (assistant.getPlateType(place) == PlateType.old_aras) {
+//
+//                printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
+//                printTemplateBinding.plateOldArasArea.setVisibility(View.VISIBLE);
+//                printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
+//
+//                printTemplateBinding.plateOldArasTag1En.setText(place.tag1);
+//                printTemplateBinding.plateOldArasTag1Fa.setText(place.tag1);
+//
+//            } else {
+//
+//                printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
+//                printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
+//                printTemplateBinding.plateNewArasArea.setVisibility(View.VISIBLE);
+//
+//                printTemplateBinding.plateNewArasTag1En.setText(place.tag1);
+//                printTemplateBinding.plateNewArasTag1Fa.setText(place.tag1);
+//                printTemplateBinding.plateNewArasTag2En.setText(place.tag2);
+//                printTemplateBinding.plateNewArasTag2Fa.setText(place.tag2);
+//
+//            }
 
-
-            PrintTemplateBinding printTemplateBinding = PrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
-
-            printTemplateBinding.placeId.setText(place.number + "");
-
-            printTemplateBinding.startTime.setText(assistant.toJalali(startTime));
-            printTemplateBinding.prices.setText(pricing);
-            printTemplateBinding.supportPhone.setText(telephone);
-            printTemplateBinding.debt.setText((-1*balance) + "تومان");
-            String cityID = sh_r.getString(SharedPreferencesRepository.CITY_ID);
-
-            String sb = "در صورت عدم حضور پارکیار برای خروج عدد " +
-                    cityID +
-                    placeID +
-                    " را به شماره " +
-                    sms_number +
-                    " ارسال کنید";
-            printTemplateBinding.description.setText(sb);
-            if (balance > 0)
-                printTemplateBinding.description2.setText("شهروند گرامی؛از این که جز مشتریان خوش حساب ما هستید سپاسگزاریم");
-            else if (balance < 0)
-                printTemplateBinding.description2.setText("اخطار: شهروند گرامی؛بدهی پلاک شما بیش از حد مجاز میباشد در صورت عدم پرداخت بدهی مشمول جریمه پارک ممنوع خواهید شد");
-            else
-                printTemplateBinding.description2.setText("شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد");
-
-            printTemplateBinding.debtArea.setVisibility(balance < 0 ? View.VISIBLE : View.GONE);
-
-            printTemplateBinding.qrcode.setImageBitmap(assistant.qrGenerator(qr_url + placeID));
-
-            if (assistant.getPlateType(place) == PlateType.simple) {
-
-                printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
-                printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
-                printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
-
-                printTemplateBinding.plateSimpleTag1.setText(place.tag1);
-                printTemplateBinding.plateSimpleTag2.setText(place.tag2);
-                printTemplateBinding.plateSimpleTag3.setText(place.tag3);
-                printTemplateBinding.plateSimpleTag4.setText(place.tag4);
-
-            } else if (assistant.getPlateType(place) == PlateType.old_aras) {
-
-                printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
-                printTemplateBinding.plateOldArasArea.setVisibility(View.VISIBLE);
-                printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
-
-                printTemplateBinding.plateOldArasTag1En.setText(place.tag1);
-                printTemplateBinding.plateOldArasTag1Fa.setText(place.tag1);
-
-            } else {
-
-                printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
-                printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
-                printTemplateBinding.plateNewArasArea.setVisibility(View.VISIBLE);
-
-                printTemplateBinding.plateNewArasTag1En.setText(place.tag1);
-                printTemplateBinding.plateNewArasTag1Fa.setText(place.tag1);
-                printTemplateBinding.plateNewArasTag2En.setText(place.tag2);
-                printTemplateBinding.plateNewArasTag2Fa.setText(place.tag2);
-
-            }
+            binding.printArea.removeAllViews();
 
             new Handler().postDelayed(() -> {
 
-                    parsianPayment.printParkInfo(assistant.toJalali(startTime), place.tag1, place.tag2, place.tag3, place.tag4, place.id, binding.printArea, pricing, telephone, sms_number, qr_url, debt, balance);
+                parsianPayment.printParkInfo(place, place.id, binding.printArea, pricing, telephone, sms_number, qr_url, balance);
 
             }, 500);
 
 
+        } else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN) {
 
-        }
-        else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN){
-
+            binding.printArea.removeAllViews();
 
             SamanPrintTemplateBinding printTemplateBinding = SamanPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
 
@@ -616,15 +620,17 @@ public class MainActivity extends AppCompatActivity {
             printTemplateBinding.startTime.setText(assistant.toJalali(startTime));
             printTemplateBinding.prices.setText(pricing);
             printTemplateBinding.supportPhone.setText(telephone);
-            printTemplateBinding.debt.setText((-1*balance) + "تومان");
+            printTemplateBinding.debt.setText((-1 * balance) + "تومان");
             String cityID = sh_r.getString(SharedPreferencesRepository.CITY_ID);
 
             String sb = "در صورت عدم حضور پارکیار برای خروج عدد " +
                     cityID +
-                    placeID +
+                    place.number +
                     " را به شماره " +
                     sms_number +
-                    " ارسال کنید";
+                    " ارسال کنید" +
+                    "\n ." +
+                    "\n .";
             printTemplateBinding.description.setText(sb);
             if (balance > 0)
                 printTemplateBinding.description2.setText("شهروند گرامی؛از این که جز مشتریان خوش حساب ما هستید سپاسگزاریم");
@@ -636,6 +642,10 @@ public class MainActivity extends AppCompatActivity {
             printTemplateBinding.debtArea.setVisibility(balance < 0 ? View.VISIBLE : View.GONE);
 
             printTemplateBinding.qrcode.setImageBitmap(assistant.qrGenerator(qr_url + placeID));
+
+            Gson gson = new Gson();
+
+            System.out.println("---------> placeee : " + gson.toJson(place));
 
             if (assistant.getPlateType(place) == PlateType.simple) {
 
@@ -680,16 +690,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-
-
-
-
     }
 
     //-------------------------------------------------------- API calls
 
     private void getPlaces() {
 
+        System.out.println("-----------> getPlaces");
 
 //        Log.e("getPlaces", "sending ... ");
 
@@ -703,6 +710,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<PlacesResponse> call, Response<PlacesResponse> response) {
 
+                System.out.println("-----------> getPlaces response : " + response.raw().toString());
 
                 binding.refreshLayout.setRefreshing(false);
 
@@ -802,19 +810,12 @@ public class MainActivity extends AppCompatActivity {
                         if (response.body().getInfo().car_balance < 0)
                             debt = -response.body().getInfo().car_balance;
 
-                        if (printFactor)
-                            new Handler().postDelayed(() -> {
+                        if (printFactor) {
 
-                                if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-                                    binding.printArea.post(() -> {
+                            Place place = response.body().getInfo().place;
+                            printFactor(place.id, place.start, response.body().getInfo().car_balance, place);
 
-                                        parsianPayment.printParkInfo(assistant.getTime(), parkBody.getTag1(), parkBody.getTag2(), parkBody.getTag3(), parkBody.getTag4(), parkBody.getPlace_id(), binding.printArea, pricing, telephone, sms_number, qr_url, debt, response.body().getInfo().car_balance);
-
-                                    });
-                                     else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-                                    samanPayment.printParkInfo(assistant.getTime(), parkBody.getTag1(), parkBody.getTag2(), parkBody.getTag3(), parkBody.getTag4(), parkBody.getPlace_id(), binding.printArea, pricing, telephone, sms_number, qr_url, debt, response.body().getInfo().car_balance);
-
-                            }, 500);
+                        }
 
 
                         getPlaces();
@@ -961,7 +962,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
 
                         if (response.isSuccessful()) {
-                        sh_r.removeFromTransactions(transaction);
+                            sh_r.removeFromTransactions(transaction);
                         }
                     }
 

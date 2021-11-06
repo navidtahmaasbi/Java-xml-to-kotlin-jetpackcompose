@@ -13,7 +13,7 @@
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_100sdp"
+            android:layout_height="@dimen/_120sdp"
             android:orientation="horizontal">
 
             <ImageView
@@ -119,7 +119,7 @@
 
                     android:id="@+id/plate_simple_area"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_15sdp"
+                    android:layout_height="@dimen/_35sdp"
                     android:layout_marginTop="@dimen/_2sdp"
                     android:visibility="visible">
 
@@ -147,7 +147,7 @@
                             android:gravity="center"
                             android:text="46"
                             android:textColor="@color/black"
-                            android:textSize="@dimen/_8sdp"
+                            android:textSize="@dimen/_13sdp"
                             android:textStyle="bold"
                             app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -160,7 +160,7 @@
                             android:gravity="center"
                             android:text="س"
                             android:textColor="@color/black"
-                            android:textSize="@dimen/_8sdp"
+                            android:textSize="@dimen/_12sdp"
                             android:textStyle="bold" />
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -172,7 +172,7 @@
                             android:gravity="center"
                             android:text="298"
                             android:textColor="@color/black"
-                            android:textSize="@dimen/_8sdp"
+                            android:textSize="@dimen/_13sdp"
                             android:textStyle="bold" />
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -185,7 +185,7 @@
                             android:gravity="center"
                             android:text="25"
                             android:textColor="@color/black"
-                            android:textSize="@dimen/_8sdp"
+                            android:textSize="@dimen/_13sdp"
                             android:textStyle="bold" />
 
                     </LinearLayout>
@@ -589,7 +589,7 @@
                 android:gravity="right"
                 android:text="شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_11sdp"
+                android:textSize="@dimen/_13sdp"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
             <ImageView
@@ -616,7 +616,7 @@
                 android:gravity="right"
                 android:text="در صورت عدم حضور پارکبان عدد ۱۰۱۰ را به شماره ۱۰۰۰۴۴۰۸۸ ارسال کنید"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_11sdp"
+                android:textSize="@dimen/_13sdp"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
 
@@ -628,6 +628,11 @@
                 android:src="@drawable/ic_checked_circle" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
+
+<!--        <androidx.appcompat.widget.LinearLayoutCompat-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="@dimen/_1sdp"-->
+<!--            android:background="@color/black"/>-->
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

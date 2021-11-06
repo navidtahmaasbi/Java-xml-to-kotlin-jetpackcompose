@@ -11,5 +11,6 @@ public class Info {
     public Car car;
     public String description;
     public int number;
+    public Place place;
 
 }

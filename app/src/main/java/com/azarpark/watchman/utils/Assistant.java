@@ -114,8 +114,12 @@ public class Assistant {
         StringBuilder sb = new StringBuilder();
         sb.append(pdate.getShYear());
         sb.append("-");
+        if (pdate.getShMonth() < 10)
+            sb.append("0");
         sb.append(pdate.getShMonth());
         sb.append("-");
+        if (pdate.getShDay() < 10)
+            sb.append("0");
         sb.append(pdate.getShDay());
         sb.append(" ");
         sb.append(pdate.getHour());
@@ -159,15 +163,15 @@ public class Assistant {
         return decimalFormat.format(num);
     }
 
-    public boolean VPNEnabled (Context mContext){
+    public boolean VPNEnabled(Context mContext) {
 
-        ConnectivityManager cm = (ConnectivityManager)mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         Network[] networks = cm.getAllNetworks();
 
         boolean vpnIsOpen = false;
 
         Log.i("TAG", "Network count: " + networks.length);
-        for(int i = 0; i < networks.length; i++) {
+        for (int i = 0; i < networks.length; i++) {
 
             NetworkCapabilities caps = cm.getNetworkCapabilities(networks[i]);
 
@@ -180,16 +184,16 @@ public class Assistant {
 
         }
 
-        return  vpnIsOpen;
+        return vpnIsOpen;
 
     }
 
-    public PlateType getPlateType(Place place){
+    public PlateType getPlateType(Place place) {
 
-        if (place.tag2 == null || place.tag2.isEmpty()|| place.tag2.equals("0"))
+        if (place.tag2 == null || place.tag2.isEmpty() || place.tag2.equals("0"))
             return PlateType.old_aras;
 
-        if (place.tag3 == null || place.tag3.isEmpty()|| place.tag3.equals("0"))
+        if (place.tag3 == null || place.tag3.isEmpty() || place.tag3.equals("0"))
             return PlateType.new_aras;
 
         return PlateType.simple;

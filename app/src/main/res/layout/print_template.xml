@@ -51,7 +51,7 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/_8sdp"
                 android:text="1234"
-                app:fontFamily="@font/sahel_fa_num_semi_bold" />
+                android:fontFamily="@font/sahel_fa_num_semi_bold" />
 
 
 <!--            <androidx.appcompat.widget.AppCompatTextView-->
@@ -74,7 +74,7 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/_8sdp"
                 android:text="جایگاه"
-                app:fontFamily="@font/sahel_fa_num_semi_bold" />
+                android:fontFamily="@font/sahel_fa_num_semi_bold" />
 
 <!--            <androidx.appcompat.widget.AppCompatTextView-->
 <!--                android:layout_width="0dp"-->
@@ -85,7 +85,7 @@
 <!--                android:textColor="@color/black"-->
 <!--                android:textSize="@dimen/_13sdp"-->
 <!--                android:text="جایگاه"-->
-<!--                app:fontFamily="@font/sahel_fa_num_semi_bold"-->
+<!--                android:fontFamily="@font/sahel_fa_num_semi_bold"-->
 <!--                />-->
 
         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -146,7 +146,7 @@
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            app:fontFamily="@font/sahel_fa_num_semi_bold"
+                            android:fontFamily="@font/sahel_fa_num_semi_bold"
                             android:gravity="center"
                             android:text="46"
                             android:textStyle="bold"
@@ -359,7 +359,7 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/_9sdp"
                 android:text="پلاک"
-                app:fontFamily="@font/sahel_fa_num_semi_bold" />
+                android:fontFamily="@font/sahel_fa_num_semi_bold" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -407,7 +407,7 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/_9sdp"
                 android:text="0 تومان"
-                app:fontFamily="@font/sahel_fa_num_semi_bold" />
+                android:fontFamily="@font/sahel_fa_num_semi_bold" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="0dp"
@@ -418,7 +418,7 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/_9sdp"
                 android:text="بدهی پیشین"
-                app:fontFamily="@font/sahel_fa_num_semi_bold" />
+                android:fontFamily="@font/sahel_fa_num_semi_bold" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -445,7 +445,7 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/_9sdp"
                 android:text="1400-07-05 13:30"
-                app:fontFamily="@font/sahel_fa_num_semi_bold" />
+                android:fontFamily="@font/sahel_fa_num_semi_bold" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="0dp"
@@ -456,7 +456,7 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/_9sdp"
                 android:text="شروع پارک"
-                app:fontFamily="@font/sahel_fa_num_semi_bold" />
+                android:fontFamily="@font/sahel_fa_num_semi_bold" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -483,7 +483,7 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/_8sdp"
                 android:text="1300-1800-3200 تومان"
-                app:fontFamily="@font/sahel_fa_num_semi_bold" />
+                android:fontFamily="@font/sahel_fa_num_semi_bold" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="0dp"
@@ -494,7 +494,7 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/_9sdp"
                 android:text="تعرفه هر ساعت"
-                app:fontFamily="@font/sahel_fa_num_semi_bold" />
+                android:fontFamily="@font/sahel_fa_num_semi_bold" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -521,7 +521,7 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/_9sdp"
                 android:text="04135555555"
-                app:fontFamily="@font/sahel_fa_num_semi_bold" />
+                android:fontFamily="@font/sahel_fa_num_semi_bold" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="0dp"
@@ -532,7 +532,7 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/_9sdp"
                 android:text="شماره پشتیبانی"
-                app:fontFamily="@font/sahel_fa_num_semi_bold" />
+                android:fontFamily="@font/sahel_fa_num_semi_bold" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -553,7 +553,7 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/_9sdp"
                 android:text="پرداخت نقدی ممنوع"
-                app:fontFamily="@font/sahel_fa_num_semi_bold" />
+                android:fontFamily="@font/sahel_fa_num_semi_bold" />
 
 <!--            <ImageView-->
 <!--                android:layout_width="@dimen/_15sdp"-->
@@ -579,7 +579,7 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/_9sdp"
                 android:text="شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد"
-                app:fontFamily="@font/sahel_fa_num_semi_bold" />
+                android:fontFamily="@font/sahel_fa_num_semi_bold" />
 
             <ImageView
                 android:layout_width="@dimen/_8sdp"
@@ -606,7 +606,7 @@
                 android:textSize="@dimen/_9sdp"
                 android:id="@+id/description"
                 android:text="در صورت عدم حضور پارکبان عدد ۱۰۱۰ را به شماره ۱۰۰۰۴۴۰۸۸ ارسال کنید"
-                app:fontFamily="@font/sahel_fa_num_semi_bold" />
+                android:fontFamily="@font/sahel_fa_num_semi_bold" />
 
 
             <ImageView
