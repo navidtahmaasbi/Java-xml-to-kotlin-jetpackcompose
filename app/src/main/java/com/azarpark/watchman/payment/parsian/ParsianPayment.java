@@ -373,11 +373,8 @@ public class ParsianPayment {
 //        return bitmap;
 //    }
 
-    public void printParkInfo(Place place,
-                              int placeID, ViewGroup viewGroupForBindFactor, String pricing, String telephone, String sms_number,
+    public void printParkInfo(Place place, int placeID, ViewGroup viewGroupForBindFactor, String pricing, String telephone, String sms_number,
                               String qr_url, int balance) {
-
-        viewGroupForBindFactor.removeAllViews();
 
         PrintTemplateBinding printTemplateBinding = PrintTemplateBinding.inflate(LayoutInflater.from(context), viewGroupForBindFactor, true);
 
@@ -399,7 +396,6 @@ public class ParsianPayment {
 
         printTemplateBinding.placeId.setText(place.number + "");
         printTemplateBinding.debt.setText(balance + " تومان");
-
 
         printTemplateBinding.startTime.setText(place.start);
 
@@ -449,7 +445,7 @@ public class ParsianPayment {
                 PrinterManager printer = new PrinterManager();
                 int setupResult = printer.setupPage(-1, -1);
                 System.out.println("---------> print setup result : " + setupResult);
-                printer.drawBitmap(getViewBitmap(viewGroupForBindFactor), 0, 0);
+                printer.drawBitmap(getViewBitmap(printTemplateBinding.getRoot()), 0, 0);
                 int printResult = printer.printPage(0);
                 System.out.println("---------> print result : " + printResult);
 

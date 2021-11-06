@@ -337,26 +337,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void setupUIForKeyboardHideOnOutsideTouch(View view) {
-
-        // Set up touch listener for non-text box views to hide keyboard.
-        if (!(view instanceof EditText)) {
-            view.setOnTouchListener(new View.OnTouchListener() {
-                public boolean onTouch(View v, MotionEvent event) {
-                    assistant.hideSoftKeyboard(MainActivity.this);
-                    return false;
-                }
-            });
-        }
-
-        //If a layout container, iterate over children and seed recursion.
-        if (view instanceof ViewGroup) {
-            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
-                View innerView = ((ViewGroup) view).getChildAt(i);
-                setupUIForKeyboardHideOnOutsideTouch(innerView);
-            }
-        }
-    }
 
     private void verifyUnverifiedTransactions() {
 
@@ -397,6 +377,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onMenuToggleClicked(View view) {
+
 
         popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
         menuIsOpen = true;
