@@ -23,20 +23,20 @@ public class RetrofitAPIClient {
     private static Retrofit retrofit = null;
     private static Retrofit initialRetrofit = null;
 
-    public static Retrofit getInitialClient(){
+    public static Retrofit getInitialClient() {
 
         if (initialRetrofit == null)
             initialRetrofit = new Retrofit.Builder()
-                    .baseUrl(INITIAL_BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .client(getUnsafeOkHttpClient())
-                    .build();
+                .baseUrl(INITIAL_BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(getUnsafeOkHttpClient())
+                .build();
 
         return initialRetrofit;
 
     }
 
-    public static Retrofit getClient(Context context){
+    public static Retrofit getClient(Context context) {
 
         SharedPreferencesRepository sh_p = new SharedPreferencesRepository(context);
 
@@ -44,10 +44,10 @@ public class RetrofitAPIClient {
 
         if (retrofit == null)
             retrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .client(getUnsafeOkHttpClient())
-                    .build();
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(getUnsafeOkHttpClient())
+                .build();
 
         return retrofit;
 
@@ -55,26 +55,33 @@ public class RetrofitAPIClient {
 
     public static void setBaseUrl(String url) {
         BASE_URL = url;
+
+        retrofit = new Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(getUnsafeOkHttpClient())
+            .build();
+
     }
 
     private static OkHttpClient getUnsafeOkHttpClient() {
         try {
             // Create a trust manager that does not validate certificate chains
-            final TrustManager[] trustAllCerts = new TrustManager[] {
-                    new X509TrustManager() {
-                        @Override
-                        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-                        }
-
-                        @Override
-                        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-                        }
-
-                        @Override
-                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                            return new java.security.cert.X509Certificate[]{};
-                        }
+            final TrustManager[] trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    @Override
+                    public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
                     }
+
+                    @Override
+                    public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                    }
+
+                    @Override
+                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                        return new java.security.cert.X509Certificate[]{};
+                    }
+                }
             };
 
             // Install the all-trusting trust manager

@@ -77,11 +77,10 @@ public class SplashActivity extends AppCompatActivity {
             messageDialog.show(getSupportFragmentManager(),MessageDialog.TAG);
 
         }
-        else if (sh_p.getString(SharedPreferencesRepository.SUB_DOMAIN).isEmpty())
+        else if (sh_p.getString(SharedPreferencesRepository.ACCESS_TOKEN).isEmpty())
             getCities();
-        else{
+        else
             getSplash();
-        }
 
 
     }
@@ -206,8 +205,8 @@ public class SplashActivity extends AppCompatActivity {
             sh_p.saveString(SharedPreferencesRepository.SUB_DOMAIN, cities.get(position).subdomain);
             sh_p.saveString(SharedPreferencesRepository.CITY_ID, cities.get(position).id+"");
 
-            RetrofitAPIClient.setBaseUrl("https://" + cities.get(position).subdomain + ".backend.iranademo.ir");
-//
+            RetrofitAPIClient.setBaseUrl("https://" + cities.get(position).subdomain + ".backend1.azarpark.irana.app");
+
             SplashActivity.this.finish();
             if (sh_p.getString(SharedPreferencesRepository.ACCESS_TOKEN).isEmpty()) {
                 startActivity(new Intent(SplashActivity.this, LoginActivity.class));
