@@ -47,6 +47,7 @@ public class APIErrorHandler {
 
                         onResponseErrorDialogIsShowing = false;
                         onResponseErrorAction.refresh();
+                        confirmDialog.dismiss();
 
                     }
 
@@ -102,6 +103,7 @@ public class APIErrorHandler {
                     }
                 });
 
+                confirmDialog.setCancelable(false);
                 confirmDialog.show(fragmentManager, ConfirmDialog.TAG);
             }
 

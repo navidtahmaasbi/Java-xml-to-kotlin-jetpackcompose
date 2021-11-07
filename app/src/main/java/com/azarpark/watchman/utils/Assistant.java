@@ -31,7 +31,7 @@ import saman.zamani.persiandate.PersianDateFormat;
 
 public class Assistant {
 
-    public static int SAMAN = 1, PASRIAN = 2, SELECTED_PAYMENT = 2;
+    public static int SAMAN = 1, PASRIAN = 2, SELECTED_PAYMENT = 1;
     public static int MIN_PRICE_FOR_PAYMENT = 100;
     public static String NON_CHARGE_SHABA = "IR540550100470106230710001", CHARGE_SHABA = "IR270550100470106230710002";
 
@@ -200,4 +200,74 @@ public class Assistant {
 
     }
 
+    public PlateType getPlateType(String tag1, String tag2, String tag3, String tag4) {
+
+        if (tag2 == null || tag2.isEmpty() || tag2.equals("0"))
+            return PlateType.old_aras;
+
+        if (tag3 == null || tag3.isEmpty() || tag3.equals("0"))
+            return PlateType.new_aras;
+
+        return PlateType.simple;
+
+    }
+
+    public boolean simplePlateIsValid(String tag1, String tag2, String tag3, String tag4) {
+
+
+        if (tag1.isEmpty() || tag2.isEmpty() || tag3.isEmpty() || tag4.isEmpty())
+            return false;
+
+        if (tag1.length() != 2 || tag2.length() != 1 || tag3.length() != 3 || tag4.length() != 2)
+            return false;
+
+        if (tag1.charAt(0) == '0' || tag3.charAt(0) == '0' || tag4.charAt(0) == '0')
+            return false;
+
+        if (tag1.contains(".") || tag3.contains(".") || tag4.contains("."))
+            return false;
+
+        if (!tag2IsValid(tag2))
+            return false;
+
+        return true;
+
+    }
+
+    private boolean tag2IsValid(String s) {
+
+        String validChars = "ضصثقفغعهخحجچپگکمنتالبیسشظطزرذدو";
+
+        for (int i = 0; i < s.length(); i++)
+            if (!validChars.contains(s.charAt(i) + ""))
+                return false;
+
+        return true;
+
+
+    }
+
+    private boolean isNotNumber(String s) {
+
+        String ignoreChars = "1234567890";
+
+        for (int i = 0; i < s.length(); i++)
+            if (!ignoreChars.contains(s.charAt(i) + ""))
+                return true;
+
+        return false;
+
+
+    }
+
+    public void saveTags(String tag1, String tag2, String tag3, String tag4, Context context) {
+
+        SharedPreferencesRepository sh_p = new SharedPreferencesRepository(context);
+
+        sh_p.saveString(SharedPreferencesRepository.TAG1,tag1);
+        sh_p.saveString(SharedPreferencesRepository.TAG2,tag2);
+        sh_p.saveString(SharedPreferencesRepository.TAG3,tag3);
+        sh_p.saveString(SharedPreferencesRepository.TAG4,tag4);
+
+    }
 }

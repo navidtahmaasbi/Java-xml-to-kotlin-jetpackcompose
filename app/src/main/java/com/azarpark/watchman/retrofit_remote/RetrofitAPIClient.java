@@ -18,8 +18,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitAPIClient {
 
+//    public static String INITIAL_BASE_URL = "https://backend.iranademo.ir";
     public static String INITIAL_BASE_URL = "https://backend1.azarpark.irana.app";
     public static String BASE_URL = "https://backend1.azarpark.irana.app";
+//    public static String BASE_URL = "https://backend.iranademo.ir";
     private static Retrofit retrofit = null;
     private static Retrofit initialRetrofit = null;
 
@@ -41,6 +43,7 @@ public class RetrofitAPIClient {
         SharedPreferencesRepository sh_p = new SharedPreferencesRepository(context);
 
         BASE_URL = "https://" + sh_p.getString(SharedPreferencesRepository.SUB_DOMAIN) + ".backend1.azarpark.irana.app";
+//        BASE_URL = "https://" + sh_p.getString(SharedPreferencesRepository.SUB_DOMAIN) + ".backend.iranademo.ir";
 
         if (retrofit == null)
             retrofit = new Retrofit.Builder()

@@ -17,6 +17,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.azarpark.watchman.UpdateApp;
 import com.azarpark.watchman.databinding.ActivitySplashBinding;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.MessageDialog;
@@ -82,10 +83,36 @@ public class SplashActivity extends AppCompatActivity {
         else
             getSplash();
 
+        binding.retry.setOnClickListener(view -> {
+
+            if (assistant.VPNEnabled(getApplicationContext())){
+
+                messageDialog = new MessageDialog("عدم دسترسی",
+                        "برنامه اذرپارک در خارج از کشور قابل دسترسی نیست درصورت روشن بودن وی پی ان ان را خاموش کرده و دوباره وارد برنامه شوید",
+                        "خروج",
+                        () -> {
+                            SplashActivity.this.finish();
+                        });
+
+                messageDialog.setCancelable(false);
+                messageDialog.show(getSupportFragmentManager(),MessageDialog.TAG);
+
+            }
+            else if (sh_p.getString(SharedPreferencesRepository.ACCESS_TOKEN).isEmpty())
+                getCities();
+            else
+                getSplash();
+
+        });
+
 
     }
 
     public void updateApp(Context context, String url) {
+
+//        UpdateApp atualizaApp = new UpdateApp();
+//        atualizaApp.setContext(getApplicationContext());
+//        atualizaApp.execute(url);
 
         com.azarpark.watchman.download_utils.DownloadController downloadController = new com.azarpark.watchman.download_utils.DownloadController(context, url);
         downloadController.enqueueDownload();
@@ -104,6 +131,7 @@ public class SplashActivity extends AppCompatActivity {
 
 
                 binding.loadingBar.setVisibility(View.INVISIBLE);
+                binding.retry.setVisibility(View.VISIBLE);
                 if (response.isSuccessful()) {
 
                     openCitiesDialog(response.body().items);
@@ -115,6 +143,7 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<GetCitiesResponse> call, Throwable t) {
                 binding.loadingBar.setVisibility(View.INVISIBLE);
+                binding.retry.setVisibility(View.VISIBLE);
                 t.printStackTrace();
                 APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> getCities());
             }
@@ -134,6 +163,7 @@ public class SplashActivity extends AppCompatActivity {
                 System.out.println("----------> splash : " + response.raw().toString());
 
                 binding.loadingBar.setVisibility(View.INVISIBLE);
+                binding.retry.setVisibility(View.VISIBLE);
                 if (response.isSuccessful()) {
 
                     sh_r.saveString(SharedPreferencesRepository.qr_url, response.body().qr_url);
@@ -148,6 +178,9 @@ public class SplashActivity extends AppCompatActivity {
                     try {
                         PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
                         int version = pInfo.versionCode;
+
+                        System.out.println("---------> version : " +version);
+                        System.out.println("---------> last version : " +response.body().update.last_version);
 
                         if (response.body().update.last_version > version)
                             openUpdateDialog(response.body().update.update_link);
@@ -169,6 +202,7 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<SplashResponse> call, Throwable t) {
                 binding.loadingBar.setVisibility(View.INVISIBLE);
+                binding.retry.setVisibility(View.VISIBLE);
                 t.printStackTrace();
                 APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> getSplash());
             }
@@ -206,6 +240,7 @@ public class SplashActivity extends AppCompatActivity {
             sh_p.saveString(SharedPreferencesRepository.CITY_ID, cities.get(position).id+"");
 
             RetrofitAPIClient.setBaseUrl("https://" + cities.get(position).subdomain + ".backend1.azarpark.irana.app");
+//            RetrofitAPIClient.setBaseUrl("https://" + cities.get(position).subdomain + ".backend.iranademo.ir");
 
             SplashActivity.this.finish();
             if (sh_p.getString(SharedPreferencesRepository.ACCESS_TOKEN).isEmpty()) {
@@ -224,8 +259,4 @@ public class SplashActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    public void onBackPressed() {
-//        super.onBackPressed();
-    }
 }

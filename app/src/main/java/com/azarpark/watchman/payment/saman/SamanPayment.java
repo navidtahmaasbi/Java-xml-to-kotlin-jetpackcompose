@@ -47,7 +47,7 @@ public class SamanPayment {
     SharedPreferencesRepository sh_r;
     Activity activity;
     Context context;
-    int PAYMENT_REQUEST_CODE = 1003;
+    public static int PAYMENT_REQUEST_CODE = 1003;
     int QR_SCANNER_REQUEST_CODE = 1004;
     public IProxy service;
     public MyServiceConnection connection;
@@ -136,12 +136,14 @@ public class SamanPayment {
         String[] param = new String[1];
         param[0] = shaba;
 
+
         Intent intent = new Intent();
         intent.putExtra("TransType", 3);
         intent.putExtra("Amount", String.valueOf(amount));
         intent.putExtra("ResNum", resNum);
         intent.putExtra("AppId", "0");
         intent.putExtra("Tashim", param);
+
 
 //        for (String key:intent.getExtras().keySet()) {
         Log.d("-----> TransType", String.valueOf(intent.getExtras().getInt("TransType")));
@@ -150,7 +152,9 @@ public class SamanPayment {
         Log.d("-----> AppId", intent.getExtras().getString("AppId"));
 //        }
 
+
         intent.setComponent(new ComponentName("ir.sep.android.smartpos", "ir.sep.android.smartpos.ThirdPartyActivity"));
+
 
         activity.startActivityForResult(intent, PAYMENT_REQUEST_CODE);
 
@@ -162,7 +166,6 @@ public class SamanPayment {
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(context);
         RetrofitAPIRepository repository = new RetrofitAPIRepository(context);
         loadingBar.show();
-
 
         repository.createTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
                 plateType,
@@ -181,6 +184,7 @@ public class SamanPayment {
 
                             long our_token = response.body().our_token;
 
+
 //                            paymentRequest(Long.toString(our_token), amount, plateType, tag1, tag2, tag3, tag4, placeID);
                             tashimPaymentRequest("0:" + (amount*10) + ":"+shaba, Long.toString(our_token), (amount*10), plateType, tag1, tag2, tag3, tag4, placeID);
 
@@ -198,8 +202,7 @@ public class SamanPayment {
 
     }
 
-    public void handleResult(int requestCode, int resultCode, Intent data) {
-
+    public void handleResult(int requestCode, int resultCode, Intent data ) {
 
         if (resultCode == Activity.RESULT_OK && requestCode == PAYMENT_REQUEST_CODE) {
 
@@ -273,6 +276,8 @@ public class SamanPayment {
 
 
             } else {
+
+
 
                 String result = data.getExtras().getString("result", "");
 
@@ -395,6 +400,15 @@ public class SamanPayment {
 
 
     }
+
+    public void printParkInfo( ViewGroup viewGroupForBindFactor) {
+
+
+        connection.print(getViewBitmap(viewGroupForBindFactor));
+
+
+    }
+
 
     public static Bitmap getViewBitmap(View v) {
 

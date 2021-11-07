@@ -18,16 +18,63 @@
         android:textColor="@color/white"
         android:background="@color/red"/>
 
-    <TextView
-        android:id="@+id/exit"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:background="@color/blue"
+        android:gravity="center"
+        android:orientation="vertical">
+
+
+
+    <TextView
+        android:id="@+id/exit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="خروج از برنامه"
         android:gravity="center"
         android:fontFamily="@font/iran_sans_fa_num_bold"
         android:textColor="@color/white"
-        android:background="@color/blue"/>
+        />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:visibility="gone"
+            android:id="@+id/password_area"
+            android:layout_marginRight="@dimen/_20sdp"
+            android:layout_marginLeft="@dimen/_20sdp"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/white_bg_5"
+                android:padding="@dimen/_10sdp"
+                android:textColor="@color/black"/>
+
+            <TextView
+                android:id="@+id/confirm"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/blue_bg_5"
+                android:fontFamily="@font/iran_sans"
+                android:gravity="center"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_8sdp"
+                android:text="تایید"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_12sdp" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </LinearLayout>
 
 
 

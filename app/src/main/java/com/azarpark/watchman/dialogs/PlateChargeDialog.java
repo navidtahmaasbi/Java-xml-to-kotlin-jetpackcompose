@@ -24,6 +24,7 @@ import com.azarpark.watchman.databinding.SingleSelectDialogBinding;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.utils.Assistant;
+import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class PlateChargeDialog extends DialogFragment {
     ChargeItemListAdapter adapter;
     OnPayClicked onPayClicked;
     Place place;
+    int selectedAmount = 0;
 
     public PlateChargeDialog(OnPayClicked onPayClicked,Place place) {
         this.onPayClicked = onPayClicked;
@@ -61,28 +63,30 @@ public class PlateChargeDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(binding.getRoot());
 
-        binding.amount.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                adapter.clearSelectedItem();
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
+//        binding.amount.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//                adapter.clearSelectedItem();
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable editable) {
+//
+//            }
+//        });
 
         adapter = new ChargeItemListAdapter(amount -> {
 
-            binding.amount.setText(NumberFormat.getNumberInstance(Locale.US).format(amount));
+            selectedAmount = amount;
+
+//            binding.amount.setText(NumberFormat.getNumberInstance(Locale.US).format(amount));
 
         }, getContext());
         binding.recyclerView.setAdapter(adapter);
@@ -93,28 +97,25 @@ public class PlateChargeDialog extends DialogFragment {
         items.add(20000);
         items.add(30000);
         items.add(50000);
+        items.add(70000);
+        items.add(100000);
 
         adapter.setItems(items);
 
         binding.submit.setOnClickListener(view -> {
 
-            String s = binding.amount.getText().toString().replace(",","");
-            int price = Integer.parseInt(s);
+//            String s = binding.amount.getText().toString().replace(",","");
+//            int price = Integer.parseInt(s);
 
-            if (binding.amount.getText().toString().isEmpty())
-                Toast.makeText(getContext(), "مبلغ شارژ را وارد کنید", Toast.LENGTH_SHORT).show();
-            else if (!isNumber(binding.amount.getText().toString()))
+            if (selectedAmount == 0)
+                Toast.makeText(getContext(), "مبلغ شارژ را انتخاب کنید", Toast.LENGTH_SHORT).show();
+            else if (!isNumber(Integer.toString(selectedAmount)))
                 Toast.makeText(getContext(), "مبلغ شارژ را درست وارد کنید", Toast.LENGTH_SHORT).show();
-            else if (price < Assistant.MIN_PRICE_FOR_PAYMENT)
+            else if (selectedAmount < Assistant.MIN_PRICE_FOR_PAYMENT)
                 Toast.makeText(getContext(), "مبلغ شارژ نباید کمتر از "+Assistant.MIN_PRICE_FOR_PAYMENT+" تومان باشد", Toast.LENGTH_SHORT).show();
-            else{
+            else
+                onPayClicked.pay(selectedAmount);
 
-                String amount = binding.amount.getText().toString();
-                amount = amount.replace(",","");
-
-                onPayClicked.pay(Integer.parseInt(amount));
-
-            }
 
         });
 

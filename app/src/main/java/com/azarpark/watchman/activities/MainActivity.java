@@ -47,6 +47,7 @@ import com.azarpark.watchman.R;
 import com.azarpark.watchman.adapters.ParkListAdapter;
 import com.azarpark.watchman.databinding.ActivityMainBinding;
 import com.azarpark.watchman.databinding.PrintTemplateBinding;
+import com.azarpark.watchman.databinding.SamanAfterPaymentPrintTemplateBinding;
 import com.azarpark.watchman.databinding.SamanPrintTemplateBinding;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.LoadingBar;
@@ -67,6 +68,7 @@ import com.azarpark.watchman.payment.parsian.ParsianPayment;
 import com.azarpark.watchman.payment.saman.SamanPayment;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.bodies.ParkBody;
+import com.azarpark.watchman.retrofit_remote.responses.DebtHistoryResponse;
 import com.azarpark.watchman.retrofit_remote.responses.DeleteExitRequestResponse;
 import com.azarpark.watchman.retrofit_remote.responses.ExitParkResponse;
 import com.azarpark.watchman.retrofit_remote.responses.LogoutResponse;
@@ -119,7 +121,6 @@ public class MainActivity extends AppCompatActivity {
     Assistant assistant;
     int debt = 0;
     ParkResponseDialog parkResponseDialog;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -205,6 +206,7 @@ public class MainActivity extends AppCompatActivity {
 
         Log.e("getPlaces", "onResume");
         getPlaces();
+        setTimer();
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -213,6 +215,17 @@ public class MainActivity extends AppCompatActivity {
         parsianPayment.handleResult(requestCode, resultCode, data);
 
         samanPayment.handleResult(requestCode, resultCode, data);
+
+        if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN && resultCode == Activity.RESULT_OK && requestCode == SamanPayment.PAYMENT_REQUEST_CODE){
+
+            String tag1 = sh_r.getString(SharedPreferencesRepository.TAG1, "0");
+            String tag2 = sh_r.getString(SharedPreferencesRepository.TAG2, "0");
+            String tag3 = sh_r.getString(SharedPreferencesRepository.TAG3, "0");
+            String tag4 = sh_r.getString(SharedPreferencesRepository.TAG4, "0");
+
+            getCarDebtHistory(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
+
+        }
 
 
     }
@@ -235,10 +248,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         if (samanPayment != null)
             samanPayment.releaseService();
+
         if (timer != null) {
 
             timer.cancel();
@@ -331,12 +355,14 @@ public class MainActivity extends AppCompatActivity {
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-                    MainActivity.this.runOnUiThread(() -> getPlaces());
+                    MainActivity.this.runOnUiThread(() -> {
+                        getPlaces();
+                        verifyUnverifiedTransactions();
+                    });
                 }
             }, 0, refresh_time * 1000);
         }
     }
-
 
     private void verifyUnverifiedTransactions() {
 
@@ -452,6 +478,8 @@ public class MainActivity extends AppCompatActivity {
                     selectedPlateType = PlateType.new_aras;
 
                 long res_num = Assistant.generateResNum();
+
+                assistant.saveTags(place.tag1,place.tag2,place.tag3,place.tag4, getApplicationContext());
 
                 if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
                     parsianPayment.createTransaction(selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id);
@@ -673,6 +701,68 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @SuppressLint("SetTextI18n")
+    private void printMiniFactor(String tag1, String tag2, String tag3, String tag4, int balance) {
+
+            if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN) {
+
+                binding.printArea.removeAllViews();
+
+                SamanAfterPaymentPrintTemplateBinding printTemplateBinding = SamanAfterPaymentPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
+
+                printTemplateBinding.balanceTitle.setText(balance < 0 ? "بدهی پلاک" : "شارژ پلاک");
+
+                printTemplateBinding.balance.setText(balance + " تومان");
+
+//            printTemplateBinding.prices.setText(pricing);
+
+                if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.simple) {
+
+                    printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
+                    printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
+                    printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
+
+                    printTemplateBinding.plateSimpleTag1.setText(tag1);
+                    printTemplateBinding.plateSimpleTag2.setText(tag2);
+                    printTemplateBinding.plateSimpleTag3.setText(tag3);
+                    printTemplateBinding.plateSimpleTag4.setText(tag4);
+
+                } else if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.old_aras) {
+
+                    printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
+                    printTemplateBinding.plateOldArasArea.setVisibility(View.VISIBLE);
+                    printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
+
+                    printTemplateBinding.plateOldArasTag1En.setText(tag1);
+                    printTemplateBinding.plateOldArasTag1Fa.setText(tag1);
+
+                } else {
+
+                    printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
+                    printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
+                    printTemplateBinding.plateNewArasArea.setVisibility(View.VISIBLE);
+
+                    printTemplateBinding.plateNewArasTag1En.setText(tag1);
+                    printTemplateBinding.plateNewArasTag1Fa.setText(tag1);
+                    printTemplateBinding.plateNewArasTag2En.setText(tag2);
+                    printTemplateBinding.plateNewArasTag2Fa.setText(tag2);
+
+                }
+
+                printTemplateBinding.text.setText("\n.\n.\n.");
+
+                new Handler().postDelayed(() -> {
+
+                    samanPayment.printParkInfo(binding.printArea);
+
+                }, 500);
+
+
+            }
+
+
+    }
+
     //-------------------------------------------------------- API calls
 
     private void getPlaces() {
@@ -695,8 +785,8 @@ public class MainActivity extends AppCompatActivity {
 
                 binding.refreshLayout.setRefreshing(false);
 
-                if (placesLoadedForFirstTime)
-                    loadingBar.dismiss();
+//                if (placesLoadedForFirstTime)
+                loadingBar.dismiss();
                 if (response.isSuccessful()) {
 
                     placesLoadedForFirstTime = false;
@@ -748,7 +838,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<PlacesResponse> call, Throwable t) {
-                if (placesLoadedForFirstTime)
+//                if (placesLoadedForFirstTime)
                     loadingBar.dismiss();
                 binding.refreshLayout.setRefreshing(false);
                 APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> getPlaces());
@@ -987,6 +1077,48 @@ public class MainActivity extends AppCompatActivity {
                 APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> logout());
             }
         });
+
+    }
+
+    private void getCarDebtHistory(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset) {
+
+        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
+        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
+        loadingBar.show();
+
+        repository.getCarDebtHistory("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
+                plateType, tag1, tag2, tag3, tag4, limit, offset, new Callback<DebtHistoryResponse>() {
+                    @Override
+                    public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
+
+
+                        loadingBar.dismiss();
+                        if (response.isSuccessful()) {
+
+                            if (response.body().getSuccess() == 1) {
+
+                                if (assistant.getPlateType(tag1,tag2,tag3,tag4) == PlateType.simple)
+                                    printMiniFactor(tag1,
+                                            tag2,
+                                            tag3,
+                                            tag4, response.body().balance);
+                                else if (assistant.getPlateType(tag1,tag2,tag3,tag4) == PlateType.old_aras)
+                                    printMiniFactor(tag1, "0", "0", "0", response.body().balance);
+                                else
+                                    printMiniFactor(tag1, tag2, "0", "0", response.body().balance);
+
+                            }
+
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
+                        loadingBar.dismiss();
+                        t.printStackTrace();
+                    }
+                });
 
     }
 
