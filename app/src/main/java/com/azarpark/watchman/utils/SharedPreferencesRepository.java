@@ -24,6 +24,7 @@ public class SharedPreferencesRepository {
     public static String
             ACCESS_TOKEN = "accessToken",
             REFRESH_TOKEN = "refreshToken",
+            USERNAME = "username",
             PLATE_TYPE = "PLATE_TYPE",
             TAG1 = "TAG1",
             TAG2 = "TAG2",

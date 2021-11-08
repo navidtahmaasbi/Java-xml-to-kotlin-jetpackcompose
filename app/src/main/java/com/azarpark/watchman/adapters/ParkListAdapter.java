@@ -68,7 +68,7 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             viewHolder.binding.placeStatus.setBackgroundColor(place.status.equals(PlaceStatus.full_by_user.toString()) ? context.getResources().getColor(R.color.orange) : context.getResources().getColor(R.color.dark_blue));
 
             if (place.estimate_price.price > 0)
-                viewHolder.binding.paymentStatus.setText(NumberFormat.getNumberInstance(Locale.US).format(place.estimate_price.price) +"");
+                viewHolder.binding.paymentStatus.setText("پولی");
             else
                 viewHolder.binding.paymentStatus.setText("رایگان");
 

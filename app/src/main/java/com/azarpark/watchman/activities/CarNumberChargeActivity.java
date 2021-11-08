@@ -335,17 +335,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
         samanPayment.handleResult(requestCode, resultCode, data);
 
-        if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN && resultCode == Activity.RESULT_OK && requestCode == SamanPayment.PAYMENT_REQUEST_CODE) {
 
-            String tag1 = sh_r.getString(SharedPreferencesRepository.TAG1, "0");
-            String tag2 = sh_r.getString(SharedPreferencesRepository.TAG2, "0");
-            String tag3 = sh_r.getString(SharedPreferencesRepository.TAG3, "0");
-            String tag4 = sh_r.getString(SharedPreferencesRepository.TAG4, "0");
-
-            getCarDebtHistory(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
-
-
-        }
 
     }
 
@@ -512,6 +502,17 @@ public class CarNumberChargeActivity extends AppCompatActivity {
                         if (response.isSuccessful()) {
 
                             sh_r.removeFromTransactions(transaction);
+
+                            if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN) {
+
+                                String tag1 = sh_r.getString(SharedPreferencesRepository.TAG1, "0");
+                                String tag2 = sh_r.getString(SharedPreferencesRepository.TAG2, "0");
+                                String tag3 = sh_r.getString(SharedPreferencesRepository.TAG3, "0");
+                                String tag4 = sh_r.getString(SharedPreferencesRepository.TAG4, "0");
+
+                                getCarDebtHistory(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
+
+                            }
 
                             Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
                         } else

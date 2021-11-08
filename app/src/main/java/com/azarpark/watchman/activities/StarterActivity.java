@@ -20,6 +20,7 @@ import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.responses.SendExitCodeResponse;
 import com.azarpark.watchman.utils.APIErrorHandler;
+import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
 import java.util.Random;
@@ -35,13 +36,17 @@ public class StarterActivity extends AppCompatActivity {
     private int code = 5555;
     LoadingBar loadingBar;
     private final int masterCode = 2580;
+    Assistant assistant;
+    SharedPreferencesRepository sh_r ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_starter);
 
+        assistant = new Assistant();
         loadingBar = new LoadingBar(StarterActivity.this);
+        sh_r = new SharedPreferencesRepository(getApplicationContext());
 
         findViewById(R.id.app).setOnClickListener(view -> {
 
@@ -72,9 +77,13 @@ public class StarterActivity extends AppCompatActivity {
 //            messageDialog.show(getSupportFragmentManager(), GetValueDialog.TAG);
 
 
-                findViewById(R.id.password_area).setVisibility(findViewById(R.id.password_area).getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
 
 
+            findViewById(R.id.password_area).setVisibility(findViewById(R.id.password_area).getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+
+            if (findViewById(R.id.password_area).getVisibility() == View.VISIBLE){
+                assistant.eventByMobile(sh_r.getString(SharedPreferencesRepository.USERNAME,"not logged-in"),"click exit app");
+            }
 
             return true;
 
@@ -89,7 +98,7 @@ public class StarterActivity extends AppCompatActivity {
 
             } else if (!edt.getText().toString().equals(Integer.toString(code)) && !edt.getText().toString().equals(Integer.toString(masterCode)))
                 Toast.makeText(getApplicationContext(), "رمز را درست وارد کنید", Toast.LENGTH_SHORT).show();
-            else{
+            else {
 
                 getPackageManager().clearPackagePreferredActivities(getPackageName());
                 Intent home = new Intent(Intent.ACTION_MAIN);
@@ -102,9 +111,9 @@ public class StarterActivity extends AppCompatActivity {
                 edt.setText("");
                 findViewById(R.id.password_area).setVisibility(View.GONE);
 
+                assistant.eventByMobile(sh_r.getString(SharedPreferencesRepository.USERNAME,"not logged-in"),"show launcher chooser");
 
                 startActivity(chooser);
-
 
 
             }

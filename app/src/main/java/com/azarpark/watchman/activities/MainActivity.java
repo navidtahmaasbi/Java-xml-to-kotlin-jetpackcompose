@@ -216,17 +216,6 @@ public class MainActivity extends AppCompatActivity {
 
         samanPayment.handleResult(requestCode, resultCode, data);
 
-        if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN && resultCode == Activity.RESULT_OK && requestCode == SamanPayment.PAYMENT_REQUEST_CODE){
-
-            String tag1 = sh_r.getString(SharedPreferencesRepository.TAG1, "0");
-            String tag2 = sh_r.getString(SharedPreferencesRepository.TAG2, "0");
-            String tag3 = sh_r.getString(SharedPreferencesRepository.TAG3, "0");
-            String tag4 = sh_r.getString(SharedPreferencesRepository.TAG4, "0");
-
-            getCarDebtHistory(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
-
-        }
-
 
     }
 
@@ -981,6 +970,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void verifyTransaction(Transaction transaction) {
 
+        System.out.println("----------> verifyTransaction");
+
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
 
@@ -1003,6 +994,17 @@ public class MainActivity extends AppCompatActivity {
                             sh_r.removeFromTransactions(transaction);
 
                             Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
+
+                            if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN) {
+
+                                String tag1 = sh_r.getString(SharedPreferencesRepository.TAG1, "0");
+                                String tag2 = sh_r.getString(SharedPreferencesRepository.TAG2, "0");
+                                String tag3 = sh_r.getString(SharedPreferencesRepository.TAG3, "0");
+                                String tag4 = sh_r.getString(SharedPreferencesRepository.TAG4, "0");
+
+                                getCarDebtHistory(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
+
+                            }
 
                             getPlaces();
 
@@ -1058,6 +1060,8 @@ public class MainActivity extends AppCompatActivity {
 
                 loadingBar.dismiss();
                 if (response.isSuccessful()) {
+
+                    assistant.eventByMobile(sh_r.getString(SharedPreferencesRepository.USERNAME,"not logged-in"),"logout");
 
                     SharedPreferencesRepository sh_p = new SharedPreferencesRepository(getApplicationContext());
                     sh_p.saveString(SharedPreferencesRepository.ACCESS_TOKEN, "");

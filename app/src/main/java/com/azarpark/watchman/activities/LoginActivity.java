@@ -23,11 +23,14 @@ import android.widget.Toast;
 
 import com.azarpark.watchman.databinding.ActivityLoginBinding;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
+import com.yandex.metrica.YandexMetrica;
 
 import org.xml.sax.ErrorHandler;
 
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
+import java.util.HashMap;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -39,6 +42,7 @@ public class LoginActivity extends AppCompatActivity {
     ActivityLoginBinding binding;
     ConfirmDialog confirmDialog;
     Activity activity = this;
+    Assistant assistant;
 
 
     @Override
@@ -46,6 +50,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        assistant = new Assistant();
 
     }
 
@@ -80,6 +86,9 @@ public class LoginActivity extends AppCompatActivity {
 
                     sh_p.saveString(SharedPreferencesRepository.ACCESS_TOKEN, response.body().access_token);
                     sh_p.saveString(SharedPreferencesRepository.REFRESH_TOKEN, response.body().refresh_token);
+                    sh_p.saveString(SharedPreferencesRepository.USERNAME, username);
+
+                    assistant.loginEvent(username);
 
                     LoginActivity.this.finish();
                     startActivity(new Intent(LoginActivity.this, SplashActivity.class));

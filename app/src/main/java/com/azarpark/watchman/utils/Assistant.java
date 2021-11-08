@@ -15,11 +15,14 @@ import android.view.inputmethod.InputMethodManager;
 import com.azarpark.watchman.download_utils.DownloadController;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.Place;
+import com.yandex.metrica.YandexMetrica;
 
 import java.net.HttpURLConnection;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -268,6 +271,26 @@ public class Assistant {
         sh_p.saveString(SharedPreferencesRepository.TAG2,tag2);
         sh_p.saveString(SharedPreferencesRepository.TAG3,tag3);
         sh_p.saveString(SharedPreferencesRepository.TAG4,tag4);
+
+    }
+
+    public void loginEvent(String username) {
+
+
+        Map<String, Object> eventParameters = new HashMap<String, Object>();
+        eventParameters.put("username", username);
+
+        YandexMetrica.reportEvent("Login", eventParameters);
+
+    }
+
+    public void eventByMobile(String username, String action) {
+
+
+        Map<String, Object> eventParameters = new HashMap<String, Object>();
+        eventParameters.put(username, action);
+
+        YandexMetrica.reportEvent("events", eventParameters);
 
     }
 }
