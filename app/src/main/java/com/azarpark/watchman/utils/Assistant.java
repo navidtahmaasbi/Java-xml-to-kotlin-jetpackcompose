@@ -267,10 +267,10 @@ public class Assistant {
 
         SharedPreferencesRepository sh_p = new SharedPreferencesRepository(context);
 
-        sh_p.saveString(SharedPreferencesRepository.TAG1,tag1);
-        sh_p.saveString(SharedPreferencesRepository.TAG2,tag2);
-        sh_p.saveString(SharedPreferencesRepository.TAG3,tag3);
-        sh_p.saveString(SharedPreferencesRepository.TAG4,tag4);
+        sh_p.saveString(SharedPreferencesRepository.TAG1, tag1);
+        sh_p.saveString(SharedPreferencesRepository.TAG2, tag2);
+        sh_p.saveString(SharedPreferencesRepository.TAG3, tag3);
+        sh_p.saveString(SharedPreferencesRepository.TAG4, tag4);
 
     }
 
@@ -293,4 +293,35 @@ public class Assistant {
         YandexMetrica.reportEvent("events", eventParameters);
 
     }
+
+    public String getTimeDifference(Date startDate, Date endDate) {
+        //milliseconds
+        long different = endDate.getTime() - startDate.getTime();
+
+        System.out.println("startDate : " + startDate);
+        System.out.println("endDate : " + endDate);
+        System.out.println("different : " + different);
+
+        long secondsInMilli = 1000;
+        long minutesInMilli = secondsInMilli * 60;
+        long hoursInMilli = minutesInMilli * 60;
+        long daysInMilli = hoursInMilli * 24;
+
+        long elapsedDays = different / daysInMilli;
+        different = different % daysInMilli;
+
+        long elapsedHours = different / hoursInMilli;
+        different = different % hoursInMilli;
+
+        long elapsedMinutes = different / minutesInMilli;
+        different = different % minutesInMilli;
+
+        long elapsedSeconds = different / secondsInMilli;
+
+        if (elapsedHours == 0)
+            return elapsedMinutes + " دقیقه";
+
+        return elapsedHours + " ساعت " + elapsedMinutes + " دقیقه";
+    }
+
 }

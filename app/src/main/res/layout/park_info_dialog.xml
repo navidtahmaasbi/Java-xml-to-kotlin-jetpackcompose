@@ -311,7 +311,6 @@
                 android:gravity="center"
                 android:padding="@dimen/_5sdp"
                 android:text="14 : 25"
-
                 android:textColor="@color/text_gray"
                 android:textSize="@dimen/_13sdp" />
 

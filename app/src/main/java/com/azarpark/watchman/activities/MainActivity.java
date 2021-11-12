@@ -224,8 +224,10 @@ public class MainActivity extends AppCompatActivity {
         if (menuIsOpen) {
             menuIsOpen = false;
             popupWindow.dismiss();
-        } else if (adapter.isShowExitRequestItems()) {
+        }
+        else if (adapter.isShowExitRequestItems()) {
 
+            binding.filterEdittext.setText("");
             adapter.showExitRequestItems(!adapter.isShowExitRequestItems());
             binding.exitRequests.setBackgroundColor(getResources().getColor(R.color.transparent));
 
@@ -404,7 +406,7 @@ public class MainActivity extends AppCompatActivity {
 //        if (exitRequestCount > 0) {
 
         adapter.showExitRequestItems(!adapter.isShowExitRequestItems());
-
+        binding.filterEdittext.setText("");
         if (adapter.isShowExitRequestItems())
             binding.exitRequests.setBackgroundColor(getResources().getColor(R.color.red));
         else

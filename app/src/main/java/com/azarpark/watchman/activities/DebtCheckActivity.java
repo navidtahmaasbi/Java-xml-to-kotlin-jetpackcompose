@@ -4,6 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -39,7 +40,9 @@ import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.UUID;
 
 import ir.sep.android.Service.IProxy;
@@ -68,16 +71,17 @@ public class DebtCheckActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         assistant = new Assistant();
-        parsianPayment = new ParsianPayment(getApplicationContext(),activity,new ParsianPayment.ParsianPaymentCallBack() {
+        parsianPayment = new ParsianPayment(getApplicationContext(), activity, new ParsianPayment.ParsianPaymentCallBack() {
             @Override
             public void verifyTransaction(Transaction transaction) {
                 DebtCheckActivity.this.verifyTransaction(transaction);
             }
+
             @Override
             public void getScannerData(int placeID) {
 
             }
-        },getSupportFragmentManager());
+        }, getSupportFragmentManager());
         samanPayment = new SamanPayment(getApplicationContext(), DebtCheckActivity.this, new SamanPayment.SamanPaymentCallBack() {
             @Override
             public void verifyTransaction(Transaction transaction) {
@@ -219,7 +223,7 @@ public class DebtCheckActivity extends AppCompatActivity {
                         binding.plateSimpleTag3.getText().toString(),
                         binding.plateSimpleTag4.getText().toString(),
                         -1
-                        );
+                );
             else if (selectedTab == PlateType.old_aras)
                 paymentRequest(debt,
                         selectedTab,
@@ -264,6 +268,7 @@ public class DebtCheckActivity extends AppCompatActivity {
         }
 
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -388,6 +393,7 @@ public class DebtCheckActivity extends AppCompatActivity {
 
         repository.getCarDebtHistory("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
                 plateType, tag1, tag2, tag3, tag4, limit, offset, new Callback<DebtHistoryResponse>() {
+                    @SuppressLint("SetTextI18n")
                     @Override
                     public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
 
@@ -397,14 +403,22 @@ public class DebtCheckActivity extends AppCompatActivity {
 
                             if (response.body().getSuccess() == 1) {
 
-                                if (response.body().balance < 0 )
-                                 debt = response.body().balance * -1;
+                                if (response.body().balance < 0)
+                                    debt = response.body().balance * -1;
 
                                 binding.balanceTitle.setText(response.body().balance >= 0 ? "اعتبار پلاک" : "بدهی پلاک");
-                                binding.debtAmount.setTextColor(getResources().getColor(response.body().balance >= 0 ?R.color.green:R.color.red));
+                                binding.debtAmount.setTextColor(getResources().getColor(response.body().balance >= 0 ? R.color.green : R.color.red));
                                 binding.payment.setVisibility(response.body().balance < 0 ? View.VISIBLE : View.GONE);
 
-                                binding.debtAmount.setText(response.body().balance + " تومان");
+                                binding.debtAmount.setText(NumberFormat.getNumberInstance(Locale.US).format(response.body().balance < 0 ? (response.body().balance * -1) : response.body().balance) + " تومان");
+
+                                binding.plateSimpleTag1.setText("");
+                                binding.plateSimpleTag2.setText("");
+                                binding.plateSimpleTag3.setText("");
+                                binding.plateSimpleTag4.setText("");
+                                binding.plateOldAras.setText("");
+                                binding.plateNewArasTag1.setText("");
+                                binding.plateNewArasTag2.setText("");
 
                                 binding.debtArea.setVisibility(View.VISIBLE);
                                 adapter.addItems(response.body().items);
@@ -414,13 +428,14 @@ public class DebtCheckActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
 
 
-                        } else APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(),activity, response, () -> getCarDebtHistory(plateType,tag1,tag2,tag3,tag4,limit,offset));
+                        } else
+                            APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> getCarDebtHistory(plateType, tag1, tag2, tag3, tag4, limit, offset));
                     }
 
                     @Override
                     public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
                         loadingBar.dismiss();
-                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(),t, () -> getCarDebtHistory(plateType,tag1,tag2,tag3,tag4,limit,offset));
+                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> getCarDebtHistory(plateType, tag1, tag2, tag3, tag4, limit, offset));
                     }
                 });
 
@@ -431,9 +446,9 @@ public class DebtCheckActivity extends AppCompatActivity {
         long res_num = Assistant.generateResNum();
 
         if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4,amount, -1);
+            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1);
         else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-            samanPayment.createTransaction(Assistant.NON_CHARGE_SHABA,plateType, tag1, tag2, tag3, tag4,amount, -1);
+            samanPayment.createTransaction(Assistant.NON_CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1);
 
     }
 
@@ -454,13 +469,13 @@ public class DebtCheckActivity extends AppCompatActivity {
 
 
                         loadingBar.dismiss();
-                        if (response.isSuccessful()){
+                        if (response.isSuccessful()) {
 
                             sh_r.removeFromTransactions(transaction);
 
                             Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
-                        }
-                        else APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(),activity, response, () -> verifyTransaction(transaction));
+                        } else
+                            APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> verifyTransaction(transaction));
                     }
 
                     @Override

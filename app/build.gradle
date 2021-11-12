@@ -10,7 +10,7 @@ android {
         applicationId "com.azarpark.watchman"
         minSdk 21
         targetSdk 31
-        versionCode 9
+        versionCode 6
         versionName "1.09"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

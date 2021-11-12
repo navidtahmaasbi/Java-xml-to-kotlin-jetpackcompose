@@ -119,7 +119,6 @@ public class ParkDialog extends DialogFragment {
             }
             else{
 
-
                 onParkClicked.clicked(new ParkBody(
                         binding.plateNewArasTag1.getText().toString(),
                         binding.plateNewArasTag2.getText().toString(),

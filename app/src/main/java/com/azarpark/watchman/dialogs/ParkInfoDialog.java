@@ -28,14 +28,19 @@ import com.azarpark.watchman.retrofit_remote.responses.EstimateParkPriceResponse
 import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
+import com.yandex.metrica.impl.ob.Da;
 
 import java.net.HttpURLConnection;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import saman.zamani.persiandate.PersianDate;
 
 public class ParkInfoDialog extends DialogFragment {
 
@@ -79,9 +84,18 @@ public class ParkInfoDialog extends DialogFragment {
         binding.placeNumber.setText(place.number + "");
         try {
 
+            System.out.println("----------> start time : " + place.start);
+
+            Date now = Calendar.getInstance().getTime();
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-M-dd hh:mm:ss");
+            Date startDate = simpleDateFormat.parse(place.start);
+
             String startTime = place.start;
             startTime = startTime.split(" ")[1];
-            binding.startTime.setText(startTime + "  ");
+            binding.startTime.setText(startTime + " - " + assistant.getTimeDifference(startDate, now));
+
+
 
         }catch (Exception e){
             e.printStackTrace();
@@ -222,7 +236,7 @@ public class ParkInfoDialog extends DialogFragment {
 
                             EstimateParkPriceResponse parkPriceResponse = response.body();
 
-                            binding.startTime.setText(binding.startTime.getText() + "  " + (parkPriceResponse.getHours() + 1) + " ساعت");
+//                            binding.startTime.setText(binding.startTime.getText() + "  " + (parkPriceResponse.getHours() + 1) + " ساعت");
 
                             int parkPrice = parkPriceResponse.getPrice();
                             int carBalance = parkPriceResponse.getCar_balance();

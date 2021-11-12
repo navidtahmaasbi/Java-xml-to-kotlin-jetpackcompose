@@ -54,9 +54,6 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-        assistant = new Assistant();
-
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
@@ -64,6 +61,8 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         sh_p = new SharedPreferencesRepository(getApplicationContext());
+
+        assistant = new Assistant();
 
         if (assistant.VPNEnabled(getApplicationContext())){
 
