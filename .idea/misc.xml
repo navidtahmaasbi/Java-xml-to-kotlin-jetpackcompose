@@ -4,13 +4,16 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/10/AppData/Local/Android/Sdk/platforms/android-31/data/res/layout/splash_screen_view.xml" value="0.36666666666666664" />
+        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/activity_debt_check.xml" value="0.15428446197676968" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/activity_login.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/activity_splash.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/confirm_dialog.xml" value="0.36666666666666664" />
+        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/debt_list_item.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/free_park_item.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/full_park_item.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/loadingbar.xml" value="0.36666666666666664" />
+        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/menu_popup_window.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/message_dialog.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/park_dialog.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/park_info_dialog.xml" value="0.36666666666666664" />

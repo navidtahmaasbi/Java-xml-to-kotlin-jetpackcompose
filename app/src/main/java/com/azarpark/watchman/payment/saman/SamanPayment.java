@@ -7,33 +7,27 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.fragment.app.FragmentManager;
 
-import com.azarpark.watchman.databinding.PrintTemplateBinding;
-import com.azarpark.watchman.databinding.SamanPrintTemplateBinding;
-import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.enums.PlateType;
-import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.responses.CreateTransactionResponse;
-import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse;
 import com.azarpark.watchman.utils.APIErrorHandler;
+import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
+import com.google.gson.Gson;
 
 import java.util.Set;
-import java.util.UUID;
 
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
@@ -53,7 +47,7 @@ public class SamanPayment {
     public MyServiceConnection connection;
     SamanPaymentCallBack samanPaymentCallBack;
     MessageDialog messageDialog;
-    LoadingBar loadingBar;
+//    LoadingBar loadingBar;
     FragmentManager fragmentManager;
 
     private String STATE = "State",
@@ -71,7 +65,7 @@ public class SamanPayment {
         this.context = context;
         this.samanPaymentCallBack = samanPaymentCallBack;
 
-        loadingBar = new LoadingBar(activity);
+//        loadingBar = new LoadingBar(activity);
 
         initService();
 
@@ -88,7 +82,6 @@ public class SamanPayment {
     }
 
     public void paymentRequest(String resNum, int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
-
 
 
         sh_r.saveString(SharedPreferencesRepository.PLATE_TYPE, plateType.toString());
@@ -162,10 +155,9 @@ public class SamanPayment {
 
     public void createTransaction(String shaba, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID) {
 
-
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(context);
         RetrofitAPIRepository repository = new RetrofitAPIRepository(context);
-        loadingBar.show();
+//        loadingBar.show();
 
         repository.createTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
                 plateType,
@@ -179,30 +171,46 @@ public class SamanPayment {
                     public void onResponse(Call<CreateTransactionResponse> call, Response<CreateTransactionResponse> response) {
 
 
-                        loadingBar.dismiss();
+//                        loadingBar.dismiss();
                         if (response.isSuccessful()) {
 
                             long our_token = response.body().our_token;
 
+                            Transaction transaction = new Transaction(
+                                    Integer.toString(amount),
+                                    Long.toString(our_token),
+                                    "0",
+                                    Integer.parseInt(sh_r.getString(SharedPreferencesRepository.PLACE_ID,"0")),
+                                    0,
+                                    SAMAN,
+                                    "0",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    Assistant.getUnixTime());
+
+                            sh_r.addToTransactions(transaction);
 
 //                            paymentRequest(Long.toString(our_token), amount, plateType, tag1, tag2, tag3, tag4, placeID);
-                            tashimPaymentRequest("0:" + (amount*10) + ":"+shaba, Long.toString(our_token), (amount*10), plateType, tag1, tag2, tag3, tag4, placeID);
+                            tashimPaymentRequest("0:" + (amount * 10) + ":" + shaba, Long.toString(our_token), (amount * 10), plateType, tag1, tag2, tag3, tag4, placeID);
 
                         } else
-                            APIErrorHandler.orResponseErrorHandler(fragmentManager, activity, response, () -> createTransaction(shaba,plateType, tag1, tag2, tag3, tag4, amount, placeID));
+                            APIErrorHandler.orResponseErrorHandler(fragmentManager, activity, response, () -> createTransaction(shaba, plateType, tag1, tag2, tag3, tag4, amount, placeID));
                     }
 
                     @Override
                     public void onFailure(Call<CreateTransactionResponse> call, Throwable t) {
-                        loadingBar.dismiss();
+//                        loadingBar.dismiss();
                         t.printStackTrace();
-                        APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> createTransaction(shaba,plateType, tag1, tag2, tag3, tag4, amount, placeID));
+                        APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> createTransaction(shaba, plateType, tag1, tag2, tag3, tag4, amount, placeID));
                     }
                 });
 
     }
 
-    public void handleResult(int requestCode, int resultCode, Intent data ) {
+    public void handleResult(int requestCode, int resultCode, Intent data) {
+
 
         if (resultCode == Activity.RESULT_OK && requestCode == PAYMENT_REQUEST_CODE) {
 
@@ -230,6 +238,7 @@ public class SamanPayment {
 //        ++trace : 000015
 //        ++message :    (this will have value if there is an error)
 
+            Transaction transaction;
 
             if (state == STATE_SUCCESSFUL) // successful
             {
@@ -254,7 +263,7 @@ public class SamanPayment {
                 String result = data.getExtras().getString("result", "");
 
 
-                Transaction transaction = new Transaction(
+                transaction = new Transaction(
                         amount,
                         resNum,
                         refNum,
@@ -265,21 +274,39 @@ public class SamanPayment {
                         pan,
                         dateTime,
                         traceNumber,
-                        result);
-
-
-                sh_r.addToTransactions(transaction);
-
-                samanPaymentCallBack.verifyTransaction(
-                        transaction
-                );
+                        result,
+                        Assistant.getUnixTime());
 
 
             } else {
 
 
-
                 String result = data.getExtras().getString("result", "");
+
+                String amount = sh_r.getString(SharedPreferencesRepository.AMOUNT, "0");
+                String resNum = sh_r.getString(SharedPreferencesRepository.OUR_TOKEN, "0");
+                int placeID = Integer.parseInt(sh_r.getString(SharedPreferencesRepository.PLACE_ID, "0"));
+                String tag4 = sh_r.getString(SharedPreferencesRepository.TAG4, "0");
+
+                System.out.println("----------> hereeeee");
+
+                transaction = new Transaction(
+                        amount,
+                        resNum,
+                        "0",
+                        placeID,
+                        -1,
+                        SAMAN,
+                        Integer.toString(state),
+                        "****-****-****-****",
+                        "0",
+                        null,
+                        result,
+                        Assistant.getUnixTime());
+
+                Gson gson = new Gson();
+
+                System.out.println("----------> transaction : " +gson.toJson(transaction));
 
                 if (!result.isEmpty())
                     Toast.makeText(context, result, Toast.LENGTH_LONG).show();
@@ -292,6 +319,12 @@ public class SamanPayment {
 
                 messageDialog.show(fragmentManager, MessageDialog.TAG);
             }
+
+            sh_r.updateTransactions(transaction);
+
+            samanPaymentCallBack.verifyTransaction(
+                    transaction
+            );
 
 
         } else if (resultCode == Activity.RESULT_OK && requestCode == QR_SCANNER_REQUEST_CODE) {
@@ -401,7 +434,7 @@ public class SamanPayment {
 
     }
 
-    public void printParkInfo( ViewGroup viewGroupForBindFactor) {
+    public void printParkInfo(ViewGroup viewGroupForBindFactor) {
 
 
         connection.print(getViewBitmap(viewGroupForBindFactor));

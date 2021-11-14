@@ -224,8 +224,7 @@ public class MainActivity extends AppCompatActivity {
         if (menuIsOpen) {
             menuIsOpen = false;
             popupWindow.dismiss();
-        }
-        else if (adapter.isShowExitRequestItems()) {
+        } else if (adapter.isShowExitRequestItems()) {
 
             binding.filterEdittext.setText("");
             adapter.showExitRequestItems(!adapter.isShowExitRequestItems());
@@ -347,8 +346,10 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     MainActivity.this.runOnUiThread(() -> {
+                        System.out.println("---------> timer called");
                         getPlaces();
                         verifyUnverifiedTransactions();
+                        sh_r.checkTransactions();
                     });
                 }
             }, 0, refresh_time * 1000);
@@ -356,6 +357,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void verifyUnverifiedTransactions() {
+
+        System.out.println("---------> verify called");
 
         for (Transaction transaction : sh_r.getTransactions())
             verifyUnverifiedTransaction(transaction);
@@ -470,7 +473,7 @@ public class MainActivity extends AppCompatActivity {
 
                 long res_num = Assistant.generateResNum();
 
-                assistant.saveTags(place.tag1,place.tag2,place.tag3,place.tag4, getApplicationContext());
+                assistant.saveTags(place.tag1, place.tag2, place.tag3, place.tag4, getApplicationContext());
 
                 if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
                     parsianPayment.createTransaction(selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id);
@@ -695,61 +698,61 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     private void printMiniFactor(String tag1, String tag2, String tag3, String tag4, int balance) {
 
-            if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN) {
+        if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN) {
 
-                binding.printArea.removeAllViews();
+            binding.printArea.removeAllViews();
 
-                SamanAfterPaymentPrintTemplateBinding printTemplateBinding = SamanAfterPaymentPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
+            SamanAfterPaymentPrintTemplateBinding printTemplateBinding = SamanAfterPaymentPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
 
-                printTemplateBinding.balanceTitle.setText(balance < 0 ? "بدهی پلاک" : "شارژ پلاک");
+            printTemplateBinding.balanceTitle.setText(balance < 0 ? "بدهی پلاک" : "شارژ پلاک");
 
-                printTemplateBinding.balance.setText(balance + " تومان");
+            printTemplateBinding.balance.setText(balance + " تومان");
 
 //            printTemplateBinding.prices.setText(pricing);
 
-                if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.simple) {
+            if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.simple) {
 
-                    printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
-                    printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
-                    printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
+                printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
+                printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
+                printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
 
-                    printTemplateBinding.plateSimpleTag1.setText(tag1);
-                    printTemplateBinding.plateSimpleTag2.setText(tag2);
-                    printTemplateBinding.plateSimpleTag3.setText(tag3);
-                    printTemplateBinding.plateSimpleTag4.setText(tag4);
+                printTemplateBinding.plateSimpleTag1.setText(tag1);
+                printTemplateBinding.plateSimpleTag2.setText(tag2);
+                printTemplateBinding.plateSimpleTag3.setText(tag3);
+                printTemplateBinding.plateSimpleTag4.setText(tag4);
 
-                } else if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.old_aras) {
+            } else if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.old_aras) {
 
-                    printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
-                    printTemplateBinding.plateOldArasArea.setVisibility(View.VISIBLE);
-                    printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
+                printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
+                printTemplateBinding.plateOldArasArea.setVisibility(View.VISIBLE);
+                printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
 
-                    printTemplateBinding.plateOldArasTag1En.setText(tag1);
-                    printTemplateBinding.plateOldArasTag1Fa.setText(tag1);
+                printTemplateBinding.plateOldArasTag1En.setText(tag1);
+                printTemplateBinding.plateOldArasTag1Fa.setText(tag1);
 
-                } else {
+            } else {
 
-                    printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
-                    printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
-                    printTemplateBinding.plateNewArasArea.setVisibility(View.VISIBLE);
+                printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
+                printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
+                printTemplateBinding.plateNewArasArea.setVisibility(View.VISIBLE);
 
-                    printTemplateBinding.plateNewArasTag1En.setText(tag1);
-                    printTemplateBinding.plateNewArasTag1Fa.setText(tag1);
-                    printTemplateBinding.plateNewArasTag2En.setText(tag2);
-                    printTemplateBinding.plateNewArasTag2Fa.setText(tag2);
-
-                }
-
-                printTemplateBinding.text.setText("\n.\n.\n.");
-
-                new Handler().postDelayed(() -> {
-
-                    samanPayment.printParkInfo(binding.printArea);
-
-                }, 500);
-
+                printTemplateBinding.plateNewArasTag1En.setText(tag1);
+                printTemplateBinding.plateNewArasTag1Fa.setText(tag1);
+                printTemplateBinding.plateNewArasTag2En.setText(tag2);
+                printTemplateBinding.plateNewArasTag2Fa.setText(tag2);
 
             }
+
+            printTemplateBinding.text.setText("\n.\n.\n.");
+
+            new Handler().postDelayed(() -> {
+
+                samanPayment.printParkInfo(binding.printArea);
+
+            }, 500);
+
+
+        }
 
 
     }
@@ -758,7 +761,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void getPlaces() {
 
-        System.out.println("-----------> getPlaces");
+        System.out.println("-----------> getPlaces called");
 
 //        Log.e("getPlaces", "sending ... ");
 
@@ -779,6 +782,20 @@ public class MainActivity extends AppCompatActivity {
 //                if (placesLoadedForFirstTime)
                 loadingBar.dismiss();
                 if (response.isSuccessful()) {
+
+                    if (response.body().success != 1 && !messageDialog.isAdded()) {
+
+                        messageDialog = new MessageDialog("خطا", response.body().description, "تایید", () -> {
+
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(response.body().update.update_link));
+                            startActivity(browserIntent);
+
+                        });
+
+                        messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
+
+                        return;
+                    }
 
                     placesLoadedForFirstTime = false;
 
@@ -830,7 +847,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<PlacesResponse> call, Throwable t) {
 //                if (placesLoadedForFirstTime)
-                    loadingBar.dismiss();
+                loadingBar.dismiss();
                 binding.refreshLayout.setRefreshing(false);
                 APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> getPlaces());
 
@@ -1063,7 +1080,7 @@ public class MainActivity extends AppCompatActivity {
                 loadingBar.dismiss();
                 if (response.isSuccessful()) {
 
-                    assistant.eventByMobile(sh_r.getString(SharedPreferencesRepository.USERNAME,"not logged-in"),"logout");
+                    assistant.eventByMobile(sh_r.getString(SharedPreferencesRepository.USERNAME, "not logged-in"), "logout");
 
                     SharedPreferencesRepository sh_p = new SharedPreferencesRepository(getApplicationContext());
                     sh_p.saveString(SharedPreferencesRepository.ACCESS_TOKEN, "");
@@ -1103,12 +1120,12 @@ public class MainActivity extends AppCompatActivity {
 
                             if (response.body().getSuccess() == 1) {
 
-                                if (assistant.getPlateType(tag1,tag2,tag3,tag4) == PlateType.simple)
+                                if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.simple)
                                     printMiniFactor(tag1,
                                             tag2,
                                             tag3,
                                             tag4, response.body().balance);
-                                else if (assistant.getPlateType(tag1,tag2,tag3,tag4) == PlateType.old_aras)
+                                else if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.old_aras)
                                     printMiniFactor(tag1, "0", "0", "0", response.body().balance);
                                 else
                                     printMiniFactor(tag1, tag2, "0", "0", response.body().balance);

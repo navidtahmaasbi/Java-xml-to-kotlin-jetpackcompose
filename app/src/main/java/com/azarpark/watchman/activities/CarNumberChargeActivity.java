@@ -317,12 +317,14 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
         ArrayList<Integer> items = new ArrayList<>();
 
+        items.add(100);
         items.add(10000);
         items.add(20000);
         items.add(30000);
         items.add(50000);
         items.add(70000);
         items.add(100000);
+        items.add(1000000);
 
         adapter.setItems(items);
 
@@ -331,11 +333,11 @@ public class CarNumberChargeActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        System.out.println("---------> onActivityResult ");
+
         parsianPayment.handleResult(requestCode, resultCode, data);
 
         samanPayment.handleResult(requestCode, resultCode, data);
-
-
 
     }
 
@@ -497,7 +499,6 @@ public class CarNumberChargeActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
 
-                        loadingBar.dismiss();
                         loadingBar.dismiss();
                         if (response.isSuccessful()) {
 

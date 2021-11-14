@@ -1,15 +1,11 @@
 package com.azarpark.watchman.payment.parsian;
 
-import static android.content.ContentValues.TAG;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.device.PrinterManager;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,9 +26,6 @@ import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Set;
 
 import androidmads.library.qrgenearator.QRGContents;
@@ -193,7 +186,8 @@ public class ParsianPayment {
                             pan,
                             Long.toString(date),
                             trace,
-                            result);
+                            result,
+                            Assistant.getUnixTime());
 
                     sh_p.addToTransactions(transaction);
 

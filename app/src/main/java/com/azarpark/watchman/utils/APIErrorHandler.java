@@ -9,6 +9,9 @@ import androidx.fragment.app.FragmentManager;
 import com.azarpark.watchman.activities.LoginActivity;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.interfaces.OnResponseErrorAction;
+import com.google.gson.Gson;
+
+import org.json.JSONObject;
 
 import retrofit2.Response;
 
@@ -22,12 +25,27 @@ public class APIErrorHandler {
 
         if (response.code() > 400 && response.code() < 420) {
 
+            SharedPreferencesRepository sh_r = new SharedPreferencesRepository(activity.getApplicationContext());
+            sh_r.saveString(SharedPreferencesRepository.ACCESS_TOKEN,"");
             activity.startActivity(new Intent(activity, LoginActivity.class));
             activity.finish();
 
         }
 
         try {
+
+            Gson gson = new Gson();
+
+            try {
+//                JSONObject jObjError = new JSONObject();
+                System.out.println("----------> error : " + response.errorBody().string());
+//                Toast.makeText(getContext(), jObjError.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("----------> errorrrrr ");
+            }
+
+
 
 
             if (!onResponseErrorDialogIsShowing) {

@@ -324,4 +324,10 @@ public class Assistant {
         return elapsedHours + " ساعت " + elapsedMinutes + " دقیقه";
     }
 
+    public static String getUnixTime(){
+
+       return Long.toString(System.currentTimeMillis() / 1000L);
+
+    }
+
 }

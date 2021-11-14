@@ -16,8 +16,9 @@ public class Transaction {
     String bank_datetime;
     String trace_number;
     String result_message;
+    String createTime;
 
-    public Transaction(String amount, String our_token, String bank_token, int placeID, int status, String bank_type, String state, String card_number, String bank_datetime, String trace_number, String result_message) {
+    public Transaction(String amount, String our_token, String bank_token, int placeID, int status, String bank_type, String state, String card_number, String bank_datetime, String trace_number, String result_message,String createTime) {
 
         if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
             amount = amount.replace(".0", "");
@@ -33,6 +34,15 @@ public class Transaction {
         this.bank_datetime = bank_datetime;
         this.trace_number = trace_number;
         this.result_message = result_message;
+        this.createTime = createTime;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
     }
 
     public String getAmount() {
@@ -79,6 +89,10 @@ public class Transaction {
         return result_message;
     }
 
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
     public void setAmount(String amount) {
         this.amount = amount;
     }
@@ -118,6 +132,8 @@ public class Transaction {
         sb.append(trace_number + " - ");
         sb.append("result_message : ");
         sb.append(result_message + " - ");
+        sb.append("createTime : ");
+        sb.append(createTime + " - ");
 
 
         return sb.toString();

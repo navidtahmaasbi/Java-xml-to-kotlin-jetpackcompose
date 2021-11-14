@@ -5,14 +5,13 @@ import static android.content.Context.MODE_PRIVATE;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import androidx.annotation.NonNull;
-
 import com.azarpark.watchman.models.Transaction;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class SharedPreferencesRepository {
 
@@ -85,6 +84,57 @@ public class SharedPreferencesRepository {
         transactions.add(transaction);
 
         saveString(UNSYCNCED_RES_NUMS, gson.toJson(transactions));
+
+    }
+
+    public void updateTransactions(Transaction transaction) {
+
+        System.out.println("---------> updateTransactions called");
+
+        String arrayString = getString(UNSYCNCED_RES_NUMS, "[]");
+        Gson gson = new Gson();
+        ArrayList<Transaction> transactions = gson.fromJson(arrayString, new TypeToken<List<Transaction>>() {
+        }.getType());
+
+        for (Transaction t : transactions)
+            if (t.getOur_token().equals(transaction.getOur_token())) {
+                transactions.remove(t);
+                transactions.add(transaction);
+                break;
+            }
+
+        saveString(UNSYCNCED_RES_NUMS, gson.toJson(transactions));
+
+    }
+
+    public void checkTransactions() {
+
+        System.out.println("---------> checkTransactions called");
+
+        String arrayString = getString(UNSYCNCED_RES_NUMS, "[]");
+        Gson gson = new Gson();
+        ArrayList<Transaction> transactions = gson.fromJson(arrayString, new TypeToken<List<Transaction>>() {
+        }.getType());
+
+        for (Transaction t : transactions) {
+
+            if (t.getStatus() == 0 && timeDifferenceInSeconds(Long.parseLong(t.getCreateTime()), Long.parseLong(Assistant.getUnixTime())) > 10) {
+                t.setStatus(-1);
+                updateTransactions(t);
+            }
+        }
+
+
+        saveString(UNSYCNCED_RES_NUMS, gson.toJson(transactions));
+
+    }
+
+    public long timeDifferenceInSeconds(long d1, long d2) {
+
+
+        long diff = Math.abs(d2-d1);
+
+        return diff;
 
     }
 

@@ -426,6 +426,16 @@
 
             </LinearLayout>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/_20sdp"
+                android:fontFamily="@font/iran_sans_bold"
+                android:text="تاریخچه پارک"
+                android:layout_gravity="right"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_13sdp" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
