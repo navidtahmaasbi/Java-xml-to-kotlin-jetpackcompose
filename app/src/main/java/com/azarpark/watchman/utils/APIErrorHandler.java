@@ -34,16 +34,16 @@ public class APIErrorHandler {
 
         try {
 
-            Gson gson = new Gson();
-
-            try {
-//                JSONObject jObjError = new JSONObject();
-                System.out.println("----------> error : " + response.errorBody().string());
-//                Toast.makeText(getContext(), jObjError.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("----------> errorrrrr ");
-            }
+//            Gson gson = new Gson();
+//
+//            try {
+////                JSONObject jObjError = new JSONObject();
+//                System.out.println("----------> error : " + response.errorBody().string());
+////                Toast.makeText(getContext(), jObjError.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                System.out.println("----------> errorrrrr ");
+//            }
 
 
 

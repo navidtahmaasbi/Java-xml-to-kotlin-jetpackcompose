@@ -42,7 +42,7 @@ public class SamanPayment {
     Activity activity;
     Context context;
     public static int PAYMENT_REQUEST_CODE = 1003;
-    int QR_SCANNER_REQUEST_CODE = 1004;
+    public static int QR_SCANNER_REQUEST_CODE = 1004;
     public IProxy service;
     public MyServiceConnection connection;
     SamanPaymentCallBack samanPaymentCallBack;
@@ -116,15 +116,7 @@ public class SamanPayment {
     public void tashimPaymentRequest(String shaba, String resNum, int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
 
 
-        sh_r.saveString(SharedPreferencesRepository.PLATE_TYPE, plateType.toString());
-        sh_r.saveString(SharedPreferencesRepository.TAG1, tag1);
-        sh_r.saveString(SharedPreferencesRepository.TAG2, tag2);
-        sh_r.saveString(SharedPreferencesRepository.TAG3, tag3);
-        sh_r.saveString(SharedPreferencesRepository.TAG4, tag4);
-        sh_r.saveString(SharedPreferencesRepository.TAG4, tag4);
-        sh_r.saveString(SharedPreferencesRepository.AMOUNT, String.valueOf(amount));
-        sh_r.saveString(SharedPreferencesRepository.PLACE_ID, Integer.toString(placeID));
-        sh_r.saveString(SharedPreferencesRepository.OUR_TOKEN, resNum);
+
 
         String[] param = new String[1];
         param[0] = shaba;
@@ -153,11 +145,12 @@ public class SamanPayment {
 
     }
 
-    public void createTransaction(String shaba, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID) {
+    public void createTransaction(String shaba, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID, int transactionType) {
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(context);
         RetrofitAPIRepository repository = new RetrofitAPIRepository(context);
 //        loadingBar.show();
+
 
         repository.createTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
                 plateType,
@@ -166,6 +159,7 @@ public class SamanPayment {
                 tag3,
                 tag4,
                 amount,
+                transactionType,
                 new Callback<CreateTransactionResponse>() {
                     @Override
                     public void onResponse(Call<CreateTransactionResponse> call, Response<CreateTransactionResponse> response) {
@@ -173,6 +167,7 @@ public class SamanPayment {
 
 //                        loadingBar.dismiss();
                         if (response.isSuccessful()) {
+
 
                             long our_token = response.body().our_token;
 
@@ -192,18 +187,30 @@ public class SamanPayment {
 
                             sh_r.addToTransactions(transaction);
 
+                            Gson gson = new Gson();
+
+                            sh_r.saveString(SharedPreferencesRepository.PLATE_TYPE, plateType.toString());
+                            sh_r.saveString(SharedPreferencesRepository.TAG1, tag1);
+                            sh_r.saveString(SharedPreferencesRepository.TAG2, tag2);
+                            sh_r.saveString(SharedPreferencesRepository.TAG3, tag3);
+                            sh_r.saveString(SharedPreferencesRepository.TAG4, tag4);
+                            sh_r.saveString(SharedPreferencesRepository.TAG4, tag4);
+                            sh_r.saveString(SharedPreferencesRepository.AMOUNT, String.valueOf(amount));
+                            sh_r.saveString(SharedPreferencesRepository.PLACE_ID, Integer.toString(placeID));
+                            sh_r.saveString(SharedPreferencesRepository.OUR_TOKEN, Long.toString(our_token));
+
 //                            paymentRequest(Long.toString(our_token), amount, plateType, tag1, tag2, tag3, tag4, placeID);
                             tashimPaymentRequest("0:" + (amount * 10) + ":" + shaba, Long.toString(our_token), (amount * 10), plateType, tag1, tag2, tag3, tag4, placeID);
 
                         } else
-                            APIErrorHandler.orResponseErrorHandler(fragmentManager, activity, response, () -> createTransaction(shaba, plateType, tag1, tag2, tag3, tag4, amount, placeID));
+                            APIErrorHandler.orResponseErrorHandler(fragmentManager, activity, response, () -> createTransaction(shaba, plateType, tag1, tag2, tag3, tag4, amount, placeID,transactionType));
                     }
 
                     @Override
                     public void onFailure(Call<CreateTransactionResponse> call, Throwable t) {
 //                        loadingBar.dismiss();
                         t.printStackTrace();
-                        APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> createTransaction(shaba, plateType, tag1, tag2, tag3, tag4, amount, placeID));
+                        APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> createTransaction(shaba, plateType, tag1, tag2, tag3, tag4, amount, placeID,transactionType));
                     }
                 });
 
@@ -213,6 +220,7 @@ public class SamanPayment {
 
 
         if (resultCode == Activity.RESULT_OK && requestCode == PAYMENT_REQUEST_CODE) {
+
 
             int state = data.getIntExtra(STATE, -1);
 
@@ -242,7 +250,8 @@ public class SamanPayment {
 
             if (state == STATE_SUCCESSFUL) // successful
             {
-                Log.e("saman payment", "Purchase did successful....");
+//                Log.e("saman payment", "Purchase did successful....");
+
 
                 String tag1 = sh_r.getString(SharedPreferencesRepository.TAG1, "0");
                 String tag2 = sh_r.getString(SharedPreferencesRepository.TAG2, "0");
@@ -264,7 +273,7 @@ public class SamanPayment {
 
 
                 transaction = new Transaction(
-                        amount,
+                        sh_r.getString(SharedPreferencesRepository.AMOUNT),
                         resNum,
                         refNum,
                         Integer.parseInt(sh_r.getString(SharedPreferencesRepository.PLACE_ID)),
@@ -288,7 +297,6 @@ public class SamanPayment {
                 int placeID = Integer.parseInt(sh_r.getString(SharedPreferencesRepository.PLACE_ID, "0"));
                 String tag4 = sh_r.getString(SharedPreferencesRepository.TAG4, "0");
 
-                System.out.println("----------> hereeeee");
 
                 transaction = new Transaction(
                         amount,
@@ -306,21 +314,22 @@ public class SamanPayment {
 
                 Gson gson = new Gson();
 
-                System.out.println("----------> transaction : " +gson.toJson(transaction));
 
-                if (!result.isEmpty())
-                    Toast.makeText(context, result, Toast.LENGTH_LONG).show();
+//                if (!result.isEmpty())
+//                    Toast.makeText(context, result, Toast.LENGTH_LONG).show();
 
                 Log.e("saman payment", "Purchase did failed....");
-                messageDialog = new MessageDialog("خطا ی" + state, "خطایی رخ داده است", "خروج", () -> {
-                    if (messageDialog != null)
-                        messageDialog.dismiss();
-                });
-
-                messageDialog.show(fragmentManager, MessageDialog.TAG);
+//                messageDialog = new MessageDialog("خطا ی" + state, "خطایی رخ داده است", "خروج", () -> {
+//                    if (messageDialog != null)
+//                        messageDialog.dismiss();
+//                });
+//
+//                messageDialog.show(fragmentManager, MessageDialog.TAG);
             }
 
             sh_r.updateTransactions(transaction);
+
+            Gson gson = new Gson();
 
             samanPaymentCallBack.verifyTransaction(
                     transaction
@@ -331,6 +340,10 @@ public class SamanPayment {
 
             String url = data.getStringExtra(SCANNER_RESULT);
             int placeId = Integer.parseInt(url.split("=")[url.split("=").length - 1]);
+
+            System.out.println("---------> placeID 1 : " + placeId);
+
+            samanPaymentCallBack.getScannerData(placeId);
 
             //add listener and call here
 //            Place place = adapter.getItemWithID(placeId);

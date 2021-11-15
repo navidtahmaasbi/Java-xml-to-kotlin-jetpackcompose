@@ -131,8 +131,6 @@ public class MainActivity extends AppCompatActivity {
 
         sh_r = new SharedPreferencesRepository(getApplicationContext());
 
-        verifyUnverifiedTransactions();
-
         assistant = new Assistant();
         parsianPayment = new ParsianPayment(getApplicationContext(), activity, new ParsianPayment.ParsianPaymentCallBack() {
             @Override
@@ -215,6 +213,8 @@ public class MainActivity extends AppCompatActivity {
         parsianPayment.handleResult(requestCode, resultCode, data);
 
         samanPayment.handleResult(requestCode, resultCode, data);
+
+        System.out.println("---------> onActivityResult");
 
 
     }
@@ -346,10 +346,9 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     MainActivity.this.runOnUiThread(() -> {
-                        System.out.println("---------> timer called");
                         getPlaces();
-                        verifyUnverifiedTransactions();
                         sh_r.checkTransactions();
+                        verifyUnverifiedTransactions();
                     });
                 }
             }, 0, refresh_time * 1000);
@@ -358,10 +357,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void verifyUnverifiedTransactions() {
 
-        System.out.println("---------> verify called");
-
         for (Transaction transaction : sh_r.getTransactions())
-            verifyUnverifiedTransaction(transaction);
+            if (transaction.getStatus() != 0)
+                verifyUnverifiedTransaction(transaction);
 
     }
 
@@ -430,11 +428,13 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent();
             intent.setComponent(new ComponentName("ir.sep.android.smartpos",
                     "ir.sep.android.smartpos.ScannerActivity"));
-            startActivityForResult(intent, 2);
+            startActivityForResult(intent, SamanPayment.QR_SCANNER_REQUEST_CODE);
         }
     }
 
     public void handleScannedPlaceID(int placeID) {
+
+        System.out.println("---------> placeID 2 : " + placeID);
 
         Place place = adapter.getItemWithID(placeID);
         if (place != null && (place.status.equals("full_by_user") || place.status.equals("full_by_watchman") || place.status.equals("full")))
@@ -476,9 +476,9 @@ public class MainActivity extends AppCompatActivity {
                 assistant.saveTags(place.tag1, place.tag2, place.tag3, place.tag4, getApplicationContext());
 
                 if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-                    parsianPayment.createTransaction(selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id);
+                    parsianPayment.createTransaction(selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id,Assistant.TRANSACTION_TYPE_PARK_PRICE);
                 else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-                    samanPayment.createTransaction(Assistant.NON_CHARGE_SHABA, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id);
+                    samanPayment.createTransaction(Assistant.NON_CHARGE_SHABA, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id,Assistant.TRANSACTION_TYPE_PARK_PRICE);
 
             }
 
@@ -505,9 +505,9 @@ public class MainActivity extends AppCompatActivity {
 
 
                     if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-                        parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1);
+                        parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1,Assistant.TRANSACTION_TYPE_CHAREG);
                     else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-                        samanPayment.createTransaction(Assistant.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1);
+                        samanPayment.createTransaction(Assistant.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1,Assistant.TRANSACTION_TYPE_CHAREG);
 
                     plateChargeDialog.dismiss();
 
@@ -568,7 +568,6 @@ public class MainActivity extends AppCompatActivity {
 //
 //            Gson gson = new Gson();
 //
-//            System.out.println("---------> placeee : " + gson.toJson(place));
 //
 //            if (assistant.getPlateType(place) == PlateType.simple) {
 //
@@ -648,7 +647,6 @@ public class MainActivity extends AppCompatActivity {
 
             Gson gson = new Gson();
 
-            System.out.println("---------> placeee : " + gson.toJson(place));
 
             if (assistant.getPlateType(place) == PlateType.simple) {
 
@@ -761,10 +759,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void getPlaces() {
 
-        System.out.println("-----------> getPlaces called");
-
-//        Log.e("getPlaces", "sending ... ");
-
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
         LoadingBar loadingBar = new LoadingBar(MainActivity.this);
@@ -775,7 +769,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<PlacesResponse> call, Response<PlacesResponse> response) {
 
-                System.out.println("-----------> getPlaces response : " + response.raw().toString());
 
                 binding.refreshLayout.setRefreshing(false);
 
@@ -837,7 +830,6 @@ public class MainActivity extends AppCompatActivity {
                         binding.exitRequestCount.setText(Integer.toString(exitRequestCount));
 
                     }
-                    setTimer();
 
                 } else
                     APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> getPlaces());
@@ -989,14 +981,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void verifyTransaction(Transaction transaction) {
 
-        System.out.println("----------> verifyTransaction");
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
 
         loadingBar.show();
-
-        transaction.devideAmountByTen();
 
         repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
                 transaction, new Callback<VerifyTransactionResponse>() {
@@ -1046,16 +1035,15 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
 
-        transaction.devideAmountByTen();
-
         repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
                 transaction, new Callback<VerifyTransactionResponse>() {
                     @Override
                     public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
 
-                        if (response.isSuccessful()) {
+                        System.out.println("----------> ressss : " + response.raw().toString());
+
+                        if (response.isSuccessful() && response.body().getSuccess() == 1)
                             sh_r.removeFromTransactions(transaction);
-                        }
                     }
 
                     @Override

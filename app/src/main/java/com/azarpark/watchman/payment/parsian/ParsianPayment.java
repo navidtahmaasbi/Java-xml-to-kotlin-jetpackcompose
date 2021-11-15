@@ -101,7 +101,7 @@ public class ParsianPayment {
 
     }
 
-    public void createTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID) {
+    public void createTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID, int transactionType) {
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(context);
         RetrofitAPIRepository repository = new RetrofitAPIRepository(context);
@@ -121,6 +121,7 @@ public class ParsianPayment {
                 tag3,
                 tag4,
                 amount,
+                transactionType,
                 new Callback<CreateTransactionResponse>() {
                     @Override
                     public void onResponse(Call<CreateTransactionResponse> call, Response<CreateTransactionResponse> response) {
@@ -135,14 +136,14 @@ public class ParsianPayment {
                             paymentRequest(amount, our_token, activity, plateType, tag1, finalTag, finalTag1, finalTag2, placeID);
 
                         } else
-                            APIErrorHandler.orResponseErrorHandler(fragmentManager, activity, response, () -> createTransaction(plateType, tag1, finalTag, finalTag1, finalTag2, amount, placeID));
+                            APIErrorHandler.orResponseErrorHandler(fragmentManager, activity, response, () -> createTransaction(plateType, tag1, finalTag, finalTag1, finalTag2, amount, placeID,transactionType));
                     }
 
                     @Override
                     public void onFailure(Call<CreateTransactionResponse> call, Throwable t) {
                         loadingBar.dismiss();
                         t.printStackTrace();
-                        APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> createTransaction(plateType, tag1, finalTag, finalTag1, finalTag2, amount, placeID));
+                        APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> createTransaction(plateType, tag1, finalTag, finalTag1, finalTag2, amount, placeID,transactionType));
                     }
                 });
 
@@ -438,10 +439,8 @@ public class ParsianPayment {
 
                 PrinterManager printer = new PrinterManager();
                 int setupResult = printer.setupPage(-1, -1);
-                System.out.println("---------> print setup result : " + setupResult);
                 printer.drawBitmap(getViewBitmap(printTemplateBinding.getRoot()), 0, 0);
                 int printResult = printer.printPage(0);
-                System.out.println("---------> print result : " + printResult);
 
 
             });

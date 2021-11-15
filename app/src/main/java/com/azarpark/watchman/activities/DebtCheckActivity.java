@@ -446,9 +446,9 @@ public class DebtCheckActivity extends AppCompatActivity {
         long res_num = Assistant.generateResNum();
 
         if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1);
+            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1,Assistant.TRANSACTION_TYPE_DEBT);
         else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-            samanPayment.createTransaction(Assistant.NON_CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1);
+            samanPayment.createTransaction(Assistant.NON_CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1,Assistant.TRANSACTION_TYPE_DEBT);
 
     }
 
@@ -460,7 +460,6 @@ public class DebtCheckActivity extends AppCompatActivity {
         RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
         loadingBar.show();
 
-        transaction.devideAmountByTen();
 
         repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
                 transaction, new Callback<VerifyTransactionResponse>() {

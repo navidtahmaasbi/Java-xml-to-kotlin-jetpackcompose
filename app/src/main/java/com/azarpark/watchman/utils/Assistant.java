@@ -35,6 +35,7 @@ import saman.zamani.persiandate.PersianDateFormat;
 public class Assistant {
 
     public static int SAMAN = 1, PASRIAN = 2, SELECTED_PAYMENT = 1;
+    public static int TRANSACTION_TYPE_CHAREG = 1, TRANSACTION_TYPE_DEBT = 2, TRANSACTION_TYPE_PARK_PRICE = 3;
     public static int MIN_PRICE_FOR_PAYMENT = 100;
     public static String NON_CHARGE_SHABA = "IR540550100470106230710001", CHARGE_SHABA = "IR270550100470106230710002";
 
@@ -298,9 +299,6 @@ public class Assistant {
         //milliseconds
         long different = endDate.getTime() - startDate.getTime();
 
-        System.out.println("startDate : " + startDate);
-        System.out.println("endDate : " + endDate);
-        System.out.println("different : " + different);
 
         long secondsInMilli = 1000;
         long minutesInMilli = secondsInMilli * 60;

@@ -159,7 +159,6 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<SplashResponse> call, Response<SplashResponse> response) {
 
-                System.out.println("----------> splash : " + response.raw().toString());
 
                 binding.loadingBar.setVisibility(View.INVISIBLE);
                 binding.retry.setVisibility(View.VISIBLE);
@@ -178,8 +177,6 @@ public class SplashActivity extends AppCompatActivity {
                         PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
                         int version = pInfo.versionCode;
 
-                        System.out.println("---------> version : " +version);
-                        System.out.println("---------> last version : " +response.body().update.last_version);
 
                         if (response.body().update.last_version > version)
                             openUpdateDialog(response.body().update.update_link);

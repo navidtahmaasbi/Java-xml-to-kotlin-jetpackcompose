@@ -84,7 +84,6 @@ public class ParkInfoDialog extends DialogFragment {
         binding.placeNumber.setText(place.number + "");
         try {
 
-            System.out.println("----------> start time : " + place.start);
 
             Date now = Calendar.getInstance().getTime();
 

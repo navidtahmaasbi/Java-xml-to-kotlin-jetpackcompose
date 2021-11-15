@@ -89,19 +89,25 @@ public class SharedPreferencesRepository {
 
     public void updateTransactions(Transaction transaction) {
 
-        System.out.println("---------> updateTransactions called");
+        System.out.println("----------> updateTransactions");
 
         String arrayString = getString(UNSYCNCED_RES_NUMS, "[]");
         Gson gson = new Gson();
         ArrayList<Transaction> transactions = gson.fromJson(arrayString, new TypeToken<List<Transaction>>() {
         }.getType());
 
+        System.out.println("----------> transactions 1 : " + gson.toJson(getTransactions()));
+
         for (Transaction t : transactions)
             if (t.getOur_token().equals(transaction.getOur_token())) {
                 transactions.remove(t);
+                System.out.println("----------> transactions 2 : " + gson.toJson(getTransactions()));
                 transactions.add(transaction);
+                System.out.println("----------> transactions 3 : " + gson.toJson(getTransactions()));
                 break;
             }
+
+        System.out.println("----------> transactions 4 : " + gson.toJson(getTransactions()));
 
         saveString(UNSYCNCED_RES_NUMS, gson.toJson(transactions));
 
@@ -109,23 +115,27 @@ public class SharedPreferencesRepository {
 
     public void checkTransactions() {
 
-        System.out.println("---------> checkTransactions called");
+        System.out.println("----------> checkTransactions");
 
         String arrayString = getString(UNSYCNCED_RES_NUMS, "[]");
         Gson gson = new Gson();
         ArrayList<Transaction> transactions = gson.fromJson(arrayString, new TypeToken<List<Transaction>>() {
         }.getType());
 
-        for (Transaction t : transactions) {
+        System.out.println("----------> transactions 0 : " + gson.toJson(getTransactions()));
 
+        for (Transaction t : transactions) {
+            System.out.println("----------> time : " + timeDifferenceInSeconds(Long.parseLong(t.getCreateTime()), Long.parseLong(Assistant.getUnixTime())));
             if (t.getStatus() == 0 && timeDifferenceInSeconds(Long.parseLong(t.getCreateTime()), Long.parseLong(Assistant.getUnixTime())) > 10) {
+                System.out.println("----------> if");
                 t.setStatus(-1);
                 updateTransactions(t);
             }
         }
 
-
         saveString(UNSYCNCED_RES_NUMS, gson.toJson(transactions));
+
+        System.out.println("----------> transactions 00: " + gson.toJson(getTransactions()));
 
     }
 

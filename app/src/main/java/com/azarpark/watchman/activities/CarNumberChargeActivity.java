@@ -317,23 +317,21 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
         ArrayList<Integer> items = new ArrayList<>();
 
-        items.add(100);
         items.add(10000);
         items.add(20000);
         items.add(30000);
         items.add(50000);
         items.add(70000);
         items.add(100000);
-        items.add(1000000);
 
         adapter.setItems(items);
+
 
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        System.out.println("---------> onActivityResult ");
 
         parsianPayment.handleResult(requestCode, resultCode, data);
 
@@ -480,29 +478,31 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
 
         if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1);
+            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1,Assistant.TRANSACTION_TYPE_CHAREG);
         else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-            samanPayment.createTransaction(Assistant.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1);
+            samanPayment.createTransaction(Assistant.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1,Assistant.TRANSACTION_TYPE_CHAREG);
     }
 
     private void verifyTransaction(Transaction transaction) {
 
-        Log.d("verifyTransaction", "started ...");
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-        loadingBar.show();
+//        loadingBar.show();
 
-        transaction.devideAmountByTen();
         repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
                 transaction, new Callback<VerifyTransactionResponse>() {
                     @Override
                     public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
 
-                        loadingBar.dismiss();
-                        if (response.isSuccessful()) {
+                        System.out.println("----------> verifyyyy : " + response.raw().toString());
+
+//                        loadingBar.dismiss();
+                        if (response.isSuccessful() && transaction.getStatus() != 0) {
 
                             sh_r.removeFromTransactions(transaction);
+
+                            Gson gson = new Gson();
 
                             if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN) {
 
@@ -522,7 +522,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
-                        loadingBar.dismiss();
+//                        loadingBar.dismiss();
                         t.printStackTrace();
                         APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> verifyTransaction(transaction));
                     }
