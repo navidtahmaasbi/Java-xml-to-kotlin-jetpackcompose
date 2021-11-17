@@ -20,6 +20,9 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -127,7 +130,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-//        setupUIForKeyboardHideOnOutsideTouch(binding.getRoot());
 
         sh_r = new SharedPreferencesRepository(getApplicationContext());
 
@@ -202,7 +204,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        Log.e("getPlaces", "onResume");
         getPlaces();
         setTimer();
     }
@@ -214,7 +215,6 @@ public class MainActivity extends AppCompatActivity {
 
         samanPayment.handleResult(requestCode, resultCode, data);
 
-        System.out.println("---------> onActivityResult");
 
 
     }
@@ -434,7 +434,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void handleScannedPlaceID(int placeID) {
 
-        System.out.println("---------> placeID 2 : " + placeID);
 
         Place place = adapter.getItemWithID(placeID);
         if (place != null && (place.status.equals("full_by_user") || place.status.equals("full_by_watchman") || place.status.equals("full")))
@@ -813,14 +812,28 @@ public class MainActivity extends AppCompatActivity {
                             watchManName.setText(response.body().watchman.name);
 
                         exitRequestCount = 0;
-
                         ArrayList<Place> myPlaces = new ArrayList<>();
+                        ArrayList<Integer> exitRequestPlaceIDs = new ArrayList<>();
 
                         myPlaces.addAll(response.body().watchman.places);
                         for (Place place : response.body().watchman.places)
                             if (place.exit_request != null) {
                                 exitRequestCount++;
+                                exitRequestPlaceIDs.add(place.id);
                             }
+
+                        if (adapter.listHaveNewExitRequest(exitRequestPlaceIDs)){
+
+                            try {
+                                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                                r.play();
+                            } catch (Exception e) {
+                                System.out.println("----------> song error");
+                                e.printStackTrace();
+                            }
+
+                        }
 
 
                         adapter.setItems(myPlaces);
@@ -962,6 +975,12 @@ public class MainActivity extends AppCompatActivity {
                         loadingBar.dismiss();
                         if (response.isSuccessful()) {
 
+                            if (response.body().getSuccess() != 1){
+
+                                Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_LONG).show();
+                                return;
+                            }
+
                             getPlaces();
                             if (parkInfoDialog != null)
                                 parkInfoDialog.dismiss();
@@ -1040,7 +1059,6 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
 
-                        System.out.println("----------> ressss : " + response.raw().toString());
 
                         if (response.isSuccessful() && response.body().getSuccess() == 1)
                             sh_r.removeFromTransactions(transaction);
@@ -1067,6 +1085,12 @@ public class MainActivity extends AppCompatActivity {
 
                 loadingBar.dismiss();
                 if (response.isSuccessful()) {
+
+                    if (response.body().getSuccess() != 1){
+
+                        Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_LONG).show();
+                        return;
+                    }
 
                     assistant.eventByMobile(sh_r.getString(SharedPreferencesRepository.USERNAME, "not logged-in"), "logout");
 
@@ -1118,7 +1142,10 @@ public class MainActivity extends AppCompatActivity {
                                 else
                                     printMiniFactor(tag1, tag2, "0", "0", response.body().balance);
 
-                            }
+                            }else
+                                Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_LONG).show();
+
+
 
 
                         }

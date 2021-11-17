@@ -267,6 +267,11 @@ public class ExitRequestActivity extends AppCompatActivity {
                         loadingBar.dismiss();
                         if (response.isSuccessful()) {
 
+                            if (response.body().getSuccess() != 1){
+
+                                Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_LONG).show();
+                                return;
+                            }
 
                             messageDialog = new MessageDialog("درخواست خروج", response.body().getDescription(), "تایید", () -> {
                                 messageDialog.dismiss();

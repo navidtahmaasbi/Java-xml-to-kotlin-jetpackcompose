@@ -338,7 +338,8 @@ public class ParkInfoDialog extends DialogFragment {
 
                             }
 
-                        } else
+                        }
+                        else
                             Toast.makeText(getContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
 
                     } else APIErrorHandler.orResponseErrorHandler(getParentFragmentManager(),getActivity(), response, () -> getParkData(place));

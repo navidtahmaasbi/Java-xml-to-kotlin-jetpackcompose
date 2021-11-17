@@ -116,8 +116,6 @@ public class SamanPayment {
     public void tashimPaymentRequest(String shaba, String resNum, int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
 
 
-
-
         String[] param = new String[1];
         param[0] = shaba;
 
@@ -139,7 +137,6 @@ public class SamanPayment {
 
 
         intent.setComponent(new ComponentName("ir.sep.android.smartpos", "ir.sep.android.smartpos.ThirdPartyActivity"));
-
 
         activity.startActivityForResult(intent, PAYMENT_REQUEST_CODE);
 
@@ -193,7 +190,6 @@ public class SamanPayment {
                             sh_r.saveString(SharedPreferencesRepository.TAG1, tag1);
                             sh_r.saveString(SharedPreferencesRepository.TAG2, tag2);
                             sh_r.saveString(SharedPreferencesRepository.TAG3, tag3);
-                            sh_r.saveString(SharedPreferencesRepository.TAG4, tag4);
                             sh_r.saveString(SharedPreferencesRepository.TAG4, tag4);
                             sh_r.saveString(SharedPreferencesRepository.AMOUNT, String.valueOf(amount));
                             sh_r.saveString(SharedPreferencesRepository.PLACE_ID, Integer.toString(placeID));
@@ -297,7 +293,6 @@ public class SamanPayment {
                 int placeID = Integer.parseInt(sh_r.getString(SharedPreferencesRepository.PLACE_ID, "0"));
                 String tag4 = sh_r.getString(SharedPreferencesRepository.TAG4, "0");
 
-
                 transaction = new Transaction(
                         amount,
                         resNum,
@@ -341,7 +336,6 @@ public class SamanPayment {
             String url = data.getStringExtra(SCANNER_RESULT);
             int placeId = Integer.parseInt(url.split("=")[url.split("=").length - 1]);
 
-            System.out.println("---------> placeID 1 : " + placeId);
 
             samanPaymentCallBack.getScannerData(placeId);
 

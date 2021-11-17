@@ -12,7 +12,7 @@ import retrofit2.http.Query;
 
 public interface CreateTransaction {
 
-    @GET("/api/watchman/create_transaction/{plate_type}/{tag1}/{tag2}/{tag3}/{tag4}/{amount}?flag={transaction_type}")
+    @GET("/api/watchman/create_transaction/{plate_type}/{tag1}/{tag2}/{tag3}/{tag4}/{amount}")
     Call<CreateTransactionResponse> create(@Header("Authorization") String authToken,
                                            @Path("plate_type") String plateType,
                                            @Path("tag1") String tag1,
@@ -20,7 +20,7 @@ public interface CreateTransaction {
                                            @Path("tag3") String tag3,
                                            @Path("tag4") String tag4,
                                            @Path("amount") int amount,
-                                           @Query("transaction_type") int transactionType
+                                           @Query("flag") int transactionType
     );
 
 }

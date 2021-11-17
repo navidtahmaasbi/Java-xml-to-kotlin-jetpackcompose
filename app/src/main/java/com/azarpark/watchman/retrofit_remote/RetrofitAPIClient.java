@@ -2,6 +2,7 @@ package com.azarpark.watchman.retrofit_remote;
 
 import android.content.Context;
 
+import com.azarpark.watchman.BuildConfig;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
 
@@ -13,6 +14,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -103,6 +105,12 @@ public class RetrofitAPIClient {
             });
 
             builder.retryOnConnectionFailure(false);
+
+            if (BuildConfig.DEBUG) {
+                HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+                interceptor.setLevel(HttpLoggingInterceptor.Level.BODY) ;
+                builder.addInterceptor(interceptor);
+            }
 
             OkHttpClient okHttpClient = builder.build();
             return okHttpClient;

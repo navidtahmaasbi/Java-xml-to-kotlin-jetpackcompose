@@ -36,7 +36,7 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     Context context;
     Assistant assistant;
 
-    public ParkListAdapter(Context context,OnItemClicked onItemClicked) {
+    public ParkListAdapter(Context context, OnItemClicked onItemClicked) {
         items = new ArrayList<>();
         filteredItems = new ArrayList<>();
         this.onItemClicked = onItemClicked;
@@ -207,11 +207,35 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public Place getItemWithID(int placeId) {
 
-        for (Place place:items)
+        for (Place place : items)
             if (place.id == placeId)
                 return place;
 
         return null;
+    }
+
+    public boolean listHaveNewExitRequest(ArrayList<Integer> exitRequestPlaceIDs) {
+
+        ArrayList<Integer> arrayList = getExitRequestsIDs();
+        if (arrayList.size() < exitRequestPlaceIDs.size())
+            return true;
+        else if (arrayList.size() == exitRequestPlaceIDs.size())
+            return !(exitRequestPlaceIDs.containsAll(arrayList) && arrayList.containsAll(exitRequestPlaceIDs));
+        else
+            return !(exitRequestPlaceIDs.containsAll(exitRequestPlaceIDs));
+
+    }
+
+    private ArrayList<Integer> getExitRequestsIDs() {
+
+        ArrayList<Integer> exitRequestPlaceIDs = new ArrayList<>();
+
+        for (Place place : items)
+            if (place.exit_request != null)
+                exitRequestPlaceIDs.add(place.id);
+
+        return exitRequestPlaceIDs;
+
     }
 
     public static class FullParkModelViewHolder extends RecyclerView.ViewHolder {

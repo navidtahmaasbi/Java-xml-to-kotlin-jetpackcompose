@@ -82,6 +82,8 @@ public class LoginActivity extends AppCompatActivity {
                 loadingBar.dismiss();
                 if (response.isSuccessful()) {
 
+
+
                     SharedPreferencesRepository sh_p = new SharedPreferencesRepository(getApplicationContext());
 
                     sh_p.saveString(SharedPreferencesRepository.ACCESS_TOKEN, response.body().access_token);

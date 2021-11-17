@@ -130,13 +130,23 @@ public class SplashActivity extends AppCompatActivity {
 
 
                 binding.loadingBar.setVisibility(View.INVISIBLE);
-                binding.retry.setVisibility(View.VISIBLE);
+
                 if (response.isSuccessful()) {
+
+                    if (!response.body().success.equals("1")){
+
+                        Toast.makeText(getApplicationContext(), response.body().description, Toast.LENGTH_LONG).show();
+                        return;
+                    }
 
                     openCitiesDialog(response.body().items);
 
-                } else
+                } else{
+
+                    binding.retry.setVisibility(View.VISIBLE);
+
                     APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> getCities());
+                }
             }
 
             @Override
@@ -161,7 +171,6 @@ public class SplashActivity extends AppCompatActivity {
 
 
                 binding.loadingBar.setVisibility(View.INVISIBLE);
-                binding.retry.setVisibility(View.VISIBLE);
                 if (response.isSuccessful()) {
 
                     sh_r.saveString(SharedPreferencesRepository.qr_url, response.body().qr_url);
@@ -188,11 +197,15 @@ public class SplashActivity extends AppCompatActivity {
 
                     } catch (PackageManager.NameNotFoundException e) {
                         e.printStackTrace();
+                        binding.retry.setVisibility(View.VISIBLE);
+
                     }
 
 
-                } else
+                } else{
+                    binding.retry.setVisibility(View.VISIBLE);
                     APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> getCities());
+                }
             }
 
             @Override

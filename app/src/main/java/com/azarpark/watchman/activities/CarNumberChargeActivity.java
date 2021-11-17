@@ -127,8 +127,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
         binding.submit.setOnClickListener(view -> {
 
-//            String s = binding.amount.getText().toString().replace(",", "");
-//            int price = Integer.parseInt(s);
+            System.out.println("----------> binding.submit");
 
 
             if (selectedTab == PlateType.simple && !assistant.simplePlateIsValid(
@@ -138,9 +137,6 @@ public class CarNumberChargeActivity extends AppCompatActivity {
                     binding.plateSimpleTag4.getText().toString()
             ))
                 Toast.makeText(getApplicationContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
-//            else if (selectedTab == PlateType.simple &&
-//                    !assistant.isPersianAlphabet(binding.plateSimpleTag2.getText().toString()))
-//                Toast.makeText(getApplicationContext(), "حرف وسط پلاک باید فارسی باشد", Toast.LENGTH_SHORT).show();
             else if (selectedTab == PlateType.old_aras &&
                     binding.plateOldAras.getText().toString().length() != 5)
                 Toast.makeText(getApplicationContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
@@ -474,6 +470,8 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
     private void charge(String amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4) {
 
+        System.out.println("----------> charge");
+
         amount = amount.replace(",", "");
 
 
@@ -495,7 +493,6 @@ public class CarNumberChargeActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
 
-                        System.out.println("----------> verifyyyy : " + response.raw().toString());
 
 //                        loadingBar.dismiss();
                         if (response.isSuccessful() && transaction.getStatus() != 0) {
@@ -544,6 +541,12 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
                         loadingBar.dismiss();
                         if (response.isSuccessful()) {
+
+                            if (response.body().success != 1){
+
+                                Toast.makeText(getApplicationContext(), response.body().msg, Toast.LENGTH_LONG).show();
+                                return;
+                            }
 
                             if (response.body().getSuccess() == 1) {
 

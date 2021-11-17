@@ -76,16 +76,6 @@ public class ParsianPayment {
 
         amount *= 10;
 
-        sh_p.saveString(SharedPreferencesRepository.PLATE_TYPE, plateType.toString());
-        sh_p.saveString(SharedPreferencesRepository.TAG1, tag1);
-        sh_p.saveString(SharedPreferencesRepository.TAG2, tag2);
-        sh_p.saveString(SharedPreferencesRepository.TAG3, tag3);
-        sh_p.saveString(SharedPreferencesRepository.TAG4, tag4);
-        sh_p.saveString(SharedPreferencesRepository.TAG4, tag4);
-        sh_p.saveString(SharedPreferencesRepository.AMOUNT, String.valueOf(amount));
-        sh_p.saveString(SharedPreferencesRepository.PLACE_ID, Integer.toString(placeID));
-        sh_p.saveString(SharedPreferencesRepository.OUR_TOKEN, Long.toString(res_num));
-
 
         Intent intent = new Intent("ir.totan.pos.view.cart.TXN");
         intent.putExtra("type", 3);
@@ -110,10 +100,10 @@ public class ParsianPayment {
         if (tag2 == null) tag2 = "null";
         if (tag3 == null) tag3 = "null";
         if (tag4 == null) tag4 = "null";
-
-        String finalTag = tag2;
-        String finalTag1 = tag3;
-        String finalTag2 = tag4;
+//
+        String finalTag2 = tag2;
+        String finalTag3 = tag3;
+        String finalTag4 = tag4;
         repository.createTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
                 plateType,
                 tag1,
@@ -132,18 +122,42 @@ public class ParsianPayment {
 
                             long our_token = response.body().our_token;
 
+                            sh_p.saveString(SharedPreferencesRepository.PLATE_TYPE, plateType.toString());
+                            sh_p.saveString(SharedPreferencesRepository.TAG1, tag1);
+                            sh_p.saveString(SharedPreferencesRepository.TAG2, finalTag2);
+                            sh_p.saveString(SharedPreferencesRepository.TAG3, finalTag3);
+                            sh_p.saveString(SharedPreferencesRepository.TAG4, finalTag4);
+                            sh_p.saveString(SharedPreferencesRepository.AMOUNT, String.valueOf(amount));
+                            sh_p.saveString(SharedPreferencesRepository.PLACE_ID, Integer.toString(placeID));
+                            sh_p.saveString(SharedPreferencesRepository.OUR_TOKEN, Long.toString(our_token));
 
-                            paymentRequest(amount, our_token, activity, plateType, tag1, finalTag, finalTag1, finalTag2, placeID);
+                            Transaction transaction = new Transaction(
+                                    Integer.toString(amount),
+                                    Long.toString(our_token),
+                                    "0",
+                                    Integer.parseInt(sh_r.getString(SharedPreferencesRepository.PLACE_ID,"0")),
+                                    0,
+                                    PARSIAN,
+                                    "0",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    Assistant.getUnixTime());
+
+                            sh_r.addToTransactions(transaction);
+
+                            paymentRequest(amount, our_token, activity, plateType, tag1, finalTag2, finalTag3, finalTag4, placeID);
 
                         } else
-                            APIErrorHandler.orResponseErrorHandler(fragmentManager, activity, response, () -> createTransaction(plateType, tag1, finalTag, finalTag1, finalTag2, amount, placeID,transactionType));
+                            APIErrorHandler.orResponseErrorHandler(fragmentManager, activity, response, () -> createTransaction(plateType, tag1, finalTag2, finalTag3, finalTag4, amount, placeID,transactionType));
                     }
 
                     @Override
                     public void onFailure(Call<CreateTransactionResponse> call, Throwable t) {
                         loadingBar.dismiss();
                         t.printStackTrace();
-                        APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> createTransaction(plateType, tag1, finalTag, finalTag1, finalTag2, amount, placeID,transactionType));
+                        APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> createTransaction(plateType, tag1, finalTag2, finalTag3, finalTag4, amount, placeID,transactionType));
                     }
                 });
 
@@ -153,6 +167,8 @@ public class ParsianPayment {
 
         if (requestCode == PAYMENT_REQUEST_CODE) {
 
+            Transaction transaction;
+
             if (resultCode == Activity.RESULT_OK) {
 
                 Bundle b = data.getBundleExtra("response");
@@ -160,7 +176,7 @@ public class ParsianPayment {
 
                     Log.d("bundle data", getBundleString(b));
 
-                    int amount = Integer.parseInt(b.getString("amount", "0"));
+                    int amount = Integer.parseInt(sh_p.getString(SharedPreferencesRepository.AMOUNT,"0"));
                     String result = b.getString("result");
                     String pan = b.getString("pan");
                     String rrn = b.getString("rrn");
@@ -176,10 +192,10 @@ public class ParsianPayment {
                     if (tag3 == null) tag3 = "null";
                     if (tag4 == null) tag4 = "null";
 
-                    Transaction transaction = new Transaction(
+                    transaction = new Transaction(
                             Integer.toString(amount),
                             Long.toString(res_num),
-                            rrn,
+                            rrn.isEmpty()?"0":rrn,
                             placeID,
                             status,
                             PARSIAN,
@@ -190,44 +206,60 @@ public class ParsianPayment {
                             result,
                             Assistant.getUnixTime());
 
-                    sh_p.addToTransactions(transaction);
-
-                    if (errorMessage.isEmpty())
-                        parsianPaymentCallBack.verifyTransaction(transaction);
-                    else {
-
-                        messageDialog = new MessageDialog("خطا", errorMessage, "خروج", () -> {
-                            if (messageDialog != null)
-                                messageDialog.dismiss();
-                        });
-
-                        messageDialog.show(fragmentManager, MessageDialog.TAG);
-                    }
-
 
                 } else {
-                    messageDialog = new MessageDialog("خطا", "تراکنش ناموفق", "خروج", () -> {
-                        if (messageDialog != null)
-                            messageDialog.dismiss();
-                    });
 
-                    messageDialog.show(fragmentManager, MessageDialog.TAG);
+                    String amount = sh_p.getString(SharedPreferencesRepository.AMOUNT, "0");
+                    String resNum = sh_p.getString(SharedPreferencesRepository.OUR_TOKEN, "0");
+                    int placeID = Integer.parseInt(sh_p.getString(SharedPreferencesRepository.PLACE_ID, "0"));
+                    String tag4 = sh_p.getString(SharedPreferencesRepository.TAG4, "0");
+
+                    transaction = new Transaction(
+                            amount,
+                            resNum,
+                            "0",
+                            placeID,
+                            -1,
+                            PARSIAN,
+                            "-1",
+                            "****-****-****-****",
+                            "0",
+                            null,
+                            "not succeed",
+                            Assistant.getUnixTime());
 
                 }
 
 
-            } else if (resultCode == Activity.RESULT_CANCELED) {
 
-                messageDialog = new MessageDialog("تراکنش", "تراکنش لغو شد", "خروج", () -> {
-                    if (messageDialog != null)
-                        messageDialog.dismiss();
-                });
 
-                messageDialog.show(messageDialog.getParentFragmentManager(), MessageDialog.TAG);
+            } else {
 
-                Log.d("Parsian Payment", "result canceled");
-            } else
-                Log.d("Parsian Payment", "unknown result : " + resultCode);
+                String amount = sh_p.getString(SharedPreferencesRepository.AMOUNT, "0");
+                String resNum = sh_p.getString(SharedPreferencesRepository.OUR_TOKEN, "0");
+                int placeID = Integer.parseInt(sh_p.getString(SharedPreferencesRepository.PLACE_ID, "0"));
+
+                transaction = new Transaction(
+                        amount,
+                        resNum,
+                        "0",
+                        placeID,
+                        -1,
+                        PARSIAN,
+                        "-1",
+                        "****-****-****-****",
+                        "0",
+                        null,
+                        "not succeed",
+                        Assistant.getUnixTime());
+
+
+            }
+
+
+            sh_p.updateTransactions(transaction);
+
+            parsianPaymentCallBack.verifyTransaction(transaction);
 
 
         } else if (requestCode == QR_SCANER_REQUEST_CODE) {
