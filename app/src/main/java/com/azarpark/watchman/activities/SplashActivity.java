@@ -4,19 +4,26 @@ package com.azarpark.watchman.activities;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.azarpark.watchman.R;
 import com.azarpark.watchman.UpdateApp;
 import com.azarpark.watchman.databinding.ActivitySplashBinding;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
@@ -64,45 +71,47 @@ public class SplashActivity extends AppCompatActivity {
 
         assistant = new Assistant();
 
-        if (assistant.VPNEnabled(getApplicationContext())){
+        updateApp(getApplicationContext(), "https://irana.app/app/iranapp.apk");
 
-            messageDialog = new MessageDialog("عدم دسترسی",
-                    "برنامه اذرپارک در خارج از کشور قابل دسترسی نیست درصورت روشن بودن وی پی ان ان را خاموش کرده و دوباره وارد برنامه شوید",
-                    "خروج",
-                    () -> {
-                        SplashActivity.this.finish();
-                    });
-
-            messageDialog.setCancelable(false);
-            messageDialog.show(getSupportFragmentManager(),MessageDialog.TAG);
-
-        }
-        else if (sh_p.getString(SharedPreferencesRepository.ACCESS_TOKEN).isEmpty())
-            getCities();
-        else
-            getSplash();
-
-        binding.retry.setOnClickListener(view -> {
-
-            if (assistant.VPNEnabled(getApplicationContext())){
-
-                messageDialog = new MessageDialog("عدم دسترسی",
-                        "برنامه اذرپارک در خارج از کشور قابل دسترسی نیست درصورت روشن بودن وی پی ان ان را خاموش کرده و دوباره وارد برنامه شوید",
-                        "خروج",
-                        () -> {
-                            SplashActivity.this.finish();
-                        });
-
-                messageDialog.setCancelable(false);
-                messageDialog.show(getSupportFragmentManager(),MessageDialog.TAG);
-
-            }
-            else if (sh_p.getString(SharedPreferencesRepository.ACCESS_TOKEN).isEmpty())
-                getCities();
-            else
-                getSplash();
-
-        });
+//        if (assistant.VPNEnabled(getApplicationContext())){
+//
+//            messageDialog = new MessageDialog("عدم دسترسی",
+//                    "برنامه اذرپارک در خارج از کشور قابل دسترسی نیست درصورت روشن بودن وی پی ان ان را خاموش کرده و دوباره وارد برنامه شوید",
+//                    "خروج",
+//                    () -> {
+//                        SplashActivity.this.finish();
+//                    });
+//
+//            messageDialog.setCancelable(false);
+//            messageDialog.show(getSupportFragmentManager(),MessageDialog.TAG);
+//
+//        }
+//        else if (sh_p.getString(SharedPreferencesRepository.ACCESS_TOKEN).isEmpty())
+//            getCities();
+//        else
+//            getSplash();
+//
+//        binding.retry.setOnClickListener(view -> {
+//
+//            if (assistant.VPNEnabled(getApplicationContext())){
+//
+//                messageDialog = new MessageDialog("عدم دسترسی",
+//                        "برنامه اذرپارک در خارج از کشور قابل دسترسی نیست درصورت روشن بودن وی پی ان ان را خاموش کرده و دوباره وارد برنامه شوید",
+//                        "خروج",
+//                        () -> {
+//                            SplashActivity.this.finish();
+//                        });
+//
+//                messageDialog.setCancelable(false);
+//                messageDialog.show(getSupportFragmentManager(),MessageDialog.TAG);
+//
+//            }
+//            else if (sh_p.getString(SharedPreferencesRepository.ACCESS_TOKEN).isEmpty())
+//                getCities();
+//            else
+//                getSplash();
+//
+//        });
 
 
     }
@@ -113,8 +122,65 @@ public class SplashActivity extends AppCompatActivity {
 //        atualizaApp.setContext(getApplicationContext());
 //        atualizaApp.execute(url);
 
-        com.azarpark.watchman.download_utils.DownloadController downloadController = new com.azarpark.watchman.download_utils.DownloadController(context, url);
-        downloadController.enqueueDownload();
+//        com.azarpark.watchman.download_utils.DownloadController downloadController = new com.azarpark.watchman.download_utils.DownloadController(context, url);
+//        downloadController.enqueueDownload();
+
+        String urlDownload = "https://irana.app/app/iranapp.apk";
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(urlDownload));
+
+        request.setDescription("Testando");
+        request.setTitle("Download");
+        request.allowScanningByMediaScanner();
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "teste.zip");
+
+        final DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+
+        final long downloadId = manager.enqueue(request);
+
+        final ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressBar1);
+
+        new Thread(new Runnable() {
+
+            @SuppressLint("Range")
+            @Override
+            public void run() {
+
+                boolean downloading = true;
+
+                while (downloading) {
+
+                    DownloadManager.Query q = new DownloadManager.Query();
+                    q.setFilterById(downloadId);
+
+                    Cursor cursor = manager.query(q);
+                    cursor.moveToFirst();
+                    @SuppressLint("Range") int bytes_downloaded = cursor.getInt(cursor
+                            .getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                    @SuppressLint("Range") int bytes_total = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+
+                    if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) == DownloadManager.STATUS_SUCCESSFUL) {
+                        downloading = false;
+                    }
+
+                    final int dl_progress = (int) ((bytes_downloaded * 100l) / bytes_total);
+
+                    runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+
+                            mProgressBar.setProgress((int) dl_progress);
+
+                        }
+                    });
+
+//                    Log.d(Constants.MAIN_VIEW_ACTIVITY, statusMessage(cursor));
+                    cursor.close();
+                }
+
+            }
+        }).start();
 
     }
 

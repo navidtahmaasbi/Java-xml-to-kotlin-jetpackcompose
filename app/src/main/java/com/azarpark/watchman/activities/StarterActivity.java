@@ -59,7 +59,7 @@ public class StarterActivity extends AppCompatActivity {
 
             Random random = new Random();
             code = 1000 + random.nextInt(9000);
-            sendExitCode(code);
+//            sendExitCode(code);
 
 //            messageDialog = new GetValueDialog("خروج از برنامه", "برای خروج از برنامه کد ارسال شده را وارد نمایید", "خروج", (s) -> {
 //
@@ -122,30 +122,30 @@ public class StarterActivity extends AppCompatActivity {
 
     }
 
-    private void sendExitCode(int code) {
-
-        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-//        loadingBar.show();
-
-        repository.sendExitCode("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-                code, new Callback<SendExitCodeResponse>() {
-                    @Override
-                    public void onResponse(Call<SendExitCodeResponse> call, Response<SendExitCodeResponse> response) {
-
-//                        loadingBar.dismiss();
-//                        if (!response.isSuccessful())
-//                            APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), StarterActivity.this, response, () -> sendExitCode(code));
-                    }
-
-                    @Override
-                    public void onFailure(Call<SendExitCodeResponse> call, Throwable t) {
-//                        loadingBar.dismiss();
-//                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> sendExitCode(code));
-                    }
-                });
-
-    }
+//    private void sendExitCode(int code) {
+//
+//        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
+//        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
+////        loadingBar.show();
+//
+//        repository.sendExitCode("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
+//                code, new Callback<SendExitCodeResponse>() {
+//                    @Override
+//                    public void onResponse(Call<SendExitCodeResponse> call, Response<SendExitCodeResponse> response) {
+//
+////                        loadingBar.dismiss();
+////                        if (!response.isSuccessful())
+////                            APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), StarterActivity.this, response, () -> sendExitCode(code));
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<SendExitCodeResponse> call, Throwable t) {
+////                        loadingBar.dismiss();
+////                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> sendExitCode(code));
+//                    }
+//                });
+//
+//    }
 
 
     @Override

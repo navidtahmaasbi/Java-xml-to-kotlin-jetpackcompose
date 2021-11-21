@@ -52,6 +52,8 @@ public class ParkInfoDialog extends DialogFragment {
     int debt = 0, balance = 0;
     Assistant assistant;
 
+    public ParkInfoDialog(){}
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -346,7 +348,7 @@ public class ParkInfoDialog extends DialogFragment {
 
                 }catch (Exception e){
 
-                    APIErrorHandler.orResponseErrorHandler(getParentFragmentManager(),getActivity(), response, () -> getParkData(place));
+//                    APIErrorHandler.orResponseErrorHandler(getParentFragmentManager(),getActivity(), response, () -> getParkData(place));
 
                 }
 
