@@ -115,6 +115,7 @@ public class SamanPayment {
 
     public void tashimPaymentRequest(String shaba, String resNum, int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
 
+        System.out.println("----------> tashimPaymentRequest ");
 
         String[] param = new String[1];
         param[0] = shaba;
@@ -144,6 +145,8 @@ public class SamanPayment {
 
     public void createTransaction(String shaba, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID, int transactionType) {
 
+        System.out.println("----------> createTransaction");
+
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(context);
         RetrofitAPIRepository repository = new RetrofitAPIRepository(context);
 //        loadingBar.show();
@@ -161,6 +164,8 @@ public class SamanPayment {
                     @Override
                     public void onResponse(Call<CreateTransactionResponse> call, Response<CreateTransactionResponse> response) {
 
+
+                        System.out.println("----------> createTransaction response : " + response.raw().toString());
 
 //                        loadingBar.dismiss();
                         if (response.isSuccessful()) {
@@ -214,6 +219,7 @@ public class SamanPayment {
 
     public void handleResult(int requestCode, int resultCode, Intent data) {
 
+        System.out.println("----------> handleResult ");
 
         if (resultCode == Activity.RESULT_OK && requestCode == PAYMENT_REQUEST_CODE) {
 

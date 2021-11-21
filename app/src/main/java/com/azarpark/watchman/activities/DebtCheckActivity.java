@@ -412,13 +412,13 @@ public class DebtCheckActivity extends AppCompatActivity {
 
                                 binding.debtAmount.setText(NumberFormat.getNumberInstance(Locale.US).format(response.body().balance < 0 ? (response.body().balance * -1) : response.body().balance) + " تومان");
 
-                                binding.plateSimpleTag1.setText("");
-                                binding.plateSimpleTag2.setText("");
-                                binding.plateSimpleTag3.setText("");
-                                binding.plateSimpleTag4.setText("");
-                                binding.plateOldAras.setText("");
-                                binding.plateNewArasTag1.setText("");
-                                binding.plateNewArasTag2.setText("");
+//                                binding.plateSimpleTag1.setText("");
+//                                binding.plateSimpleTag2.setText("");
+//                                binding.plateSimpleTag3.setText("");
+//                                binding.plateSimpleTag4.setText("");
+//                                binding.plateOldAras.setText("");
+//                                binding.plateNewArasTag1.setText("");
+//                                binding.plateNewArasTag2.setText("");
 
                                 binding.debtArea.setVisibility(View.VISIBLE);
                                 adapter.addItems(response.body().items);
@@ -442,8 +442,6 @@ public class DebtCheckActivity extends AppCompatActivity {
     }
 
     public void paymentRequest(int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
-
-        long res_num = Assistant.generateResNum();
 
         if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
             parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1,Assistant.TRANSACTION_TYPE_DEBT);
