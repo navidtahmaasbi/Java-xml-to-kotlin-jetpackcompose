@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
+import android.os.Build;
 import android.service.autofill.RegexValidator;
 import android.util.Log;
 import android.view.View;
@@ -325,6 +326,22 @@ public class Assistant {
     public static String getUnixTime(){
 
        return Long.toString(System.currentTimeMillis() / 1000L);
+
+    }
+
+    public static String getSerialNumber(){
+
+        try{
+
+            return Build.SERIAL;
+
+        }catch (Exception e){
+
+            return "";
+
+        }
+
+
 
     }
 

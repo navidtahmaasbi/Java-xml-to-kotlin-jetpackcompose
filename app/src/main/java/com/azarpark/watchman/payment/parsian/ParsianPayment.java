@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.fragment.app.FragmentManager;
 
@@ -262,19 +263,24 @@ public class ParsianPayment {
             parsianPaymentCallBack.verifyTransaction(transaction);
 
 
-        } else if (requestCode == QR_SCANER_REQUEST_CODE) {
+        }
+        else if (requestCode == QR_SCANER_REQUEST_CODE) {
 
             if (data != null) {
 
-                String scannedData = data.getExtras().getString(QR_DATA);
+                try{
 
-                int placeId = Integer.parseInt(scannedData.split("=")[scannedData.split("=").length - 1]);
+                    String scannedData = data.getExtras().getString(QR_DATA);
+                    int placeId = Integer.parseInt(scannedData.split("=")[scannedData.split("=").length - 1]);
+                    parsianPaymentCallBack.getScannerData(placeId);
 
-                parsianPaymentCallBack.getScannerData(placeId);
+                } catch (Exception e) {
+                    Toast.makeText(context, "معتبر نمیباشد", Toast.LENGTH_LONG).show();
+                }
+
             }
 
-        } else
-            Log.d("Parsian Payment", "result is not for parsaian payment");
+        }
 
     }
 

@@ -47,7 +47,7 @@ public class SamanPayment {
     public MyServiceConnection connection;
     SamanPaymentCallBack samanPaymentCallBack;
     MessageDialog messageDialog;
-//    LoadingBar loadingBar;
+    //    LoadingBar loadingBar;
     FragmentManager fragmentManager;
 
     private String STATE = "State",
@@ -177,7 +177,7 @@ public class SamanPayment {
                                     Integer.toString(amount),
                                     Long.toString(our_token),
                                     "0",
-                                    Integer.parseInt(sh_r.getString(SharedPreferencesRepository.PLACE_ID,"0")),
+                                    Integer.parseInt(sh_r.getString(SharedPreferencesRepository.PLACE_ID, "0")),
                                     0,
                                     SAMAN,
                                     "0",
@@ -204,14 +204,14 @@ public class SamanPayment {
                             tashimPaymentRequest("0:" + (amount * 10) + ":" + shaba, Long.toString(our_token), (amount * 10), plateType, tag1, tag2, tag3, tag4, placeID);
 
                         } else
-                            APIErrorHandler.orResponseErrorHandler(fragmentManager, activity, response, () -> createTransaction(shaba, plateType, tag1, tag2, tag3, tag4, amount, placeID,transactionType));
+                            APIErrorHandler.orResponseErrorHandler(fragmentManager, activity, response, () -> createTransaction(shaba, plateType, tag1, tag2, tag3, tag4, amount, placeID, transactionType));
                     }
 
                     @Override
                     public void onFailure(Call<CreateTransactionResponse> call, Throwable t) {
 //                        loadingBar.dismiss();
                         t.printStackTrace();
-                        APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> createTransaction(shaba, plateType, tag1, tag2, tag3, tag4, amount, placeID,transactionType));
+                        APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> createTransaction(shaba, plateType, tag1, tag2, tag3, tag4, amount, placeID, transactionType));
                     }
                 });
 
@@ -225,6 +225,11 @@ public class SamanPayment {
 
 
             int state = data.getIntExtra(STATE, -1);
+
+            System.out.println("----------> state : " + state);
+
+            if (state != 0)
+                Toast.makeText(context, state + "", Toast.LENGTH_LONG).show();
 
 //            AdditionalData :
 //            ++State : 55
@@ -337,39 +342,19 @@ public class SamanPayment {
             );
 
 
-        } else if (resultCode == Activity.RESULT_OK && requestCode == QR_SCANNER_REQUEST_CODE) {
+        }
+        else if (resultCode == Activity.RESULT_OK && requestCode == QR_SCANNER_REQUEST_CODE) {
 
-            String url = data.getStringExtra(SCANNER_RESULT);
-            int placeId = Integer.parseInt(url.split("=")[url.split("=").length - 1]);
+            try {
 
+                String url = data.getStringExtra(SCANNER_RESULT);
+                int placeId = Integer.parseInt(url.split("=")[url.split("=").length - 1]);
+                samanPaymentCallBack.getScannerData(placeId);
 
-            samanPaymentCallBack.getScannerData(placeId);
+            } catch (Exception e) {
+                Toast.makeText(context, "معتبر نمیباشد", Toast.LENGTH_LONG).show();
+            }
 
-            //add listener and call here
-//            Place place = adapter.getItemWithID(placeId);
-//            if (place != null)
-//                openParkInfoDialog(place);
-//            else {
-//
-//                confirmDialog = new ConfirmDialog("درخواست خروج", " آیا برای درخواست خروج اطمینان دارید؟", "بله", "خیر", new ConfirmDialog.ConfirmButtonClicks() {
-//                    @Override
-//                    public void onConfirmClicked() {
-//
-//                        exitPark(placeId);
-//
-//                    }
-//
-//                    @Override
-//                    public void onCancelClicked() {
-//
-//                        confirmDialog.dismiss();
-//
-//                    }
-//                });
-//
-//                confirmDialog.show(getSupportFragmentManager(), ConfirmDialog.TAG);
-//
-//            }
 
         }
 
