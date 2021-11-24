@@ -1,24 +1,15 @@
 package com.azarpark.watchman.activities;
 
-import static android.content.ContentValues.TAG;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.RemoteException;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -28,30 +19,21 @@ import com.azarpark.watchman.R;
 import com.azarpark.watchman.adapters.ChargeItemListAdapter;
 import com.azarpark.watchman.databinding.ActivityCarNumberChargeBinding;
 import com.azarpark.watchman.databinding.SamanAfterPaymentPrintTemplateBinding;
-import com.azarpark.watchman.databinding.SamanPrintTemplateBinding;
-import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.enums.PlateType;
-import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.payment.parsian.ParsianPayment;
-import com.azarpark.watchman.payment.saman.MyServiceConnection;
 import com.azarpark.watchman.payment.saman.SamanPayment;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.responses.DebtHistoryResponse;
 import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse;
 import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.Assistant;
-import com.azarpark.watchman.utils.NumberTextWatcher;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.google.gson.Gson;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Locale;
-import java.util.UUID;
 
-import ir.sep.android.Service.IProxy;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -313,6 +295,8 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
         ArrayList<Integer> items = new ArrayList<>();
 
+        //todo release
+        items.add(100);
         items.add(10000);
         items.add(20000);
         items.add(30000);
@@ -514,7 +498,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
                             Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
                         } else
-                            APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> verifyTransaction(transaction));
+                            APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> verifyTransaction(transaction));
                     }
 
                     @Override
@@ -544,7 +528,8 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
                             if (response.body().success != 1){
 
-                                Toast.makeText(getApplicationContext(), response.body().msg, Toast.LENGTH_LONG).show();
+
+                                Toast.makeText(getApplicationContext(), response.body().description != null ? response.body().description : response.body().getMsg(), Toast.LENGTH_SHORT).show();
                                 return;
                             }
 

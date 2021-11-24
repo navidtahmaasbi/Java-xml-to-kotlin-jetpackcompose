@@ -8,6 +8,7 @@ public class DebtHistoryResponse {
 
     public int success;
     public String msg;
+    public String description;
     public int balance;
     public ArrayList<Park> items;
 

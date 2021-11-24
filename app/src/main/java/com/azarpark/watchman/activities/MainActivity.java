@@ -1,18 +1,10 @@
 package com.azarpark.watchman.activities;
 
-import static android.content.ContentValues.TAG;
-
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.LinearLayoutCompat;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -20,26 +12,16 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.RemoteException;
-import android.print.PrintManager;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -49,7 +31,6 @@ import android.widget.Toast;
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.adapters.ParkListAdapter;
 import com.azarpark.watchman.databinding.ActivityMainBinding;
-import com.azarpark.watchman.databinding.PrintTemplateBinding;
 import com.azarpark.watchman.databinding.SamanAfterPaymentPrintTemplateBinding;
 import com.azarpark.watchman.databinding.SamanPrintTemplateBinding;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
@@ -59,13 +40,10 @@ import com.azarpark.watchman.dialogs.ParkDialog;
 import com.azarpark.watchman.dialogs.ParkInfoDialog;
 import com.azarpark.watchman.dialogs.ParkResponseDialog;
 import com.azarpark.watchman.dialogs.PlateChargeDialog;
-import com.azarpark.watchman.download_utils.DownloadController;
 import com.azarpark.watchman.enums.PlaceStatus;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnGetInfoClicked;
-import com.azarpark.watchman.interfaces.OnSubmitClicked;
 import com.azarpark.watchman.models.Place;
-import com.azarpark.watchman.models.Street;
 import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.payment.parsian.ParsianPayment;
 import com.azarpark.watchman.payment.saman.SamanPayment;
@@ -83,14 +61,9 @@ import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.google.gson.Gson;
 
-import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.UUID;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -214,7 +187,6 @@ public class MainActivity extends AppCompatActivity {
         parsianPayment.handleResult(requestCode, resultCode, data);
 
         samanPayment.handleResult(requestCode, resultCode, data);
-
 
 
     }
@@ -470,14 +442,12 @@ public class MainActivity extends AppCompatActivity {
                 else if (place.tag3 == null || place.tag3.isEmpty())
                     selectedPlateType = PlateType.new_aras;
 
-                long res_num = Assistant.generateResNum();
-
                 assistant.saveTags(place.tag1, place.tag2, place.tag3, place.tag4, getApplicationContext());
 
                 if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-                    parsianPayment.createTransaction(selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id,Assistant.TRANSACTION_TYPE_PARK_PRICE);
+                    parsianPayment.createTransaction(selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id, Assistant.TRANSACTION_TYPE_PARK_PRICE);
                 else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-                    samanPayment.createTransaction(Assistant.NON_CHARGE_SHABA, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id,Assistant.TRANSACTION_TYPE_PARK_PRICE);
+                    samanPayment.createTransaction(Assistant.NON_CHARGE_SHABA, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id, Assistant.TRANSACTION_TYPE_PARK_PRICE);
 
             }
 
@@ -504,9 +474,9 @@ public class MainActivity extends AppCompatActivity {
 
 
                     if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-                        parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1,Assistant.TRANSACTION_TYPE_CHAREG);
+                        parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1, Assistant.TRANSACTION_TYPE_CHAREG);
                     else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-                        samanPayment.createTransaction(Assistant.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1,Assistant.TRANSACTION_TYPE_CHAREG);
+                        samanPayment.createTransaction(Assistant.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Assistant.TRANSACTION_TYPE_CHAREG);
 
                     plateChargeDialog.dismiss();
 
@@ -621,7 +591,7 @@ public class MainActivity extends AppCompatActivity {
             printTemplateBinding.startTime.setText(assistant.toJalali(startTime));
             printTemplateBinding.prices.setText(pricing);
             printTemplateBinding.supportPhone.setText(telephone);
-            printTemplateBinding.debt.setText((-1 * balance) + "تومان");
+            printTemplateBinding.debt.setText((balance < 0 ? -1 * balance : balance) + "تومان");
             String cityID = sh_r.getString(SharedPreferencesRepository.CITY_ID);
 
             String sb = "در صورت عدم حضور پارکیار برای خروج عدد " +
@@ -633,14 +603,21 @@ public class MainActivity extends AppCompatActivity {
                     "\n ." +
                     "\n .";
             printTemplateBinding.description.setText(sb);
-            if (balance > 0)
-                printTemplateBinding.description2.setText("شهروند گرامی؛از این که جز مشتریان خوش حساب ما هستید سپاسگزاریم");
-            else if (balance < 0)
-                printTemplateBinding.description2.setText("اخطار: شهروند گرامی؛بدهی پلاک شما بیش از حد مجاز میباشد در صورت عدم پرداخت بدهی مشمول جریمه پارک ممنوع خواهید شد");
-            else
-                printTemplateBinding.description2.setText("شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد");
+            if (balance > 0) {
 
-            printTemplateBinding.debtArea.setVisibility(balance < 0 ? View.VISIBLE : View.GONE);
+                printTemplateBinding.balanceTitle.setText("اعتبار پلاک");
+                printTemplateBinding.description2.setText("شهروند گرامی؛از این که جز مشتریان خوش حساب ما هستید سپاسگزاریم");
+            } else if (balance < 0) {
+
+                printTemplateBinding.balanceTitle.setText("بدهی پلاک");
+                printTemplateBinding.description2.setText("اخطار: شهروند گرامی؛بدهی پلاک شما بیش از حد مجاز میباشد در صورت عدم پرداخت بدهی مشمول جریمه پارک ممنوع خواهید شد");
+            } else {
+
+                printTemplateBinding.balanceTitle.setText("بدهی پلاک");
+                printTemplateBinding.description2.setText("شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد");
+            }
+
+//            printTemplateBinding.debtArea.setVisibility(balance < 0 ? View.VISIBLE : View.GONE);
 
             printTemplateBinding.qrcode.setImageBitmap(assistant.qrGenerator(qr_url + placeID));
 
@@ -775,16 +752,9 @@ public class MainActivity extends AppCompatActivity {
                 loadingBar.dismiss();
                 if (response.isSuccessful()) {
 
-                    if (response.body().success != 1 && !messageDialog.isAdded()) {
+                    if (response.body() != null && response.body().success != 1) {
 
-                        messageDialog = new MessageDialog("خطا", response.body().description, "تایید", () -> {
-
-                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(response.body().update.update_link));
-                            startActivity(browserIntent);
-
-                        });
-
-                        messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
+                        Toast.makeText(getApplicationContext(), response.body().description != null ? response.body().description : response.body().msg, Toast.LENGTH_SHORT).show();
 
                         return;
                     }
@@ -822,7 +792,7 @@ public class MainActivity extends AppCompatActivity {
                                 exitRequestPlaceIDs.add(place.id);
                             }
 
-                        if (adapter.listHaveNewExitRequest(exitRequestPlaceIDs)){
+                        if (adapter.listHaveNewExitRequest(exitRequestPlaceIDs)) {
 
                             try {
                                 Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -845,7 +815,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                 } else
-                    APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> getPlaces());
+                    APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> getPlaces());
 
             }
 
@@ -878,6 +848,13 @@ public class MainActivity extends AppCompatActivity {
                 loadingBar.dismiss();
                 if (response.isSuccessful()) {
 
+                    if (response.body() != null && response.body().getSuccess() != 1) {
+
+                        Toast.makeText(getApplicationContext(), response.body().getDescription() != null ? response.body().getDescription() : response.body().getMsg(), Toast.LENGTH_SHORT).show();
+
+                        return;
+                    }
+
                     if (response.body().getSuccess() == 1) {
 
                         parkResponseDialog = new ParkResponseDialog(response.body().getInfo().number, response.body().getInfo().price, response.body().getInfo().car_balance, () -> {
@@ -908,7 +885,7 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
 
                 } else
-                    APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> parkCar(parkBody, printFactor));
+                    APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> parkCar(parkBody, printFactor));
             }
 
             @Override
@@ -921,7 +898,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void exitPark(int placeID) {
-
 
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
@@ -943,11 +919,11 @@ public class MainActivity extends AppCompatActivity {
                         getPlaces();
 
                     }
-                    Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), response.body().getDescription() != null ? response.body().getDescription() : response.body().getMsg(), Toast.LENGTH_SHORT).show();
 
 
                 } else
-                    APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> exitPark(placeID));
+                    APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> exitPark(placeID));
             }
 
             @Override
@@ -975,9 +951,10 @@ public class MainActivity extends AppCompatActivity {
                         loadingBar.dismiss();
                         if (response.isSuccessful()) {
 
-                            if (response.body().getSuccess() != 1){
+                            if (response.body().getSuccess() != 1) {
 
-                                Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_LONG).show();
+
+                                Toast.makeText(getApplicationContext(), response.body().getDescription() != null ? response.body().getDescription() : response.body().getMsg(), Toast.LENGTH_SHORT).show();
                                 return;
                             }
 
@@ -986,7 +963,7 @@ public class MainActivity extends AppCompatActivity {
                                 parkInfoDialog.dismiss();
 
                         } else
-                            APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> deleteExitRequest(place_id));
+                            APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> deleteExitRequest(place_id));
                     }
 
                     @Override
@@ -1036,7 +1013,7 @@ public class MainActivity extends AppCompatActivity {
                             getPlaces();
 
                         } else
-                            APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> verifyTransaction(transaction));
+                            APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> verifyTransaction(transaction));
                     }
 
                     @Override
@@ -1086,9 +1063,10 @@ public class MainActivity extends AppCompatActivity {
                 loadingBar.dismiss();
                 if (response.isSuccessful()) {
 
-                    if (response.body().getSuccess() != 1){
+                    if (response.body().getSuccess() != 1) {
 
-                        Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_LONG).show();
+
+                        Toast.makeText(getApplicationContext(), response.body().getDescription() != null ? response.body().getDescription() : response.body().getMsg(), Toast.LENGTH_SHORT).show();
                         return;
                     }
 
@@ -1103,7 +1081,7 @@ public class MainActivity extends AppCompatActivity {
                     confirmDialog.dismiss();
 
                 } else
-                    APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> logout());
+                    APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> logout());
             }
 
             @Override
@@ -1130,6 +1108,13 @@ public class MainActivity extends AppCompatActivity {
                         loadingBar.dismiss();
                         if (response.isSuccessful()) {
 
+                            if (response.body().success != 1) {
+
+
+                                Toast.makeText(getApplicationContext(), response.body().description != null ? response.body().description : response.body().getMsg(), Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
                             if (response.body().getSuccess() == 1) {
 
                                 if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.simple)
@@ -1142,10 +1127,8 @@ public class MainActivity extends AppCompatActivity {
                                 else
                                     printMiniFactor(tag1, tag2, "0", "0", response.body().balance);
 
-                            }else
+                            } else
                                 Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_LONG).show();
-
-
 
 
                         }

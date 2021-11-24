@@ -69,6 +69,7 @@
             android:name=".activities.StarterActivity"
             android:exported="true">
 
+            <!--todo release-->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.HOME" />

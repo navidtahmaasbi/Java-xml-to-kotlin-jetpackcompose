@@ -21,7 +21,7 @@ public class APIErrorHandler {
     public static boolean onfailureDialogIsShowing = false;
     public static boolean onResponseErrorDialogIsShowing = false;
 
-    public static void orResponseErrorHandler(FragmentManager fragmentManager, Activity activity, Response response, OnResponseErrorAction onResponseErrorAction) {
+    public static void onResponseErrorHandler(FragmentManager fragmentManager, Activity activity, Response response, OnResponseErrorAction onResponseErrorAction) {
 
         if (response.code() > 400 && response.code() < 420) {
 

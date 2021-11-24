@@ -5,10 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 
 
-import com.azarpark.watchman.R;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.LoadingBar;
-import com.azarpark.watchman.retrofit_remote.RetrofitAPIClient;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.bodies.LoginBody;
 import com.azarpark.watchman.retrofit_remote.responses.LoginResponse;
@@ -23,19 +21,10 @@ import android.widget.Toast;
 
 import com.azarpark.watchman.databinding.ActivityLoginBinding;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
-import com.yandex.metrica.YandexMetrica;
-
-import org.xml.sax.ErrorHandler;
-
-import java.lang.reflect.Method;
-import java.net.HttpURLConnection;
-import java.util.HashMap;
-import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.http.HTTP;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -96,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
                     startActivity(new Intent(LoginActivity.this, SplashActivity.class));
 
                 } else
-                    APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(),activity, response, () -> login(username, password));
+                    APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(),activity, response, () -> login(username, password));
 
             }
 

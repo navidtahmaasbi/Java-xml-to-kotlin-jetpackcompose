@@ -28,9 +28,7 @@ import com.azarpark.watchman.retrofit_remote.responses.EstimateParkPriceResponse
 import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
-import com.yandex.metrica.impl.ob.Da;
 
-import java.net.HttpURLConnection;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -40,7 +38,6 @@ import java.util.Locale;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import saman.zamani.persiandate.PersianDate;
 
 public class ParkInfoDialog extends DialogFragment {
 
@@ -52,7 +49,8 @@ public class ParkInfoDialog extends DialogFragment {
     int debt = 0, balance = 0;
     Assistant assistant;
 
-    public ParkInfoDialog(){}
+    public ParkInfoDialog() {
+    }
 
     @Nullable
     @Override
@@ -97,8 +95,7 @@ public class ParkInfoDialog extends DialogFragment {
             binding.startTime.setText(startTime + " - " + assistant.getTimeDifference(startDate, now));
 
 
-
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -182,7 +179,7 @@ public class ParkInfoDialog extends DialogFragment {
             else if (place.tag3 == null || place.tag3.isEmpty())
                 selectedPlateType = PlateType.new_aras;
 
-            onGetInfoClicked.charge(selectedPlateType,place.tag1,place.tag2, place.tag3, place.tag4);
+            onGetInfoClicked.charge(selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4);
 
         });
 
@@ -197,7 +194,7 @@ public class ParkInfoDialog extends DialogFragment {
                 selectedPlateType = PlateType.new_aras;
 
 
-            onGetInfoClicked.print(place.start,selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id,debt, balance);
+            onGetInfoClicked.print(place.start, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id, debt, balance);
 
         });
 
@@ -232,6 +229,18 @@ public class ParkInfoDialog extends DialogFragment {
                     }
 
                     if (response.isSuccessful()) {
+
+                        if (response.body() != null && response.body().getSuccess() != 1) {
+
+                            try {
+                                Toast.makeText(getContext(), response.body().description != null ? response.body().description : response.body().getMsg(), Toast.LENGTH_SHORT).show();
+
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+
+                        return;
+                    }
 
                         if (response.body().getSuccess() == 1) {
 
@@ -271,7 +280,7 @@ public class ParkInfoDialog extends DialogFragment {
 
                                 });
 
-                                binding.pay.setOnClickListener(view ->Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
+                                binding.pay.setOnClickListener(view -> Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
                                 binding.pay.setOnLongClickListener(view -> {
                                     onGetInfoClicked.pay(totalPrice, place);
                                     return false;
@@ -287,9 +296,9 @@ public class ParkInfoDialog extends DialogFragment {
                                 binding.carBalance.setTextColor(getResources().getColor(R.color.dark_green));
 
 
-                                if (parkPrice == 0){
+                                if (parkPrice == 0) {
 
-                                    totalPrice = parkPrice ;
+                                    totalPrice = parkPrice;
 
                                     binding.pay.setBackgroundDrawable(getResources().getDrawable(R.drawable.green_5_bg));
                                     binding.pay.setText("خروج از پارک");
@@ -302,9 +311,9 @@ public class ParkInfoDialog extends DialogFragment {
                                         return false;
                                     });
 
-                                } else if (carBalance >= parkPrice){
+                                } else if (carBalance >= parkPrice) {
 
-                                    totalPrice = parkPrice ;
+                                    totalPrice = parkPrice;
 
                                     binding.pay.setBackgroundDrawable(getResources().getDrawable(R.drawable.green_5_bg));
                                     binding.pay.setText("کسر از اعتبار");
@@ -317,7 +326,7 @@ public class ParkInfoDialog extends DialogFragment {
                                         return false;
                                     });
 
-                                }else {
+                                } else {
 
                                     totalPrice = parkPrice - carBalance;
 
@@ -330,7 +339,6 @@ public class ParkInfoDialog extends DialogFragment {
                                 }
 
 
-
                                 binding.totalPrice.setText(NumberFormat.getNumberInstance(Locale.US).format(totalPrice) + " تومان");
 
                                 binding.parkPrice.setText(NumberFormat.getNumberInstance(Locale.US).format(parkPrice) + " تومان");
@@ -340,23 +348,34 @@ public class ParkInfoDialog extends DialogFragment {
 
                             }
 
-                        }
-                        else
+                        } else
                             Toast.makeText(getContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
 
-                    } else APIErrorHandler.orResponseErrorHandler(getParentFragmentManager(),getActivity(), response, () -> getParkData(place));
+                    } else {
+                        try {
+                            APIErrorHandler.onResponseErrorHandler(getParentFragmentManager(), getActivity(), response, () -> getParkData(place));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
 
-                }catch (Exception e){
+                } catch (Exception e) {
 
-//                    APIErrorHandler.orResponseErrorHandler(getParentFragmentManager(),getActivity(), response, () -> getParkData(place));
+                    try {
+                        APIErrorHandler.onResponseErrorHandler(getParentFragmentManager(), getActivity(), response, () -> getParkData(place));
+
+                    } catch (Exception e2) {
+                        e2.printStackTrace();
+                    }
 
                 }
 
 
             }
+
             @Override
             public void onFailure(Call<EstimateParkPriceResponse> call, Throwable t) {
-                APIErrorHandler.onFailureErrorHandler(getParentFragmentManager(),t, () -> getParkData(place));
+                APIErrorHandler.onFailureErrorHandler(getParentFragmentManager(), t, () -> getParkData(place));
 
             }
         });

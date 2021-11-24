@@ -71,11 +71,11 @@ public class RetrofitAPIRepository {
 
     }
 
-    public void getSplashData(String token, Callback<SplashResponse> responseCallback) {
+    public void getSplashData(String token,int versionCode, Callback<SplashResponse> responseCallback) {
 
         Splash request = RetrofitAPIClient.getClient(context).create(Splash.class);
 
-        request.get(token).enqueue(responseCallback);
+        request.get(token, versionCode).enqueue(responseCallback);
 
     }
 

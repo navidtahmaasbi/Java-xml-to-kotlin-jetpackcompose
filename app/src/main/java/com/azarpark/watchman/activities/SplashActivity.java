@@ -4,27 +4,17 @@ package com.azarpark.watchman.activities;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.azarpark.watchman.R;
-import com.azarpark.watchman.UpdateApp;
 import com.azarpark.watchman.databinding.ActivitySplashBinding;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.MessageDialog;
@@ -56,6 +46,8 @@ public class SplashActivity extends AppCompatActivity {
     DownloadController downloadController;
     MessageDialog messageDialog;
     Assistant assistant;
+    int versionCode = 0;
+    String versionName = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +63,15 @@ public class SplashActivity extends AppCompatActivity {
 
         assistant = new Assistant();
 
+        PackageInfo pInfo = null;
+        try {
+            pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            versionCode = pInfo.versionCode;
+            versionName = pInfo.versionName;
+            binding.version.setText("نسخه " + versionName);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
 
         if (assistant.VPNEnabled(getApplicationContext())){
 
@@ -139,9 +140,12 @@ public class SplashActivity extends AppCompatActivity {
 
                 if (response.isSuccessful()) {
 
-                    if (!response.body().success.equals("1")){
 
-                        Toast.makeText(getApplicationContext(), response.body().description, Toast.LENGTH_LONG).show();
+
+                    if (response.body() != null && !response.body().success.equals("1")) {
+
+                        Toast.makeText(getApplicationContext(), response.body().description != null ? response.body().description : response.body().msg, Toast.LENGTH_SHORT).show();
+
                         return;
                     }
 
@@ -151,7 +155,7 @@ public class SplashActivity extends AppCompatActivity {
 
                     binding.retry.setVisibility(View.VISIBLE);
 
-                    APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> getCities());
+                    APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> getCities());
                 }
             }
 
@@ -171,13 +175,14 @@ public class SplashActivity extends AppCompatActivity {
         SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
         RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
 
-        repository.getSplashData("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), new Callback<SplashResponse>() {
+        repository.getSplashData("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),versionCode, new Callback<SplashResponse>() {
             @Override
             public void onResponse(Call<SplashResponse> call, Response<SplashResponse> response) {
 
 
                 binding.loadingBar.setVisibility(View.INVISIBLE);
                 if (response.isSuccessful()) {
+
 
                     sh_r.saveString(SharedPreferencesRepository.qr_url, response.body().qr_url);
                     sh_r.saveString(SharedPreferencesRepository.refresh_time, Integer.toString(response.body().refresh_time));
@@ -210,7 +215,7 @@ public class SplashActivity extends AppCompatActivity {
 
                 } else{
                     binding.retry.setVisibility(View.VISIBLE);
-                    APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> getCities());
+                    APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> getCities());
                 }
             }
 

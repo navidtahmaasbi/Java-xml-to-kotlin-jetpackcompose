@@ -7,21 +7,15 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import com.azarpark.watchman.R;
 import com.azarpark.watchman.adapters.DebtListAdapter;
 import com.azarpark.watchman.databinding.ActivityDebtListBinding;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.enums.PlateType;
-import com.azarpark.watchman.models.DebtModel;
-import com.azarpark.watchman.models.Park;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.responses.DebtHistoryResponse;
 import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
-
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -78,6 +72,12 @@ public class DebtListActivity extends AppCompatActivity {
                         loadingBar.dismiss();
                         if (response.isSuccessful()) {
 
+                            if (response.body().success != 1){
+
+                                Toast.makeText(getApplicationContext(), response.body().description != null ? response.body().description : response.body().getMsg(), Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
                             if (response.body().getSuccess() == 1) {
 
                                 adapter.addItems(response.body().items);
@@ -86,7 +86,7 @@ public class DebtListActivity extends AppCompatActivity {
                             } else
                                 Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
 
-                        } else APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(),activity, response, () -> getCarDebtHistory(plateType,tag1,tag2,tag3,tag4,limit,offset));
+                        } else APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(),activity, response, () -> getCarDebtHistory(plateType,tag1,tag2,tag3,tag4,limit,offset));
                     }
 
                     @Override

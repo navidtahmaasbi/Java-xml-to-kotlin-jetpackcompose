@@ -93,7 +93,8 @@ public class PlateChargeDialog extends DialogFragment {
 
         ArrayList<Integer> items = new ArrayList<>();
 
-
+        //todo release
+        items.add(100);
         items.add(10000);
         items.add(20000);
         items.add(30000);

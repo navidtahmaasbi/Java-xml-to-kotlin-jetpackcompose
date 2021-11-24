@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import androidx.fragment.app.FragmentManager;
 
-import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.Transaction;
@@ -203,16 +202,29 @@ public class SamanPayment {
 //                            paymentRequest(Long.toString(our_token), amount, plateType, tag1, tag2, tag3, tag4, placeID);
                             tashimPaymentRequest("0:" + (amount * 10) + ":" + shaba, Long.toString(our_token), (amount * 10), plateType, tag1, tag2, tag3, tag4, placeID);
 
-                        } else
-                            APIErrorHandler.orResponseErrorHandler(fragmentManager, activity, response, () -> createTransaction(shaba, plateType, tag1, tag2, tag3, tag4, amount, placeID, transactionType));
+                        }
+                        else
+                            try{
+
+                                APIErrorHandler.onResponseErrorHandler(fragmentManager, activity, response, () -> createTransaction(shaba, plateType, tag1, tag2, tag3, tag4, amount, placeID, transactionType));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                     }
 
                     @Override
                     public void onFailure(Call<CreateTransactionResponse> call, Throwable t) {
 //                        loadingBar.dismiss();
-                        t.printStackTrace();
-                        APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> createTransaction(shaba, plateType, tag1, tag2, tag3, tag4, amount, placeID, transactionType));
-                    }
+                        try {
+
+                            t.printStackTrace();
+                            APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> createTransaction(shaba, plateType, tag1, tag2, tag3, tag4, amount, placeID, transactionType));
+
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        }
                 });
 
     }

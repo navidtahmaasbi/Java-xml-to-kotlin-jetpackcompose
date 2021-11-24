@@ -6,6 +6,7 @@ public class LoginResponse {
     public double expires_in;
     public String access_token;
     public String refresh_token;
+    public String description;
 
     public String getToken_type() {
         return token_type;

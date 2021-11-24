@@ -151,15 +151,28 @@ public class ParsianPayment {
                             paymentRequest(amount, our_token, activity, plateType, tag1, finalTag2, finalTag3, finalTag4, placeID);
 
                         } else
-                            APIErrorHandler.orResponseErrorHandler(fragmentManager, activity, response, () -> createTransaction(plateType, tag1, finalTag2, finalTag3, finalTag4, amount, placeID,transactionType));
+                            try {
+
+                                APIErrorHandler.onResponseErrorHandler(fragmentManager, activity, response, () -> createTransaction(plateType, tag1, finalTag2, finalTag3, finalTag4, amount, placeID,transactionType));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                     }
 
                     @Override
                     public void onFailure(Call<CreateTransactionResponse> call, Throwable t) {
-                        loadingBar.dismiss();
-                        t.printStackTrace();
-                        APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> createTransaction(plateType, tag1, finalTag2, finalTag3, finalTag4, amount, placeID,transactionType));
-                    }
+
+                        try {
+
+                            loadingBar.dismiss();
+                            t.printStackTrace();
+                            APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> createTransaction(plateType, tag1, finalTag2, finalTag3, finalTag4, amount, placeID,transactionType));
+
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                       }
                 });
 
     }
@@ -414,18 +427,20 @@ public class ParsianPayment {
         if (balance > 0) {
 
             printTemplateBinding.description2.setText("شهروند گرامی؛از این که جز مشتریان خوش حساب ما هستید سپاسگزاریم");
+            printTemplateBinding.balanceTitle.setText("اعتبار پلاک");
 
         } else if (balance < 0) {
 
             printTemplateBinding.description2.setText("اخطار: شهروند گرامی؛بدهی پلاک شما بیش از حد مجاز میباشد در صورت عدم پرداخت بدهی مشمول جریمه پارک ممنوع خواهید شد");
+            printTemplateBinding.balanceTitle.setText("بدهی پلاک");
 
         } else {
 
             printTemplateBinding.description2.setText("شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد");
-
+            printTemplateBinding.balanceTitle.setText("اعتبار پلاک");
         }
 
-        printTemplateBinding.debtArea.setVisibility(balance <= 0 ? View.VISIBLE : View.GONE);
+//        printTemplateBinding.debtArea.setVisibility(balance <= 0 ? View.VISIBLE : View.GONE);
 
         printTemplateBinding.placeId.setText(place.number + "");
         printTemplateBinding.debt.setText(balance + " تومان");

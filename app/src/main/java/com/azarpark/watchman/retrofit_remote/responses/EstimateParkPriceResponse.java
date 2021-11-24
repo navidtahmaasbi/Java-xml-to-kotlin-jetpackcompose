@@ -4,6 +4,7 @@ public class EstimateParkPriceResponse {
 
     int success,price,hours,minutes,car_balance;
     String msg;
+    public String description;
 
     public int getSuccess() {
         return success;

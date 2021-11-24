@@ -17,14 +17,10 @@ import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
-import com.azarpark.watchman.retrofit_remote.responses.DeleteExitRequestResponse;
 import com.azarpark.watchman.retrofit_remote.responses.ExitRequestResponse;
-import com.azarpark.watchman.retrofit_remote.responses.SendExitCodeResponse;
 import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
-
-import java.net.HttpURLConnection;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -281,7 +277,7 @@ public class ExitRequestActivity extends AppCompatActivity {
                             messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
 
 
-                        } else APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(),activity, response, () -> exitRequest(plateType,tag1,tag2,tag3,tag4));
+                        } else APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(),activity, response, () -> exitRequest(plateType,tag1,tag2,tag3,tag4));
                     }
 
                     @Override
