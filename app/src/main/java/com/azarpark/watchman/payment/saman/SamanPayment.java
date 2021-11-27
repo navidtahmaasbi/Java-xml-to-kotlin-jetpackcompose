@@ -21,8 +21,10 @@ import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.responses.CreateTransactionResponse;
+import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse;
 import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.Assistant;
+import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.google.gson.Gson;
 
@@ -57,11 +59,12 @@ public class SamanPayment {
 
     int STATE_SUCCESSFUL = 0;
 
-    public SamanPayment(Context context, Activity activity, SamanPaymentCallBack samanPaymentCallBack) {
+    public SamanPayment(FragmentManager fragmentManager,Context context, Activity activity, SamanPaymentCallBack samanPaymentCallBack) {
 
         sh_r = new SharedPreferencesRepository(context);
         this.activity = activity;
         this.context = context;
+        this.fragmentManager = fragmentManager;
         this.samanPaymentCallBack = samanPaymentCallBack;
 
 //        loadingBar = new LoadingBar(activity);
@@ -104,6 +107,7 @@ public class SamanPayment {
         Log.d("-----> Amount", intent.getExtras().getString("Amount"));
         Log.d("-----> ResNum", intent.getExtras().getString("ResNum"));
         Log.d("-----> AppId", intent.getExtras().getString("AppId"));
+
 //        }
 
         intent.setComponent(new ComponentName("ir.sep.android.smartpos", "ir.sep.android.smartpos.ThirdPartyActivity"));
@@ -135,6 +139,8 @@ public class SamanPayment {
         Log.d("-----> AppId", intent.getExtras().getString("AppId"));
 //        }
 
+        Gson gson = new Gson();
+        System.out.println("---------> intent : " + gson.toJson(intent));
 
         intent.setComponent(new ComponentName("ir.sep.android.smartpos", "ir.sep.android.smartpos.ThirdPartyActivity"));
 
@@ -231,9 +237,9 @@ public class SamanPayment {
 
     public void handleResult(int requestCode, int resultCode, Intent data) {
 
-        System.out.println("----------> handleResult ");
+        System.out.println("----------> handleResult " +resultCode);
 
-        if (resultCode == Activity.RESULT_OK && requestCode == PAYMENT_REQUEST_CODE) {
+        if (/*resultCode == Activity.RESULT_OK &&*/ requestCode == PAYMENT_REQUEST_CODE) {
 
 
             int state = data.getIntExtra(STATE, -1);
@@ -330,28 +336,25 @@ public class SamanPayment {
                         result,
                         Assistant.getUnixTime());
 
-                Gson gson = new Gson();
-
 
 //                if (!result.isEmpty())
 //                    Toast.makeText(context, result, Toast.LENGTH_LONG).show();
 
                 Log.e("saman payment", "Purchase did failed....");
-//                messageDialog = new MessageDialog("خطا ی" + state, "خطایی رخ داده است", "خروج", () -> {
-//                    if (messageDialog != null)
-//                        messageDialog.dismiss();
-//                });
-//
-//                messageDialog.show(fragmentManager, MessageDialog.TAG);
+                messageDialog = new MessageDialog("خطا ی " + state, result, "خروج", () -> {
+                    if (messageDialog != null)
+                        messageDialog.dismiss();
+                });
+
+                messageDialog.show(fragmentManager, MessageDialog.TAG);
             }
 
             sh_r.updateTransactions(transaction);
 
             Gson gson = new Gson();
 
-            samanPaymentCallBack.verifyTransaction(
-                    transaction
-            );
+            verifyTransaction(transaction);
+
 
 
         }
@@ -369,6 +372,37 @@ public class SamanPayment {
 
 
         }
+
+    }
+
+    private void verifyTransaction(Transaction transaction) {
+
+
+        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(context);
+        RetrofitAPIRepository repository = new RetrofitAPIRepository(context);
+
+        repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
+                transaction, new Callback<VerifyTransactionResponse>() {
+                    @Override
+                    public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
+
+
+                        if (response.isSuccessful() && transaction.getStatus() != 0) {
+
+                            sh_r.removeFromTransactions(transaction);
+                            Toast.makeText(context, response.body().getDescription(), Toast.LENGTH_SHORT).show();
+                            samanPaymentCallBack.onVerifyFinished();
+
+                        } else
+                            APIErrorHandler.onResponseErrorHandler(fragmentManager, activity, response, () -> verifyTransaction(transaction));
+                    }
+
+                    @Override
+                    public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
+                        t.printStackTrace();
+                        APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> verifyTransaction(transaction));
+                    }
+                });
 
     }
 
@@ -504,6 +538,8 @@ public class SamanPayment {
         public void verifyTransaction(Transaction transaction);
 
         public void getScannerData(int placeID);
+
+        public void onVerifyFinished();
     }
 
     public void releaseService() {

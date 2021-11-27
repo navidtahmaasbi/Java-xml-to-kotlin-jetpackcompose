@@ -578,6 +578,8 @@ public class ParsianPayment {
 
         public void getScannerData(int placeID);
 
+        public void onVersifyFinished();
+
     }
 
 }

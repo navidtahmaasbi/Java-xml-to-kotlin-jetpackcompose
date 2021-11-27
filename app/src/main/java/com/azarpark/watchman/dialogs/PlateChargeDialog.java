@@ -24,6 +24,7 @@ import com.azarpark.watchman.databinding.SingleSelectDialogBinding;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.utils.Assistant;
+import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
 import java.text.NumberFormat;
@@ -39,7 +40,7 @@ public class PlateChargeDialog extends DialogFragment {
     Place place;
     int selectedAmount = 0;
 
-    public PlateChargeDialog(OnPayClicked onPayClicked,Place place) {
+    public PlateChargeDialog(OnPayClicked onPayClicked, Place place) {
         this.onPayClicked = onPayClicked;
         this.place = place;
     }
@@ -113,8 +114,8 @@ public class PlateChargeDialog extends DialogFragment {
                 Toast.makeText(getContext(), "مبلغ شارژ را انتخاب کنید", Toast.LENGTH_SHORT).show();
             else if (!isNumber(Integer.toString(selectedAmount)))
                 Toast.makeText(getContext(), "مبلغ شارژ را درست وارد کنید", Toast.LENGTH_SHORT).show();
-            else if (selectedAmount < Assistant.MIN_PRICE_FOR_PAYMENT)
-                Toast.makeText(getContext(), "مبلغ شارژ نباید کمتر از "+Assistant.MIN_PRICE_FOR_PAYMENT+" تومان باشد", Toast.LENGTH_SHORT).show();
+            else if (selectedAmount < Constants.MIN_PRICE_FOR_PAYMENT)
+                Toast.makeText(getContext(), "مبلغ شارژ نباید کمتر از " + Constants.MIN_PRICE_FOR_PAYMENT + " تومان باشد", Toast.LENGTH_SHORT).show();
             else
                 onPayClicked.pay(selectedAmount);
 
@@ -172,7 +173,7 @@ public class PlateChargeDialog extends DialogFragment {
         return true;
     }
 
-    public interface OnPayClicked{
+    public interface OnPayClicked {
 
         public void pay(int amount);
 

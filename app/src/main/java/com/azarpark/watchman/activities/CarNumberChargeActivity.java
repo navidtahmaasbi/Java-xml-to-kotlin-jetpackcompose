@@ -29,6 +29,7 @@ import com.azarpark.watchman.retrofit_remote.responses.DebtHistoryResponse;
 import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse;
 import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.Assistant;
+import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.google.gson.Gson;
 
@@ -61,23 +62,42 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         parsianPayment = new ParsianPayment(getApplicationContext(), activity, new ParsianPayment.ParsianPaymentCallBack() {
             @Override
             public void verifyTransaction(Transaction transaction) {
-                CarNumberChargeActivity.this.verifyTransaction(transaction);
+//                CarNumberChargeActivity.this.verifyTransaction(transaction);
             }
 
             @Override
             public void getScannerData(int placeID) {
                 //dont need to do any thing in CarNumberActivity
             }
+
+            @Override
+            public void onVersifyFinished() {
+                //todo print mimii factor
+            }
         }, getSupportFragmentManager());
-        samanPayment = new SamanPayment(getApplicationContext(), CarNumberChargeActivity.this, new SamanPayment.SamanPaymentCallBack() {
+        samanPayment = new SamanPayment(getSupportFragmentManager(),getApplicationContext(), CarNumberChargeActivity.this, new SamanPayment.SamanPaymentCallBack() {
             @Override
             public void verifyTransaction(Transaction transaction) {
-                CarNumberChargeActivity.this.verifyTransaction(transaction);
+//                CarNumberChargeActivity.this.verifyTransaction(transaction);
             }
 
             @Override
             public void getScannerData(int placeID) {
                 //don't need to do anything in CarNumberCharge Activity
+            }
+
+            @Override
+            public void onVerifyFinished() {
+                if (Constants.SELECTED_PAYMENT == Constants.SAMAN) {
+
+                    String tag1 = sh_r.getString(SharedPreferencesRepository.TAG1, "0");
+                    String tag2 = sh_r.getString(SharedPreferencesRepository.TAG2, "0");
+                    String tag3 = sh_r.getString(SharedPreferencesRepository.TAG3, "0");
+                    String tag4 = sh_r.getString(SharedPreferencesRepository.TAG4, "0");
+
+                    getCarDebtHistory(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
+
+                }
             }
         });
         binding.plateSimpleTag1.requestFocus();
@@ -140,8 +160,8 @@ public class CarNumberChargeActivity extends AppCompatActivity {
                 );
             else if (!assistant.isNumber(Integer.toString(selectedAmount)))
                 Toast.makeText(getApplicationContext(), "مبلغ شارژ را درست وارد کنید", Toast.LENGTH_SHORT).show();
-            else if (selectedAmount < assistant.MIN_PRICE_FOR_PAYMENT)
-                Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید کمتر از " + assistant.MIN_PRICE_FOR_PAYMENT + " تومان باشد", Toast.LENGTH_SHORT).show();
+            else if (selectedAmount < Constants.MIN_PRICE_FOR_PAYMENT)
+                Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید کمتر از " + Constants.MIN_PRICE_FOR_PAYMENT + " تومان باشد", Toast.LENGTH_SHORT).show();
             else if (selectedTab == PlateType.old_aras)
                 charge(
                         Integer.toString(selectedAmount),
@@ -312,7 +332,6 @@ public class CarNumberChargeActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-
         parsianPayment.handleResult(requestCode, resultCode, data);
 
         samanPayment.handleResult(requestCode, resultCode, data);
@@ -325,7 +344,6 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         if (samanPayment != null)
             samanPayment.releaseService();
     }
-
 
     //------------------------------------------------------------------ view
 
@@ -391,7 +409,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     private void printFactor(String tag1, String tag2, String tag3, String tag4, int balance) {
 
-        if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN) {
+        if (Constants.SELECTED_PAYMENT == Constants.SAMAN) {
 
             binding.printArea.removeAllViews();
 
@@ -459,10 +477,10 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         amount = amount.replace(",", "");
 
 
-        if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1,Assistant.TRANSACTION_TYPE_CHAREG);
-        else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-            samanPayment.createTransaction(Assistant.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1,Assistant.TRANSACTION_TYPE_CHAREG);
+        if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
+            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1,Constants.TRANSACTION_TYPE_CHAREG);
+        else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
+            samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1,Constants.TRANSACTION_TYPE_CHAREG);
     }
 
     private void verifyTransaction(Transaction transaction) {
@@ -485,7 +503,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
                             Gson gson = new Gson();
 
-                            if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN) {
+                            if (Constants.SELECTED_PAYMENT == Constants.SAMAN) {
 
                                 String tag1 = sh_r.getString(SharedPreferencesRepository.TAG1, "0");
                                 String tag2 = sh_r.getString(SharedPreferencesRepository.TAG2, "0");

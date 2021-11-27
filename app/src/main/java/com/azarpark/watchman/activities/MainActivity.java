@@ -58,6 +58,7 @@ import com.azarpark.watchman.retrofit_remote.responses.PlacesResponse;
 import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse;
 import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.Assistant;
+import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.google.gson.Gson;
 
@@ -110,23 +111,44 @@ public class MainActivity extends AppCompatActivity {
         parsianPayment = new ParsianPayment(getApplicationContext(), activity, new ParsianPayment.ParsianPaymentCallBack() {
             @Override
             public void verifyTransaction(Transaction transaction) {
-                MainActivity.this.verifyTransaction(transaction);
+//                MainActivity.this.verifyTransaction(transaction);
             }
 
             @Override
             public void getScannerData(int placeID) {
                 handleScannedPlaceID(placeID);
+            }
+
+            @Override
+            public void onVersifyFinished() {
+
             }
         }, getSupportFragmentManager());
-        samanPayment = new SamanPayment(getApplicationContext(), MainActivity.this, new SamanPayment.SamanPaymentCallBack() {
+        samanPayment = new SamanPayment(getSupportFragmentManager(),getApplicationContext(), MainActivity.this, new SamanPayment.SamanPaymentCallBack() {
             @Override
             public void verifyTransaction(Transaction transaction) {
-                MainActivity.this.verifyTransaction(transaction);
+//                MainActivity.this.verifyTransaction(transaction);
             }
 
             @Override
             public void getScannerData(int placeID) {
                 handleScannedPlaceID(placeID);
+            }
+
+            @Override
+            public void onVerifyFinished() {
+                if (Constants.SELECTED_PAYMENT == Constants.SAMAN) {
+
+                    String tag1 = sh_r.getString(SharedPreferencesRepository.TAG1, "0");
+                    String tag2 = sh_r.getString(SharedPreferencesRepository.TAG2, "0");
+                    String tag3 = sh_r.getString(SharedPreferencesRepository.TAG3, "0");
+                    String tag4 = sh_r.getString(SharedPreferencesRepository.TAG4, "0");
+
+                    getCarDebtHistory(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
+
+                }
+
+                getPlaces();
             }
         });
 
@@ -391,7 +413,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onBarcodeIconClicked(View view) {
 
-        if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN) {
+        if (Constants.SELECTED_PAYMENT == Constants.PASRIAN) {
 
             startActivityForResult(new Intent(MainActivity.this, QRScanerActivity.class), ParsianPayment.QR_SCANER_REQUEST_CODE);
 
@@ -444,10 +466,10 @@ public class MainActivity extends AppCompatActivity {
 
                 assistant.saveTags(place.tag1, place.tag2, place.tag3, place.tag4, getApplicationContext());
 
-                if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-                    parsianPayment.createTransaction(selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id, Assistant.TRANSACTION_TYPE_PARK_PRICE);
-                else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-                    samanPayment.createTransaction(Assistant.NON_CHARGE_SHABA, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id, Assistant.TRANSACTION_TYPE_PARK_PRICE);
+                if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
+                    parsianPayment.createTransaction(selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id, Constants.TRANSACTION_TYPE_PARK_PRICE);
+                else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
+                    samanPayment.createTransaction(Constants.NON_CHARGE_SHABA, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id, Constants.TRANSACTION_TYPE_PARK_PRICE);
 
             }
 
@@ -473,10 +495,10 @@ public class MainActivity extends AppCompatActivity {
                 plateChargeDialog = new PlateChargeDialog(amount -> {
 
 
-                    if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-                        parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1, Assistant.TRANSACTION_TYPE_CHAREG);
-                    else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-                        samanPayment.createTransaction(Assistant.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Assistant.TRANSACTION_TYPE_CHAREG);
+                    if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
+                        parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG);
+                    else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
+                        samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG);
 
                     plateChargeDialog.dismiss();
 
@@ -501,7 +523,7 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     private void printFactor(int placeID, String startTime, int balance, Place place) {
 
-        if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN) {
+        if (Constants.SELECTED_PAYMENT == Constants.PASRIAN) {
 
 //            binding.printArea.removeAllViews();
 //
@@ -580,7 +602,7 @@ public class MainActivity extends AppCompatActivity {
             }, 500);
 
 
-        } else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN) {
+        } else if (Constants.SELECTED_PAYMENT == Constants.SAMAN) {
 
             binding.printArea.removeAllViews();
 
@@ -672,7 +694,7 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     private void printMiniFactor(String tag1, String tag2, String tag3, String tag4, int balance) {
 
-        if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN) {
+        if (Constants.SELECTED_PAYMENT == Constants.SAMAN) {
 
             binding.printArea.removeAllViews();
 
@@ -999,7 +1021,7 @@ public class MainActivity extends AppCompatActivity {
 
                             Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
 
-                            if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN) {
+                            if (Constants.SELECTED_PAYMENT == Constants.SAMAN) {
 
                                 String tag1 = sh_r.getString(SharedPreferencesRepository.TAG1, "0");
                                 String tag2 = sh_r.getString(SharedPreferencesRepository.TAG2, "0");

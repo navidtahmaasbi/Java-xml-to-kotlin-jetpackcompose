@@ -27,6 +27,7 @@ import com.azarpark.watchman.retrofit_remote.responses.DebtHistoryResponse;
 import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse;
 import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.Assistant;
+import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
 import java.text.NumberFormat;
@@ -61,23 +62,33 @@ public class DebtCheckActivity extends AppCompatActivity {
         parsianPayment = new ParsianPayment(getApplicationContext(), activity, new ParsianPayment.ParsianPaymentCallBack() {
             @Override
             public void verifyTransaction(Transaction transaction) {
-                DebtCheckActivity.this.verifyTransaction(transaction);
+//                DebtCheckActivity.this.verifyTransaction(transaction);
             }
 
             @Override
             public void getScannerData(int placeID) {
 
             }
+
+            @Override
+            public void onVersifyFinished() {
+
+            }
         }, getSupportFragmentManager());
-        samanPayment = new SamanPayment(getApplicationContext(), DebtCheckActivity.this, new SamanPayment.SamanPaymentCallBack() {
+        samanPayment = new SamanPayment(getSupportFragmentManager(),getApplicationContext(), DebtCheckActivity.this, new SamanPayment.SamanPaymentCallBack() {
             @Override
             public void verifyTransaction(Transaction transaction) {
-                DebtCheckActivity.this.verifyTransaction(transaction);
+//                DebtCheckActivity.this.verifyTransaction(transaction);
             }
 
             @Override
             public void getScannerData(int placeID) {
                 //don't need to do anything in DebtCheck Activity
+            }
+
+            @Override
+            public void onVerifyFinished() {
+
             }
         });
         sh_r = new SharedPreferencesRepository(getApplicationContext());
@@ -446,10 +457,10 @@ public class DebtCheckActivity extends AppCompatActivity {
 
     public void paymentRequest(int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
 
-        if (Assistant.SELECTED_PAYMENT == Assistant.PASRIAN)
-            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1, Assistant.TRANSACTION_TYPE_DEBT);
-        else if (Assistant.SELECTED_PAYMENT == Assistant.SAMAN)
-            samanPayment.createTransaction(Assistant.NON_CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Assistant.TRANSACTION_TYPE_DEBT);
+        if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
+            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_DEBT);
+        else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
+            samanPayment.createTransaction(Constants.NON_CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_DEBT);
 
     }
 
@@ -472,7 +483,6 @@ public class DebtCheckActivity extends AppCompatActivity {
                         if (response.isSuccessful()) {
 
                             sh_r.removeFromTransactions(transaction);
-
                             Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
                         } else
                             APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> verifyTransaction(transaction));
