@@ -20,10 +20,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class WebService {
 
-    private static Retrofit retrofit = null;
-    private static Retrofit initialRetrofit = null;
+    private static Retrofit retrofit = null,initialRetrofit = null;
+    private static API initialAPI = null, api = null;
 
-    public static Retrofit getInitialClient() {
+    public static API getInitialClient() {
 
         if (initialRetrofit == null)
             initialRetrofit = new Retrofit.Builder()
@@ -32,11 +32,14 @@ public class WebService {
                     .client(getUnsafeOkHttpClient())
                     .build();
 
-        return initialRetrofit;
+        if (initialAPI == null)
+            initialAPI = initialRetrofit.create(API.class);
+
+        return initialAPI;
 
     }
 
-    public static Retrofit getClient(Context context) {
+    public static API getClient(Context context) {
 
         SharedPreferencesRepository sh_p = new SharedPreferencesRepository(context);
         String baseURL = Constants.BASE_URL_FIRST_PART + sh_p.getString(SharedPreferencesRepository.SUB_DOMAIN) + Constants.BASE_URL_SECOND_PART;
@@ -48,7 +51,10 @@ public class WebService {
                     .client(getUnsafeOkHttpClient())
                     .build();
 
-        return retrofit;
+        if (api == null)
+            api = retrofit.create(API.class);
+
+        return api;
 
     }
 

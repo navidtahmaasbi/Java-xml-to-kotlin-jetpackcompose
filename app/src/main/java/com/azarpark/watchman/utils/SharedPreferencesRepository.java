@@ -89,7 +89,6 @@ public class SharedPreferencesRepository {
 
     public void updateTransactions(Transaction transaction) {
 
-
         String arrayString = getString(UNSYCNCED_RES_NUMS, "[]");
         Gson gson = new Gson();
         ArrayList<Transaction> transactions = gson.fromJson(arrayString, new TypeToken<List<Transaction>>() {
@@ -132,7 +131,7 @@ public class SharedPreferencesRepository {
     public long timeDifferenceInSeconds(long d1, long d2) {
 
 
-        long diff = Math.abs(d2-d1);
+        long diff = Math.abs(d2 - d1);
 
         return diff;
 
@@ -164,6 +163,47 @@ public class SharedPreferencesRepository {
         }.getType());
 
         return transactions;
+
+    }
+
+    //----------------------------------------------------------------------------------------------------
+
+    private static SharedPreferences sharedPreferences;
+
+    public static void create(Context context) {
+        sharedPreferences = context.getSharedPreferences(Constants.SHAREDPREFERNCE, context.MODE_PRIVATE);
+    }
+
+    public static String getValue(String key, String defaultValue) {
+
+        return sharedPreferences.getString(key, defaultValue);
+    }
+
+    public static void setValue(String key, String value) {
+
+        sharedPreferences.edit().putString(key, value).apply();
+
+    }
+
+    public static String getToken() {
+
+        return sharedPreferences.getString(Constants.ACCESS_TOKEN, "");
+    }
+
+    public static String getTokenWithPrefix() {
+
+        return "Bearer " + sharedPreferences.getString(Constants.ACCESS_TOKEN, "");
+    }
+
+    public static void setToken(String token) {
+
+        sharedPreferences.edit().putString(Constants.ACCESS_TOKEN, token).apply();
+
+    }
+
+    public static void removeToken() {
+
+        sharedPreferences.edit().putString(Constants.ACCESS_TOKEN, "").apply();
 
     }
 

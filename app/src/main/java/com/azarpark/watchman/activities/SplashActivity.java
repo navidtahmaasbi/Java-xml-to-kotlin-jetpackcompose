@@ -28,6 +28,8 @@ import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.DownloadController;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
+import com.azarpark.watchman.web_service.NewErrorHandler;
+import com.azarpark.watchman.web_service.WebService;
 
 import java.util.ArrayList;
 
@@ -87,7 +89,7 @@ public class SplashActivity extends AppCompatActivity {
 
         }
         else if (sh_p.getString(SharedPreferencesRepository.ACCESS_TOKEN).isEmpty())
-            getCities();
+            getCities02();
         else
             getSplash();
 
@@ -107,7 +109,7 @@ public class SplashActivity extends AppCompatActivity {
 
             }
             else if (sh_p.getString(SharedPreferencesRepository.ACCESS_TOKEN).isEmpty())
-                getCities();
+                getCities02();
             else
                 getSplash();
 
@@ -141,7 +143,6 @@ public class SplashActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
 
 
-
                     if (response.body() != null && !response.body().success.equals("1")) {
 
                         Toast.makeText(getApplicationContext(), response.body().description != null ? response.body().description : response.body().msg, Toast.LENGTH_SHORT).show();
@@ -165,6 +166,29 @@ public class SplashActivity extends AppCompatActivity {
                 binding.retry.setVisibility(View.VISIBLE);
                 t.printStackTrace();
                 APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> getCities());
+            }
+        });
+
+    }
+
+    private void getCities02(){
+
+        WebService.getInitialClient().getCities().enqueue(new Callback<GetCitiesResponse>() {
+            @Override
+            public void onResponse(Call<GetCitiesResponse> call, Response<GetCitiesResponse> response) {
+
+
+                if (NewErrorHandler.responseHasError(response, getApplicationContext()))
+                    return;
+
+                openCitiesDialog(response.body().items);
+
+
+            }
+
+            @Override
+            public void onFailure(Call<GetCitiesResponse> call, Throwable t) {
+                //todo make this
             }
         });
 

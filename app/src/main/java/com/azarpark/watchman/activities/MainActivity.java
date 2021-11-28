@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         sh_r = new SharedPreferencesRepository(getApplicationContext());
 
         assistant = new Assistant();
-        parsianPayment = new ParsianPayment(getApplicationContext(), activity, new ParsianPayment.ParsianPaymentCallBack() {
+        parsianPayment = new ParsianPayment(binding.printArea,getApplicationContext(), activity, new ParsianPayment.ParsianPaymentCallBack() {
             @Override
             public void verifyTransaction(Transaction transaction) {
 //                MainActivity.this.verifyTransaction(transaction);
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onVersifyFinished() {
+            public void onVerifyFinished() {
 
             }
         }, getSupportFragmentManager());
@@ -643,8 +643,6 @@ public class MainActivity extends AppCompatActivity {
 
             printTemplateBinding.qrcode.setImageBitmap(assistant.qrGenerator(qr_url + placeID));
 
-            Gson gson = new Gson();
-
 
             if (assistant.getPlateType(place) == PlateType.simple) {
 
@@ -681,7 +679,7 @@ public class MainActivity extends AppCompatActivity {
 
             new Handler().postDelayed(() -> {
 
-                samanPayment.printParkInfo(assistant.toJalali(startTime), place.tag1, place.tag2, place.tag3, place.tag4, place.id, binding.printArea, pricing, telephone, sms_number, qr_url, debt, balance);
+                samanPayment.printParkInfo(binding.printArea);
 
             }, 500);
 

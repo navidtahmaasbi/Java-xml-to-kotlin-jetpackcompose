@@ -35,9 +35,10 @@ public class StarterActivity extends AppCompatActivity {
     GetValueDialog messageDialog;
     private int code = 5555;
     LoadingBar loadingBar;
-    private final int masterCode = 2580;
+    private final int masterCode = 2369;//todo release
     Assistant assistant;
-    SharedPreferencesRepository sh_r ;
+    SharedPreferencesRepository sh_r;
+    int tapCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,35 +56,26 @@ public class StarterActivity extends AppCompatActivity {
 
         });
 
+        findViewById(R.id.exit).setOnClickListener(view -> {
+            tapCount += 1;
+        });
+
         findViewById(R.id.exit).setOnLongClickListener(view -> {
 
-            Random random = new Random();
-            code = 1000 + random.nextInt(9000);
-//            sendExitCode(code);
+            if (tapCount >= 4) {
 
-//            messageDialog = new GetValueDialog("خروج از برنامه", "برای خروج از برنامه کد ارسال شده را وارد نمایید", "خروج", (s) -> {
-//
-//                if (s.equals(Integer.toString(code)) || s.equals(Integer.toString(masterCode))) {
-//
-//                    messageDialog.dismiss();
-//
-//
-//
-//                } else
-//                    Toast.makeText(getApplicationContext(), "رمز اشتباه است", Toast.LENGTH_SHORT).show();
-//
-//            });
+                Random random = new Random();
+                code = 1000 + random.nextInt(9000);
+                sendExitCode(code);
 
-//            messageDialog.show(getSupportFragmentManager(), GetValueDialog.TAG);
+                findViewById(R.id.password_area).setVisibility(findViewById(R.id.password_area).getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+                if (findViewById(R.id.password_area).getVisibility() == View.VISIBLE)
+                    assistant.eventByMobile(sh_r.getString(SharedPreferencesRepository.USERNAME, "not logged-in"), "click exit app");
 
-
-
-
-            findViewById(R.id.password_area).setVisibility(findViewById(R.id.password_area).getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-
-            if (findViewById(R.id.password_area).getVisibility() == View.VISIBLE){
-                assistant.eventByMobile(sh_r.getString(SharedPreferencesRepository.USERNAME,"not logged-in"),"click exit app");
             }
+
+
+
 
             return true;
 
@@ -111,7 +103,7 @@ public class StarterActivity extends AppCompatActivity {
                 edt.setText("");
                 findViewById(R.id.password_area).setVisibility(View.GONE);
 
-                assistant.eventByMobile(sh_r.getString(SharedPreferencesRepository.USERNAME,"not logged-in"),"show launcher chooser");
+                assistant.eventByMobile(sh_r.getString(SharedPreferencesRepository.USERNAME, "not logged-in"), "show launcher chooser");
 
                 startActivity(chooser);
 
@@ -122,30 +114,30 @@ public class StarterActivity extends AppCompatActivity {
 
     }
 
-//    private void sendExitCode(int code) {
-//
-//        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-//        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-////        loadingBar.show();
-//
-//        repository.sendExitCode("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-//                code, new Callback<SendExitCodeResponse>() {
-//                    @Override
-//                    public void onResponse(Call<SendExitCodeResponse> call, Response<SendExitCodeResponse> response) {
-//
-////                        loadingBar.dismiss();
-////                        if (!response.isSuccessful())
-////                            APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), StarterActivity.this, response, () -> sendExitCode(code));
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Call<SendExitCodeResponse> call, Throwable t) {
-////                        loadingBar.dismiss();
-////                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> sendExitCode(code));
-//                    }
-//                });
-//
-//    }
+    private void sendExitCode(int code) {
+
+        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
+        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
+//        loadingBar.show();
+
+        repository.sendExitCode("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
+                code, new Callback<SendExitCodeResponse>() {
+                    @Override
+                    public void onResponse(Call<SendExitCodeResponse> call, Response<SendExitCodeResponse> response) {
+
+//                        loadingBar.dismiss();
+//                        if (!response.isSuccessful())
+//                            APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), StarterActivity.this, response, () -> sendExitCode(code));
+                    }
+
+                    @Override
+                    public void onFailure(Call<SendExitCodeResponse> call, Throwable t) {
+//                        loadingBar.dismiss();
+//                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> sendExitCode(code));
+                    }
+                });
+
+    }
 
 
     @Override

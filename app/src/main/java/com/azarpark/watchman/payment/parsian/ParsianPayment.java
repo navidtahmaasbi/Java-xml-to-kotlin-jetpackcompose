@@ -1,12 +1,15 @@
 package com.azarpark.watchman.payment.parsian;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.device.PrinterManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.media.Image;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +18,9 @@ import android.widget.Toast;
 
 import androidx.fragment.app.FragmentManager;
 
+import com.azarpark.watchman.databinding.ParsianAfterPaymentPrintTemplateBinding;
 import com.azarpark.watchman.databinding.PrintTemplateBinding;
+import com.azarpark.watchman.databinding.SamanAfterPaymentPrintTemplateBinding;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.enums.PlateType;
@@ -23,9 +28,13 @@ import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
 import com.azarpark.watchman.retrofit_remote.responses.CreateTransactionResponse;
+import com.azarpark.watchman.retrofit_remote.responses.DebtHistoryResponse;
+import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse;
 import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.Assistant;
+import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
+import com.google.gson.Gson;
 
 import java.util.Set;
 
@@ -62,12 +71,14 @@ public class ParsianPayment {
     LoadingBar loadingBar;
     SharedPreferencesRepository sh_p;
     Assistant assistant;
+    ViewGroup printArea;
 
-    public ParsianPayment(Context context, Activity activity, ParsianPaymentCallBack parsianPaymentCallBack, FragmentManager fragmentManager) {
+    public ParsianPayment(ViewGroup printArea, Context context, Activity activity, ParsianPaymentCallBack parsianPaymentCallBack, FragmentManager fragmentManager) {
         this.context = context;
         this.parsianPaymentCallBack = parsianPaymentCallBack;
         this.fragmentManager = fragmentManager;
         this.activity = activity;
+        this.printArea = printArea;
         loadingBar = new LoadingBar(activity);
         sh_p = new SharedPreferencesRepository(context);
         assistant = new Assistant();
@@ -91,6 +102,126 @@ public class ParsianPayment {
         activity.startActivityForResult(intent, PAYMENT_REQUEST_CODE);
 
     }
+
+    public void handleResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == PAYMENT_REQUEST_CODE) {
+
+            Transaction transaction;
+
+            if (resultCode == Activity.RESULT_OK) {
+
+                Bundle b = data.getBundleExtra("response");
+                if (b != null) {
+
+                    Log.d("bundle data", getBundleString(b));
+
+                    int amount = Integer.parseInt(sh_p.getString(SharedPreferencesRepository.AMOUNT, "0"));
+                    String result = b.getString("result");
+                    String pan = b.getString("pan");
+                    String rrn = b.getString("rrn");
+                    Long date = b.getLong("date");
+                    String trace = b.getString("trace");
+                    String errorMessage = b.getString("message", "");
+//                    Long res_num = Long.parseLong(sh_p.getString(SharedPreferencesRepository.OUR_TOKEN));
+                    Long res_num = b.getLong("res_num");
+                    int status = result.equals("succeed") ? 1 : -1;
+
+                    if (tag2 == null) tag2 = "null";
+                    if (tag3 == null) tag3 = "null";
+                    if (tag4 == null) tag4 = "null";
+
+                    transaction = new Transaction(
+                            Integer.toString(amount),
+                            Long.toString(res_num),
+                            (rrn == null || rrn.isEmpty()) ? "0" : rrn,
+                            placeID,
+                            status,
+                            PARSIAN,
+//                            result.equals("succeed") ? "1" : "-1",
+                            result,
+                            pan,
+                            Long.toString(date),
+                            trace,
+                            result,
+                            Assistant.getUnixTime());
+
+
+                } else {
+
+                    String amount = sh_p.getString(SharedPreferencesRepository.AMOUNT, "0");
+                    String resNum = sh_p.getString(SharedPreferencesRepository.OUR_TOKEN, "0");
+                    int placeID = Integer.parseInt(sh_p.getString(SharedPreferencesRepository.PLACE_ID, "0"));
+                    String tag4 = sh_p.getString(SharedPreferencesRepository.TAG4, "0");
+
+                    transaction = new Transaction(
+                            amount,
+                            resNum,
+                            "0",
+                            placeID,
+                            -1,
+                            PARSIAN,
+                            "-1",
+                            "****-****-****-****",
+                            "0",
+                            null,
+                            "not succeed",
+                            Assistant.getUnixTime());
+
+                }
+
+
+            } else {
+
+                String amount = sh_p.getString(SharedPreferencesRepository.AMOUNT, "0");
+                String resNum = sh_p.getString(SharedPreferencesRepository.OUR_TOKEN, "0");
+                int placeID = Integer.parseInt(sh_p.getString(SharedPreferencesRepository.PLACE_ID, "0"));
+
+                transaction = new Transaction(
+                        amount,
+                        resNum,
+                        "0",
+                        placeID,
+                        -1,
+                        PARSIAN,
+                        "-1",
+                        "****-****-****-****",
+                        "0",
+                        "",
+                        "not succeed",
+                        Assistant.getUnixTime());
+
+
+            }
+
+            Gson gson = new Gson();
+            sh_p.updateTransactions(transaction);
+            verifyTransaction(transaction);
+
+//            parsianPaymentCallBack.verifyTransaction(transaction);
+
+
+        } else if (requestCode == QR_SCANER_REQUEST_CODE) {
+
+            if (data != null) {
+
+                try {
+
+                    String scannedData = data.getExtras().getString(QR_DATA);
+                    int placeId = Integer.parseInt(scannedData.split("=")[scannedData.split("=").length - 1]);
+                    parsianPaymentCallBack.getScannerData(placeId);
+
+                } catch (Exception e) {
+                    Toast.makeText(context, "معتبر نمیباشد", Toast.LENGTH_LONG).show();
+                }
+
+            }
+
+        }
+
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     public void createTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID, int transactionType) {
 
@@ -136,7 +267,7 @@ public class ParsianPayment {
                                     Integer.toString(amount),
                                     Long.toString(our_token),
                                     "0",
-                                    Integer.parseInt(sh_r.getString(SharedPreferencesRepository.PLACE_ID,"0")),
+                                    Integer.parseInt(sh_r.getString(SharedPreferencesRepository.PLACE_ID, "0")),
                                     0,
                                     PARSIAN,
                                     "0",
@@ -153,7 +284,7 @@ public class ParsianPayment {
                         } else
                             try {
 
-                                APIErrorHandler.onResponseErrorHandler(fragmentManager, activity, response, () -> createTransaction(plateType, tag1, finalTag2, finalTag3, finalTag4, amount, placeID,transactionType));
+                                APIErrorHandler.onResponseErrorHandler(fragmentManager, activity, response, () -> createTransaction(plateType, tag1, finalTag2, finalTag3, finalTag4, amount, placeID, transactionType));
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -166,258 +297,176 @@ public class ParsianPayment {
 
                             loadingBar.dismiss();
                             t.printStackTrace();
-                            APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> createTransaction(plateType, tag1, finalTag2, finalTag3, finalTag4, amount, placeID,transactionType));
+                            APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> createTransaction(plateType, tag1, finalTag2, finalTag3, finalTag4, amount, placeID, transactionType));
 
 
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                       }
+                    }
                 });
 
     }
 
-    public void handleResult(int requestCode, int resultCode, Intent data) {
+    private void verifyTransaction(Transaction transaction) {
 
-        if (requestCode == PAYMENT_REQUEST_CODE) {
+        System.out.println("----------> verifyTransaction");
 
-            Transaction transaction;
+        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(context);
+        RetrofitAPIRepository repository = new RetrofitAPIRepository(context);
 
-            if (resultCode == Activity.RESULT_OK) {
-
-                Bundle b = data.getBundleExtra("response");
-                if (b != null) {
-
-                    Log.d("bundle data", getBundleString(b));
-
-                    int amount = Integer.parseInt(sh_p.getString(SharedPreferencesRepository.AMOUNT,"0"));
-                    String result = b.getString("result");
-                    String pan = b.getString("pan");
-                    String rrn = b.getString("rrn");
-                    Long date = b.getLong("date");
-                    String trace = b.getString("trace");
-                    String errorMessage = b.getString("message", "");
-//                    Long res_num = Long.parseLong(sh_p.getString(SharedPreferencesRepository.OUR_TOKEN));
-                    Long res_num = b.getLong("res_num");
-                    int status = errorMessage.isEmpty() ? 1 : -1;
+        repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
+                transaction, new Callback<VerifyTransactionResponse>() {
+                    @Override
+                    public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
 
 
-                    if (tag2 == null) tag2 = "null";
-                    if (tag3 == null) tag3 = "null";
-                    if (tag4 == null) tag4 = "null";
+                        if (response.isSuccessful() && transaction.getStatus() != 0) {
 
-                    transaction = new Transaction(
-                            Integer.toString(amount),
-                            Long.toString(res_num),
-                            rrn.isEmpty()?"0":rrn,
-                            placeID,
-                            status,
-                            PARSIAN,
-                            result.equals("succeed") ? "1" : "-1",
-                            pan,
-                            Long.toString(date),
-                            trace,
-                            result,
-                            Assistant.getUnixTime());
+                            sh_r.removeFromTransactions(transaction);
+                            Toast.makeText(context, response.body().getDescription(), Toast.LENGTH_SHORT).show();
+                            String tag1 = sh_r.getString(SharedPreferencesRepository.TAG1, "0");
+                            String tag2 = sh_r.getString(SharedPreferencesRepository.TAG2, "0");
+                            String tag3 = sh_r.getString(SharedPreferencesRepository.TAG3, "0");
+                            String tag4 = sh_r.getString(SharedPreferencesRepository.TAG4, "0");
+
+                            getCarDebtHistory(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
 
 
-                } else {
+                        } else
+                            APIErrorHandler.onResponseErrorHandler(fragmentManager, activity, response, () -> verifyTransaction(transaction));
+                    }
 
-                    String amount = sh_p.getString(SharedPreferencesRepository.AMOUNT, "0");
-                    String resNum = sh_p.getString(SharedPreferencesRepository.OUR_TOKEN, "0");
-                    int placeID = Integer.parseInt(sh_p.getString(SharedPreferencesRepository.PLACE_ID, "0"));
-                    String tag4 = sh_p.getString(SharedPreferencesRepository.TAG4, "0");
+                    @Override
+                    public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
+                        t.printStackTrace();
+                        APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> verifyTransaction(transaction));
+                    }
+                });
 
-                    transaction = new Transaction(
-                            amount,
-                            resNum,
-                            "0",
-                            placeID,
-                            -1,
-                            PARSIAN,
-                            "-1",
-                            "****-****-****-****",
-                            "0",
-                            null,
-                            "not succeed",
-                            Assistant.getUnixTime());
+    }
 
-                }
+    private void getCarDebtHistory(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset) {
 
+        System.out.println("----------> getCarDebtHistory");
+
+        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(context);
+        RetrofitAPIRepository repository = new RetrofitAPIRepository(context);
+        loadingBar.show();
+
+        repository.getCarDebtHistory("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
+                plateType, tag1, tag2, tag3, tag4, limit, offset, new Callback<DebtHistoryResponse>() {
+                    @Override
+                    public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
 
 
+                        loadingBar.dismiss();
+                        if (response.isSuccessful()) {
+
+                            if (response.body().success != 1) {
+
+
+                                Toast.makeText(context, response.body().description != null ? response.body().description : response.body().getMsg(), Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            if (response.body().getSuccess() == 1) {
+
+                                if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.simple)
+                                    printFactor(tag1,
+                                            tag2,
+                                            tag3,
+                                            tag4, response.body().balance);
+                                else if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.old_aras)
+                                    printFactor(tag1, "0", "0", "0", response.body().balance);
+                                else
+                                    printFactor(tag1, tag2, "0", "0", response.body().balance);
+
+                            }
+
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
+                        loadingBar.dismiss();
+                        t.printStackTrace();
+                    }
+                });
+
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @SuppressLint("SetTextI18n")
+    private void printFactor(String tag1, String tag2, String tag3, String tag4, int balance) {
+
+
+        if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
+
+            printArea.removeAllViews();
+
+            ParsianAfterPaymentPrintTemplateBinding printTemplateBinding = ParsianAfterPaymentPrintTemplateBinding.inflate(LayoutInflater.from(context), printArea, true);
+
+            printTemplateBinding.balanceTitle.setText(balance < 0 ? "بدهی پلاک" : "شارژ پلاک");
+
+            printTemplateBinding.balance.setText(balance + " تومان");
+
+//            printTemplateBinding.prices.setText(pricing);
+
+            if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.simple) {
+
+                printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
+                printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
+                printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
+
+                printTemplateBinding.plateSimpleTag1.setText(tag1);
+                printTemplateBinding.plateSimpleTag2.setText(tag2);
+                printTemplateBinding.plateSimpleTag3.setText(tag3);
+                printTemplateBinding.plateSimpleTag4.setText(tag4);
+
+            } else if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.old_aras) {
+
+                printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
+                printTemplateBinding.plateOldArasArea.setVisibility(View.VISIBLE);
+                printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
+
+                printTemplateBinding.plateOldArasTag1En.setText(tag1);
+                printTemplateBinding.plateOldArasTag1Fa.setText(tag1);
 
             } else {
 
-                String amount = sh_p.getString(SharedPreferencesRepository.AMOUNT, "0");
-                String resNum = sh_p.getString(SharedPreferencesRepository.OUR_TOKEN, "0");
-                int placeID = Integer.parseInt(sh_p.getString(SharedPreferencesRepository.PLACE_ID, "0"));
+                printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
+                printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
+                printTemplateBinding.plateNewArasArea.setVisibility(View.VISIBLE);
 
-                transaction = new Transaction(
-                        amount,
-                        resNum,
-                        "0",
-                        placeID,
-                        -1,
-                        PARSIAN,
-                        "-1",
-                        "****-****-****-****",
-                        "0",
-                        null,
-                        "not succeed",
-                        Assistant.getUnixTime());
-
+                printTemplateBinding.plateNewArasTag1En.setText(tag1);
+                printTemplateBinding.plateNewArasTag1Fa.setText(tag1);
+                printTemplateBinding.plateNewArasTag2En.setText(tag2);
+                printTemplateBinding.plateNewArasTag2Fa.setText(tag2);
 
             }
 
+            printTemplateBinding.text.setText("\n.");
 
-            sh_p.updateTransactions(transaction);
+            try {
 
-            parsianPaymentCallBack.verifyTransaction(transaction);
+                printArea.post(() -> {
+
+                    PrinterManager printer = new PrinterManager();
+                    int setupResult = printer.setupPage(-1, -1);
+                    printer.drawBitmap(getViewBitmap(printTemplateBinding.getRoot()), 0, 0);
+                    int printResult = printer.printPage(0);
+                });
 
 
-        }
-        else if (requestCode == QR_SCANER_REQUEST_CODE) {
-
-            if (data != null) {
-
-                try{
-
-                    String scannedData = data.getExtras().getString(QR_DATA);
-                    int placeId = Integer.parseInt(scannedData.split("=")[scannedData.split("=").length - 1]);
-                    parsianPaymentCallBack.getScannerData(placeId);
-
-                } catch (Exception e) {
-                    Toast.makeText(context, "معتبر نمیباشد", Toast.LENGTH_LONG).show();
-                }
-
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("----------> Exception  ");
             }
 
-        }
-
     }
-
-    private String getBundleString(Bundle b) {
-
-//        sample
-//        amount : 000000001000
-//        result : (succeed / unsucceed)
-//        pan : 589210***2557
-//        rrn : 801663199541
-//        date : 23732049000
-//        trace : 000015
-//        message :    (this will have value if there is an error)
-//        res_num : -1 (our_token)
-//        charge_pin : null
-
-        Set<String> keys = b.keySet();
-
-        StringBuffer sb = new StringBuffer();
-
-        for (String key : keys) {
-            sb.append(key);
-            sb.append(" : ");
-            if (key.equals("date") || key.equals("res_num"))
-                sb.append(b.getLong(key));
-            else
-                sb.append(b.getString(key));
-            sb.append(" - ");
-        }
-
-        return sb.toString();
-
-    }
-
-//    public void printParkInfo(String startTime, String tag1, String tag2, String tag3, String tag4,
-//                              int placeID, ViewGroup viewGroupForBindFactor, String pricing, String telephone, String sms_number,
-//                              String qr_url) {
-//
-//
-//        PrintTemplateBinding printTemplateBinding = PrintTemplateBinding.inflate(LayoutInflater.from(context), viewGroupForBindFactor, true);
-//
-//        printTemplateBinding.placeId.setText(placeID + "");
-//
-////                String time = startTime.split(" ")[]
-//
-//        printTemplateBinding.startTime.setText(startTime);
-//        printTemplateBinding.prices.setText(pricing);
-//        printTemplateBinding.supportPhone.setText(telephone);
-//        printTemplateBinding.description.setText("در صورت عدم حضور پارکیار عدد " + placeID + " را به شماره " + sms_number + " ارسال کنید");
-//
-//        printTemplateBinding.qrcode.setImageBitmap(QRGenerator(qr_url + placeID));
-//
-//        if (tag4 != null && !tag4.isEmpty()) {
-//
-//            printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
-//            printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
-//            printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
-//
-//            printTemplateBinding.plateSimpleTag1.setText(tag1);
-//            printTemplateBinding.plateSimpleTag2.setText(tag2);
-//            printTemplateBinding.plateSimpleTag3.setText(tag3);
-//            printTemplateBinding.plateSimpleTag4.setText(tag4);
-//
-//        } else if (tag2 == null || tag2.isEmpty()) {
-//
-//            printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
-//            printTemplateBinding.plateOldArasArea.setVisibility(View.VISIBLE);
-//            printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
-//
-//            printTemplateBinding.plateOldArasTag1En.setText(tag1);
-//            printTemplateBinding.plateOldArasTag1Fa.setText(tag1);
-//
-//        } else {
-//
-//            printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
-//            printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
-//            printTemplateBinding.plateNewArasArea.setVisibility(View.VISIBLE);
-//
-//            printTemplateBinding.plateNewArasTag1En.setText(tag1);
-//            printTemplateBinding.plateNewArasTag1Fa.setText(tag1);
-//            printTemplateBinding.plateNewArasTag2En.setText(tag2);
-//            printTemplateBinding.plateNewArasTag2Fa.setText(tag2);
-//
-//        }
-//
-//        PrinterManager printer = new PrinterManager();
-//        int setupResult = printer.setupPage(-1,-1);
-//        printer.drawBitmap(getViewBitmap(printTemplateBinding.getRoot()),0,0);
-//        printer.printPage(0);
-//
-//
-//    }
-//
-//    public static Bitmap getViewBitmap(View v) {
-//        v.clearFocus();
-//        v.setPressed(false);
-//
-//        boolean willNotCache = v.willNotCacheDrawing();
-//        v.setWillNotCacheDrawing(false);
-//
-//        // Reset the drawing cache background color to fully transparent
-//        // for the duration of this operation
-//        int color = v.getDrawingCacheBackgroundColor();
-//        v.setDrawingCacheBackgroundColor(0);
-//
-//        if (color != 0) {
-//            v.destroyDrawingCache();
-//        }
-//        v.buildDrawingCache();
-//        Bitmap cacheBitmap = v.getDrawingCache();
-//        if (cacheBitmap == null) {
-//            Log.e(TAG, "failed getViewBitmap(" + v + ")", new RuntimeException());
-//            return null;
-//        }
-//
-//        Bitmap bitmap = Bitmap.createBitmap(cacheBitmap);
-//
-//        // Restore the view
-//        v.destroyDrawingCache();
-//        v.setWillNotCacheDrawing(willNotCache);
-//        v.setDrawingCacheBackgroundColor(color);
-//
-//        return bitmap;
-//    }
 
     public void printParkInfo(Place place, int placeID, ViewGroup viewGroupForBindFactor, String pricing, String telephone, String sms_number,
                               String qr_url, int balance) {
@@ -505,6 +554,9 @@ public class ParsianPayment {
 
     }
 
+
+    //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     public static Bitmap getViewBitmap(View view) {
 
 
@@ -523,9 +575,6 @@ public class ParsianPayment {
 //            canvas.drawColor(Color.WHITE);
 //        view.draw(canvas);
 //        return returnedBitmap;
-
-
-
 
 
 //        v.clearFocus();
@@ -572,13 +621,46 @@ public class ParsianPayment {
 
     }
 
+    private String getBundleString(Bundle b) {
+
+//        sample
+//        amount : 000000001000
+//        result : (succeed / unsucceed)
+//        pan : 589210***2557
+//        rrn : 801663199541
+//        date : 23732049000
+//        trace : 000015
+//        message :    (this will have value if there is an error)
+//        res_num : -1 (our_token)
+//        charge_pin : null
+
+        Set<String> keys = b.keySet();
+
+        StringBuffer sb = new StringBuffer();
+
+        for (String key : keys) {
+            sb.append(key);
+            sb.append(" : ");
+            if (key.equals("date") || key.equals("res_num"))
+                sb.append(b.getLong(key));
+            else
+                sb.append(b.getString(key));
+            sb.append(" - ");
+        }
+
+        return sb.toString();
+
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     public interface ParsianPaymentCallBack {
 
         public void verifyTransaction(Transaction transaction);
 
         public void getScannerData(int placeID);
 
-        public void onVersifyFinished();
+        public void onVerifyFinished();
 
     }
 

@@ -59,7 +59,7 @@ public class DebtCheckActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         assistant = new Assistant();
-        parsianPayment = new ParsianPayment(getApplicationContext(), activity, new ParsianPayment.ParsianPaymentCallBack() {
+        parsianPayment = new ParsianPayment(binding.printArea,getApplicationContext(), activity, new ParsianPayment.ParsianPaymentCallBack() {
             @Override
             public void verifyTransaction(Transaction transaction) {
 //                DebtCheckActivity.this.verifyTransaction(transaction);
@@ -71,7 +71,7 @@ public class DebtCheckActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onVersifyFinished() {
+            public void onVerifyFinished() {
 
             }
         }, getSupportFragmentManager());

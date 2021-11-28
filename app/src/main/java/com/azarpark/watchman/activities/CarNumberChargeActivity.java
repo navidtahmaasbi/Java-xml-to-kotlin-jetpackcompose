@@ -59,7 +59,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         assistant = new Assistant();
-        parsianPayment = new ParsianPayment(getApplicationContext(), activity, new ParsianPayment.ParsianPaymentCallBack() {
+        parsianPayment = new ParsianPayment(binding.printArea,getApplicationContext(), activity, new ParsianPayment.ParsianPaymentCallBack() {
             @Override
             public void verifyTransaction(Transaction transaction) {
 //                CarNumberChargeActivity.this.verifyTransaction(transaction);
@@ -71,7 +71,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onVersifyFinished() {
+            public void onVerifyFinished() {
                 //todo print mimii factor
             }
         }, getSupportFragmentManager());
@@ -316,7 +316,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         ArrayList<Integer> items = new ArrayList<>();
 
         //todo release
-        items.add(100);
+//        items.add(1000);
         items.add(10000);
         items.add(20000);
         items.add(30000);
