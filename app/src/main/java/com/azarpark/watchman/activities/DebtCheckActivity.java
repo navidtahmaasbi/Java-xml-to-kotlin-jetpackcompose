@@ -29,9 +29,12 @@ import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
+import com.azarpark.watchman.web_service.NewErrorHandler;
+import com.azarpark.watchman.web_service.WebService;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Locale;
 
 import retrofit2.Call;
@@ -362,7 +365,7 @@ public class DebtCheckActivity extends AppCompatActivity {
                         binding.plateNewArasTag2.getText().toString().length() != 2))
             Toast.makeText(getApplicationContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
         else if (selectedTab == PlateType.simple)
-            getCarDebtHistory(
+            getCarDebtHistory02(
                     selectedTab,
                     binding.plateSimpleTag1.getText().toString(),
                     binding.plateSimpleTag2.getText().toString(),
@@ -372,7 +375,7 @@ public class DebtCheckActivity extends AppCompatActivity {
                     adapter.getItemCount()
             );
         else if (selectedTab == PlateType.old_aras)
-            getCarDebtHistory(
+            getCarDebtHistory02(
                     selectedTab,
                     binding.plateOldAras.getText().toString(),
                     "0", "0", "0",
@@ -381,7 +384,7 @@ public class DebtCheckActivity extends AppCompatActivity {
 
             );
         else
-            getCarDebtHistory(
+            getCarDebtHistory02(
                     selectedTab,
                     binding.plateNewArasTag1.getText().toString(),
                     binding.plateNewArasTag2.getText().toString(),
@@ -392,66 +395,105 @@ public class DebtCheckActivity extends AppCompatActivity {
 
     }
 
-    private void getCarDebtHistory(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset) {
+//    private void getCarDebtHistory(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset) {
+//
+//        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
+//        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
+//        loadingBar.show();
+//
+//        repository.getCarDebtHistory("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
+//                plateType, tag1, tag2, tag3, tag4, limit, offset, new Callback<DebtHistoryResponse>() {
+//                    @SuppressLint("SetTextI18n")
+//                    @Override
+//                    public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
+//
+//
+//                        loadingBar.dismiss();
+//                        if (response.isSuccessful()) {
+//
+//                             if (response.body().success != 1){
+//
+//
+//                                 Toast.makeText(getApplicationContext(), response.body().description != null ? response.body().description : response.body().getMsg(), Toast.LENGTH_SHORT).show();
+//                                return;
+//                            }
+//
+//                            if (response.body().getSuccess() == 1) {
+//
+//                                if (response.body().balance < 0)
+//                                    debt = response.body().balance * -1;
+//
+//                                binding.balanceTitle.setText(response.body().balance >= 0 ? "اعتبار پلاک" : "بدهی پلاک");
+//                                binding.debtAmount.setTextColor(getResources().getColor(response.body().balance >= 0 ? R.color.green : R.color.red));
+//                                binding.payment.setVisibility(response.body().balance < 0 ? View.VISIBLE : View.GONE);
+//
+//                                binding.debtAmount.setText(NumberFormat.getNumberInstance(Locale.US).format(response.body().balance < 0 ? (response.body().balance * -1) : response.body().balance) + " تومان");
+//
+////                                binding.plateSimpleTag1.setText("");
+////                                binding.plateSimpleTag2.setText("");
+////                                binding.plateSimpleTag3.setText("");
+////                                binding.plateSimpleTag4.setText("");
+////                                binding.plateOldAras.setText("");
+////                                binding.plateNewArasTag1.setText("");
+////                                binding.plateNewArasTag2.setText("");
+//
+//                                binding.debtArea.setVisibility(View.VISIBLE);
+//                                adapter.addItems(response.body().items);
+//
+//
+//                            } else
+//                                Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
+//
+//
+//                        } else
+//                            APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> getCarDebtHistory(plateType, tag1, tag2, tag3, tag4, limit, offset));
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
+//                        loadingBar.dismiss();
+//                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> getCarDebtHistory(plateType, tag1, tag2, tag3, tag4, limit, offset));
+//                    }
+//                });
+//
+//    }
 
-        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-        loadingBar.show();
+    private void getCarDebtHistory02(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset) {
 
-        repository.getCarDebtHistory("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-                plateType, tag1, tag2, tag3, tag4, limit, offset, new Callback<DebtHistoryResponse>() {
-                    @SuppressLint("SetTextI18n")
-                    @Override
-                    public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
+        Runnable functionRunnable = () -> getCarDebtHistory02(plateType, tag1, tag2, tag3, tag4, limit, offset);
+        LoadingBar.start(DebtCheckActivity.this);
 
+        WebService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
+            @Override
+            public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
 
-                        loadingBar.dismiss();
-                        if (response.isSuccessful()) {
+                Assistant.hideKeyboard(DebtCheckActivity.this);
 
-                             if (response.body().success != 1){
+                LoadingBar.stop();
+                if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
+                    return;
 
+                if (response.body().balance < 0)
+                    debt = response.body().balance * -1;
 
-                                 Toast.makeText(getApplicationContext(), response.body().description != null ? response.body().description : response.body().getMsg(), Toast.LENGTH_SHORT).show();
-                                return;
-                            }
+                binding.balanceTitle.setText(response.body().balance >= 0 ? "اعتبار پلاک" : "بدهی پلاک");
+                binding.debtAmount.setTextColor(getResources().getColor(response.body().balance >= 0 ? R.color.green : R.color.red));
+                binding.payment.setVisibility(response.body().balance < 0 ? View.VISIBLE : View.GONE);
 
-                            if (response.body().getSuccess() == 1) {
+                binding.debtAmount.setText(NumberFormat.getNumberInstance(Locale.US).format(response.body().balance < 0 ? (response.body().balance * -1) : response.body().balance) + " تومان");
 
-                                if (response.body().balance < 0)
-                                    debt = response.body().balance * -1;
-
-                                binding.balanceTitle.setText(response.body().balance >= 0 ? "اعتبار پلاک" : "بدهی پلاک");
-                                binding.debtAmount.setTextColor(getResources().getColor(response.body().balance >= 0 ? R.color.green : R.color.red));
-                                binding.payment.setVisibility(response.body().balance < 0 ? View.VISIBLE : View.GONE);
-
-                                binding.debtAmount.setText(NumberFormat.getNumberInstance(Locale.US).format(response.body().balance < 0 ? (response.body().balance * -1) : response.body().balance) + " تومان");
-
-//                                binding.plateSimpleTag1.setText("");
-//                                binding.plateSimpleTag2.setText("");
-//                                binding.plateSimpleTag3.setText("");
-//                                binding.plateSimpleTag4.setText("");
-//                                binding.plateOldAras.setText("");
-//                                binding.plateNewArasTag1.setText("");
-//                                binding.plateNewArasTag2.setText("");
-
-                                binding.debtArea.setVisibility(View.VISIBLE);
-                                adapter.addItems(response.body().items);
+                binding.debtArea.setVisibility(View.VISIBLE);
+                adapter.addItems(response.body().items);
 
 
-                            } else
-                                Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
+            }
 
-
-                        } else
-                            APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> getCarDebtHistory(plateType, tag1, tag2, tag3, tag4, limit, offset));
-                    }
-
-                    @Override
-                    public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
-                        loadingBar.dismiss();
-                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> getCarDebtHistory(plateType, tag1, tag2, tag3, tag4, limit, offset));
-                    }
-                });
+            @Override
+            public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
+                LoadingBar.stop();
+                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
+            }
+        });
 
     }
 
@@ -464,37 +506,37 @@ public class DebtCheckActivity extends AppCompatActivity {
 
     }
 
-    private void verifyTransaction(Transaction transaction) {
-
-        Log.d("verifyTransaction", "started ...");
-
-        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-        loadingBar.show();
-
-
-        repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-                transaction, new Callback<VerifyTransactionResponse>() {
-                    @Override
-                    public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
-
-
-                        loadingBar.dismiss();
-                        if (response.isSuccessful()) {
-
-                            sh_r.removeFromTransactions(transaction);
-                            Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
-                        } else
-                            APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> verifyTransaction(transaction));
-                    }
-
-                    @Override
-                    public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
-                        loadingBar.dismiss();
-                        t.printStackTrace();
-                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> verifyTransaction(transaction));
-                    }
-                });
-
-    }
+//    private void verifyTransaction(Transaction transaction) {
+//
+//        Log.d("verifyTransaction", "started ...");
+//
+//        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
+//        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
+//        loadingBar.show();
+//
+//
+//        repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
+//                transaction, new Callback<VerifyTransactionResponse>() {
+//                    @Override
+//                    public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
+//
+//
+//                        loadingBar.dismiss();
+//                        if (response.isSuccessful()) {
+//
+//                            sh_r.removeFromTransactions(transaction);
+//                            Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
+//                        } else
+//                            APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> verifyTransaction(transaction));
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
+//                        loadingBar.dismiss();
+//                        t.printStackTrace();
+//                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> verifyTransaction(transaction));
+//                    }
+//                });
+//
+//    }
 }

@@ -2,6 +2,7 @@ package com.azarpark.watchman;
 
 import android.app.Application;
 
+import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.yandex.metrica.YandexMetrica;
 import com.yandex.metrica.YandexMetricaConfig;
 
@@ -16,6 +17,9 @@ public class MyApp extends Application {
         YandexMetrica.activate(getApplicationContext(), config);
         // Automatic tracking of user activity.
         YandexMetrica.enableActivityAutoTracking(this);
+
+        SharedPreferencesRepository.create(getApplicationContext());
+
     }
 
 }

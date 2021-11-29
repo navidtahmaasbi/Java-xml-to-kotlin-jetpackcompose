@@ -19,15 +19,19 @@ import androidx.fragment.app.DialogFragment;
 
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.activities.DebtListActivity;
+import com.azarpark.watchman.activities.MainActivity;
 import com.azarpark.watchman.databinding.ParkInfoDialogBinding;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnGetInfoClicked;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
+import com.azarpark.watchman.retrofit_remote.responses.DeleteExitRequestResponse;
 import com.azarpark.watchman.retrofit_remote.responses.EstimateParkPriceResponse;
 import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
+import com.azarpark.watchman.web_service.NewErrorHandler;
+import com.azarpark.watchman.web_service.WebService;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -79,7 +83,7 @@ public class ParkInfoDialog extends DialogFragment {
 
         assistant = new Assistant();
 
-        getParkData(place);
+        getParkData02(place);
 
         binding.placeNumber.setText(place.number + "");
         try {
@@ -235,12 +239,12 @@ public class ParkInfoDialog extends DialogFragment {
                             try {
                                 Toast.makeText(getContext(), response.body().description != null ? response.body().description : response.body().getMsg(), Toast.LENGTH_SHORT).show();
 
-                            }catch (Exception e){
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
 
-                        return;
-                    }
+                            return;
+                        }
 
                         if (response.body().getSuccess() == 1) {
 
@@ -377,6 +381,147 @@ public class ParkInfoDialog extends DialogFragment {
             public void onFailure(Call<EstimateParkPriceResponse> call, Throwable t) {
                 APIErrorHandler.onFailureErrorHandler(getParentFragmentManager(), t, () -> getParkData(place));
 
+            }
+        });
+
+    }
+
+    private void getParkData02(Place place) {
+
+        Runnable functionRunnable = () -> getParkData02(place);
+        LoadingBar.start(getContext());
+
+        WebService.getClient(getContext()).estimatePArkPrice(SharedPreferencesRepository.getTokenWithPrefix(), place.id).enqueue(new Callback<EstimateParkPriceResponse>() {
+            @Override
+            public void onResponse(Call<EstimateParkPriceResponse> call, Response<EstimateParkPriceResponse> response) {
+
+                LoadingBar.stop();
+                if (NewErrorHandler.apiResponseHasError(response, getContext()))
+                    return;
+
+                if (place.exit_request != null) {
+
+                    binding.exitRequestArea.setVisibility(View.VISIBLE);
+                    binding.paymentArea.setVisibility(View.GONE);
+                    binding.chargeArea.setVisibility(View.GONE);
+                    binding.pay.setVisibility(View.GONE);
+
+                } else {
+
+                    binding.exitRequestArea.setVisibility(View.GONE);
+                    binding.paymentArea.setVisibility(View.VISIBLE);
+
+                }
+
+                EstimateParkPriceResponse parkPriceResponse = response.body();
+
+                int parkPrice = parkPriceResponse.getPrice();
+                int carBalance = parkPriceResponse.getCar_balance();
+                balance = carBalance;
+
+                binding.paymentArea.setVisibility(View.VISIBLE);
+
+                if (carBalance < 0) {
+
+                    debt = -carBalance;
+
+                    binding.carBalanceTitle.setText("بدهی شما");
+                    binding.carBalance.setText(NumberFormat.getNumberInstance(Locale.US).format(-carBalance) + " تومان");
+
+                    binding.carBalance.setTextColor(getResources().getColor(R.color.red));
+
+                    binding.showDebtList.setVisibility(View.VISIBLE);
+
+                    binding.parkPrice.setText(NumberFormat.getNumberInstance(Locale.US).format(parkPrice) + " تومان");
+                    totalPrice = parkPrice - carBalance;
+                    binding.totalPrice.setText(NumberFormat.getNumberInstance(Locale.US).format(totalPrice) + " تومان");
+
+                    binding.balanceCheckbox.setVisibility(View.VISIBLE);
+                    binding.balanceIcon.setVisibility(View.GONE);
+
+
+                    binding.balanceCheckbox.setOnCheckedChangeListener((compoundButton, b) -> {
+
+                        totalPrice = b ? parkPrice - carBalance : parkPrice;
+                        binding.totalPrice.setText(NumberFormat.getNumberInstance(Locale.US).format(totalPrice) + " تومان");
+
+                    });
+
+                    binding.pay.setOnClickListener(view -> Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
+                    binding.pay.setOnLongClickListener(view -> {
+                        onGetInfoClicked.pay(totalPrice, place);
+                        return false;
+                    });
+
+                }
+                else {
+
+                    binding.carBalanceTitle.setText("اعتبار پلاک");
+                    binding.carBalance.setText(NumberFormat.getNumberInstance(Locale.US).format(carBalance) + " تومان");
+
+                    binding.showDebtList.setVisibility(View.GONE);
+
+                    binding.carBalance.setTextColor(getResources().getColor(R.color.dark_green));
+
+
+                    if (parkPrice == 0) {
+
+                        totalPrice = parkPrice;
+
+                        binding.pay.setBackgroundDrawable(getResources().getDrawable(R.drawable.green_5_bg));
+                        binding.pay.setText("خروج از پارک");
+
+                        binding.payAsDebt.setVisibility(View.GONE);
+
+                        binding.pay.setOnClickListener(view -> Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
+                        binding.pay.setOnLongClickListener(view -> {
+                            onGetInfoClicked.payAsDebt(place);
+                            return false;
+                        });
+
+                    } else if (carBalance >= parkPrice) {
+
+                        totalPrice = parkPrice;
+
+                        binding.pay.setBackgroundDrawable(getResources().getDrawable(R.drawable.green_5_bg));
+                        binding.pay.setText("کسر از اعتبار");
+
+                        binding.payAsDebt.setVisibility(View.GONE);
+
+                        binding.pay.setOnClickListener(view -> Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
+                        binding.pay.setOnLongClickListener(view -> {
+                            onGetInfoClicked.payAsDebt(place);
+                            return false;
+                        });
+
+                    } else {
+
+                        totalPrice = parkPrice - carBalance;
+
+                        binding.pay.setOnClickListener(view -> Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
+                        binding.pay.setOnLongClickListener(view -> {
+                            onGetInfoClicked.pay(totalPrice, place);
+                            return false;
+                        });
+
+                    }
+
+
+                    binding.totalPrice.setText(NumberFormat.getNumberInstance(Locale.US).format(totalPrice) + " تومان");
+
+                    binding.parkPrice.setText(NumberFormat.getNumberInstance(Locale.US).format(parkPrice) + " تومان");
+
+                    binding.balanceCheckbox.setVisibility(View.GONE);
+                    binding.balanceIcon.setVisibility(View.VISIBLE);
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<EstimateParkPriceResponse> call, Throwable t) {
+                LoadingBar.stop();
+                NewErrorHandler.apiFailureErrorHandler(call, t, getParentFragmentManager(), functionRunnable);
             }
         });
 

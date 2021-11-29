@@ -15,4 +15,29 @@ public class Constants {
     public static final String BASE_URL_SECOND_PART = ".backend1.azarpark.irana.app";
     public static final String ACCESS_TOKEN = "ACCESS_TOKEN";
 
+
+    public static String
+            REFRESH_TOKEN = "refreshToken",
+            USERNAME = "username",
+            PLATE_TYPE = "PLATE_TYPE",
+            TAG1 = "TAG1",
+            TAG2 = "TAG2",
+            TAG3 = "TAG3",
+            TAG4 = "TAG4",
+            AMOUNT = "AMOUNT",
+            PLACE_ID = "PLACE_ID",
+            OUR_TOKEN = "our_token",
+            TRANSACTION_ID = "TRANSACTION_ID",
+            REF_NUM = "REF_NUM",
+            SUB_DOMAIN = "SUB_DOMAIN",
+            CITY_ID = "city_id";
+    public static String qr_url = "qr_url";
+    public static String refresh_time = "refresh_time";
+    public static String telephone = "telephone";
+    public static String pricing = "pricing";
+    public static String sms_number = "sms_number";
+    public static String rules_url = "rules_url";
+    public static String about_us_url = "about_us_url";
+    public static String guide_url = "guide_url";
+
 }

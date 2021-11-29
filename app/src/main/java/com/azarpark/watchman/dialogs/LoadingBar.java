@@ -16,6 +16,7 @@ public class LoadingBar {
 
     public Dialog dialog;
     private boolean isLoading;
+    public static Dialog dialog02;
 
     public boolean isLoading() {
         return isLoading;
@@ -43,6 +44,29 @@ public class LoadingBar {
 
         isLoading = false;
         dialog.dismiss();
+
+    }
+
+    public static void start(Context context) {
+
+        if (dialog02 == null) {
+
+            dialog02 = new Dialog(context);
+            dialog02.setContentView(R.layout.loadingbar);
+            dialog02.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+            dialog02.getWindow().setGravity(Gravity.CENTER);
+            dialog02.setCancelable(false);
+            dialog02.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        dialog02.show();
+
+    }
+
+    public static void stop(){
+
+        if (dialog02 != null)
+            dialog02.dismiss();
 
     }
 

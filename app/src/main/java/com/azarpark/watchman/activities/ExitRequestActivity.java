@@ -17,10 +17,16 @@ import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
+import com.azarpark.watchman.retrofit_remote.responses.DebtHistoryResponse;
 import com.azarpark.watchman.retrofit_remote.responses.ExitRequestResponse;
 import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
+import com.azarpark.watchman.web_service.NewErrorHandler;
+import com.azarpark.watchman.web_service.WebService;
+
+import java.text.NumberFormat;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -224,7 +230,7 @@ public class ExitRequestActivity extends AppCompatActivity {
                         binding.plateNewArasTag2.getText().toString().isEmpty()))
             Toast.makeText(getApplicationContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
         else if (selectedTab == PlateType.simple)
-            exitRequest(
+            exitRequest02(
                     selectedTab,
                     binding.plateSimpleTag1.getText().toString(),
                     binding.plateSimpleTag2.getText().toString(),
@@ -232,14 +238,14 @@ public class ExitRequestActivity extends AppCompatActivity {
                     binding.plateSimpleTag4.getText().toString()
             );
         else if (selectedTab == PlateType.old_aras)
-            exitRequest(
+            exitRequest02(
                     selectedTab,
                     binding.plateOldAras.getText().toString(),
                     "0", "0", "0"
 
             );
         else
-            exitRequest(
+            exitRequest02(
                     selectedTab,
                     binding.plateNewArasTag1.getText().toString(),
                     binding.plateNewArasTag2.getText().toString(),
@@ -248,44 +254,78 @@ public class ExitRequestActivity extends AppCompatActivity {
 
     }
 
-    private void exitRequest(PlateType plateType, String tag1, String tag2, String tag3, String tag4) {
+//    private void exitRequest(PlateType plateType, String tag1, String tag2, String tag3, String tag4) {
+//
+//        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
+//        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
+//        loadingBar.show();
+//
+//        repository.exitRequest("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
+//                plateType, tag1, tag2, tag3, tag4, new Callback<ExitRequestResponse>() {
+//                    @Override
+//                    public void onResponse(Call<ExitRequestResponse> call, Response<ExitRequestResponse> response) {
+//
+//
+//                        loadingBar.dismiss();
+//                        if (response.isSuccessful()) {
+//
+//                            if (response.body().getSuccess() != 1){
+//
+//                                Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_LONG).show();
+//                                return;
+//                            }
+//
+//                            messageDialog = new MessageDialog("درخواست خروج", response.body().getDescription(), "تایید", () -> {
+//                                messageDialog.dismiss();
+//                                onBackPressed();
+//                            });
+//
+//                            messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
+//
+//
+//                        } else APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(),activity, response, () -> exitRequest(plateType,tag1,tag2,tag3,tag4));
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<ExitRequestResponse> call, Throwable t) {
+//                        loadingBar.dismiss();
+//                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(),t, () -> exitRequest(plateType,tag1,tag2,tag3,tag4));
+//                    }
+//                });
+//
+//    }
 
-        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-        loadingBar.show();
+    private void exitRequest02(PlateType plateType, String tag1, String tag2, String tag3, String tag4) {
 
-        repository.exitRequest("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-                plateType, tag1, tag2, tag3, tag4, new Callback<ExitRequestResponse>() {
-                    @Override
-                    public void onResponse(Call<ExitRequestResponse> call, Response<ExitRequestResponse> response) {
+        Runnable functionRunnable = () -> exitRequest02(plateType, tag1, tag2, tag3, tag4);
+        LoadingBar.start(ExitRequestActivity.this);
 
+        WebService.getClient(getApplicationContext()).exitRequest(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4).enqueue(new Callback<ExitRequestResponse>() {
+            @Override
+            public void onResponse(Call<ExitRequestResponse> call, Response<ExitRequestResponse> response) {
 
-                        loadingBar.dismiss();
-                        if (response.isSuccessful()) {
+                Assistant.hideKeyboard(ExitRequestActivity.this);
 
-                            if (response.body().getSuccess() != 1){
+                LoadingBar.stop();
+                if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
+                    return;
 
-                                Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_LONG).show();
-                                return;
-                            }
-
-                            messageDialog = new MessageDialog("درخواست خروج", response.body().getDescription(), "تایید", () -> {
-                                messageDialog.dismiss();
-                                onBackPressed();
-                            });
-
-                            messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
-
-
-                        } else APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(),activity, response, () -> exitRequest(plateType,tag1,tag2,tag3,tag4));
-                    }
-
-                    @Override
-                    public void onFailure(Call<ExitRequestResponse> call, Throwable t) {
-                        loadingBar.dismiss();
-                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(),t, () -> exitRequest(plateType,tag1,tag2,tag3,tag4));
-                    }
+                messageDialog = new MessageDialog("درخواست خروج", response.body().getDescription(), "تایید", () -> {
+                    messageDialog.dismiss();
+                    onBackPressed();
                 });
+
+                messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
+
+
+            }
+
+            @Override
+            public void onFailure(Call<ExitRequestResponse> call, Throwable t) {
+                LoadingBar.stop();
+                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
+            }
+        });
 
     }
 

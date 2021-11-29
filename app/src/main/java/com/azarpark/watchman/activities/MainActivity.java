@@ -48,10 +48,13 @@ import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.payment.parsian.ParsianPayment;
 import com.azarpark.watchman.payment.saman.SamanPayment;
 import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
+import com.azarpark.watchman.retrofit_remote.bodies.LoginBody;
 import com.azarpark.watchman.retrofit_remote.bodies.ParkBody;
+import com.azarpark.watchman.retrofit_remote.interfaces.CarDebtHistory;
 import com.azarpark.watchman.retrofit_remote.responses.DebtHistoryResponse;
 import com.azarpark.watchman.retrofit_remote.responses.DeleteExitRequestResponse;
 import com.azarpark.watchman.retrofit_remote.responses.ExitParkResponse;
+import com.azarpark.watchman.retrofit_remote.responses.LoginResponse;
 import com.azarpark.watchman.retrofit_remote.responses.LogoutResponse;
 import com.azarpark.watchman.retrofit_remote.responses.ParkResponse;
 import com.azarpark.watchman.retrofit_remote.responses.PlacesResponse;
@@ -60,6 +63,8 @@ import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
+import com.azarpark.watchman.web_service.NewErrorHandler;
+import com.azarpark.watchman.web_service.WebService;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -99,6 +104,8 @@ public class MainActivity extends AppCompatActivity {
     int debt = 0;
     ParkResponseDialog parkResponseDialog;
 
+    //------------------------------------------------------------------------------------------------
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
         sh_r = new SharedPreferencesRepository(getApplicationContext());
 
         assistant = new Assistant();
-        parsianPayment = new ParsianPayment(binding.printArea,getApplicationContext(), activity, new ParsianPayment.ParsianPaymentCallBack() {
+        parsianPayment = new ParsianPayment(binding.printArea, getApplicationContext(), activity, new ParsianPayment.ParsianPaymentCallBack() {
             @Override
             public void verifyTransaction(Transaction transaction) {
 //                MainActivity.this.verifyTransaction(transaction);
@@ -124,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }, getSupportFragmentManager());
-        samanPayment = new SamanPayment(getSupportFragmentManager(),getApplicationContext(), MainActivity.this, new SamanPayment.SamanPaymentCallBack() {
+        samanPayment = new SamanPayment(getSupportFragmentManager(), getApplicationContext(), MainActivity.this, new SamanPayment.SamanPaymentCallBack() {
             @Override
             public void verifyTransaction(Transaction transaction) {
 //                MainActivity.this.verifyTransaction(transaction);
@@ -144,11 +151,11 @@ public class MainActivity extends AppCompatActivity {
                     String tag3 = sh_r.getString(SharedPreferencesRepository.TAG3, "0");
                     String tag4 = sh_r.getString(SharedPreferencesRepository.TAG4, "0");
 
-                    getCarDebtHistory(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
+                    getCarDebtHistory02(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
 
                 }
 
-                getPlaces();
+                getPlaces02();
             }
         });
 
@@ -199,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        getPlaces();
+        getPlaces02();
         setTimer();
     }
 
@@ -313,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onConfirmClicked() {
 
-                    logout();
+                    logout02();
 
                 }
 
@@ -340,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     MainActivity.this.runOnUiThread(() -> {
-                        getPlaces();
+                        getPlaces02();
                         sh_r.checkTransactions();
                         verifyUnverifiedTransactions();
                     });
@@ -353,7 +360,7 @@ public class MainActivity extends AppCompatActivity {
 
         for (Transaction transaction : sh_r.getTransactions())
             if (transaction.getStatus() != 0)
-                verifyUnverifiedTransaction(transaction);
+                verifyUnverifiedTransaction02(transaction);
 
     }
 
@@ -382,7 +389,7 @@ public class MainActivity extends AppCompatActivity {
 
         binding.refreshLayout.setOnRefreshListener(() -> {
 
-            getPlaces();
+            getPlaces02();
 
         });
 
@@ -444,7 +451,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void openParkDialog(Place place) {
 
-        parkDialog = new ParkDialog(this::parkCar, place);
+        parkDialog = new ParkDialog(this::parkCar02, place);
         parkDialog.show(getSupportFragmentManager(), ParkDialog.TAG);
 
         assistant.showSoftKeyboard(MainActivity.this);
@@ -476,14 +483,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void payAsDebt(Place place) {
 
-                exitPark(place.id);
+                exitPark02(place.id);
 
             }
 
             @Override
             public void removeExitRequest(Place place1) {
 
-                deleteExitRequest(place1.id);
+                deleteExitRequest02(place1.id);
 
             }
 
@@ -751,206 +758,344 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     //-------------------------------------------------------- API calls
 
-    private void getPlaces() {
+//    private void getPlaces() {
+//
+//        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
+//        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
+//        LoadingBar loadingBar = new LoadingBar(MainActivity.this);
+//        if (placesLoadedForFirstTime)
+//            loadingBar.show();
+//
+//        repository.getPlaces("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), new Callback<PlacesResponse>() {
+//            @Override
+//            public void onResponse(Call<PlacesResponse> call, Response<PlacesResponse> response) {
+//
+//
+//                binding.refreshLayout.setRefreshing(false);
+//
+////                if (placesLoadedForFirstTime)
+//                loadingBar.dismiss();
+//                if (response.isSuccessful()) {
+//
+//                    if (response.body() != null && response.body().success != 1) {
+//
+//                        Toast.makeText(getApplicationContext(), response.body().description != null ? response.body().description : response.body().msg, Toast.LENGTH_SHORT).show();
+//
+//                        return;
+//                    }
+//
+//                    placesLoadedForFirstTime = false;
+//
+//                    if (!updatePopUpIsShowed && version != 0 && response.body().update.last_version > version) {
+//
+//                        updatePopUpIsShowed = true;
+//
+//                        if (response.body().update.is_forced == 1) {
+//
+//                            messageDialog = new MessageDialog("به روز رسانی", "به روز رسانی اجباری برای آذرپارک موجود است.", "به روز رسانی", () -> {
+//
+//                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(response.body().update.update_link));
+//                                startActivity(browserIntent);
+//
+//                            });
+//
+//                        }
+//
+//                    } else {
+//
+//                        if (watchManName != null)
+//                            watchManName.setText(response.body().watchman.name);
+//
+//                        exitRequestCount = 0;
+//                        ArrayList<Place> myPlaces = new ArrayList<>();
+//                        ArrayList<Integer> exitRequestPlaceIDs = new ArrayList<>();
+//
+//                        myPlaces.addAll(response.body().watchman.places);
+//                        for (Place place : response.body().watchman.places)
+//                            if (place.exit_request != null) {
+//                                exitRequestCount++;
+//                                exitRequestPlaceIDs.add(place.id);
+//                            }
+//
+//                        if (adapter.listHaveNewExitRequest(exitRequestPlaceIDs)) {
+//
+//                            try {
+//                                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//                                Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+//                                r.play();
+//                            } catch (Exception e) {
+//                                System.out.println("----------> song error");
+//                                e.printStackTrace();
+//                            }
+//
+//                        }
+//
+//
+//                        adapter.setItems(myPlaces);
+//
+//                        binding.placeholder.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
+//
+//                        binding.exitRequestCount.setText(Integer.toString(exitRequestCount));
+//
+//                    }
+//
+//                } else
+//                    APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> getPlaces());
+//
+//            }
+//
+//            @Override
+//            public void onFailure(Call<PlacesResponse> call, Throwable t) {
+////                if (placesLoadedForFirstTime)
+//                loadingBar.dismiss();
+//                binding.refreshLayout.setRefreshing(false);
+//                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> getPlaces());
+//
+//            }
+//        });
+//
+//
+//    }
 
-        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-        LoadingBar loadingBar = new LoadingBar(MainActivity.this);
-        if (placesLoadedForFirstTime)
-            loadingBar.show();
+    private void getPlaces02() {
 
-        repository.getPlaces("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), new Callback<PlacesResponse>() {
+        Runnable functionRunnable = () -> getPlaces02();
+        if (placesLoadedForFirstTime){
+
+            placesLoadedForFirstTime = false;
+            LoadingBar.start(MainActivity.this);
+        }
+
+        WebService.getClient(getApplicationContext()).getPlaces(SharedPreferencesRepository.getTokenWithPrefix()).enqueue(new Callback<PlacesResponse>() {
             @Override
             public void onResponse(Call<PlacesResponse> call, Response<PlacesResponse> response) {
 
-
+                LoadingBar.stop();
                 binding.refreshLayout.setRefreshing(false);
+                if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
+                    return;
 
-//                if (placesLoadedForFirstTime)
-                loadingBar.dismiss();
-                if (response.isSuccessful()) {
+                if (!updatePopUpIsShowed && version != 0 && response.body().update.last_version > version) {
 
-                    if (response.body() != null && response.body().success != 1) {
+                    updatePopUpIsShowed = true;
 
-                        Toast.makeText(getApplicationContext(), response.body().description != null ? response.body().description : response.body().msg, Toast.LENGTH_SHORT).show();
+                    if (response.body().update.is_forced == 1) {
 
-                        return;
-                    }
+                        messageDialog = new MessageDialog("به روز رسانی", "به روز رسانی اجباری برای آذرپارک موجود است.", "به روز رسانی", () -> {
 
-                    placesLoadedForFirstTime = false;
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(response.body().update.update_link));
+                            startActivity(browserIntent);
 
-                    if (!updatePopUpIsShowed && version != 0 && response.body().update.last_version > version) {
-
-                        updatePopUpIsShowed = true;
-
-                        if (response.body().update.is_forced == 1) {
-
-                            messageDialog = new MessageDialog("به روز رسانی", "به روز رسانی اجباری برای آذرپارک موجود است.", "به روز رسانی", () -> {
-
-                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(response.body().update.update_link));
-                                startActivity(browserIntent);
-
-                            });
-
-                        }
-
-                    } else {
-
-                        if (watchManName != null)
-                            watchManName.setText(response.body().watchman.name);
-
-                        exitRequestCount = 0;
-                        ArrayList<Place> myPlaces = new ArrayList<>();
-                        ArrayList<Integer> exitRequestPlaceIDs = new ArrayList<>();
-
-                        myPlaces.addAll(response.body().watchman.places);
-                        for (Place place : response.body().watchman.places)
-                            if (place.exit_request != null) {
-                                exitRequestCount++;
-                                exitRequestPlaceIDs.add(place.id);
-                            }
-
-                        if (adapter.listHaveNewExitRequest(exitRequestPlaceIDs)) {
-
-                            try {
-                                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                                Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                                r.play();
-                            } catch (Exception e) {
-                                System.out.println("----------> song error");
-                                e.printStackTrace();
-                            }
-
-                        }
-
-
-                        adapter.setItems(myPlaces);
-
-                        binding.placeholder.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
-
-                        binding.exitRequestCount.setText(Integer.toString(exitRequestCount));
+                        });
 
                     }
 
-                } else
-                    APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> getPlaces());
+                } else {
+
+                    if (watchManName != null)
+                        watchManName.setText(response.body().watchman.name);
+
+                    exitRequestCount = 0;
+                    ArrayList<Place> myPlaces = new ArrayList<>();
+                    ArrayList<Integer> exitRequestPlaceIDs = new ArrayList<>();
+
+                    myPlaces.addAll(response.body().watchman.places);
+                    for (Place place : response.body().watchman.places)
+                        if (place.exit_request != null) {
+                            exitRequestCount++;
+                            exitRequestPlaceIDs.add(place.id);
+                        }
+
+                    if (adapter.listHaveNewExitRequest(exitRequestPlaceIDs)) {
+
+                        try {
+                            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                            r.play();
+                        } catch (Exception e) {
+                            System.out.println("----------> song error");
+                            e.printStackTrace();
+                        }
+
+                    }
+
+
+                    adapter.setItems(myPlaces);
+
+                    binding.placeholder.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
+
+                    binding.exitRequestCount.setText(Integer.toString(exitRequestCount));
+
+                }
 
             }
 
             @Override
             public void onFailure(Call<PlacesResponse> call, Throwable t) {
-//                if (placesLoadedForFirstTime)
-                loadingBar.dismiss();
+                LoadingBar.stop();
                 binding.refreshLayout.setRefreshing(false);
-                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> getPlaces());
-
+                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }
         });
 
-
     }
 
-    private void parkCar(ParkBody parkBody, boolean printFactor) {
+//    private void parkCar(ParkBody parkBody, boolean printFactor) {
+//
+//        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
+//        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
+//        LoadingBar loadingBar = new LoadingBar(MainActivity.this);
+//        loadingBar.show();
+//
+//        repository.park("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), parkBody, new Callback<ParkResponse>() {
+//            @Override
+//            public void onResponse(Call<ParkResponse> call, Response<ParkResponse> response) {
+//
+//                assistant.hideSoftKeyboard(activity);
+//
+//                loadingBar.dismiss();
+//                if (response.isSuccessful()) {
+//
+//                    if (response.body() != null && response.body().getSuccess() != 1) {
+//
+//                        Toast.makeText(getApplicationContext(), response.body().getDescription() != null ? response.body().getDescription() : response.body().getMsg(), Toast.LENGTH_SHORT).show();
+//
+//                        return;
+//                    }
+//
+//                    if (response.body().getSuccess() == 1) {
+//
+//                    } else
+//                        Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
+//
+//                } else
+//                    APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> parkCar(parkBody, printFactor));
+//            }
+//
+//            @Override
+//            public void onFailure(Call<ParkResponse> call, Throwable t) {
+//                loadingBar.dismiss();
+//                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> parkCar(parkBody, printFactor));
+//            }
+//        });
+//
+//    }
 
-        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-        LoadingBar loadingBar = new LoadingBar(MainActivity.this);
-        loadingBar.show();
+    private void parkCar02(ParkBody parkBody, boolean printFactor) {
 
-        repository.park("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), parkBody, new Callback<ParkResponse>() {
+        Runnable functionRunnable = () -> parkCar02(parkBody, printFactor);
+        LoadingBar.start(MainActivity.this);
+
+        WebService.getClient(getApplicationContext()).parkCar(SharedPreferencesRepository.getTokenWithPrefix(), parkBody).enqueue(new Callback<ParkResponse>() {
             @Override
             public void onResponse(Call<ParkResponse> call, Response<ParkResponse> response) {
 
                 assistant.hideSoftKeyboard(activity);
-
-                loadingBar.dismiss();
-                if (response.isSuccessful()) {
-
-                    if (response.body() != null && response.body().getSuccess() != 1) {
-
-                        Toast.makeText(getApplicationContext(), response.body().getDescription() != null ? response.body().getDescription() : response.body().getMsg(), Toast.LENGTH_SHORT).show();
-
-                        return;
-                    }
-
-                    if (response.body().getSuccess() == 1) {
-
-                        parkResponseDialog = new ParkResponseDialog(response.body().getInfo().number, response.body().getInfo().price, response.body().getInfo().car_balance, () -> {
-
-                            parkResponseDialog.dismiss();
-
-                        });
-
-                        parkResponseDialog.show(getSupportFragmentManager(), ParkResponseDialog.TAG);
-
-                        Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
-                        parkDialog.dismiss();
-
-                        if (response.body().getInfo().car_balance < 0)
-                            debt = -response.body().getInfo().car_balance;
-
-                        if (printFactor) {
-
-                            Place place = response.body().getInfo().place;
-                            printFactor(place.id, place.start, response.body().getInfo().car_balance, place);
-
-                        }
+                LoadingBar.stop();
+                if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
+                    return;
 
 
-                        getPlaces();
+                parkResponseDialog = new ParkResponseDialog(response.body().getInfo().number, response.body().getInfo().price, response.body().getInfo().car_balance, () -> {
 
-                    } else
-                        Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
+                    parkResponseDialog.dismiss();
 
-                } else
-                    APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> parkCar(parkBody, printFactor));
+                });
+
+                parkResponseDialog.show(getSupportFragmentManager(), ParkResponseDialog.TAG);
+
+                Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
+                parkDialog.dismiss();
+
+                if (response.body().getInfo().car_balance < 0)
+                    debt = -response.body().getInfo().car_balance;
+
+                if (printFactor) {
+
+                    Place place = response.body().getInfo().place;
+                    printFactor(place.id, place.start, response.body().getInfo().car_balance, place);
+
+                }
+
+
+                getPlaces02();
+
             }
 
             @Override
             public void onFailure(Call<ParkResponse> call, Throwable t) {
-                loadingBar.dismiss();
-                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> parkCar(parkBody, printFactor));
+                LoadingBar.stop();
+                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }
         });
 
     }
 
-    private void exitPark(int placeID) {
+//    private void exitPark(int placeID) {
+//
+//        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
+//        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
+//        LoadingBar loadingBar = new LoadingBar(MainActivity.this);
+//        loadingBar.show();
+//
+//        repository.exitPark("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), placeID, new Callback<ExitParkResponse>() {
+//            @Override
+//            public void onResponse(Call<ExitParkResponse> call, Response<ExitParkResponse> response) {
+//
+//
+//                loadingBar.dismiss();
+//                if (response.isSuccessful()) {
+//
+//                    if (response.body().getSuccess() == 1) {
+//
+//                        if (parkInfoDialog != null)
+//                            parkInfoDialog.dismiss();
+//                        getPlaces02();
+//
+//                    }
+//                    Toast.makeText(getApplicationContext(), response.body().getDescription() != null ? response.body().getDescription() : response.body().getMsg(), Toast.LENGTH_SHORT).show();
+//
+//
+//                } else
+//                    APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> exitPark(placeID));
+//            }
+//
+//            @Override
+//            public void onFailure(Call<ExitParkResponse> call, Throwable t) {
+//                loadingBar.dismiss();
+//                t.printStackTrace();
+//                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> exitPark(placeID));
+//            }
+//        });
+//
+//    }
 
-        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-        LoadingBar loadingBar = new LoadingBar(MainActivity.this);
-        loadingBar.show();
+    private void exitPark02(int placeID) {
 
-        repository.exitPark("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), placeID, new Callback<ExitParkResponse>() {
+        Runnable functionRunnable = () -> exitPark02(placeID);
+        LoadingBar.start(MainActivity.this);
+
+        WebService.getClient(getApplicationContext()).exitPark(SharedPreferencesRepository.getTokenWithPrefix(), placeID).enqueue(new Callback<ExitParkResponse>() {
             @Override
             public void onResponse(Call<ExitParkResponse> call, Response<ExitParkResponse> response) {
 
+                LoadingBar.stop();
+                if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
+                    return;
 
-                loadingBar.dismiss();
-                if (response.isSuccessful()) {
+                if (parkInfoDialog != null)
+                    parkInfoDialog.dismiss();
+                getPlaces02();
 
-                    if (response.body().getSuccess() == 1) {
-
-                        if (parkInfoDialog != null)
-                            parkInfoDialog.dismiss();
-                        getPlaces();
-
-                    }
-                    Toast.makeText(getApplicationContext(), response.body().getDescription() != null ? response.body().getDescription() : response.body().getMsg(), Toast.LENGTH_SHORT).show();
-
-
-                } else
-                    APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> exitPark(placeID));
             }
 
             @Override
             public void onFailure(Call<ExitParkResponse> call, Throwable t) {
-                loadingBar.dismiss();
-                t.printStackTrace();
-                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> exitPark(placeID));
+                LoadingBar.stop();
+                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }
         });
 
@@ -978,7 +1123,7 @@ public class MainActivity extends AppCompatActivity {
                                 return;
                             }
 
-                            getPlaces();
+                            getPlaces02();
                             if (parkInfoDialog != null)
                                 parkInfoDialog.dismiss();
 
@@ -995,174 +1140,299 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void verifyTransaction(Transaction transaction) {
+    private void deleteExitRequest02(int placeID) {
 
+        Runnable functionRunnable = () -> deleteExitRequest(placeID);
+        LoadingBar.start(MainActivity.this);
 
-        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-
-        loadingBar.show();
-
-        repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-                transaction, new Callback<VerifyTransactionResponse>() {
-                    @Override
-                    public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
-
-
-                        loadingBar.dismiss();
-                        if (response.isSuccessful()) {
-
-                            if (parkInfoDialog != null)
-                                parkInfoDialog.dismiss();
-
-                            sh_r.removeFromTransactions(transaction);
-
-                            Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
-
-                            if (Constants.SELECTED_PAYMENT == Constants.SAMAN) {
-
-                                String tag1 = sh_r.getString(SharedPreferencesRepository.TAG1, "0");
-                                String tag2 = sh_r.getString(SharedPreferencesRepository.TAG2, "0");
-                                String tag3 = sh_r.getString(SharedPreferencesRepository.TAG3, "0");
-                                String tag4 = sh_r.getString(SharedPreferencesRepository.TAG4, "0");
-
-                                getCarDebtHistory(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
-
-                            }
-
-                            getPlaces();
-
-                        } else
-                            APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> verifyTransaction(transaction));
-                    }
-
-                    @Override
-                    public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
-                        loadingBar.dismiss();
-                        t.printStackTrace();
-                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> verifyTransaction(transaction));
-                    }
-                });
-
-    }
-
-    private void verifyUnverifiedTransaction(Transaction transaction) {
-
-        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-
-        repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-                transaction, new Callback<VerifyTransactionResponse>() {
-                    @Override
-                    public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
-
-
-                        if (response.isSuccessful() && response.body().getSuccess() == 1)
-                            sh_r.removeFromTransactions(transaction);
-                    }
-
-                    @Override
-                    public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
-                        t.printStackTrace();
-                    }
-                });
-
-    }
-
-    private void logout() {
-
-        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-        loadingBar.show();
-
-        repository.logout("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), new Callback<LogoutResponse>() {
+        WebService.getClient(getApplicationContext()).deleteExitRequest(SharedPreferencesRepository.getTokenWithPrefix(), placeID).enqueue(new Callback<DeleteExitRequestResponse>() {
             @Override
-            public void onResponse(Call<LogoutResponse> call, Response<LogoutResponse> response) {
+            public void onResponse(Call<DeleteExitRequestResponse> call, Response<DeleteExitRequestResponse> response) {
 
+                LoadingBar.stop();
+                if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
+                    return;
 
-                loadingBar.dismiss();
-                if (response.isSuccessful()) {
+                if (parkInfoDialog != null) {
+                    parkInfoDialog.dismiss();
+                }
+                getPlaces02();
 
-                    if (response.body().getSuccess() != 1) {
-
-
-                        Toast.makeText(getApplicationContext(), response.body().getDescription() != null ? response.body().getDescription() : response.body().getMsg(), Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    assistant.eventByMobile(sh_r.getString(SharedPreferencesRepository.USERNAME, "not logged-in"), "logout");
-
-                    SharedPreferencesRepository sh_p = new SharedPreferencesRepository(getApplicationContext());
-                    sh_p.saveString(SharedPreferencesRepository.ACCESS_TOKEN, "");
-                    sh_p.saveString(SharedPreferencesRepository.REFRESH_TOKEN, "");
-                    sh_p.saveString(SharedPreferencesRepository.SUB_DOMAIN, "");
-                    startActivity(new Intent(MainActivity.this, SplashActivity.class));
-                    MainActivity.this.finish();
-                    confirmDialog.dismiss();
-
-                } else
-                    APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> logout());
             }
 
             @Override
-            public void onFailure(Call<LogoutResponse> call, Throwable t) {
-                loadingBar.dismiss();
-                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> logout());
+            public void onFailure(Call<DeleteExitRequestResponse> call, Throwable t) {
+                LoadingBar.stop();
+                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }
         });
 
     }
 
-    private void getCarDebtHistory(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset) {
+//    private void verifyTransaction(Transaction transaction) {
+//
+//
+//        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
+//        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
+//
+//        loadingBar.show();
+//
+//        repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
+//                transaction, new Callback<VerifyTransactionResponse>() {
+//                    @Override
+//                    public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
+//
+//
+//                        loadingBar.dismiss();
+//                        if (response.isSuccessful()) {
+//
+//                            if (parkInfoDialog != null)
+//                                parkInfoDialog.dismiss();
+//
+//                            sh_r.removeFromTransactions(transaction);
+//
+//                            Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
+//
+//                            if (Constants.SELECTED_PAYMENT == Constants.SAMAN) {
+//
+//                                String tag1 = sh_r.getString(SharedPreferencesRepository.TAG1, "0");
+//                                String tag2 = sh_r.getString(SharedPreferencesRepository.TAG2, "0");
+//                                String tag3 = sh_r.getString(SharedPreferencesRepository.TAG3, "0");
+//                                String tag4 = sh_r.getString(SharedPreferencesRepository.TAG4, "0");
+//
+//                                getCarDebtHistory02(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
+//
+//                            }
+//
+//                            getPlaces02();
+//
+//                        } else
+//                            APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> verifyTransaction(transaction));
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
+//                        loadingBar.dismiss();
+//                        t.printStackTrace();
+//                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> verifyTransaction(transaction));
+//                    }
+//                });
+//
+//    }
+//
+//    private void verifyUnverifiedTransaction(Transaction transaction) {
+//
+//        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
+//        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
+//
+//        repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
+//                transaction, new Callback<VerifyTransactionResponse>() {
+//                    @Override
+//                    public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
+//
+//
+//                        if (response.isSuccessful() && response.body().getSuccess() == 1)
+//                            sh_r.removeFromTransactions(transaction);
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
+//                        t.printStackTrace();
+//                    }
+//                });
+//
+//    }
 
-        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-        loadingBar.show();
+    private void verifyUnverifiedTransaction02(Transaction transaction) {
 
-        repository.getCarDebtHistory("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-                plateType, tag1, tag2, tag3, tag4, limit, offset, new Callback<DebtHistoryResponse>() {
-                    @Override
-                    public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
+        Runnable functionRunnable = () -> verifyUnverifiedTransaction02(transaction);
+        LoadingBar.start(MainActivity.this);
 
+        WebService.getClient(getApplicationContext()).verifyTransaction(SharedPreferencesRepository.getTokenWithPrefix(), transaction.getAmount(),
+                transaction.getOur_token(), transaction.getBank_token(), transaction.getPlaceID(), transaction.getStatus(), transaction.getBank_type(),
+                transaction.getState(), transaction.getCard_number(), transaction.getBank_datetime(), transaction.getTrace_number(),
+                transaction.getResult_message()).enqueue(new Callback<VerifyTransactionResponse>() {
+            @Override
+            public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
 
-                        loadingBar.dismiss();
-                        if (response.isSuccessful()) {
+                LoadingBar.stop();
+                if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
+                    return;
 
-                            if (response.body().success != 1) {
+                if (response.isSuccessful() && response.body().getSuccess() == 1)
+                    sh_r.removeFromTransactions(transaction);
 
+            }
 
-                                Toast.makeText(getApplicationContext(), response.body().description != null ? response.body().description : response.body().getMsg(), Toast.LENGTH_SHORT).show();
-                                return;
-                            }
+            @Override
+            public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
+                LoadingBar.stop();
+                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
+            }
+        });
 
-                            if (response.body().getSuccess() == 1) {
+    }//todo test
 
-                                if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.simple)
-                                    printMiniFactor(tag1,
-                                            tag2,
-                                            tag3,
-                                            tag4, response.body().balance);
-                                else if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.old_aras)
-                                    printMiniFactor(tag1, "0", "0", "0", response.body().balance);
-                                else
-                                    printMiniFactor(tag1, tag2, "0", "0", response.body().balance);
+//    private void logout() {
+//
+//        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
+//        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
+//        loadingBar.show();
+//
+//        repository.logout("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), new Callback<LogoutResponse>() {
+//            @Override
+//            public void onResponse(Call<LogoutResponse> call, Response<LogoutResponse> response) {
+//
+//
+//                loadingBar.dismiss();
+//                if (response.isSuccessful()) {
+//
+//                    if (response.body().getSuccess() != 1) {
+//
+//                        Toast.makeText(getApplicationContext(), response.body().getDescription() != null ? response.body().getDescription() : response.body().getMsg(), Toast.LENGTH_SHORT).show();
+//                        return;
+//                    }
+//
+//                    Assistant.eventByMobile(sh_r.getString(SharedPreferencesRepository.USERNAME, "not logged-in"), "logout");
+//
+//                    SharedPreferencesRepository sh_p = new SharedPreferencesRepository(getApplicationContext());
+//                    sh_p.saveString(SharedPreferencesRepository.ACCESS_TOKEN, "");
+//                    sh_p.saveString(SharedPreferencesRepository.REFRESH_TOKEN, "");
+//                    sh_p.saveString(SharedPreferencesRepository.SUB_DOMAIN, "");
+//                    startActivity(new Intent(MainActivity.this, SplashActivity.class));
+//                    MainActivity.this.finish();
+//                    confirmDialog.dismiss();
+//
+//                } else
+//                    APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> logout());
+//            }
+//
+//            @Override
+//            public void onFailure(Call<LogoutResponse> call, Throwable t) {
+//                loadingBar.dismiss();
+//                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> logout());
+//            }
+//        });
+//
+//    }
 
-                            } else
-                                Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_LONG).show();
+    private void logout02() {
 
+        Runnable functionRunnable = () -> logout02();
+        LoadingBar.start(MainActivity.this);
 
-                        }
-                    }
+        WebService.getClient(getApplicationContext()).logout(SharedPreferencesRepository.getTokenWithPrefix()).enqueue(new Callback<LogoutResponse>() {
+            @Override
+            public void onResponse(Call<LogoutResponse> call, Response<LogoutResponse> response) {
 
-                    @Override
-                    public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
-                        loadingBar.dismiss();
-                        t.printStackTrace();
-                    }
-                });
+                LoadingBar.stop();
+                if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
+                    return;
+
+                Assistant.eventByMobile(SharedPreferencesRepository.getValue(Constants.USERNAME,"not logged-in"), "logout");
+
+                SharedPreferencesRepository.setValue(Constants.ACCESS_TOKEN, "");
+                SharedPreferencesRepository.setValue(Constants.REFRESH_TOKEN, "");
+                SharedPreferencesRepository.setValue(Constants.SUB_DOMAIN, "");
+                startActivity(new Intent(MainActivity.this, SplashActivity.class));
+                MainActivity.this.finish();
+
+            }
+
+            @Override
+            public void onFailure(Call<LogoutResponse> call, Throwable t) {
+                LoadingBar.stop();
+                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
+            }
+        });
 
     }
 
+//    private void getCarDebtHistory(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset) {
+//
+//        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
+//        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
+//        loadingBar.show();
+//
+//        repository.getCarDebtHistory("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
+//                plateType, tag1, tag2, tag3, tag4, limit, offset, new Callback<DebtHistoryResponse>() {
+//                    @Override
+//                    public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
+//
+//
+//                        loadingBar.dismiss();
+//                        if (response.isSuccessful()) {
+//
+//                            if (response.body().success != 1) {
+//
+//
+//                                Toast.makeText(getApplicationContext(), response.body().description != null ? response.body().description : response.body().getMsg(), Toast.LENGTH_SHORT).show();
+//                                return;
+//                            }
+//
+//                            if (response.body().getSuccess() == 1) {
+//
+//                                if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.simple)
+//                                    printMiniFactor(tag1,
+//                                            tag2,
+//                                            tag3,
+//                                            tag4, response.body().balance);
+//                                else if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.old_aras)
+//                                    printMiniFactor(tag1, "0", "0", "0", response.body().balance);
+//                                else
+//                                    printMiniFactor(tag1, tag2, "0", "0", response.body().balance);
+//
+//                            } else
+//                                Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_LONG).show();
+//
+//
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
+//                        loadingBar.dismiss();
+//                        t.printStackTrace();
+//                    }
+//                });
+//
+//    }
+
+    private void getCarDebtHistory02(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset) {
+
+        Runnable functionRunnable = () -> getCarDebtHistory02(plateType, tag1, tag2, tag3, tag4, limit, offset);
+        LoadingBar.start(MainActivity.this);
+
+        WebService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
+            @Override
+            public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
+
+                LoadingBar.stop();
+                if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
+                    return;
+
+                if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.simple)
+                    printMiniFactor(tag1,
+                            tag2,
+                            tag3,
+                            tag4, response.body().balance);
+                else if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.old_aras)
+                    printMiniFactor(tag1, "0", "0", "0", response.body().balance);
+                else
+                    printMiniFactor(tag1, tag2, "0", "0", response.body().balance);
+
+            }
+
+            @Override
+            public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
+                LoadingBar.stop();
+                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
+            }
+        });
+
+    }//todo test
+
+    //------------------------------------------------------------------------------------------
 
     public static Bitmap getViewBitmap(View view) {
 

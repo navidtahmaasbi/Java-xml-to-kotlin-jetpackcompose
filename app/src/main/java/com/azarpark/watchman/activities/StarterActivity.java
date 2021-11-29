@@ -70,7 +70,7 @@ public class StarterActivity extends AppCompatActivity {
 
                 findViewById(R.id.password_area).setVisibility(findViewById(R.id.password_area).getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
                 if (findViewById(R.id.password_area).getVisibility() == View.VISIBLE)
-                    assistant.eventByMobile(sh_r.getString(SharedPreferencesRepository.USERNAME, "not logged-in"), "click exit app");
+                    Assistant.eventByMobile(sh_r.getString(SharedPreferencesRepository.USERNAME, "not logged-in"), "click exit app");
 
             }
 
@@ -103,7 +103,7 @@ public class StarterActivity extends AppCompatActivity {
                 edt.setText("");
                 findViewById(R.id.password_area).setVisibility(View.GONE);
 
-                assistant.eventByMobile(sh_r.getString(SharedPreferencesRepository.USERNAME, "not logged-in"), "show launcher chooser");
+                Assistant.eventByMobile(sh_r.getString(SharedPreferencesRepository.USERNAME, "not logged-in"), "show launcher chooser");
 
                 startActivity(chooser);
 

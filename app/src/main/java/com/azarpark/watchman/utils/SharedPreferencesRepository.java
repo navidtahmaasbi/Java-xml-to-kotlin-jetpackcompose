@@ -21,7 +21,7 @@ public class SharedPreferencesRepository {
     SharedPreferences prefs;
 
     public static String
-            ACCESS_TOKEN = "accessToken",
+            ACCESS_TOKEN = "ACCESS_TOKEN",
             REFRESH_TOKEN = "refreshToken",
             USERNAME = "username",
             PLATE_TYPE = "PLATE_TYPE",

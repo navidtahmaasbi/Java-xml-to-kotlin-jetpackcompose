@@ -29,6 +29,7 @@
         android:gravity="center">
 
         <ProgressBar
+            android:visibility="invisible"
             android:id="@+id/loading_bar"
             android:layout_width="@dimen/_40sdp"
             android:layout_height="@dimen/_40sdp"

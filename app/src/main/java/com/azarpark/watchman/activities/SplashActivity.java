@@ -26,6 +26,7 @@ import com.azarpark.watchman.retrofit_remote.responses.GetCitiesResponse;
 import com.azarpark.watchman.retrofit_remote.responses.SplashResponse;
 import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.Assistant;
+import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.DownloadController;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.NewErrorHandler;
@@ -75,7 +76,15 @@ public class SplashActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        if (assistant.VPNEnabled(getApplicationContext())){
+        decide();
+
+        binding.retry.setOnClickListener(view -> decide());
+
+    }
+
+    private void decide() {
+
+        if (assistant.VPNEnabled(getApplicationContext())) {
 
             messageDialog = new MessageDialog("عدم دسترسی",
                     "برنامه اذرپارک در خارج از کشور قابل دسترسی نیست درصورت روشن بودن وی پی ان ان را خاموش کرده و دوباره وارد برنامه شوید",
@@ -85,36 +94,13 @@ public class SplashActivity extends AppCompatActivity {
                     });
 
             messageDialog.setCancelable(false);
-            messageDialog.show(getSupportFragmentManager(),MessageDialog.TAG);
+            messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
 
         }
-        else if (sh_p.getString(SharedPreferencesRepository.ACCESS_TOKEN).isEmpty())
+        else if (SharedPreferencesRepository.getToken().isEmpty())
             getCities02();
         else
-            getSplash();
-
-        binding.retry.setOnClickListener(view -> {
-
-            if (assistant.VPNEnabled(getApplicationContext())){
-
-                messageDialog = new MessageDialog("عدم دسترسی",
-                        "برنامه اذرپارک در خارج از کشور قابل دسترسی نیست درصورت روشن بودن وی پی ان ان را خاموش کرده و دوباره وارد برنامه شوید",
-                        "خروج",
-                        () -> {
-                            SplashActivity.this.finish();
-                        });
-
-                messageDialog.setCancelable(false);
-                messageDialog.show(getSupportFragmentManager(),MessageDialog.TAG);
-
-            }
-            else if (sh_p.getString(SharedPreferencesRepository.ACCESS_TOKEN).isEmpty())
-                getCities02();
-            else
-                getSplash();
-
-        });
-
+            getSplash02();
 
     }
 
@@ -127,119 +113,116 @@ public class SplashActivity extends AppCompatActivity {
 
     }
 
-    private void getCities() {
+//    private void getCities() {
+//
+//
+//        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
+//        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
+//
+//        repository.getCities("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), new Callback<GetCitiesResponse>() {
+//            @Override
+//            public void onResponse(Call<GetCitiesResponse> call, Response<GetCitiesResponse> response) {
+//
+//
+//                binding.loadingBar.setVisibility(View.INVISIBLE);
+//
+//                if (response.isSuccessful()) {
+//
+//
+//                    if (response.body() != null && !response.body().success.equals("1")) {
+//
+//                        Toast.makeText(getApplicationContext(), response.body().description != null ? response.body().description : response.body().msg, Toast.LENGTH_SHORT).show();
+//
+//                        return;
+//                    }
+//
+//                    openCitiesDialog(response.body().items);
+//
+//                } else {
+//
+//                    binding.retry.setVisibility(View.VISIBLE);
+//
+//                    APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> getCities());
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<GetCitiesResponse> call, Throwable t) {
+//                binding.loadingBar.setVisibility(View.INVISIBLE);
+//                binding.retry.setVisibility(View.VISIBLE);
+//                t.printStackTrace();
+//                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> getCities());
+//            }
+//        });
+//
+//    }
 
+    private void getCities02() {
 
-        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-
-        repository.getCities("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), new Callback<GetCitiesResponse>() {
-            @Override
-            public void onResponse(Call<GetCitiesResponse> call, Response<GetCitiesResponse> response) {
-
-
-                binding.loadingBar.setVisibility(View.INVISIBLE);
-
-                if (response.isSuccessful()) {
-
-
-                    if (response.body() != null && !response.body().success.equals("1")) {
-
-                        Toast.makeText(getApplicationContext(), response.body().description != null ? response.body().description : response.body().msg, Toast.LENGTH_SHORT).show();
-
-                        return;
-                    }
-
-                    openCitiesDialog(response.body().items);
-
-                } else{
-
-                    binding.retry.setVisibility(View.VISIBLE);
-
-                    APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> getCities());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<GetCitiesResponse> call, Throwable t) {
-                binding.loadingBar.setVisibility(View.INVISIBLE);
-                binding.retry.setVisibility(View.VISIBLE);
-                t.printStackTrace();
-                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> getCities());
-            }
-        });
-
-    }
-
-    private void getCities02(){
+        Runnable functionRunnable = this::getCities02;
+        binding.loadingBar.setVisibility(View.VISIBLE);
 
         WebService.getInitialClient().getCities().enqueue(new Callback<GetCitiesResponse>() {
             @Override
             public void onResponse(Call<GetCitiesResponse> call, Response<GetCitiesResponse> response) {
 
-
-                if (NewErrorHandler.responseHasError(response, getApplicationContext()))
+                binding.loadingBar.setVisibility(View.INVISIBLE);
+                if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
                     return;
 
                 openCitiesDialog(response.body().items);
-
-
             }
 
             @Override
             public void onFailure(Call<GetCitiesResponse> call, Throwable t) {
-                //todo make this
+                binding.loadingBar.setVisibility(View.INVISIBLE);
+                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }
         });
 
     }
 
-    private void getSplash() {
+    private void getSplash02() {
 
-        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
+        Runnable functionRunnable = this::getSplash02;
+        binding.loadingBar.setVisibility(View.VISIBLE);
+        binding.retry.setVisibility(View.INVISIBLE);
 
-        repository.getSplashData("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),versionCode, new Callback<SplashResponse>() {
+        WebService.getClient(getApplicationContext()).getSplash(SharedPreferencesRepository.getTokenWithPrefix(), versionCode).enqueue(new Callback<SplashResponse>() {
             @Override
             public void onResponse(Call<SplashResponse> call, Response<SplashResponse> response) {
 
-
                 binding.loadingBar.setVisibility(View.INVISIBLE);
-                if (response.isSuccessful()) {
+                if (NewErrorHandler.apiResponseHasError(response, getApplicationContext())) {
+                    binding.retry.setVisibility(View.VISIBLE);
+                    return;
+                }
 
+                SharedPreferencesRepository.setValue(Constants.qr_url, response.body().qr_url);
+                SharedPreferencesRepository.setValue(Constants.refresh_time, Integer.toString(response.body().refresh_time));
+                SharedPreferencesRepository.setValue(Constants.telephone, response.body().telephone);
+                SharedPreferencesRepository.setValue(Constants.pricing, response.body().pricing);
+                SharedPreferencesRepository.setValue(Constants.sms_number, response.body().sms_number);
+                SharedPreferencesRepository.setValue(Constants.rules_url, response.body().rules_url);
+                SharedPreferencesRepository.setValue(Constants.about_us_url, response.body().about_us_url);
+                SharedPreferencesRepository.setValue(Constants.guide_url, response.body().guide_url);
 
-                    sh_r.saveString(SharedPreferencesRepository.qr_url, response.body().qr_url);
-                    sh_r.saveString(SharedPreferencesRepository.refresh_time, Integer.toString(response.body().refresh_time));
-                    sh_r.saveString(SharedPreferencesRepository.telephone, response.body().telephone);
-                    sh_r.saveString(SharedPreferencesRepository.pricing, response.body().pricing);
-                    sh_r.saveString(SharedPreferencesRepository.sms_number, response.body().sms_number);
-                    sh_r.saveString(SharedPreferencesRepository.rules_url, response.body().rules_url);
-                    sh_r.saveString(SharedPreferencesRepository.about_us_url, response.body().about_us_url);
-                    sh_r.saveString(SharedPreferencesRepository.guide_url, response.body().guide_url);
+                try {
+                    PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+                    int version = pInfo.versionCode;
 
-                    try {
-                        PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-                        int version = pInfo.versionCode;
+                    if (response.body().update.last_version > version)
+                        openUpdateDialog(response.body().update.update_link);
+                    else {
 
-
-                        if (response.body().update.last_version > version)
-                            openUpdateDialog(response.body().update.update_link);
-                        else {
-
-                            startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                            SplashActivity.this.finish();
-                        }
-
-                    } catch (PackageManager.NameNotFoundException e) {
-                        e.printStackTrace();
-                        binding.retry.setVisibility(View.VISIBLE);
-
+                        startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                        SplashActivity.this.finish();
                     }
 
-
-                } else{
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
                     binding.retry.setVisibility(View.VISIBLE);
-                    APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> getCities());
+
                 }
             }
 
@@ -247,14 +230,49 @@ public class SplashActivity extends AppCompatActivity {
             public void onFailure(Call<SplashResponse> call, Throwable t) {
                 binding.loadingBar.setVisibility(View.INVISIBLE);
                 binding.retry.setVisibility(View.VISIBLE);
-                t.printStackTrace();
-                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> getSplash());
+                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }
         });
 
     }
 
-    private void openUpdateDialog( String url){
+//    private void getSplash() {
+//
+//        binding.loadingBar.setVisibility(View.INVISIBLE);
+//
+//        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
+//        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
+//
+//        repository.getSplashData("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), versionCode, new Callback<SplashResponse>() {
+//            @Override
+//            public void onResponse(Call<SplashResponse> call, Response<SplashResponse> response) {
+//
+//
+//                binding.loadingBar.setVisibility(View.INVISIBLE);
+//                if (response.isSuccessful()) {
+//
+//
+//
+//
+//
+//                } else {
+//                    binding.retry.setVisibility(View.VISIBLE);
+//                    APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> getSplash());
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<SplashResponse> call, Throwable t) {
+//                binding.loadingBar.setVisibility(View.INVISIBLE);
+//                binding.retry.setVisibility(View.VISIBLE);
+//                t.printStackTrace();
+//                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> getSplash());
+//            }
+//        });
+//
+//    }
+
+    private void openUpdateDialog(String url) {
 
         messageDialog = new MessageDialog("به روز رسانی",
                 "برای برنامه به روزرسانی وجود دارد. بدون به روز رسانی قادر به ادامه نخواهید بود",
@@ -266,7 +284,7 @@ public class SplashActivity extends AppCompatActivity {
                 });
 
         messageDialog.setCancelable(false);
-        messageDialog.show(getSupportFragmentManager(),MessageDialog.TAG);
+        messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
 
     }
 
@@ -281,7 +299,7 @@ public class SplashActivity extends AppCompatActivity {
             citySelectDialog.dismiss();
 
             sh_p.saveString(SharedPreferencesRepository.SUB_DOMAIN, cities.get(position).subdomain);
-            sh_p.saveString(SharedPreferencesRepository.CITY_ID, cities.get(position).id+"");
+            sh_p.saveString(SharedPreferencesRepository.CITY_ID, cities.get(position).id + "");
 
             RetrofitAPIClient.setBaseUrl("https://" + cities.get(position).subdomain + ".backend1.azarpark.irana.app");
 //            RetrofitAPIClient.setBaseUrl("https://" + cities.get(position).subdomain + ".backend.iranademo.ir");
@@ -298,7 +316,6 @@ public class SplashActivity extends AppCompatActivity {
 
         if (citySelectDialog != null)
             binding.getRoot().post(() -> citySelectDialog.show(getSupportFragmentManager(), SingleSelectDialog.TAG));
-
 
 
     }

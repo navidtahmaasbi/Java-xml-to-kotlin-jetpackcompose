@@ -75,6 +75,13 @@ public class Assistant {
 
     }
 
+    public static void hideKeyboard(Activity activity) {
+
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.HIDE_NOT_ALWAYS, 0);
+
+    }
+
     public Bitmap qrGenerator(String value) {
 
         // Initializing the QR Encoder with your value to be encoded, type you required and Dimension
@@ -267,7 +274,7 @@ public class Assistant {
 
     }
 
-    public void loginEvent(String username) {
+    public static void loginEvent(String username) {
 
 
         Map<String, Object> eventParameters = new HashMap<String, Object>();
@@ -277,7 +284,7 @@ public class Assistant {
 
     }
 
-    public void eventByMobile(String username, String action) {
+    public static void eventByMobile(String username, String action) {
 
 
         Map<String, Object> eventParameters = new HashMap<String, Object>();
