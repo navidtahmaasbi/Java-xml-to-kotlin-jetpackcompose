@@ -15,102 +15,11 @@ import java.util.concurrent.TimeUnit;
 
 public class SharedPreferencesRepository {
 
-    private String MY_PREFS_NAME = "app_needs";
 
-    SharedPreferences.Editor editor;
-    SharedPreferences prefs;
-
-    public static String
-            ACCESS_TOKEN = "ACCESS_TOKEN",
-            REFRESH_TOKEN = "refreshToken",
-            USERNAME = "username",
-            PLATE_TYPE = "PLATE_TYPE",
-            TAG1 = "TAG1",
-            TAG2 = "TAG2",
-            TAG3 = "TAG3",
-            TAG4 = "TAG4",
-            AMOUNT = "AMOUNT",
-            PLACE_ID = "PLACE_ID",
-            OUR_TOKEN = "our_token",
-            TRANSACTION_ID = "TRANSACTION_ID",
-            REF_NUM = "REF_NUM",
-            SUB_DOMAIN = "SUB_DOMAIN",
-            CITY_ID = "city_id";
-    public static String qr_url = "qr_url";
-    public static String refresh_time = "refresh_time";
-    public static String telephone = "telephone";
-    public static String pricing = "pricing";
-    public static String sms_number = "sms_number";
-    public static String rules_url = "rules_url";
-    public static String about_us_url = "about_us_url";
-    public static String guide_url = "guide_url";
-
-    private String UNSYCNCED_RES_NUMS = "unsynced_res_nums";
-
-    public SharedPreferencesRepository(Context context) {
-
-        editor = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
-        prefs = context.getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
-    }
-
-    public void saveString(String key, String value) {
-
-        editor.putString(key, value);
-        editor.apply();
-    }
-
-    public String getString(String key) {
-
-        String defaultString = "";
-
-        return prefs.getString(key, defaultString);
-
-    }
-
-    public String getString(String key, String defaultString) {
+    public static void checkTransactions() {
 
 
-        return prefs.getString(key, defaultString);
-
-    }
-
-    public void addToTransactions(Transaction transaction) {
-
-        String arrayString = getString(UNSYCNCED_RES_NUMS, "[]");
-        Gson gson = new Gson();
-        ArrayList<Transaction> transactions = gson.fromJson(arrayString, new TypeToken<List<Transaction>>() {
-        }.getType());
-
-        transactions.add(transaction);
-
-        saveString(UNSYCNCED_RES_NUMS, gson.toJson(transactions));
-
-    }
-
-    public void updateTransactions(Transaction transaction) {
-
-        String arrayString = getString(UNSYCNCED_RES_NUMS, "[]");
-        Gson gson = new Gson();
-        ArrayList<Transaction> transactions = gson.fromJson(arrayString, new TypeToken<List<Transaction>>() {
-        }.getType());
-
-
-        for (Transaction t : transactions)
-            if (t.getOur_token().equals(transaction.getOur_token())) {
-                transactions.remove(t);
-                transactions.add(transaction);
-                break;
-            }
-
-
-        saveString(UNSYCNCED_RES_NUMS, gson.toJson(transactions));
-
-    }
-
-    public void checkTransactions() {
-
-
-        String arrayString = getString(UNSYCNCED_RES_NUMS, "[]");
+        String arrayString = getValue(Constants.UNSYCNCED_RES_NUMS, "[]");
         Gson gson = new Gson();
         ArrayList<Transaction> transactions = gson.fromJson(arrayString, new TypeToken<List<Transaction>>() {
         }.getType());
@@ -119,16 +28,16 @@ public class SharedPreferencesRepository {
         for (Transaction t : transactions) {
             if (t.getStatus() == 0 && timeDifferenceInSeconds(Long.parseLong(t.getCreateTime()), Long.parseLong(Assistant.getUnixTime())) > 10) {
                 t.setStatus(-1);
-                updateTransactions(t);
+                updateTransactions02(t);
             }
         }
 
-        saveString(UNSYCNCED_RES_NUMS, gson.toJson(transactions));
+        setValue(Constants.UNSYCNCED_RES_NUMS, gson.toJson(transactions));
 
 
     }
 
-    public long timeDifferenceInSeconds(long d1, long d2) {
+    private static long timeDifferenceInSeconds(long d1, long d2) {
 
 
         long diff = Math.abs(d2 - d1);
@@ -137,27 +46,9 @@ public class SharedPreferencesRepository {
 
     }
 
-    public void removeFromTransactions(Transaction transaction) {
+    public static ArrayList<Transaction> getTransactions() {
 
-
-        String arrayString = getString(UNSYCNCED_RES_NUMS, "[]");
-        Gson gson = new Gson();
-        ArrayList<Transaction> transactions = gson.fromJson(arrayString, new TypeToken<List<Transaction>>() {
-        }.getType());
-
-
-        if (transactions.size() != 0)
-            for (int i = 0; i < transactions.size(); i++)
-                if (transactions.get(i).getOur_token().equals(transaction.getOur_token()))
-                    transactions.remove(i);
-
-        saveString(UNSYCNCED_RES_NUMS, gson.toJson(transactions));
-
-    }
-
-    public ArrayList<Transaction> getTransactions() {
-
-        String arrayString = getString(UNSYCNCED_RES_NUMS, "[]");
+        String arrayString = getValue(Constants.UNSYCNCED_RES_NUMS, "[]");
         Gson gson = new Gson();
         ArrayList<Transaction> transactions = gson.fromJson(arrayString, new TypeToken<List<Transaction>>() {
         }.getType());
@@ -177,6 +68,11 @@ public class SharedPreferencesRepository {
     public static String getValue(String key, String defaultValue) {
 
         return sharedPreferences.getString(key, defaultValue);
+    }
+
+    public static String getValue(String key) {
+
+        return sharedPreferences.getString(key, "");
     }
 
     public static void setValue(String key, String value) {
@@ -204,6 +100,54 @@ public class SharedPreferencesRepository {
     public static void removeToken() {
 
         sharedPreferences.edit().putString(Constants.ACCESS_TOKEN, "").apply();
+
+    }
+
+    public static void updateTransactions02(Transaction transaction) {
+
+        String arrayString = getValue(Constants.UNSYCNCED_RES_NUMS, "[]");
+        Gson gson = new Gson();
+        ArrayList<Transaction> transactions = gson.fromJson(arrayString, new TypeToken<List<Transaction>>() {
+        }.getType());
+
+        for (Transaction t : transactions)
+            if (t.getOur_token().equals(transaction.getOur_token())) {
+                transactions.remove(t);
+                transactions.add(transaction);
+                break;
+            }
+
+        setValue(Constants.UNSYCNCED_RES_NUMS, gson.toJson(transactions));
+
+    }
+
+    public static void addToTransactions02(Transaction transaction) {
+
+        String arrayString = getValue(Constants.UNSYCNCED_RES_NUMS, "[]");
+        Gson gson = new Gson();
+        ArrayList<Transaction> transactions = gson.fromJson(arrayString, new TypeToken<List<Transaction>>() {
+        }.getType());
+
+        transactions.add(transaction);
+
+        setValue(Constants.UNSYCNCED_RES_NUMS, gson.toJson(transactions));
+
+    }
+
+    public static void removeFromTransactions02(Transaction transaction) {
+
+        String arrayString = getValue(Constants.UNSYCNCED_RES_NUMS, "[]");
+        Gson gson = new Gson();
+        ArrayList<Transaction> transactions = gson.fromJson(arrayString, new TypeToken<List<Transaction>>() {
+        }.getType());
+
+
+        if (transactions.size() != 0)
+            for (int i = 0; i < transactions.size(); i++)
+                if (transactions.get(i).getOur_token().equals(transaction.getOur_token()))
+                    transactions.remove(i);
+
+        setValue(Constants.UNSYCNCED_RES_NUMS, gson.toJson(transactions));
 
     }
 

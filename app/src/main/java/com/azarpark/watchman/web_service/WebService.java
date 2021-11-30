@@ -41,8 +41,7 @@ public class WebService {
 
     public static API getClient(Context context) {
 
-        SharedPreferencesRepository sh_p = new SharedPreferencesRepository(context);
-        String baseURL = Constants.BASE_URL_FIRST_PART + sh_p.getString(SharedPreferencesRepository.SUB_DOMAIN) + Constants.BASE_URL_SECOND_PART;
+        String baseURL = Constants.BASE_URL_FIRST_PART + SharedPreferencesRepository.getValue(Constants.SUB_DOMAIN) + Constants.BASE_URL_SECOND_PART;
 
         if (retrofit == null)
             retrofit = new Retrofit.Builder()

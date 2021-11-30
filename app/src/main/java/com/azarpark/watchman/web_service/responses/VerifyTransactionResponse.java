@@ -1,17 +1,10 @@
-package com.azarpark.watchman.retrofit_remote.responses;
+package com.azarpark.watchman.web_service.responses;
 
-public class DeleteExitRequestResponse {
+public class VerifyTransactionResponse {
 
     int success;
-    String msg, description;
-
-    public int getSuccess() {
-        return success;
-    }
-
-    public void setSuccess(int success) {
-        this.success = success;
-    }
+    String description;
+    String msg;
 
     public String getMsg() {
         return msg;
@@ -19,6 +12,14 @@ public class DeleteExitRequestResponse {
 
     public void setMsg(String msg) {
         this.msg = msg;
+    }
+
+    public int getSuccess() {
+        return success;
+    }
+
+    public void setSuccess(int success) {
+        this.success = success;
     }
 
     public String getDescription() {

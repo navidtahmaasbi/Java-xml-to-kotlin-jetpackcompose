@@ -24,14 +24,12 @@ import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.payment.parsian.ParsianPayment;
 import com.azarpark.watchman.payment.saman.SamanPayment;
-import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
-import com.azarpark.watchman.retrofit_remote.responses.DebtHistoryResponse;
-import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse;
-import com.azarpark.watchman.utils.APIErrorHandler;
+import com.azarpark.watchman.web_service.responses.DebtHistoryResponse;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
-import com.google.gson.Gson;
+import com.azarpark.watchman.web_service.NewErrorHandler;
+import com.azarpark.watchman.web_service.WebService;
 
 import java.util.ArrayList;
 
@@ -44,7 +42,6 @@ public class CarNumberChargeActivity extends AppCompatActivity {
     ActivityCarNumberChargeBinding binding;
     private PlateType selectedTab = PlateType.simple;
     LoadingBar loadingBar;
-    SharedPreferencesRepository sh_r;
     ChargeItemListAdapter adapter;
     Activity activity = this;
     ParsianPayment parsianPayment;
@@ -90,10 +87,10 @@ public class CarNumberChargeActivity extends AppCompatActivity {
             public void onVerifyFinished() {
                 if (Constants.SELECTED_PAYMENT == Constants.SAMAN) {
 
-                    String tag1 = sh_r.getString(SharedPreferencesRepository.TAG1, "0");
-                    String tag2 = sh_r.getString(SharedPreferencesRepository.TAG2, "0");
-                    String tag3 = sh_r.getString(SharedPreferencesRepository.TAG3, "0");
-                    String tag4 = sh_r.getString(SharedPreferencesRepository.TAG4, "0");
+                    String tag1 = SharedPreferencesRepository.getValue(Constants.TAG1, "0");
+                    String tag2 = SharedPreferencesRepository.getValue(Constants.TAG2, "0");
+                    String tag3 = SharedPreferencesRepository.getValue(Constants.TAG3, "0");
+                    String tag4 = SharedPreferencesRepository.getValue(Constants.TAG4, "0");
 
                     getCarDebtHistory(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
 
@@ -102,7 +99,6 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         });
         binding.plateSimpleTag1.requestFocus();
 
-        sh_r = new SharedPreferencesRepository(getApplicationContext());
         loadingBar = new LoadingBar(CarNumberChargeActivity.this);
 
         binding.plateSimpleTag1.requestFocus();
@@ -316,7 +312,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         ArrayList<Integer> items = new ArrayList<>();
 
         //todo release
-//        items.add(1000);
+        items.add(1000);
         items.add(10000);
         items.add(20000);
         items.add(30000);
@@ -483,75 +479,21 @@ public class CarNumberChargeActivity extends AppCompatActivity {
             samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1,Constants.TRANSACTION_TYPE_CHAREG);
     }
 
-    private void verifyTransaction(Transaction transaction) {
-
-
-        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-//        loadingBar.show();
-
-        repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-                transaction, new Callback<VerifyTransactionResponse>() {
-                    @Override
-                    public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
-
-
-//                        loadingBar.dismiss();
-                        if (response.isSuccessful() && transaction.getStatus() != 0) {
-
-                            sh_r.removeFromTransactions(transaction);
-
-                            Gson gson = new Gson();
-
-                            if (Constants.SELECTED_PAYMENT == Constants.SAMAN) {
-
-                                String tag1 = sh_r.getString(SharedPreferencesRepository.TAG1, "0");
-                                String tag2 = sh_r.getString(SharedPreferencesRepository.TAG2, "0");
-                                String tag3 = sh_r.getString(SharedPreferencesRepository.TAG3, "0");
-                                String tag4 = sh_r.getString(SharedPreferencesRepository.TAG4, "0");
-
-                                getCarDebtHistory(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
-
-                            }
-
-                            Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
-                        } else
-                            APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> verifyTransaction(transaction));
-                    }
-
-                    @Override
-                    public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
-//                        loadingBar.dismiss();
-                        t.printStackTrace();
-                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> verifyTransaction(transaction));
-                    }
-                });
-
-    }
-
     private void getCarDebtHistory(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset) {
 
-        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-        loadingBar.show();
+        Runnable functionRunnable = () -> getCarDebtHistory(plateType, tag1, tag2, tag3, tag4, limit, offset);
+        LoadingBar.start(CarNumberChargeActivity.this);
 
-        repository.getCarDebtHistory("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-                plateType, tag1, tag2, tag3, tag4, limit, offset, new Callback<DebtHistoryResponse>() {
-                    @Override
-                    public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
+        WebService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
+            @Override
+            public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
 
+                Assistant.hideKeyboard(CarNumberChargeActivity.this);
 
-                        loadingBar.dismiss();
-                        if (response.isSuccessful()) {
+                LoadingBar.stop();
+                if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
+                    return;
 
-                            if (response.body().success != 1){
-
-
-                                Toast.makeText(getApplicationContext(), response.body().description != null ? response.body().description : response.body().getMsg(), Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-
-                            if (response.body().getSuccess() == 1) {
 
                                 if (selectedTab == PlateType.simple)
                                     printFactor(tag1,
@@ -563,19 +505,17 @@ public class CarNumberChargeActivity extends AppCompatActivity {
                                 else
                                     printFactor(tag1, tag2, "0", "0", response.body().balance);
 
-                            }
 
+            }
 
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
-                        loadingBar.dismiss();
-                        t.printStackTrace();
-                    }
-                });
+            @Override
+            public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
+                LoadingBar.stop();
+                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
+            }
+        });
 
     }
+
 
 }

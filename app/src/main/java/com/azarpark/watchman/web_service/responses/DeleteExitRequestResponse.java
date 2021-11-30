@@ -1,6 +1,6 @@
-package com.azarpark.watchman.retrofit_remote.responses;
+package com.azarpark.watchman.web_service.responses;
 
-public class SendExitCodeResponse {
+public class DeleteExitRequestResponse {
 
     int success;
     String msg, description;

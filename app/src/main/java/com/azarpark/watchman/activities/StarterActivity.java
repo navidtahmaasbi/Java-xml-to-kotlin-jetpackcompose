@@ -2,26 +2,19 @@ package com.azarpark.watchman.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.admin.DevicePolicyManager;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.azarpark.watchman.R;
-import com.azarpark.watchman.dialogs.GetValueDialog;
 import com.azarpark.watchman.dialogs.LoadingBar;
-import com.azarpark.watchman.dialogs.MessageDialog;
-import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
-import com.azarpark.watchman.retrofit_remote.responses.SendExitCodeResponse;
-import com.azarpark.watchman.utils.APIErrorHandler;
+import com.azarpark.watchman.web_service.responses.DeleteExitRequestResponse;
 import com.azarpark.watchman.utils.Assistant;
+import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
+import com.azarpark.watchman.web_service.WebService;
 
 import java.util.Random;
 
@@ -32,12 +25,10 @@ import retrofit2.Response;
 public class StarterActivity extends AppCompatActivity {
 
 
-    GetValueDialog messageDialog;
     private int code = 5555;
     LoadingBar loadingBar;
     private final int masterCode = 2369;//todo release
     Assistant assistant;
-    SharedPreferencesRepository sh_r;
     int tapCount = 0;
 
     @Override
@@ -47,7 +38,6 @@ public class StarterActivity extends AppCompatActivity {
 
         assistant = new Assistant();
         loadingBar = new LoadingBar(StarterActivity.this);
-        sh_r = new SharedPreferencesRepository(getApplicationContext());
 
         findViewById(R.id.app).setOnClickListener(view -> {
 
@@ -66,11 +56,11 @@ public class StarterActivity extends AppCompatActivity {
 
                 Random random = new Random();
                 code = 1000 + random.nextInt(9000);
-                sendExitCode(code);
+                sendExitCode02(code);
 
                 findViewById(R.id.password_area).setVisibility(findViewById(R.id.password_area).getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
                 if (findViewById(R.id.password_area).getVisibility() == View.VISIBLE)
-                    Assistant.eventByMobile(sh_r.getString(SharedPreferencesRepository.USERNAME, "not logged-in"), "click exit app");
+                    Assistant.eventByMobile(SharedPreferencesRepository.getValue(Constants.USERNAME, "not logged-in"), "click exit app");
 
             }
 
@@ -103,7 +93,7 @@ public class StarterActivity extends AppCompatActivity {
                 edt.setText("");
                 findViewById(R.id.password_area).setVisibility(View.GONE);
 
-                Assistant.eventByMobile(sh_r.getString(SharedPreferencesRepository.USERNAME, "not logged-in"), "show launcher chooser");
+                Assistant.eventByMobile(SharedPreferencesRepository.getValue(Constants.USERNAME, "not logged-in"), "show launcher chooser");
 
                 startActivity(chooser);
 
@@ -114,34 +104,30 @@ public class StarterActivity extends AppCompatActivity {
 
     }
 
-    private void sendExitCode(int code) {
-
-        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-//        loadingBar.show();
-
-        repository.sendExitCode("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-                code, new Callback<SendExitCodeResponse>() {
-                    @Override
-                    public void onResponse(Call<SendExitCodeResponse> call, Response<SendExitCodeResponse> response) {
-
-//                        loadingBar.dismiss();
-//                        if (!response.isSuccessful())
-//                            APIErrorHandler.orResponseErrorHandler(getSupportFragmentManager(), StarterActivity.this, response, () -> sendExitCode(code));
-                    }
-
-                    @Override
-                    public void onFailure(Call<SendExitCodeResponse> call, Throwable t) {
-//                        loadingBar.dismiss();
-//                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> sendExitCode(code));
-                    }
-                });
-
-    }
-
-
     @Override
     public void onBackPressed() {
 //        super.onBackPressed();
     }
+
+    //------------------------------------------------------------------------------------------------------------------------
+
+    private void sendExitCode02(int placeID) {
+
+        WebService.getClient(getApplicationContext()).deleteExitRequest(SharedPreferencesRepository.getTokenWithPrefix(), placeID).enqueue(new Callback<DeleteExitRequestResponse>() {
+            @Override
+            public void onResponse(Call<DeleteExitRequestResponse> call, Response<DeleteExitRequestResponse> response) {
+
+
+            }
+
+            @Override
+            public void onFailure(Call<DeleteExitRequestResponse> call, Throwable t) {
+
+            }
+        });
+
+    }
+
+
+
 }

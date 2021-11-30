@@ -1,16 +1,13 @@
 package com.azarpark.watchman.dialogs;
 
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,25 +15,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.azarpark.watchman.R;
-import com.azarpark.watchman.activities.DebtListActivity;
-import com.azarpark.watchman.databinding.ParkInfoDialogBinding;
 import com.azarpark.watchman.databinding.ParkResponseDialogBinding;
-import com.azarpark.watchman.enums.PlateType;
-import com.azarpark.watchman.interfaces.OnGetInfoClicked;
 import com.azarpark.watchman.interfaces.OnSubmitClicked;
-import com.azarpark.watchman.models.Place;
-import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
-import com.azarpark.watchman.retrofit_remote.responses.EstimateParkPriceResponse;
-import com.azarpark.watchman.utils.APIErrorHandler;
 import com.azarpark.watchman.utils.Assistant;
-import com.azarpark.watchman.utils.SharedPreferencesRepository;
-
-import java.text.NumberFormat;
-import java.util.Locale;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class ParkResponseDialog extends DialogFragment {
 

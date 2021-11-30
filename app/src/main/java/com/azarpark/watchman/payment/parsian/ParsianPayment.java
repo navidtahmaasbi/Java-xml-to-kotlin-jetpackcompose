@@ -7,9 +7,7 @@ import android.content.Intent;
 import android.device.PrinterManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.media.Image;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,20 +18,18 @@ import androidx.fragment.app.FragmentManager;
 
 import com.azarpark.watchman.databinding.ParsianAfterPaymentPrintTemplateBinding;
 import com.azarpark.watchman.databinding.PrintTemplateBinding;
-import com.azarpark.watchman.databinding.SamanAfterPaymentPrintTemplateBinding;
 import com.azarpark.watchman.dialogs.LoadingBar;
-import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.models.Transaction;
-import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
-import com.azarpark.watchman.retrofit_remote.responses.CreateTransactionResponse;
-import com.azarpark.watchman.retrofit_remote.responses.DebtHistoryResponse;
-import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse;
-import com.azarpark.watchman.utils.APIErrorHandler;
+import com.azarpark.watchman.web_service.responses.CreateTransactionResponse;
+import com.azarpark.watchman.web_service.responses.DebtHistoryResponse;
+import com.azarpark.watchman.web_service.responses.VerifyTransactionResponse;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
+import com.azarpark.watchman.web_service.NewErrorHandler;
+import com.azarpark.watchman.web_service.WebService;
 import com.google.gson.Gson;
 
 import java.util.Set;
@@ -47,16 +43,9 @@ import retrofit2.Response;
 public class ParsianPayment {
 
     public static int PAYMENT_REQUEST_CODE = 103;
-    String PLATE_TYPE = "plate_type";
     public static String QR_DATA = "qr_data";
-    String TAG1 = "tag1";
-    String TAG2 = "tag2";
-    String TAG3 = "tag3";
-    String TAG4 = "tag4";
-    String PLACE_ID = "place_id";
     String PARSIAN = "parsian";
     public static int QR_SCANER_REQUEST_CODE = 350;
-    MessageDialog messageDialog;
     PlateType plateType;
     String tag1;
     String tag2;
@@ -69,7 +58,6 @@ public class ParsianPayment {
     ParsianPaymentCallBack parsianPaymentCallBack;
     FragmentManager fragmentManager;
     LoadingBar loadingBar;
-    SharedPreferencesRepository sh_p;
     Assistant assistant;
     ViewGroup printArea;
 
@@ -80,7 +68,7 @@ public class ParsianPayment {
         this.activity = activity;
         this.printArea = printArea;
         loadingBar = new LoadingBar(activity);
-        sh_p = new SharedPreferencesRepository(context);
+//        sh_p = new SharedPreferencesRepository(context);
         assistant = new Assistant();
     }
 
@@ -116,14 +104,13 @@ public class ParsianPayment {
 
                     Log.d("bundle data", getBundleString(b));
 
-                    int amount = Integer.parseInt(sh_p.getString(SharedPreferencesRepository.AMOUNT, "0"));
+                    int amount = Integer.parseInt(SharedPreferencesRepository.getValue(Constants.AMOUNT, "0"));
                     String result = b.getString("result");
                     String pan = b.getString("pan");
                     String rrn = b.getString("rrn");
                     Long date = b.getLong("date");
                     String trace = b.getString("trace");
                     String errorMessage = b.getString("message", "");
-//                    Long res_num = Long.parseLong(sh_p.getString(SharedPreferencesRepository.OUR_TOKEN));
                     Long res_num = b.getLong("res_num");
                     int status = result.equals("succeed") ? 1 : -1;
 
@@ -149,10 +136,10 @@ public class ParsianPayment {
 
                 } else {
 
-                    String amount = sh_p.getString(SharedPreferencesRepository.AMOUNT, "0");
-                    String resNum = sh_p.getString(SharedPreferencesRepository.OUR_TOKEN, "0");
-                    int placeID = Integer.parseInt(sh_p.getString(SharedPreferencesRepository.PLACE_ID, "0"));
-                    String tag4 = sh_p.getString(SharedPreferencesRepository.TAG4, "0");
+                    String amount = SharedPreferencesRepository.getValue(Constants.AMOUNT, "0");
+                    String resNum = SharedPreferencesRepository.getValue(Constants.OUR_TOKEN, "0");
+                    int placeID = Integer.parseInt(SharedPreferencesRepository.getValue(Constants.PLACE_ID, "0"));
+                    String tag4 = SharedPreferencesRepository.getValue(Constants.TAG4, "0");
 
                     transaction = new Transaction(
                             amount,
@@ -173,9 +160,9 @@ public class ParsianPayment {
 
             } else {
 
-                String amount = sh_p.getString(SharedPreferencesRepository.AMOUNT, "0");
-                String resNum = sh_p.getString(SharedPreferencesRepository.OUR_TOKEN, "0");
-                int placeID = Integer.parseInt(sh_p.getString(SharedPreferencesRepository.PLACE_ID, "0"));
+                String amount = SharedPreferencesRepository.getValue(Constants.AMOUNT, "0");
+                String resNum = SharedPreferencesRepository.getValue(Constants.OUR_TOKEN, "0");
+                int placeID = Integer.parseInt(SharedPreferencesRepository.getValue(Constants.PLACE_ID, "0"));
 
                 transaction = new Transaction(
                         amount,
@@ -195,8 +182,8 @@ public class ParsianPayment {
             }
 
             Gson gson = new Gson();
-            sh_p.updateTransactions(transaction);
-            verifyTransaction(transaction);
+            SharedPreferencesRepository.updateTransactions02(transaction);
+            verifyTransaction02(transaction);
 
 //            parsianPaymentCallBack.verifyTransaction(transaction);
 
@@ -221,179 +208,121 @@ public class ParsianPayment {
 
     }
 
-    //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
     public void createTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID, int transactionType) {
 
-        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(context);
-        RetrofitAPIRepository repository = new RetrofitAPIRepository(context);
-        loadingBar.show();
+        Runnable functionRunnable = () -> createTransaction(plateType, tag1, tag2, tag3, tag4, amount, placeID,transactionType);
 
-        if (tag2 == null) tag2 = "null";
-        if (tag3 == null) tag3 = "null";
-        if (tag4 == null) tag4 = "null";
-//
-        String finalTag2 = tag2;
-        String finalTag3 = tag3;
-        String finalTag4 = tag4;
-        repository.createTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-                plateType,
-                tag1,
-                tag2,
-                tag3,
-                tag4,
-                amount,
-                transactionType,
-                new Callback<CreateTransactionResponse>() {
-                    @Override
-                    public void onResponse(Call<CreateTransactionResponse> call, Response<CreateTransactionResponse> response) {
+        WebService.getClient(context).createTransaction(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(),tag1,tag2,tag3,tag4,amount,transactionType).enqueue(new Callback<CreateTransactionResponse>() {
+            @Override
+            public void onResponse(Call<CreateTransactionResponse> call, Response<CreateTransactionResponse> response) {
 
+                if (NewErrorHandler.apiResponseHasError(response, context))
+                    return;
 
-                        loadingBar.dismiss();
-                        if (response.isSuccessful()) {
+                long our_token = response.body().our_token;
 
-                            long our_token = response.body().our_token;
+                SharedPreferencesRepository.setValue(Constants.PLATE_TYPE, plateType.toString());
+                SharedPreferencesRepository.setValue(Constants.TAG1, tag1);
+                SharedPreferencesRepository.setValue(Constants.TAG2, tag2);
+                SharedPreferencesRepository.setValue(Constants.TAG3, tag3);
+                SharedPreferencesRepository.setValue(Constants.TAG4, tag4);
+                SharedPreferencesRepository.setValue(Constants.AMOUNT, String.valueOf(amount));
+                SharedPreferencesRepository.setValue(Constants.PLACE_ID, Integer.toString(placeID));
+                SharedPreferencesRepository.setValue(Constants.OUR_TOKEN, Long.toString(our_token));
 
-                            sh_p.saveString(SharedPreferencesRepository.PLATE_TYPE, plateType.toString());
-                            sh_p.saveString(SharedPreferencesRepository.TAG1, tag1);
-                            sh_p.saveString(SharedPreferencesRepository.TAG2, finalTag2);
-                            sh_p.saveString(SharedPreferencesRepository.TAG3, finalTag3);
-                            sh_p.saveString(SharedPreferencesRepository.TAG4, finalTag4);
-                            sh_p.saveString(SharedPreferencesRepository.AMOUNT, String.valueOf(amount));
-                            sh_p.saveString(SharedPreferencesRepository.PLACE_ID, Integer.toString(placeID));
-                            sh_p.saveString(SharedPreferencesRepository.OUR_TOKEN, Long.toString(our_token));
+                Transaction transaction = new Transaction(
+                        Integer.toString(amount),
+                        Long.toString(our_token),
+                        "0",
+                        Integer.parseInt(SharedPreferencesRepository.getValue(Constants.PLACE_ID, "0")),
+                        0,
+                        PARSIAN,
+                        "0",
+                        "",
+                        "",
+                        "",
+                        "",
+                        Assistant.getUnixTime());
 
-                            Transaction transaction = new Transaction(
-                                    Integer.toString(amount),
-                                    Long.toString(our_token),
-                                    "0",
-                                    Integer.parseInt(sh_r.getString(SharedPreferencesRepository.PLACE_ID, "0")),
-                                    0,
-                                    PARSIAN,
-                                    "0",
-                                    "",
-                                    "",
-                                    "",
-                                    "",
-                                    Assistant.getUnixTime());
+                SharedPreferencesRepository.addToTransactions02(transaction);
 
-                            sh_r.addToTransactions(transaction);
-
-                            paymentRequest(amount, our_token, activity, plateType, tag1, finalTag2, finalTag3, finalTag4, placeID);
-
-                        } else
-                            try {
-
-                                APIErrorHandler.onResponseErrorHandler(fragmentManager, activity, response, () -> createTransaction(plateType, tag1, finalTag2, finalTag3, finalTag4, amount, placeID, transactionType));
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                    }
-
-                    @Override
-                    public void onFailure(Call<CreateTransactionResponse> call, Throwable t) {
-
-                        try {
-
-                            loadingBar.dismiss();
-                            t.printStackTrace();
-                            APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> createTransaction(plateType, tag1, finalTag2, finalTag3, finalTag4, amount, placeID, transactionType));
+                paymentRequest(amount, our_token, activity, plateType, tag1, tag2, tag3, tag4, placeID);
 
 
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
+            }
+
+            @Override
+            public void onFailure(Call<CreateTransactionResponse> call, Throwable t) {
+                NewErrorHandler.apiFailureErrorHandler(call, t, fragmentManager, functionRunnable);
+            }
+        });
 
     }
 
-    private void verifyTransaction(Transaction transaction) {
+    public void verifyTransaction02(Transaction transaction) {
 
-        System.out.println("----------> verifyTransaction");
+        Runnable functionRunnable = () -> verifyTransaction02(transaction);
 
-        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(context);
-        RetrofitAPIRepository repository = new RetrofitAPIRepository(context);
+        WebService.getClient(context).verifyTransaction(SharedPreferencesRepository.getTokenWithPrefix(),transaction.getAmount(),transaction.getOur_token(),
+                transaction.getBank_token(),transaction.getPlaceID(),transaction.getStatus(),transaction.getBank_type(),transaction.getState(),
+                transaction.getCard_number(),transaction.getBank_datetime(),transaction.getTrace_number(),transaction.getResult_message()).enqueue(new Callback<VerifyTransactionResponse>() {
+            @Override
+            public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
 
-        repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-                transaction, new Callback<VerifyTransactionResponse>() {
-                    @Override
-                    public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
+                if (NewErrorHandler.apiResponseHasError(response, context))
+                    return;
 
+                SharedPreferencesRepository.removeFromTransactions02(transaction);
+                Toast.makeText(context, response.body().getDescription(), Toast.LENGTH_SHORT).show();
+                String tag1 = SharedPreferencesRepository.getValue(Constants.TAG1, "0");
+                String tag2 = SharedPreferencesRepository.getValue(Constants.TAG2, "0");
+                String tag3 = SharedPreferencesRepository.getValue(Constants.TAG3, "0");
+                String tag4 = SharedPreferencesRepository.getValue(Constants.TAG4, "0");
 
-                        if (response.isSuccessful() && transaction.getStatus() != 0) {
+                getCarDebtHistory02(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
 
-                            sh_r.removeFromTransactions(transaction);
-                            Toast.makeText(context, response.body().getDescription(), Toast.LENGTH_SHORT).show();
-                            String tag1 = sh_r.getString(SharedPreferencesRepository.TAG1, "0");
-                            String tag2 = sh_r.getString(SharedPreferencesRepository.TAG2, "0");
-                            String tag3 = sh_r.getString(SharedPreferencesRepository.TAG3, "0");
-                            String tag4 = sh_r.getString(SharedPreferencesRepository.TAG4, "0");
+            }
 
-                            getCarDebtHistory(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
-
-
-                        } else
-                            APIErrorHandler.onResponseErrorHandler(fragmentManager, activity, response, () -> verifyTransaction(transaction));
-                    }
-
-                    @Override
-                    public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
-                        t.printStackTrace();
-                        APIErrorHandler.onFailureErrorHandler(fragmentManager, t, () -> verifyTransaction(transaction));
-                    }
-                });
+            @Override
+            public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
+                NewErrorHandler.apiFailureErrorHandler(call, t, fragmentManager, functionRunnable);
+            }
+        });
 
     }
 
-    private void getCarDebtHistory(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset) {
+    private void getCarDebtHistory02(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset) {
 
-        System.out.println("----------> getCarDebtHistory");
+        Runnable functionRunnable = () -> getCarDebtHistory02(plateType, tag1, tag2, tag3, tag4, limit, offset);
+        LoadingBar.start(activity);
 
-        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(context);
-        RetrofitAPIRepository repository = new RetrofitAPIRepository(context);
-        loadingBar.show();
+        WebService.getClient(context).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
+            @Override
+            public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
 
-        repository.getCarDebtHistory("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-                plateType, tag1, tag2, tag3, tag4, limit, offset, new Callback<DebtHistoryResponse>() {
-                    @Override
-                    public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
+                LoadingBar.stop();
+                if (NewErrorHandler.apiResponseHasError(response, context))
+                    return;
 
-
-                        loadingBar.dismiss();
-                        if (response.isSuccessful()) {
-
-                            if (response.body().success != 1) {
-
-
-                                Toast.makeText(context, response.body().description != null ? response.body().description : response.body().getMsg(), Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-
-                            if (response.body().getSuccess() == 1) {
-
-                                if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.simple)
-                                    printFactor(tag1,
-                                            tag2,
-                                            tag3,
-                                            tag4, response.body().balance);
-                                else if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.old_aras)
-                                    printFactor(tag1, "0", "0", "0", response.body().balance);
-                                else
-                                    printFactor(tag1, tag2, "0", "0", response.body().balance);
-
-                            }
+                if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.simple)
+                    printFactor(tag1,
+                            tag2,
+                            tag3,
+                            tag4, response.body().balance);
+                else if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.old_aras)
+                    printFactor(tag1, "0", "0", "0", response.body().balance);
+                else
+                    printFactor(tag1, tag2, "0", "0", response.body().balance);
 
 
-                        }
-                    }
+            }
 
-                    @Override
-                    public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
-                        loadingBar.dismiss();
-                        t.printStackTrace();
-                    }
-                });
+            @Override
+            public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
+                LoadingBar.stop();
+                NewErrorHandler.apiFailureErrorHandler(call, t, fragmentManager, functionRunnable);
+            }
+        });
 
     }
 
@@ -553,7 +482,6 @@ public class ParsianPayment {
         }
 
     }
-
 
     //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 

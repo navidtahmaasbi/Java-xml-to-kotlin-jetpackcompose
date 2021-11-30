@@ -10,8 +10,6 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,12 +18,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.azarpark.watchman.R;
-import com.azarpark.watchman.activities.MainActivity;
 import com.azarpark.watchman.databinding.ParkDialogBinding;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnParkClicked;
 import com.azarpark.watchman.models.Place;
-import com.azarpark.watchman.retrofit_remote.bodies.ParkBody;
+import com.azarpark.watchman.web_service.bodies.ParkBody;
 import com.azarpark.watchman.utils.Assistant;
 
 public class ParkDialog extends DialogFragment {

@@ -1,6 +1,6 @@
 package com.azarpark.watchman.interfaces;
 
-import com.azarpark.watchman.retrofit_remote.bodies.ParkBody;
+import com.azarpark.watchman.web_service.bodies.ParkBody;
 
 public interface OnParkClicked {
 

@@ -25,8 +25,7 @@ public class APIErrorHandler {
 
         if (response.code() > 400 && response.code() < 420) {
 
-            SharedPreferencesRepository sh_r = new SharedPreferencesRepository(activity.getApplicationContext());
-            sh_r.saveString(SharedPreferencesRepository.ACCESS_TOKEN,"");
+            SharedPreferencesRepository.setValue(Constants.ACCESS_TOKEN,"");
             activity.startActivity(new Intent(activity, LoginActivity.class));
             activity.finish();
 

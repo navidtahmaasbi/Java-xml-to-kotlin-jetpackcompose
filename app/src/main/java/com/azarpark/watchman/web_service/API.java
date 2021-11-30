@@ -1,21 +1,21 @@
 package com.azarpark.watchman.web_service;
 
-import com.azarpark.watchman.retrofit_remote.bodies.LoginBody;
-import com.azarpark.watchman.retrofit_remote.bodies.ParkBody;
-import com.azarpark.watchman.retrofit_remote.responses.CreateTransactionResponse;
-import com.azarpark.watchman.retrofit_remote.responses.DebtHistoryResponse;
-import com.azarpark.watchman.retrofit_remote.responses.DeleteExitRequestResponse;
-import com.azarpark.watchman.retrofit_remote.responses.EstimateParkPriceResponse;
-import com.azarpark.watchman.retrofit_remote.responses.ExitParkResponse;
-import com.azarpark.watchman.retrofit_remote.responses.ExitRequestResponse;
-import com.azarpark.watchman.retrofit_remote.responses.GetCitiesResponse;
-import com.azarpark.watchman.retrofit_remote.responses.LoginResponse;
-import com.azarpark.watchman.retrofit_remote.responses.LogoutResponse;
-import com.azarpark.watchman.retrofit_remote.responses.ParkResponse;
-import com.azarpark.watchman.retrofit_remote.responses.PlacesResponse;
-import com.azarpark.watchman.retrofit_remote.responses.SendExitCodeResponse;
-import com.azarpark.watchman.retrofit_remote.responses.SplashResponse;
-import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse;
+import com.azarpark.watchman.web_service.bodies.LoginBody;
+import com.azarpark.watchman.web_service.bodies.ParkBody;
+import com.azarpark.watchman.web_service.responses.CreateTransactionResponse;
+import com.azarpark.watchman.web_service.responses.DebtHistoryResponse;
+import com.azarpark.watchman.web_service.responses.DeleteExitRequestResponse;
+import com.azarpark.watchman.web_service.responses.EstimateParkPriceResponse;
+import com.azarpark.watchman.web_service.responses.ExitParkResponse;
+import com.azarpark.watchman.web_service.responses.ExitRequestResponse;
+import com.azarpark.watchman.web_service.responses.GetCitiesResponse;
+import com.azarpark.watchman.web_service.responses.LoginResponse;
+import com.azarpark.watchman.web_service.responses.LogoutResponse;
+import com.azarpark.watchman.web_service.responses.ParkResponse;
+import com.azarpark.watchman.web_service.responses.PlacesResponse;
+import com.azarpark.watchman.web_service.responses.SendExitCodeResponse;
+import com.azarpark.watchman.web_service.responses.SplashResponse;
+import com.azarpark.watchman.web_service.responses.VerifyTransactionResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;

@@ -47,25 +47,19 @@ import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.payment.parsian.ParsianPayment;
 import com.azarpark.watchman.payment.saman.SamanPayment;
-import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
-import com.azarpark.watchman.retrofit_remote.bodies.LoginBody;
-import com.azarpark.watchman.retrofit_remote.bodies.ParkBody;
-import com.azarpark.watchman.retrofit_remote.interfaces.CarDebtHistory;
-import com.azarpark.watchman.retrofit_remote.responses.DebtHistoryResponse;
-import com.azarpark.watchman.retrofit_remote.responses.DeleteExitRequestResponse;
-import com.azarpark.watchman.retrofit_remote.responses.ExitParkResponse;
-import com.azarpark.watchman.retrofit_remote.responses.LoginResponse;
-import com.azarpark.watchman.retrofit_remote.responses.LogoutResponse;
-import com.azarpark.watchman.retrofit_remote.responses.ParkResponse;
-import com.azarpark.watchman.retrofit_remote.responses.PlacesResponse;
-import com.azarpark.watchman.retrofit_remote.responses.VerifyTransactionResponse;
-import com.azarpark.watchman.utils.APIErrorHandler;
+import com.azarpark.watchman.web_service.bodies.ParkBody;
+import com.azarpark.watchman.web_service.responses.DebtHistoryResponse;
+import com.azarpark.watchman.web_service.responses.DeleteExitRequestResponse;
+import com.azarpark.watchman.web_service.responses.ExitParkResponse;
+import com.azarpark.watchman.web_service.responses.LogoutResponse;
+import com.azarpark.watchman.web_service.responses.ParkResponse;
+import com.azarpark.watchman.web_service.responses.PlacesResponse;
+import com.azarpark.watchman.web_service.responses.VerifyTransactionResponse;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.NewErrorHandler;
 import com.azarpark.watchman.web_service.WebService;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -91,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
     TextView watchManName;
     boolean updatePopUpIsShowed = false;
     int version = 0;
-    SharedPreferencesRepository sh_r;
     PlateChargeDialog plateChargeDialog;
     boolean placesLoadedForFirstTime = true;
     Activity activity = this;
@@ -112,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        sh_r = new SharedPreferencesRepository(getApplicationContext());
 
         assistant = new Assistant();
         parsianPayment = new ParsianPayment(binding.printArea, getApplicationContext(), activity, new ParsianPayment.ParsianPaymentCallBack() {
@@ -146,10 +138,10 @@ public class MainActivity extends AppCompatActivity {
             public void onVerifyFinished() {
                 if (Constants.SELECTED_PAYMENT == Constants.SAMAN) {
 
-                    String tag1 = sh_r.getString(SharedPreferencesRepository.TAG1, "0");
-                    String tag2 = sh_r.getString(SharedPreferencesRepository.TAG2, "0");
-                    String tag3 = sh_r.getString(SharedPreferencesRepository.TAG3, "0");
-                    String tag4 = sh_r.getString(SharedPreferencesRepository.TAG4, "0");
+                    String tag1 = SharedPreferencesRepository.getValue(Constants.TAG1, "0");
+                    String tag2 = SharedPreferencesRepository.getValue(Constants.TAG2, "0");
+                    String tag3 = SharedPreferencesRepository.getValue(Constants.TAG3, "0");
+                    String tag4 = SharedPreferencesRepository.getValue(Constants.TAG4, "0");
 
                     getCarDebtHistory02(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
 
@@ -159,14 +151,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        qr_url = sh_r.getString(SharedPreferencesRepository.qr_url, "");
-        refresh_time = Integer.parseInt(sh_r.getString(SharedPreferencesRepository.refresh_time, "10"));
-        telephone = sh_r.getString(SharedPreferencesRepository.telephone, "");
-        pricing = sh_r.getString(SharedPreferencesRepository.pricing, "");
-        sms_number = sh_r.getString(SharedPreferencesRepository.sms_number, "");
-        rules_url = sh_r.getString(SharedPreferencesRepository.rules_url, "");
-        about_us_url = sh_r.getString(SharedPreferencesRepository.about_us_url, "");
-        guide_url = sh_r.getString(SharedPreferencesRepository.guide_url, "");
+        qr_url = SharedPreferencesRepository.getValue(Constants.qr_url, "");
+        refresh_time = Integer.parseInt(SharedPreferencesRepository.getValue(Constants.refresh_time, "10"));
+        telephone = SharedPreferencesRepository.getValue(Constants.telephone, "");
+        pricing = SharedPreferencesRepository.getValue(Constants.pricing, "");
+        sms_number = SharedPreferencesRepository.getValue(Constants.sms_number, "");
+        rules_url = SharedPreferencesRepository.getValue(Constants.rules_url, "");
+        about_us_url = SharedPreferencesRepository.getValue(Constants.about_us_url, "");
+        guide_url = SharedPreferencesRepository.getValue(Constants.guide_url, "");
 
         try {
             PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -289,7 +281,7 @@ public class MainActivity extends AppCompatActivity {
         popupView.findViewById(R.id.help).setOnClickListener(view -> {
 
             Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
-            intent.putExtra("url", sh_r.getString(SharedPreferencesRepository.guide_url));
+            intent.putExtra("url", SharedPreferencesRepository.getValue(Constants.guide_url));
             startActivity(intent);
             popupWindow.dismiss();
 
@@ -297,14 +289,14 @@ public class MainActivity extends AppCompatActivity {
         watchManName = popupView.findViewById(R.id.name);
         popupView.findViewById(R.id.about_us).setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
-            intent.putExtra("url", sh_r.getString(SharedPreferencesRepository.about_us_url));
+            intent.putExtra("url", SharedPreferencesRepository.getValue(Constants.about_us_url));
             startActivity(intent);
             popupWindow.dismiss();
         });
         popupView.findViewById(R.id.rules).setOnClickListener(view -> {
 
             Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
-            intent.putExtra("url", sh_r.getString(SharedPreferencesRepository.rules_url));
+            intent.putExtra("url", SharedPreferencesRepository.getValue(Constants.rules_url));
             startActivity(intent);
             popupWindow.dismiss();
 
@@ -348,7 +340,7 @@ public class MainActivity extends AppCompatActivity {
                 public void run() {
                     MainActivity.this.runOnUiThread(() -> {
                         getPlaces02();
-                        sh_r.checkTransactions();
+                        SharedPreferencesRepository.checkTransactions();
                         verifyUnverifiedTransactions();
                     });
                 }
@@ -358,7 +350,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void verifyUnverifiedTransactions() {
 
-        for (Transaction transaction : sh_r.getTransactions())
+        for (Transaction transaction : SharedPreferencesRepository.getTransactions())
             if (transaction.getStatus() != 0)
                 verifyUnverifiedTransaction02(transaction);
 
@@ -473,6 +465,9 @@ public class MainActivity extends AppCompatActivity {
 
                 assistant.saveTags(place.tag1, place.tag2, place.tag3, place.tag4, getApplicationContext());
 
+                if (parkInfoDialog != null)
+                    parkInfoDialog.dismiss();
+
                 if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
                     parsianPayment.createTransaction(selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id, Constants.TRANSACTION_TYPE_PARK_PRICE);
                 else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
@@ -542,7 +537,7 @@ public class MainActivity extends AppCompatActivity {
 //            printTemplateBinding.prices.setText(pricing);
 //            printTemplateBinding.supportPhone.setText(telephone);
 //            printTemplateBinding.debt.setText((-1 * balance) + "تومان");
-//            String cityID = sh_r.getString(SharedPreferencesRepository.CITY_ID);
+//            String cityID = SharedPreferencesRepository.getValue(SharedPreferencesRepository.CITY_ID);
 //
 //            String sb = "در صورت عدم حضور پارکیار برای خروج عدد " +
 //                    cityID +
@@ -621,7 +616,7 @@ public class MainActivity extends AppCompatActivity {
             printTemplateBinding.prices.setText(pricing);
             printTemplateBinding.supportPhone.setText(telephone);
             printTemplateBinding.debt.setText((balance < 0 ? -1 * balance : balance) + "تومان");
-            String cityID = sh_r.getString(SharedPreferencesRepository.CITY_ID);
+            String cityID = SharedPreferencesRepository.getValue(Constants.CITY_ID);
 
             String sb = "در صورت عدم حضور پارکیار برای خروج عدد " +
                     cityID +
@@ -758,108 +753,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-    //-------------------------------------------------------- API calls
-
-//    private void getPlaces() {
-//
-//        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-//        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-//        LoadingBar loadingBar = new LoadingBar(MainActivity.this);
-//        if (placesLoadedForFirstTime)
-//            loadingBar.show();
-//
-//        repository.getPlaces("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), new Callback<PlacesResponse>() {
-//            @Override
-//            public void onResponse(Call<PlacesResponse> call, Response<PlacesResponse> response) {
-//
-//
-//                binding.refreshLayout.setRefreshing(false);
-//
-////                if (placesLoadedForFirstTime)
-//                loadingBar.dismiss();
-//                if (response.isSuccessful()) {
-//
-//                    if (response.body() != null && response.body().success != 1) {
-//
-//                        Toast.makeText(getApplicationContext(), response.body().description != null ? response.body().description : response.body().msg, Toast.LENGTH_SHORT).show();
-//
-//                        return;
-//                    }
-//
-//                    placesLoadedForFirstTime = false;
-//
-//                    if (!updatePopUpIsShowed && version != 0 && response.body().update.last_version > version) {
-//
-//                        updatePopUpIsShowed = true;
-//
-//                        if (response.body().update.is_forced == 1) {
-//
-//                            messageDialog = new MessageDialog("به روز رسانی", "به روز رسانی اجباری برای آذرپارک موجود است.", "به روز رسانی", () -> {
-//
-//                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(response.body().update.update_link));
-//                                startActivity(browserIntent);
-//
-//                            });
-//
-//                        }
-//
-//                    } else {
-//
-//                        if (watchManName != null)
-//                            watchManName.setText(response.body().watchman.name);
-//
-//                        exitRequestCount = 0;
-//                        ArrayList<Place> myPlaces = new ArrayList<>();
-//                        ArrayList<Integer> exitRequestPlaceIDs = new ArrayList<>();
-//
-//                        myPlaces.addAll(response.body().watchman.places);
-//                        for (Place place : response.body().watchman.places)
-//                            if (place.exit_request != null) {
-//                                exitRequestCount++;
-//                                exitRequestPlaceIDs.add(place.id);
-//                            }
-//
-//                        if (adapter.listHaveNewExitRequest(exitRequestPlaceIDs)) {
-//
-//                            try {
-//                                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-//                                Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-//                                r.play();
-//                            } catch (Exception e) {
-//                                System.out.println("----------> song error");
-//                                e.printStackTrace();
-//                            }
-//
-//                        }
-//
-//
-//                        adapter.setItems(myPlaces);
-//
-//                        binding.placeholder.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
-//
-//                        binding.exitRequestCount.setText(Integer.toString(exitRequestCount));
-//
-//                    }
-//
-//                } else
-//                    APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> getPlaces());
-//
-//            }
-//
-//            @Override
-//            public void onFailure(Call<PlacesResponse> call, Throwable t) {
-////                if (placesLoadedForFirstTime)
-//                loadingBar.dismiss();
-//                binding.refreshLayout.setRefreshing(false);
-//                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> getPlaces());
-//
-//            }
-//        });
-//
-//
-//    }
-
     private void getPlaces02() {
 
         Runnable functionRunnable = () -> getPlaces02();
@@ -943,47 +836,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-//    private void parkCar(ParkBody parkBody, boolean printFactor) {
-//
-//        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-//        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-//        LoadingBar loadingBar = new LoadingBar(MainActivity.this);
-//        loadingBar.show();
-//
-//        repository.park("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), parkBody, new Callback<ParkResponse>() {
-//            @Override
-//            public void onResponse(Call<ParkResponse> call, Response<ParkResponse> response) {
-//
-//                assistant.hideSoftKeyboard(activity);
-//
-//                loadingBar.dismiss();
-//                if (response.isSuccessful()) {
-//
-//                    if (response.body() != null && response.body().getSuccess() != 1) {
-//
-//                        Toast.makeText(getApplicationContext(), response.body().getDescription() != null ? response.body().getDescription() : response.body().getMsg(), Toast.LENGTH_SHORT).show();
-//
-//                        return;
-//                    }
-//
-//                    if (response.body().getSuccess() == 1) {
-//
-//                    } else
-//                        Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
-//
-//                } else
-//                    APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> parkCar(parkBody, printFactor));
-//            }
-//
-//            @Override
-//            public void onFailure(Call<ParkResponse> call, Throwable t) {
-//                loadingBar.dismiss();
-//                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> parkCar(parkBody, printFactor));
-//            }
-//        });
-//
-//    }
-
     private void parkCar02(ParkBody parkBody, boolean printFactor) {
 
         Runnable functionRunnable = () -> parkCar02(parkBody, printFactor);
@@ -1034,45 +886,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-//    private void exitPark(int placeID) {
-//
-//        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-//        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-//        LoadingBar loadingBar = new LoadingBar(MainActivity.this);
-//        loadingBar.show();
-//
-//        repository.exitPark("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), placeID, new Callback<ExitParkResponse>() {
-//            @Override
-//            public void onResponse(Call<ExitParkResponse> call, Response<ExitParkResponse> response) {
-//
-//
-//                loadingBar.dismiss();
-//                if (response.isSuccessful()) {
-//
-//                    if (response.body().getSuccess() == 1) {
-//
-//                        if (parkInfoDialog != null)
-//                            parkInfoDialog.dismiss();
-//                        getPlaces02();
-//
-//                    }
-//                    Toast.makeText(getApplicationContext(), response.body().getDescription() != null ? response.body().getDescription() : response.body().getMsg(), Toast.LENGTH_SHORT).show();
-//
-//
-//                } else
-//                    APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> exitPark(placeID));
-//            }
-//
-//            @Override
-//            public void onFailure(Call<ExitParkResponse> call, Throwable t) {
-//                loadingBar.dismiss();
-//                t.printStackTrace();
-//                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> exitPark(placeID));
-//            }
-//        });
-//
-//    }
-
     private void exitPark02(int placeID) {
 
         Runnable functionRunnable = () -> exitPark02(placeID);
@@ -1101,48 +914,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void deleteExitRequest(int place_id) {
-
-        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-        loadingBar.show();
-
-        repository.deleteExitRequest("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-                place_id, new Callback<DeleteExitRequestResponse>() {
-                    @Override
-                    public void onResponse(Call<DeleteExitRequestResponse> call, Response<DeleteExitRequestResponse> response) {
-
-
-                        loadingBar.dismiss();
-                        if (response.isSuccessful()) {
-
-                            if (response.body().getSuccess() != 1) {
-
-
-                                Toast.makeText(getApplicationContext(), response.body().getDescription() != null ? response.body().getDescription() : response.body().getMsg(), Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-
-                            getPlaces02();
-                            if (parkInfoDialog != null)
-                                parkInfoDialog.dismiss();
-
-                        } else
-                            APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> deleteExitRequest(place_id));
-                    }
-
-                    @Override
-                    public void onFailure(Call<DeleteExitRequestResponse> call, Throwable t) {
-                        loadingBar.dismiss();
-                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> deleteExitRequest(place_id));
-                    }
-                });
-
-    }
-
     private void deleteExitRequest02(int placeID) {
 
-        Runnable functionRunnable = () -> deleteExitRequest(placeID);
+        Runnable functionRunnable = () -> deleteExitRequest02(placeID);
         LoadingBar.start(MainActivity.this);
 
         WebService.getClient(getApplicationContext()).deleteExitRequest(SharedPreferencesRepository.getTokenWithPrefix(), placeID).enqueue(new Callback<DeleteExitRequestResponse>() {
@@ -1169,80 +943,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-//    private void verifyTransaction(Transaction transaction) {
-//
-//
-//        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-//        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-//
-//        loadingBar.show();
-//
-//        repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-//                transaction, new Callback<VerifyTransactionResponse>() {
-//                    @Override
-//                    public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
-//
-//
-//                        loadingBar.dismiss();
-//                        if (response.isSuccessful()) {
-//
-//                            if (parkInfoDialog != null)
-//                                parkInfoDialog.dismiss();
-//
-//                            sh_r.removeFromTransactions(transaction);
-//
-//                            Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
-//
-//                            if (Constants.SELECTED_PAYMENT == Constants.SAMAN) {
-//
-//                                String tag1 = sh_r.getString(SharedPreferencesRepository.TAG1, "0");
-//                                String tag2 = sh_r.getString(SharedPreferencesRepository.TAG2, "0");
-//                                String tag3 = sh_r.getString(SharedPreferencesRepository.TAG3, "0");
-//                                String tag4 = sh_r.getString(SharedPreferencesRepository.TAG4, "0");
-//
-//                                getCarDebtHistory02(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
-//
-//                            }
-//
-//                            getPlaces02();
-//
-//                        } else
-//                            APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> verifyTransaction(transaction));
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
-//                        loadingBar.dismiss();
-//                        t.printStackTrace();
-//                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> verifyTransaction(transaction));
-//                    }
-//                });
-//
-//    }
-//
-//    private void verifyUnverifiedTransaction(Transaction transaction) {
-//
-//        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-//        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-//
-//        repository.verifyTransaction("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-//                transaction, new Callback<VerifyTransactionResponse>() {
-//                    @Override
-//                    public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
-//
-//
-//                        if (response.isSuccessful() && response.body().getSuccess() == 1)
-//                            sh_r.removeFromTransactions(transaction);
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
-//                        t.printStackTrace();
-//                    }
-//                });
-//
-//    }
-
     private void verifyUnverifiedTransaction02(Transaction transaction) {
 
         Runnable functionRunnable = () -> verifyUnverifiedTransaction02(transaction);
@@ -1260,7 +960,7 @@ public class MainActivity extends AppCompatActivity {
                     return;
 
                 if (response.isSuccessful() && response.body().getSuccess() == 1)
-                    sh_r.removeFromTransactions(transaction);
+                    SharedPreferencesRepository.removeFromTransactions02(transaction);
 
             }
 
@@ -1272,49 +972,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }//todo test
-
-//    private void logout() {
-//
-//        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-//        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-//        loadingBar.show();
-//
-//        repository.logout("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), new Callback<LogoutResponse>() {
-//            @Override
-//            public void onResponse(Call<LogoutResponse> call, Response<LogoutResponse> response) {
-//
-//
-//                loadingBar.dismiss();
-//                if (response.isSuccessful()) {
-//
-//                    if (response.body().getSuccess() != 1) {
-//
-//                        Toast.makeText(getApplicationContext(), response.body().getDescription() != null ? response.body().getDescription() : response.body().getMsg(), Toast.LENGTH_SHORT).show();
-//                        return;
-//                    }
-//
-//                    Assistant.eventByMobile(sh_r.getString(SharedPreferencesRepository.USERNAME, "not logged-in"), "logout");
-//
-//                    SharedPreferencesRepository sh_p = new SharedPreferencesRepository(getApplicationContext());
-//                    sh_p.saveString(SharedPreferencesRepository.ACCESS_TOKEN, "");
-//                    sh_p.saveString(SharedPreferencesRepository.REFRESH_TOKEN, "");
-//                    sh_p.saveString(SharedPreferencesRepository.SUB_DOMAIN, "");
-//                    startActivity(new Intent(MainActivity.this, SplashActivity.class));
-//                    MainActivity.this.finish();
-//                    confirmDialog.dismiss();
-//
-//                } else
-//                    APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> logout());
-//            }
-//
-//            @Override
-//            public void onFailure(Call<LogoutResponse> call, Throwable t) {
-//                loadingBar.dismiss();
-//                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> logout());
-//            }
-//        });
-//
-//    }
 
     private void logout02() {
 
@@ -1347,56 +1004,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-
-//    private void getCarDebtHistory(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset) {
-//
-//        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-//        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-//        loadingBar.show();
-//
-//        repository.getCarDebtHistory("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-//                plateType, tag1, tag2, tag3, tag4, limit, offset, new Callback<DebtHistoryResponse>() {
-//                    @Override
-//                    public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
-//
-//
-//                        loadingBar.dismiss();
-//                        if (response.isSuccessful()) {
-//
-//                            if (response.body().success != 1) {
-//
-//
-//                                Toast.makeText(getApplicationContext(), response.body().description != null ? response.body().description : response.body().getMsg(), Toast.LENGTH_SHORT).show();
-//                                return;
-//                            }
-//
-//                            if (response.body().getSuccess() == 1) {
-//
-//                                if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.simple)
-//                                    printMiniFactor(tag1,
-//                                            tag2,
-//                                            tag3,
-//                                            tag4, response.body().balance);
-//                                else if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.old_aras)
-//                                    printMiniFactor(tag1, "0", "0", "0", response.body().balance);
-//                                else
-//                                    printMiniFactor(tag1, tag2, "0", "0", response.body().balance);
-//
-//                            } else
-//                                Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_LONG).show();
-//
-//
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
-//                        loadingBar.dismiss();
-//                        t.printStackTrace();
-//                    }
-//                });
-//
-//    }
 
     private void getCarDebtHistory02(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset) {
 

@@ -1,4 +1,4 @@
-package com.azarpark.watchman.retrofit_remote.bodies;
+package com.azarpark.watchman.web_service.bodies;
 
 public class VerifyTransactionBody {
 

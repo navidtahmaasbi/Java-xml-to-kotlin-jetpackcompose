@@ -20,11 +20,8 @@ import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.dialogs.SingleSelectDialog;
 import com.azarpark.watchman.models.City;
-import com.azarpark.watchman.retrofit_remote.RetrofitAPIClient;
-import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
-import com.azarpark.watchman.retrofit_remote.responses.GetCitiesResponse;
-import com.azarpark.watchman.retrofit_remote.responses.SplashResponse;
-import com.azarpark.watchman.utils.APIErrorHandler;
+import com.azarpark.watchman.web_service.responses.GetCitiesResponse;
+import com.azarpark.watchman.web_service.responses.SplashResponse;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.DownloadController;
@@ -43,7 +40,7 @@ public class SplashActivity extends AppCompatActivity {
     ActivitySplashBinding binding;
     SingleSelectDialog citySelectDialog;
     ArrayList<City> cities;
-    SharedPreferencesRepository sh_p;
+//    SharedPreferencesRepository sh_p;
     ConfirmDialog confirmDialog;
     Activity activity = this;
     DownloadController downloadController;
@@ -62,7 +59,7 @@ public class SplashActivity extends AppCompatActivity {
         binding = ActivitySplashBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        sh_p = new SharedPreferencesRepository(getApplicationContext());
+//        sh_p = new SharedPreferencesRepository(getApplicationContext());
 
         assistant = new Assistant();
 
@@ -82,6 +79,8 @@ public class SplashActivity extends AppCompatActivity {
 
     }
 
+    //------------------------------------------------------------------------------------------------------------------------
+
     private void decide() {
 
         if (assistant.VPNEnabled(getApplicationContext())) {
@@ -98,9 +97,9 @@ public class SplashActivity extends AppCompatActivity {
 
         }
         else if (SharedPreferencesRepository.getToken().isEmpty())
-            getCities02();
+            getCities();
         else
-            getSplash02();
+            getSplash();
 
     }
 
@@ -113,53 +112,56 @@ public class SplashActivity extends AppCompatActivity {
 
     }
 
-//    private void getCities() {
-//
-//
-//        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-//        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-//
-//        repository.getCities("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), new Callback<GetCitiesResponse>() {
-//            @Override
-//            public void onResponse(Call<GetCitiesResponse> call, Response<GetCitiesResponse> response) {
-//
-//
-//                binding.loadingBar.setVisibility(View.INVISIBLE);
-//
-//                if (response.isSuccessful()) {
-//
-//
-//                    if (response.body() != null && !response.body().success.equals("1")) {
-//
-//                        Toast.makeText(getApplicationContext(), response.body().description != null ? response.body().description : response.body().msg, Toast.LENGTH_SHORT).show();
-//
-//                        return;
-//                    }
-//
-//                    openCitiesDialog(response.body().items);
-//
-//                } else {
-//
-//                    binding.retry.setVisibility(View.VISIBLE);
-//
-//                    APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> getCities());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<GetCitiesResponse> call, Throwable t) {
-//                binding.loadingBar.setVisibility(View.INVISIBLE);
-//                binding.retry.setVisibility(View.VISIBLE);
-//                t.printStackTrace();
-//                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> getCities());
-//            }
-//        });
-//
-//    }
+    private void openUpdateDialog(String url) {
 
-    private void getCities02() {
+        messageDialog = new MessageDialog("به روز رسانی",
+                "برای برنامه به روزرسانی وجود دارد. بدون به روز رسانی قادر به ادامه نخواهید بود",
+                "به روز رسانی",
+                () -> {
+                    updateApp(getApplicationContext(), url);
+                    messageDialog.dismiss();
+                    Toast.makeText(getApplicationContext(), "بعد از دانلود شدن برنامه آن را نصب کنید", Toast.LENGTH_LONG).show();
+                });
 
-        Runnable functionRunnable = this::getCities02;
+        messageDialog.setCancelable(false);
+        messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
+
+    }
+
+    private void openCitiesDialog(ArrayList<City> cities) {
+
+        ArrayList<String> items = new ArrayList<>();
+        for (City city : cities)
+            items.add(city.name);
+
+        citySelectDialog = new SingleSelectDialog("انتخاب شهر", "شهر فعالیت خود را انتخاب کنید", items, position -> {
+
+            citySelectDialog.dismiss();
+
+            SharedPreferencesRepository.setValue(Constants.SUB_DOMAIN, cities.get(position).subdomain);
+            SharedPreferencesRepository.setValue(Constants.CITY_ID, cities.get(position).id + "");
+
+            SplashActivity.this.finish();
+            if (SharedPreferencesRepository.getToken().isEmpty()) {
+                startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+            } else {
+                startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                overridePendingTransition(0, 0);
+            }
+
+        });
+
+        if (citySelectDialog != null)
+            binding.getRoot().post(() -> citySelectDialog.show(getSupportFragmentManager(), SingleSelectDialog.TAG));
+
+
+    }
+
+    //------------------------------------------------------------------------------------------------------------------------
+
+    private void getCities() {
+
+        Runnable functionRunnable = this::getCities;
         binding.loadingBar.setVisibility(View.VISIBLE);
 
         WebService.getInitialClient().getCities().enqueue(new Callback<GetCitiesResponse>() {
@@ -182,9 +184,9 @@ public class SplashActivity extends AppCompatActivity {
 
     }
 
-    private void getSplash02() {
+    private void getSplash() {
 
-        Runnable functionRunnable = this::getSplash02;
+        Runnable functionRunnable = this::getSplash;
         binding.loadingBar.setVisibility(View.VISIBLE);
         binding.retry.setVisibility(View.INVISIBLE);
 
@@ -236,88 +238,6 @@ public class SplashActivity extends AppCompatActivity {
 
     }
 
-//    private void getSplash() {
-//
-//        binding.loadingBar.setVisibility(View.INVISIBLE);
-//
-//        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-//        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-//
-//        repository.getSplashData("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN), versionCode, new Callback<SplashResponse>() {
-//            @Override
-//            public void onResponse(Call<SplashResponse> call, Response<SplashResponse> response) {
-//
-//
-//                binding.loadingBar.setVisibility(View.INVISIBLE);
-//                if (response.isSuccessful()) {
-//
-//
-//
-//
-//
-//                } else {
-//                    binding.retry.setVisibility(View.VISIBLE);
-//                    APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(), activity, response, () -> getSplash());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<SplashResponse> call, Throwable t) {
-//                binding.loadingBar.setVisibility(View.INVISIBLE);
-//                binding.retry.setVisibility(View.VISIBLE);
-//                t.printStackTrace();
-//                APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(), t, () -> getSplash());
-//            }
-//        });
-//
-//    }
 
-    private void openUpdateDialog(String url) {
-
-        messageDialog = new MessageDialog("به روز رسانی",
-                "برای برنامه به روزرسانی وجود دارد. بدون به روز رسانی قادر به ادامه نخواهید بود",
-                "به روز رسانی",
-                () -> {
-                    updateApp(getApplicationContext(), url);
-                    messageDialog.dismiss();
-                    Toast.makeText(getApplicationContext(), "بعد از دانلود شدن برنامه آن را نصب کنید", Toast.LENGTH_LONG).show();
-                });
-
-        messageDialog.setCancelable(false);
-        messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
-
-    }
-
-    private void openCitiesDialog(ArrayList<City> cities) {
-
-        ArrayList<String> items = new ArrayList<>();
-        for (City city : cities)
-            items.add(city.name);
-
-        citySelectDialog = new SingleSelectDialog("انتخاب شهر", "شهر فعالیت خود را انتخاب کنید", items, position -> {
-
-            citySelectDialog.dismiss();
-
-            sh_p.saveString(SharedPreferencesRepository.SUB_DOMAIN, cities.get(position).subdomain);
-            sh_p.saveString(SharedPreferencesRepository.CITY_ID, cities.get(position).id + "");
-
-            RetrofitAPIClient.setBaseUrl("https://" + cities.get(position).subdomain + ".backend1.azarpark.irana.app");
-//            RetrofitAPIClient.setBaseUrl("https://" + cities.get(position).subdomain + ".backend.iranademo.ir");
-
-            SplashActivity.this.finish();
-            if (sh_p.getString(SharedPreferencesRepository.ACCESS_TOKEN).isEmpty()) {
-                startActivity(new Intent(SplashActivity.this, LoginActivity.class));
-            } else {
-                startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                overridePendingTransition(0, 0);
-            }
-
-        });
-
-        if (citySelectDialog != null)
-            binding.getRoot().post(() -> citySelectDialog.show(getSupportFragmentManager(), SingleSelectDialog.TAG));
-
-
-    }
 
 }

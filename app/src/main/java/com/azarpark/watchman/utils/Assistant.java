@@ -265,12 +265,10 @@ public class Assistant {
 
     public void saveTags(String tag1, String tag2, String tag3, String tag4, Context context) {
 
-        SharedPreferencesRepository sh_p = new SharedPreferencesRepository(context);
-
-        sh_p.saveString(SharedPreferencesRepository.TAG1, tag1);
-        sh_p.saveString(SharedPreferencesRepository.TAG2, tag2);
-        sh_p.saveString(SharedPreferencesRepository.TAG3, tag3);
-        sh_p.saveString(SharedPreferencesRepository.TAG4, tag4);
+        SharedPreferencesRepository.setValue(Constants.TAG1, tag1);
+        SharedPreferencesRepository.setValue(Constants.TAG2, tag2);
+        SharedPreferencesRepository.setValue(Constants.TAG3, tag3);
+        SharedPreferencesRepository.setValue(Constants.TAG4, tag4);
 
     }
 

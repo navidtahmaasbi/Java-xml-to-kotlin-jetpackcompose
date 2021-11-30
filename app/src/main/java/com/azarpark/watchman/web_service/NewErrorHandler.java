@@ -1,9 +1,7 @@
 package com.azarpark.watchman.web_service;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.fragment.app.FragmentManager;
@@ -11,7 +9,7 @@ import androidx.fragment.app.FragmentManager;
 import com.azarpark.watchman.activities.SplashActivity;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.MessageDialog;
-import com.azarpark.watchman.retrofit_remote.responses.GetCitiesResponse;
+import com.azarpark.watchman.web_service.responses.GetCitiesResponse;
 import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.google.gson.Gson;
@@ -19,7 +17,6 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.net.HttpURLConnection;
 
 import retrofit2.Call;

@@ -12,7 +12,6 @@ import com.azarpark.watchman.databinding.ActivityWebViewBinding;
 public class WebViewActivity extends AppCompatActivity {
 
     ActivityWebViewBinding binding;
-    Activity activity = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +26,6 @@ public class WebViewActivity extends AppCompatActivity {
             binding.webView.getSettings().setDomStorageEnabled(true);
             binding.webView.loadUrl(getIntent().getExtras().getString("url", getIntent().getStringExtra("url")));
         }
-
 
     }
 

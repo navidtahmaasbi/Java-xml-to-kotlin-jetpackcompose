@@ -2,20 +2,17 @@ package com.azarpark.watchman.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import com.azarpark.watchman.adapters.DebtListAdapter;
 import com.azarpark.watchman.databinding.ActivityDebtListBinding;
-import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.enums.PlateType;
-import com.azarpark.watchman.retrofit_remote.RetrofitAPIRepository;
-import com.azarpark.watchman.retrofit_remote.responses.DebtHistoryResponse;
-import com.azarpark.watchman.utils.APIErrorHandler;
+import com.azarpark.watchman.web_service.responses.DebtHistoryResponse;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
+import com.azarpark.watchman.web_service.NewErrorHandler;
+import com.azarpark.watchman.web_service.WebService;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -26,9 +23,6 @@ public class DebtListActivity extends AppCompatActivity {
     ActivityDebtListBinding binding;
     LoadingBar loadingBar;
     DebtListAdapter adapter = new DebtListAdapter();
-    ConfirmDialog confirmDialog;
-    Activity activity = this;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,50 +51,40 @@ public class DebtListActivity extends AppCompatActivity {
 
     }
 
-    private void getCarDebtHistory(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset) {
-
-        SharedPreferencesRepository sh_r = new SharedPreferencesRepository(getApplicationContext());
-        RetrofitAPIRepository repository = new RetrofitAPIRepository(getApplicationContext());
-        loadingBar.show();
-
-        repository.getCarDebtHistory("Bearer " + sh_r.getString(SharedPreferencesRepository.ACCESS_TOKEN),
-                plateType, tag1, tag2, tag3, tag4, limit, offset, new Callback<DebtHistoryResponse>() {
-                    @Override
-                    public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
-
-
-                        loadingBar.dismiss();
-                        if (response.isSuccessful()) {
-
-                            if (response.body().success != 1){
-
-                                Toast.makeText(getApplicationContext(), response.body().description != null ? response.body().description : response.body().getMsg(), Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-
-                            if (response.body().getSuccess() == 1) {
-
-                                adapter.addItems(response.body().items);
-
-
-                            } else
-                                Toast.makeText(getApplicationContext(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
-
-                        } else APIErrorHandler.onResponseErrorHandler(getSupportFragmentManager(),activity, response, () -> getCarDebtHistory(plateType,tag1,tag2,tag3,tag4,limit,offset));
-                    }
-
-                    @Override
-                    public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
-                        loadingBar.dismiss();
-                        APIErrorHandler.onFailureErrorHandler(getSupportFragmentManager(),t, () -> getCarDebtHistory(plateType,tag1,tag2,tag3,tag4,limit,offset));
-                    }
-                });
-
-    }
-
     public void myOnBackPressed(View view) {
 
         onBackPressed();
 
     }
+
+    //------------------------------------------------------------------------------------------------------------------------
+
+    private void getCarDebtHistory(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset) {
+
+        Runnable functionRunnable = () -> getCarDebtHistory(plateType, tag1, tag2, tag3, tag4, limit, offset);
+        LoadingBar.start(DebtListActivity.this);
+
+        WebService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
+            @Override
+            public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
+
+                LoadingBar.stop();
+                if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
+                    return;
+
+                adapter.addItems(response.body().items);
+
+
+            }
+
+            @Override
+            public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
+                LoadingBar.stop();
+                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
+            }
+        });
+
+    }
+
+
 }
