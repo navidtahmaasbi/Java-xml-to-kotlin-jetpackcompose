@@ -62,13 +62,14 @@ public class DebtListActivity extends AppCompatActivity {
     private void getCarDebtHistory(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset) {
 
         Runnable functionRunnable = () -> getCarDebtHistory(plateType, tag1, tag2, tag3, tag4, limit, offset);
-        LoadingBar.start(DebtListActivity.this);
+        LoadingBar loadingBar = new LoadingBar(DebtListActivity.this);
+        loadingBar.show();
 
         WebService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
             @Override
             public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
 
-                LoadingBar.stop();
+                loadingBar.dismiss();
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
                     return;
 
@@ -79,7 +80,7 @@ public class DebtListActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
-                LoadingBar.stop();
+                loadingBar.dismiss();
                 NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }
         });

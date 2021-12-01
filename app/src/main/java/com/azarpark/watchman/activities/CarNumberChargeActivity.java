@@ -312,7 +312,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         ArrayList<Integer> items = new ArrayList<>();
 
         //todo release
-        items.add(1000);
+//        items.add(1000);
         items.add(10000);
         items.add(20000);
         items.add(30000);
@@ -482,15 +482,16 @@ public class CarNumberChargeActivity extends AppCompatActivity {
     private void getCarDebtHistory(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset) {
 
         Runnable functionRunnable = () -> getCarDebtHistory(plateType, tag1, tag2, tag3, tag4, limit, offset);
-        LoadingBar.start(CarNumberChargeActivity.this);
+        LoadingBar loadingBar = new LoadingBar(CarNumberChargeActivity.this);
+        loadingBar.show();
 
         WebService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
             @Override
             public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
 
-                Assistant.hideKeyboard(CarNumberChargeActivity.this);
+                Assistant.hideKeyboard(CarNumberChargeActivity.this, binding.getRoot());
 
-                LoadingBar.stop();
+                loadingBar.dismiss();
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
                     return;
 
@@ -510,7 +511,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
-                LoadingBar.stop();
+                loadingBar.dismiss();
                 NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }
         });

@@ -141,6 +141,8 @@ public class SplashActivity extends AppCompatActivity {
             SharedPreferencesRepository.setValue(Constants.SUB_DOMAIN, cities.get(position).subdomain);
             SharedPreferencesRepository.setValue(Constants.CITY_ID, cities.get(position).id + "");
 
+            WebService.changeClientURL(cities.get(position).subdomain);
+
             SplashActivity.this.finish();
             if (SharedPreferencesRepository.getToken().isEmpty()) {
                 startActivity(new Intent(SplashActivity.this, LoginActivity.class));

@@ -267,15 +267,17 @@ public class ExitRequestActivity extends AppCompatActivity {
     private void exitRequest02(PlateType plateType, String tag1, String tag2, String tag3, String tag4) {
 
         Runnable functionRunnable = () -> exitRequest02(plateType, tag1, tag2, tag3, tag4);
-        LoadingBar.start(ExitRequestActivity.this);
+        LoadingBar loadingBar = new LoadingBar(ExitRequestActivity.this);
+        loadingBar.show();
+
 
         WebService.getClient(getApplicationContext()).exitRequest(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4).enqueue(new Callback<ExitRequestResponse>() {
             @Override
             public void onResponse(Call<ExitRequestResponse> call, Response<ExitRequestResponse> response) {
 
-                Assistant.hideKeyboard(ExitRequestActivity.this);
+                Assistant.hideKeyboard(ExitRequestActivity.this, binding.getRoot());
 
-                LoadingBar.stop();
+                loadingBar.dismiss();
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
                     return;
 
@@ -291,7 +293,7 @@ public class ExitRequestActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ExitRequestResponse> call, Throwable t) {
-                LoadingBar.stop();
+                loadingBar.dismiss();
                 NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }
         });

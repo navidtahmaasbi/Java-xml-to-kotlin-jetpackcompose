@@ -79,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
     ParkListAdapter adapter;
     ParkDialog parkDialog;
     ParkInfoDialog parkInfoDialog;
-    LoadingBar loadingBar;
     MessageDialog messageDialog;
     int exitRequestCount = 0;
     TextView watchManName;
@@ -120,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onVerifyFinished() {
-
+                getPlaces02();
             }
         }, getSupportFragmentManager());
         samanPayment = new SamanPayment(getSupportFragmentManager(), getApplicationContext(), MainActivity.this, new SamanPayment.SamanPaymentCallBack() {
@@ -166,8 +165,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-
-        loadingBar = new LoadingBar(MainActivity.this);
 
         initMenuPopup();
 
@@ -756,17 +753,16 @@ public class MainActivity extends AppCompatActivity {
     private void getPlaces02() {
 
         Runnable functionRunnable = () -> getPlaces02();
-        if (placesLoadedForFirstTime){
+        if (placesLoadedForFirstTime) {
 
             placesLoadedForFirstTime = false;
-            LoadingBar.start(MainActivity.this);
+
         }
 
         WebService.getClient(getApplicationContext()).getPlaces(SharedPreferencesRepository.getTokenWithPrefix()).enqueue(new Callback<PlacesResponse>() {
             @Override
             public void onResponse(Call<PlacesResponse> call, Response<PlacesResponse> response) {
 
-                LoadingBar.stop();
                 binding.refreshLayout.setRefreshing(false);
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
                     return;
@@ -828,7 +824,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<PlacesResponse> call, Throwable t) {
-                LoadingBar.stop();
                 binding.refreshLayout.setRefreshing(false);
                 NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }
@@ -839,14 +834,15 @@ public class MainActivity extends AppCompatActivity {
     private void parkCar02(ParkBody parkBody, boolean printFactor) {
 
         Runnable functionRunnable = () -> parkCar02(parkBody, printFactor);
-        LoadingBar.start(MainActivity.this);
+        LoadingBar loadingBar = new LoadingBar(MainActivity.this);
+        loadingBar.show();
 
         WebService.getClient(getApplicationContext()).parkCar(SharedPreferencesRepository.getTokenWithPrefix(), parkBody).enqueue(new Callback<ParkResponse>() {
             @Override
             public void onResponse(Call<ParkResponse> call, Response<ParkResponse> response) {
 
                 assistant.hideSoftKeyboard(activity);
-                LoadingBar.stop();
+                loadingBar.dismiss();
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
                     return;
 
@@ -879,7 +875,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ParkResponse> call, Throwable t) {
-                LoadingBar.stop();
+                loadingBar.dismiss();
                 NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }
         });
@@ -889,13 +885,14 @@ public class MainActivity extends AppCompatActivity {
     private void exitPark02(int placeID) {
 
         Runnable functionRunnable = () -> exitPark02(placeID);
-        LoadingBar.start(MainActivity.this);
+        LoadingBar loadingBar = new LoadingBar(MainActivity.this);
+        loadingBar.show();
 
         WebService.getClient(getApplicationContext()).exitPark(SharedPreferencesRepository.getTokenWithPrefix(), placeID).enqueue(new Callback<ExitParkResponse>() {
             @Override
             public void onResponse(Call<ExitParkResponse> call, Response<ExitParkResponse> response) {
 
-                LoadingBar.stop();
+                loadingBar.dismiss();
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
                     return;
 
@@ -907,7 +904,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ExitParkResponse> call, Throwable t) {
-                LoadingBar.stop();
+                loadingBar.dismiss();
                 NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }
         });
@@ -917,13 +914,14 @@ public class MainActivity extends AppCompatActivity {
     private void deleteExitRequest02(int placeID) {
 
         Runnable functionRunnable = () -> deleteExitRequest02(placeID);
-        LoadingBar.start(MainActivity.this);
+        LoadingBar loadingBar = new LoadingBar(MainActivity.this);
+        loadingBar.show();
 
         WebService.getClient(getApplicationContext()).deleteExitRequest(SharedPreferencesRepository.getTokenWithPrefix(), placeID).enqueue(new Callback<DeleteExitRequestResponse>() {
             @Override
             public void onResponse(Call<DeleteExitRequestResponse> call, Response<DeleteExitRequestResponse> response) {
 
-                LoadingBar.stop();
+                loadingBar.dismiss();
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
                     return;
 
@@ -936,7 +934,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<DeleteExitRequestResponse> call, Throwable t) {
-                LoadingBar.stop();
+                loadingBar.dismiss();
                 NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }
         });
@@ -946,7 +944,6 @@ public class MainActivity extends AppCompatActivity {
     private void verifyUnverifiedTransaction02(Transaction transaction) {
 
         Runnable functionRunnable = () -> verifyUnverifiedTransaction02(transaction);
-        LoadingBar.start(MainActivity.this);
 
         WebService.getClient(getApplicationContext()).verifyTransaction(SharedPreferencesRepository.getTokenWithPrefix(), transaction.getAmount(),
                 transaction.getOur_token(), transaction.getBank_token(), transaction.getPlaceID(), transaction.getStatus(), transaction.getBank_type(),
@@ -955,7 +952,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
 
-                LoadingBar.stop();
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
                     return;
 
@@ -966,7 +962,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
-                LoadingBar.stop();
                 NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }
         });
@@ -976,17 +971,18 @@ public class MainActivity extends AppCompatActivity {
     private void logout02() {
 
         Runnable functionRunnable = () -> logout02();
-        LoadingBar.start(MainActivity.this);
+        LoadingBar loadingBar = new LoadingBar(MainActivity.this);
+        loadingBar.show();
 
         WebService.getClient(getApplicationContext()).logout(SharedPreferencesRepository.getTokenWithPrefix()).enqueue(new Callback<LogoutResponse>() {
             @Override
             public void onResponse(Call<LogoutResponse> call, Response<LogoutResponse> response) {
 
-                LoadingBar.stop();
+                loadingBar.dismiss();
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
                     return;
 
-                Assistant.eventByMobile(SharedPreferencesRepository.getValue(Constants.USERNAME,"not logged-in"), "logout");
+                Assistant.eventByMobile(SharedPreferencesRepository.getValue(Constants.USERNAME, "not logged-in"), "logout");
 
                 SharedPreferencesRepository.setValue(Constants.ACCESS_TOKEN, "");
                 SharedPreferencesRepository.setValue(Constants.REFRESH_TOKEN, "");
@@ -998,7 +994,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<LogoutResponse> call, Throwable t) {
-                LoadingBar.stop();
+                loadingBar.dismiss();
                 NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }
         });
@@ -1008,13 +1004,11 @@ public class MainActivity extends AppCompatActivity {
     private void getCarDebtHistory02(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset) {
 
         Runnable functionRunnable = () -> getCarDebtHistory02(plateType, tag1, tag2, tag3, tag4, limit, offset);
-        LoadingBar.start(MainActivity.this);
 
         WebService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
             @Override
             public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
 
-                LoadingBar.stop();
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
                     return;
 
@@ -1032,7 +1026,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
-                LoadingBar.stop();
                 NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }
         });

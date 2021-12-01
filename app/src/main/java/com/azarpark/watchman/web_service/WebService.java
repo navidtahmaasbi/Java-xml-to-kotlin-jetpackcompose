@@ -57,6 +57,20 @@ public class WebService {
 
     }
 
+    public static void changeClientURL(String subDomain) {
+
+        String baseURL = Constants.BASE_URL_FIRST_PART + subDomain + Constants.BASE_URL_SECOND_PART;
+
+        retrofit = new Retrofit.Builder()
+                .baseUrl(baseURL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(getUnsafeOkHttpClient())
+                .build();
+
+        api = retrofit.create(API.class);
+
+    }
+
     public static void setBaseUrl(String url) {
         Constants.BASE_URL = url;
 

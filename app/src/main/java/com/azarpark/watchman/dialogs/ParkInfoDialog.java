@@ -18,6 +18,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.activities.DebtListActivity;
+import com.azarpark.watchman.activities.MainActivity;
 import com.azarpark.watchman.databinding.ParkInfoDialogBinding;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnGetInfoClicked;
@@ -384,13 +385,14 @@ public class ParkInfoDialog extends DialogFragment {
     private void getParkData02(Place place) {
 
         Runnable functionRunnable = () -> getParkData02(place);
-        LoadingBar.start(getContext());
+        LoadingBar loadingBar = new LoadingBar(getActivity());
+        loadingBar.show();
 
         WebService.getClient(getContext()).estimatePArkPrice(SharedPreferencesRepository.getTokenWithPrefix(), place.id).enqueue(new Callback<EstimateParkPriceResponse>() {
             @Override
             public void onResponse(Call<EstimateParkPriceResponse> call, Response<EstimateParkPriceResponse> response) {
 
-                LoadingBar.stop();
+                loadingBar.dismiss();
                 if (NewErrorHandler.apiResponseHasError(response, getContext()))
                     return;
 
@@ -515,7 +517,7 @@ public class ParkInfoDialog extends DialogFragment {
 
             @Override
             public void onFailure(Call<EstimateParkPriceResponse> call, Throwable t) {
-                LoadingBar.stop();
+                loadingBar.dismiss();
                 NewErrorHandler.apiFailureErrorHandler(call, t, getParentFragmentManager(), functionRunnable);
             }
         });

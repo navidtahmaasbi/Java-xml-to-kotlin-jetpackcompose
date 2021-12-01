@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.fragment.app.FragmentManager;
 
+import com.azarpark.watchman.activities.MainActivity;
 import com.azarpark.watchman.databinding.ParsianAfterPaymentPrintTemplateBinding;
 import com.azarpark.watchman.databinding.PrintTemplateBinding;
 import com.azarpark.watchman.dialogs.LoadingBar;
@@ -281,6 +282,8 @@ public class ParsianPayment {
 
                 getCarDebtHistory02(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
 
+                parsianPaymentCallBack.onVerifyFinished();
+
             }
 
             @Override
@@ -294,13 +297,14 @@ public class ParsianPayment {
     private void getCarDebtHistory02(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset) {
 
         Runnable functionRunnable = () -> getCarDebtHistory02(plateType, tag1, tag2, tag3, tag4, limit, offset);
-        LoadingBar.start(activity);
+        LoadingBar loadingBar = new LoadingBar(activity);
+        loadingBar.show();
 
         WebService.getClient(context).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
             @Override
             public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
 
-                LoadingBar.stop();
+                loadingBar.dismiss();
                 if (NewErrorHandler.apiResponseHasError(response, context))
                     return;
 
@@ -319,7 +323,7 @@ public class ParsianPayment {
 
             @Override
             public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
-                LoadingBar.stop();
+               loadingBar.dismiss();
                 NewErrorHandler.apiFailureErrorHandler(call, t, fragmentManager, functionRunnable);
             }
         });
@@ -400,6 +404,8 @@ public class ParsianPayment {
     public void printParkInfo(Place place, int placeID, ViewGroup viewGroupForBindFactor, String pricing, String telephone, String sms_number,
                               String qr_url, int balance) {
 
+        String cityID = SharedPreferencesRepository.getValue(Constants.CITY_ID);
+
         PrintTemplateBinding printTemplateBinding = PrintTemplateBinding.inflate(LayoutInflater.from(context), viewGroupForBindFactor, true);
 
         if (balance > 0) {
@@ -427,7 +433,8 @@ public class ParsianPayment {
 
         printTemplateBinding.prices.setText(pricing);
         printTemplateBinding.supportPhone.setText(telephone);
-        printTemplateBinding.description.setText("در صورت عدم حضور پارکیار عدد " + placeID + " را به شماره " + sms_number + " ارسال کنید");
+        printTemplateBinding.description.setText("در صورت عدم حضور پارکیار عدد " + cityID +
+                place.number + " را به شماره " + sms_number + " ارسال کنید");
 
         printTemplateBinding.qrcode.setImageBitmap(QRGenerator(qr_url + placeID));
 

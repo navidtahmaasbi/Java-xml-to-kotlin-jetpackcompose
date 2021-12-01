@@ -46,7 +46,7 @@ public class StarterActivity extends AppCompatActivity {
 
         });
 
-        findViewById(R.id.exit).setOnClickListener(view -> {
+        findViewById(R.id.exit_area).setOnClickListener(view -> {
             tapCount += 1;
         });
 

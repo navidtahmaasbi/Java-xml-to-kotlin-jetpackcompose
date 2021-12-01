@@ -14,9 +14,9 @@ import com.azarpark.watchman.R;
 
 public class LoadingBar {
 
-    public Dialog dialog;
+    private Dialog dialog;
     private boolean isLoading;
-    public static Dialog dialog02;
+    private static Dialog dialog02;
 
     public boolean isLoading() {
         return isLoading;

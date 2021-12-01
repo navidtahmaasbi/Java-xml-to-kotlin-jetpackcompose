@@ -62,13 +62,14 @@ public class LoginActivity extends AppCompatActivity {
     private void login(LoginBody loginBody) {
 
         Runnable functionRunnable = () -> login(loginBody);
-        LoadingBar.start(LoginActivity.this);
+        LoadingBar loadingBar = new LoadingBar(LoginActivity.this);
+        loadingBar.show();
 
         WebService.getClient(getApplicationContext()).login( loginBody).enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
 
-                LoadingBar.stop();
+                loadingBar.dismiss();
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
                     return;
 
@@ -84,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
-                LoadingBar.stop();
+                loadingBar.dismiss();
                 NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }
         });

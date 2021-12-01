@@ -390,15 +390,16 @@ public class DebtCheckActivity extends AppCompatActivity {
     private void getCarDebtHistory02(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset) {
 
         Runnable functionRunnable = () -> getCarDebtHistory02(plateType, tag1, tag2, tag3, tag4, limit, offset);
-        LoadingBar.start(DebtCheckActivity.this);
+        LoadingBar loadingBar = new LoadingBar(DebtCheckActivity.this);
+        loadingBar.show();
+
+        Assistant.hideKeyboard(DebtCheckActivity.this, binding.getRoot());
 
         WebService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
             @Override
             public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
 
-                Assistant.hideKeyboard(DebtCheckActivity.this);
-
-                LoadingBar.stop();
+                loadingBar.dismiss();
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
                     return;
 
@@ -419,7 +420,7 @@ public class DebtCheckActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
-                LoadingBar.stop();
+                loadingBar.dismiss();
                 NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }
         });

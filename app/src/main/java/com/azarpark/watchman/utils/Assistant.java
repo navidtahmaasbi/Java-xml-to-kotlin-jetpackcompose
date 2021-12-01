@@ -75,10 +75,10 @@ public class Assistant {
 
     }
 
-    public static void hideKeyboard(Activity activity) {
+    public static void hideKeyboard(Activity activity, View view) {
 
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.HIDE_NOT_ALWAYS, 0);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
     }
 
