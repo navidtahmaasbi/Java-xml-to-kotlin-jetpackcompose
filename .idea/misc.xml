@@ -4,6 +4,8 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/10/AppData/Local/Android/Sdk/platforms/android-31/data/res/layout/splash_screen_view.xml" value="0.36666666666666664" />
+        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/drawable/gray_bg_5.xml" value="0.3769230769230769" />
+        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/activity_car_number_charge.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/activity_debt_check.xml" value="0.15428446197676968" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/activity_login.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/activity_main.xml" value="0.33" />
@@ -17,9 +19,11 @@
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/loadingbar.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/menu_popup_window.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/message_dialog.xml" value="0.36666666666666664" />
+        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/notification.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/park_dialog.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/park_info_dialog.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/parsian_after_payment_print_template.xml" value="0.36666666666666664" />
+        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/plate_charge_dialog.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/print_template.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/saman_after_payment_print_template.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/saman_print_template.xml" value="0.36666666666666664" />

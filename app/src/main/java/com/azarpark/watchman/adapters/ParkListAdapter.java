@@ -6,6 +6,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,7 +29,7 @@ import java.util.Locale;
 
 public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    ArrayList<Place> items, filteredItems;
+    ArrayList<Place> items, filteredItems, tempItems;
     OnItemClicked onItemClicked;
     int VIEW_TYPE_FREE = 0, VIEW_TYPE_FUll = 1;
     boolean showExitRequestItems = false;
@@ -39,6 +40,7 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public ParkListAdapter(Context context, OnItemClicked onItemClicked) {
         items = new ArrayList<>();
         filteredItems = new ArrayList<>();
+        tempItems = new ArrayList<>();
         this.onItemClicked = onItemClicked;
         this.context = context;
         assistant = new Assistant();
@@ -128,10 +130,51 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public void setItems(ArrayList<Place> items) {
 
+        System.out.println("---------> sizeee : " + this.items.size());
+        if (this.items.size() != 0)
+            checkForNotification(items);
+
         this.items = items;
         filteredItems = items;
         filterItems(filterText);
 
+    }
+
+    private void checkForNotification(ArrayList<Place> newItems) {
+
+        for (Place newPlace : newItems) {
+
+            Place oldPlace = findPlace(newPlace);
+            if (oldPlace != null && (
+                    (oldPlace.exit_request == null && newPlace.exit_request != null) ||
+                            (oldPlace.exit_request != null && newPlace.exit_request != null && oldPlace.exit_request.id != newPlace.exit_request.id))) {
+
+                String des = "درخواست خروج جدید در جایگاه " + newPlace.number;
+                Assistant.createNotification(context, "درخواست خروج-" + newPlace.number, des);
+            }
+
+            if (oldPlace != null &&
+                    (!oldPlace.status.equals(PlaceStatus.free_by_user.toString()) && newPlace.status.equals(PlaceStatus.free_by_user.toString()) ||
+                            (!oldPlace.status.equals(PlaceStatus.free_by_sms.toString()) && newPlace.status.equals(PlaceStatus.free_by_sms.toString()))
+                    )) {
+
+                String des = "خروج توسط کاربر در " + newPlace.number;
+                Assistant.createNotification(context, "خروج توسط کاربر-" + newPlace.number, des);
+            }
+
+        }
+
+
+    }
+
+    private Place findPlace(Place place) {
+
+        for (Place p : items)
+            if (p.id == place.id)
+                return p;
+
+
+        return null;
     }
 
     @Override

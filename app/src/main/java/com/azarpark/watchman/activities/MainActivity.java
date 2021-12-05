@@ -825,7 +825,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<PlacesResponse> call, Throwable t) {
                 binding.refreshLayout.setRefreshing(false);
-                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
+//                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }
         });
 

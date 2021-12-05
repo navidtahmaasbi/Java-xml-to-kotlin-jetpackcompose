@@ -1,7 +1,13 @@
 package com.azarpark.watchman.utils;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -12,7 +18,12 @@ import android.service.autofill.RegexValidator;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.RemoteViews;
 
+import androidx.core.app.NotificationCompat;
+
+import com.azarpark.watchman.R;
+import com.azarpark.watchman.activities.SplashActivity;
 import com.azarpark.watchman.download_utils.DownloadController;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.Place;
@@ -339,6 +350,61 @@ public class Assistant {
 
 
 
+    }
+
+    public static void createNotification(Context context,String title,String message){
+
+        Intent intent = new Intent(context, SplashActivity.class);
+
+        // Assign channel ID
+        String channel_id = "notification_channel";
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                context,
+                0,
+                intent,
+                PendingIntent.FLAG_ONE_SHOT
+        );
+
+        NotificationCompat.Builder builder
+                = new NotificationCompat.Builder(
+                context,
+                channel_id)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setAutoCancel(true)
+                .setVibrate(new long[]{1000, 1000, 1000, 1000, 1000})
+                .setOnlyAlertOnce(true)
+                .setContentIntent(pendingIntent);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            builder = builder.setContent(getCustomDesign(context,title, message));
+        } else {
+            builder = builder.setContentTitle(title)
+                    .setContentText(message)
+                    .setSmallIcon(R.drawable.ic_launcher);
+        }
+
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel(
+                    channel_id,
+                    "web_app",
+                    NotificationManager.IMPORTANCE_HIGH);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+
+        notificationManager.notify(0, builder.build());
+
+    }
+
+    private static RemoteViews getCustomDesign(Context context,String title,
+                                        String message) {
+        @SuppressLint("RemoteViewLayout") RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.notification);
+        remoteViews.setTextViewText(R.id.title, title);
+        remoteViews.setTextViewText(R.id.message, message);
+        remoteViews.setImageViewResource(R.id.icon, R.drawable.ic_launcher);
+        return remoteViews;
     }
 
 }
