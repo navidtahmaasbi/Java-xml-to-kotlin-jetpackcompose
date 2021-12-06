@@ -640,7 +640,7 @@ public class MainActivity extends AppCompatActivity {
 
 //            printTemplateBinding.debtArea.setVisibility(balance < 0 ? View.VISIBLE : View.GONE);
 
-            printTemplateBinding.qrcode.setImageBitmap(assistant.qrGenerator(qr_url + placeID));
+            printTemplateBinding.qrcode.setImageBitmap(assistant.qrGenerator(qr_url , placeID, place.tag1,place.tag2,place.tag3,place.tag4));
 
 
             if (assistant.getPlateType(place) == PlateType.simple) {
@@ -678,6 +678,7 @@ public class MainActivity extends AppCompatActivity {
 
             new Handler().postDelayed(() -> {
 
+                //todo
                 samanPayment.printParkInfo(binding.printArea);
 
             }, 500);

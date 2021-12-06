@@ -5,7 +5,7 @@ public class Constants {
     public static final String SHAREDPREFERNCE = "app_needs";
     public static final String SUCCESS = "success";
     public static final String DESCRIPTION = "description";
-    public static int SAMAN = 1, PASRIAN = 2, SELECTED_PAYMENT = 2 ;//todo release
+    public static int SAMAN = 1, PASRIAN = 2, SELECTED_PAYMENT = 1 ;//todo release
     public static int TRANSACTION_TYPE_CHAREG = 1, TRANSACTION_TYPE_DEBT = 2, TRANSACTION_TYPE_PARK_PRICE = 3;
     public static int MIN_PRICE_FOR_PAYMENT = 100;
     public static String NON_CHARGE_SHABA = "IR540550100470106230710001", CHARGE_SHABA = "IR270550100470106230710002";
@@ -15,6 +15,7 @@ public class Constants {
     public static final String BASE_URL_SECOND_PART = ".backend1.azarpark.irana.app";
     public static final String ACCESS_TOKEN = "ACCESS_TOKEN";
     public static String UNSYCNCED_RES_NUMS = "unsynced_res_nums";
+    public static String place_id = "place_id";
 
 
     public static String
@@ -40,5 +41,9 @@ public class Constants {
     public static String rules_url = "rules_url";
     public static String about_us_url = "about_us_url";
     public static String guide_url = "guide_url";
+    public static String tag1 = "tag1";
+    public static String tag2 = "tag2";
+    public static String tag3 = "tag3";
+    public static String tag4 = "tag4";
 
 }

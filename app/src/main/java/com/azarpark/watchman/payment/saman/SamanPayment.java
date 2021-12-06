@@ -270,6 +270,7 @@ public class SamanPayment {
             try {
 
                 String url = data.getStringExtra(SCANNER_RESULT);
+                System.out.println("----------> url : " +url);
                 int placeId = Integer.parseInt(url.split("=")[url.split("=").length - 1]);
                 samanPaymentCallBack.getScannerData(placeId);
 

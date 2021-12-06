@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
+import android.net.Uri;
 import android.os.Build;
 import android.service.autofill.RegexValidator;
 import android.util.Log;
@@ -95,8 +96,44 @@ public class Assistant {
 
     public Bitmap qrGenerator(String value) {
 
+        System.out.println("----------> value : " + value);
+
         // Initializing the QR Encoder with your value to be encoded, type you required and Dimension
         QRGEncoder qrgEncoder = new QRGEncoder(value, null, QRGContents.Type.TEXT, 512);
+        qrgEncoder.setColorBlack(Color.BLACK);
+        qrgEncoder.setColorWhite(Color.WHITE);
+        Bitmap bitmap = qrgEncoder.getBitmap();
+
+        return bitmap;
+
+
+    }
+
+    public Bitmap qrGenerator(String url, int placeID,String tag1,String tag2,String tag3,String tag4) {
+
+        Uri uri = Uri.parse(url);
+
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme(uri.getScheme())
+                .authority(uri.getAuthority())
+                .appendPath(uri.getPath())
+                /*.fragment("section-name")*/;
+
+        for (String p : uri.getPathSegments())
+            builder.appendPath(p);
+
+        for (String q : uri.getQueryParameterNames())
+            builder.appendQueryParameter(q,uri.getQueryParameter(q));
+
+        builder.appendQueryParameter(Constants.tag1, tag1);
+        builder.appendQueryParameter(Constants.tag2, tag2);
+        builder.appendQueryParameter(Constants.tag3, tag3);
+        builder.appendQueryParameter(Constants.tag4, tag4);
+
+        builder.appendQueryParameter(Constants.place_id, Integer.toString(placeID));
+        String myUrl = builder.build().toString();
+
+        QRGEncoder qrgEncoder = new QRGEncoder(myUrl, null, QRGContents.Type.TEXT, 512);
         qrgEncoder.setColorBlack(Color.BLACK);
         qrgEncoder.setColorWhite(Color.WHITE);
         Bitmap bitmap = qrgEncoder.getBitmap();
@@ -336,19 +373,13 @@ public class Assistant {
 
     }
 
+    @SuppressLint("HardwareIds")
     public static String getSerialNumber(){
 
-        try{
+        if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.O)
+            return android.os.Build.SERIAL;
 
-            return Build.SERIAL;
-
-        }catch (Exception e){
-
-            return "";
-
-        }
-
-
+        return "";
 
     }
 
