@@ -16,8 +16,10 @@ import com.azarpark.watchman.databinding.FreeParkItemBinding;
 import com.azarpark.watchman.databinding.FullParkItemBinding;
 import com.azarpark.watchman.enums.PlaceStatus;
 import com.azarpark.watchman.enums.PlateType;
+import com.azarpark.watchman.models.LocalNotification;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.utils.Assistant;
+import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
 import java.text.DateFormat;
 import java.text.NumberFormat;
@@ -151,6 +153,7 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                 String des = "درخواست خروج جدید در جایگاه " + newPlace.number;
                 Assistant.createNotification(context, "درخواست خروج-" + newPlace.number, des);
+                SharedPreferencesRepository.addToLocalNotifications(new LocalNotification(Long.toString(new Date().getTime()), newPlace.id , newPlace.number,LocalNotification.Type.exitRequest));
             }
 
             if (oldPlace != null &&
@@ -160,6 +163,8 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                 String des = "خروج توسط کاربر در " + newPlace.number;
                 Assistant.createNotification(context, "خروج توسط کاربر-" + newPlace.number, des);
+                SharedPreferencesRepository.addToLocalNotifications(new LocalNotification(Long.toString(new Date().getTime()), newPlace.id , newPlace.number,LocalNotification.Type.freeByUser));
+
             }
 
         }

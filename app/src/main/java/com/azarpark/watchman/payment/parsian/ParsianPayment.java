@@ -209,11 +209,11 @@ public class ParsianPayment {
 
     }
 
-    public void createTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID, int transactionType) {
+    public void createTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID, int transactionType,String mobile) {
 
-        Runnable functionRunnable = () -> createTransaction(plateType, tag1, tag2, tag3, tag4, amount, placeID,transactionType);
+        Runnable functionRunnable = () -> createTransaction(plateType, tag1, tag2, tag3, tag4, amount, placeID,transactionType,mobile);
 
-        WebService.getClient(context).createTransaction(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(),tag1,tag2,tag3,tag4,amount,transactionType).enqueue(new Callback<CreateTransactionResponse>() {
+        WebService.getClient(context).createTransaction(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(),tag1,tag2,tag3,tag4,amount,transactionType,mobile).enqueue(new Callback<CreateTransactionResponse>() {
             @Override
             public void onResponse(Call<CreateTransactionResponse> call, Response<CreateTransactionResponse> response) {
 

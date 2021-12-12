@@ -10,17 +10,14 @@
     android:orientation="vertical">
 
     <ScrollView
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:id="@+id/print_area">
-
 
         </LinearLayout>
 
@@ -155,6 +152,15 @@
             android:inputType="numberDecimal"
             android:padding="@dimen/_3sdp"
             android:textSize="@dimen/_13sdp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/notifications_recyclerview"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:orientation="horizontal"
+            tools:listitem="@layout/notification_item"
+            app:reverseLayout="true"/>
 
         <RelativeLayout
             android:id="@+id/aaabbb"

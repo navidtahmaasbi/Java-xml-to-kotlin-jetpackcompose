@@ -110,14 +110,18 @@ public class PlateChargeDialog extends DialogFragment {
 //            String s = binding.amount.getText().toString().replace(",","");
 //            int price = Integer.parseInt(s);
 
+            Assistant assistant = new Assistant();
+
             if (selectedAmount == 0)
                 Toast.makeText(getContext(), "مبلغ شارژ را انتخاب کنید", Toast.LENGTH_SHORT).show();
             else if (!isNumber(Integer.toString(selectedAmount)))
                 Toast.makeText(getContext(), "مبلغ شارژ را درست وارد کنید", Toast.LENGTH_SHORT).show();
             else if (selectedAmount < Constants.MIN_PRICE_FOR_PAYMENT)
                 Toast.makeText(getContext(), "مبلغ شارژ نباید کمتر از " + Constants.MIN_PRICE_FOR_PAYMENT + " تومان باشد", Toast.LENGTH_SHORT).show();
+            else if (!binding.mobile.getText().toString().isEmpty() && !assistant.isMobile(binding.mobile.getText().toString()))
+                Toast.makeText(getContext(), "شماره موبایل را درست وارد کنید", Toast.LENGTH_SHORT).show();
             else
-                onPayClicked.pay(selectedAmount);
+                onPayClicked.pay(selectedAmount, binding.mobile.getText().toString());
 
 
         });
@@ -175,7 +179,7 @@ public class PlateChargeDialog extends DialogFragment {
 
     public interface OnPayClicked {
 
-        public void pay(int amount);
+        public void pay(int amount, String mobile);
 
     }
 

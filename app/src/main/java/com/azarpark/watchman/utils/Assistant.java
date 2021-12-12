@@ -388,7 +388,7 @@ public class Assistant {
         Intent intent = new Intent(context, SplashActivity.class);
 
         // Assign channel ID
-        String channel_id = "notification_channel";
+        String channel_id = "notification_channel" + new Date().getTime();
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 context,

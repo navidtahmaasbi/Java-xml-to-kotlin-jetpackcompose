@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 
 import com.azarpark.watchman.R;
+import com.azarpark.watchman.adapters.LocalNotificationsListAdapter;
 import com.azarpark.watchman.adapters.ParkListAdapter;
 import com.azarpark.watchman.databinding.ActivityMainBinding;
 import com.azarpark.watchman.databinding.SamanAfterPaymentPrintTemplateBinding;
@@ -95,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
     Assistant assistant;
     int debt = 0;
     ParkResponseDialog parkResponseDialog;
+    LocalNotificationsListAdapter localNotificationsListAdapter;
 
     //------------------------------------------------------------------------------------------------
 
@@ -158,6 +160,16 @@ public class MainActivity extends AppCompatActivity {
         rules_url = SharedPreferencesRepository.getValue(Constants.rules_url, "");
         about_us_url = SharedPreferencesRepository.getValue(Constants.about_us_url, "");
         guide_url = SharedPreferencesRepository.getValue(Constants.guide_url, "");
+
+        localNotificationsListAdapter = new LocalNotificationsListAdapter((int placeID) -> {
+
+            if (binding.filterEdittext.getText().toString().equals(Integer.toString(placeID)))
+                binding.filterEdittext.setText("");
+            else
+                binding.filterEdittext.setText(Integer.toString(placeID));
+
+        });
+        binding.notificationsRecyclerview.setAdapter(localNotificationsListAdapter);
 
         try {
             PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -451,7 +463,7 @@ public class MainActivity extends AppCompatActivity {
 
         parkInfoDialog = new ParkInfoDialog(new OnGetInfoClicked() {
             @Override
-            public void pay(int price, Place place) {
+            public void pay(int price, Place place,String mobile) {
 
                 PlateType selectedPlateType = PlateType.simple;
 
@@ -466,9 +478,9 @@ public class MainActivity extends AppCompatActivity {
                     parkInfoDialog.dismiss();
 
                 if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
-                    parsianPayment.createTransaction(selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id, Constants.TRANSACTION_TYPE_PARK_PRICE);
+                    parsianPayment.createTransaction(selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id, Constants.TRANSACTION_TYPE_PARK_PRICE,mobile);
                 else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
-                    samanPayment.createTransaction(Constants.NON_CHARGE_SHABA, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id, Constants.TRANSACTION_TYPE_PARK_PRICE);
+                    samanPayment.createTransaction(Constants.NON_CHARGE_SHABA, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id, Constants.TRANSACTION_TYPE_PARK_PRICE,mobile);
 
             }
 
@@ -491,13 +503,13 @@ public class MainActivity extends AppCompatActivity {
 
                 parkInfoDialog.dismiss();
 
-                plateChargeDialog = new PlateChargeDialog(amount -> {
+                plateChargeDialog = new PlateChargeDialog((amount,mobile) -> {
 
 
                     if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
-                        parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG);
+                        parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG,mobile);
                     else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
-                        samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG);
+                        samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG,mobile);
 
                     plateChargeDialog.dismiss();
 
@@ -640,7 +652,7 @@ public class MainActivity extends AppCompatActivity {
 
 //            printTemplateBinding.debtArea.setVisibility(balance < 0 ? View.VISIBLE : View.GONE);
 
-            printTemplateBinding.qrcode.setImageBitmap(assistant.qrGenerator(qr_url , placeID, place.tag1,place.tag2,place.tag3,place.tag4));
+            printTemplateBinding.qrcode.setImageBitmap(assistant.qrGenerator(qr_url, placeID, place.tag1, place.tag2, place.tag3, place.tag4));
 
 
             if (assistant.getPlateType(place) == PlateType.simple) {
@@ -814,6 +826,8 @@ public class MainActivity extends AppCompatActivity {
 
 
                     adapter.setItems(myPlaces);
+                    localNotificationsListAdapter.updateItems();
+                    binding.notificationsRecyclerview.setVisibility(localNotificationsListAdapter.getItemCount() > 0 ? View.VISIBLE : View.GONE);
 
                     binding.placeholder.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
 
@@ -842,7 +856,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ParkResponse> call, Response<ParkResponse> response) {
 
-                assistant.hideSoftKeyboard(activity);
+                assistant.hideKeyboard(activity, binding.getRoot());
                 loadingBar.dismiss();
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
                     return;

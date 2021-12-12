@@ -474,9 +474,9 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
 
         if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
-            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1,Constants.TRANSACTION_TYPE_CHAREG);
+            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1,Constants.TRANSACTION_TYPE_CHAREG,null);
         else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
-            samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1,Constants.TRANSACTION_TYPE_CHAREG);
+            samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1,Constants.TRANSACTION_TYPE_CHAREG,null);
     }
 
     private void getCarDebtHistory(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset) {

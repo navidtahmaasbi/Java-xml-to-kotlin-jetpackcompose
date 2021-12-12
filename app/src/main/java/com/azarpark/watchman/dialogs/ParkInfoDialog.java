@@ -123,8 +123,7 @@ public class ParkInfoDialog extends DialogFragment {
             binding.plateSimpleTag3.setText(place.tag3);
             binding.plateSimpleTag4.setText(place.tag4);
 
-        }
-        else if (assistant.getPlateType(place) == PlateType.old_aras) {
+        } else if (assistant.getPlateType(place) == PlateType.old_aras) {
 
             binding.plateSimpleArea.setVisibility(View.GONE);
             binding.plateOldArasArea.setVisibility(View.VISIBLE);
@@ -133,8 +132,7 @@ public class ParkInfoDialog extends DialogFragment {
             binding.plateOldArasTag1En.setText(place.tag1);
             binding.plateOldArasTag1Fa.setText(place.tag1);
 
-        }
-        else {
+        } else {
 
             binding.plateSimpleArea.setVisibility(View.GONE);
             binding.plateOldArasArea.setVisibility(View.GONE);
@@ -267,12 +265,16 @@ public class ParkInfoDialog extends DialogFragment {
 
                     binding.pay.setOnClickListener(view -> Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
                     binding.pay.setOnLongClickListener(view -> {
-                        onGetInfoClicked.pay(totalPrice, place);
+
+                        if (!binding.mobile.getText().toString().isEmpty() &&
+                                !assistant.isMobile(binding.mobile.getText().toString()))
+                            Toast.makeText(getContext(), "شماره موبایل را درست وارد کنید", Toast.LENGTH_SHORT).show();
+                        else
+                            onGetInfoClicked.pay(totalPrice, place, binding.mobile.getText().toString());
                         return false;
                     });
 
-                }
-                else {
+                } else {
 
                     binding.carBalanceTitle.setText("اعتبار پلاک");
                     binding.carBalance.setText(NumberFormat.getNumberInstance(Locale.US).format(carBalance) + " تومان");
@@ -293,6 +295,7 @@ public class ParkInfoDialog extends DialogFragment {
 
                         binding.pay.setOnClickListener(view -> Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
                         binding.pay.setOnLongClickListener(view -> {
+
                             onGetInfoClicked.payAsDebt(place);
                             return false;
                         });
@@ -308,6 +311,7 @@ public class ParkInfoDialog extends DialogFragment {
 
                         binding.pay.setOnClickListener(view -> Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
                         binding.pay.setOnLongClickListener(view -> {
+
                             onGetInfoClicked.payAsDebt(place);
                             return false;
                         });
@@ -318,7 +322,11 @@ public class ParkInfoDialog extends DialogFragment {
 
                         binding.pay.setOnClickListener(view -> Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
                         binding.pay.setOnLongClickListener(view -> {
-                            onGetInfoClicked.pay(totalPrice, place);
+                            if (!binding.mobile.getText().toString().isEmpty() &&
+                                    !assistant.isMobile(binding.mobile.getText().toString()))
+                                Toast.makeText(getContext(), "شماره موبایل را درست وارد کنید", Toast.LENGTH_SHORT).show();
+                            else
+                                onGetInfoClicked.pay(totalPrice, place,binding.mobile.getText().toString());
                             return false;
                         });
 

@@ -5,6 +5,7 @@ import static android.content.Context.MODE_PRIVATE;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.azarpark.watchman.models.LocalNotification;
 import com.azarpark.watchman.models.Transaction;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -148,6 +149,45 @@ public class SharedPreferencesRepository {
                     transactions.remove(i);
 
         setValue(Constants.UNSYCNCED_RES_NUMS, gson.toJson(transactions));
+
+    }
+
+    public static ArrayList<LocalNotification> getLocalNotifications() {
+
+        String arrayString = getValue(Constants.LOCAL_NOTIFICATIONS, "[]");
+        Gson gson = new Gson();
+        ArrayList<LocalNotification> notifications = gson.fromJson(arrayString, new TypeToken<List<LocalNotification>>() {
+        }.getType());
+
+        return notifications;
+
+    }
+
+    public static void addToLocalNotifications(LocalNotification notification) {
+
+        String arrayString = getValue(Constants.LOCAL_NOTIFICATIONS, "[]");
+        Gson gson = new Gson();
+        ArrayList<LocalNotification> notifications = gson.fromJson(arrayString, new TypeToken<List<LocalNotification>>() {
+        }.getType());
+
+        notifications.add(notification);
+
+        setValue(Constants.LOCAL_NOTIFICATIONS, gson.toJson(notifications));
+
+    }
+
+    public static void removeFromLocalNotifications(LocalNotification notification) {
+
+        String arrayString = getValue(Constants.LOCAL_NOTIFICATIONS, "[]");
+        Gson gson = new Gson();
+        ArrayList<LocalNotification> notifications = gson.fromJson(arrayString, new TypeToken<List<LocalNotification>>() {
+        }.getType());
+
+        for (LocalNotification n : notifications)
+            if (n.id.equals(notification.id))
+                notifications.remove(n);
+
+        setValue(Constants.LOCAL_NOTIFICATIONS, gson.toJson(notifications));
 
     }
 
