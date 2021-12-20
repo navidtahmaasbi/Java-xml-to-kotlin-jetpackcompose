@@ -163,7 +163,9 @@ public class SharedPreferencesRepository {
 
     }
 
-    public static void addToLocalNotifications(LocalNotification notification) {
+    public static void addToLocalNotifications(LocalNotification notification,Context context) {
+
+        Assistant.makeSoundAndVibrate(context);
 
         String arrayString = getValue(Constants.LOCAL_NOTIFICATIONS, "[]");
         Gson gson = new Gson();

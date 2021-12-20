@@ -398,7 +398,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void onMenuToggleClicked(View view) {
 
-
         popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
         menuIsOpen = true;
 
@@ -499,12 +498,11 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void charge(PlateType plateType, String tag1, String tag2, String tag3, String tag4) {
+            public void charge(PlateType plateType, String tag1, String tag2, String tag3, String tag4, boolean hasMobile) {
 
                 parkInfoDialog.dismiss();
 
                 plateChargeDialog = new PlateChargeDialog((amount,mobile) -> {
-
 
                     if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
                         parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG,mobile);
@@ -513,7 +511,7 @@ public class MainActivity extends AppCompatActivity {
 
                     plateChargeDialog.dismiss();
 
-                }, place);
+                }, place, hasMobile);
 
                 plateChargeDialog.show(getSupportFragmentManager(), PlateChargeDialog.TAG);
 
@@ -621,16 +619,15 @@ public class MainActivity extends AppCompatActivity {
 
             printTemplateBinding.placeId.setText(place.number + "");
 
-            printTemplateBinding.startTime.setText(assistant.toJalali(startTime));
+            printTemplateBinding.startTime.setText(/*assistant.toJalali(*/startTime/*)*/);
             printTemplateBinding.prices.setText(pricing);
             printTemplateBinding.supportPhone.setText(telephone);
             printTemplateBinding.debt.setText((balance < 0 ? -1 * balance : balance) + "تومان");
             String cityID = SharedPreferencesRepository.getValue(Constants.CITY_ID);
 
-            String sb = "در صورت عدم حضور پارکیار برای خروج عدد " +
-                    cityID +
-                    place.number +
-                    " را به شماره " +
+            String sb = "در صورت عدم حضور پارکیار برای خروج عبارت '" +
+                    place.getPlateString() +
+                    "' را به شماره " +
                     sms_number +
                     " ارسال کنید" +
                     "\n ." +
@@ -848,6 +845,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void parkCar02(ParkBody parkBody, boolean printFactor) {
 
+        assistant.hideSoftKeyboard(MainActivity.this);
+
         Runnable functionRunnable = () -> parkCar02(parkBody, printFactor);
         LoadingBar loadingBar = new LoadingBar(MainActivity.this);
         loadingBar.show();
@@ -879,7 +878,17 @@ public class MainActivity extends AppCompatActivity {
                 if (printFactor) {
 
                     Place place = response.body().getInfo().place;
-                    printFactor(place.id, place.start, response.body().getInfo().car_balance, place);
+
+                    String startTime = place.start;
+                    try {
+
+                        startTime = startTime.split(" ")[1];
+
+                    }catch (Exception e){
+                        System.out.println("---------> split exception");
+                    }
+
+                    printFactor(place.id, startTime, response.body().getInfo().car_balance, place);
 
                 }
 

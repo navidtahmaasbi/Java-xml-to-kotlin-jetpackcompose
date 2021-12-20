@@ -48,6 +48,7 @@ public class ParkInfoDialog extends DialogFragment {
     int totalPrice = 0;
     int debt = 0, balance = 0;
     Assistant assistant;
+    boolean hasMobile = false;
 
     public ParkInfoDialog() {
     }
@@ -178,12 +179,11 @@ public class ParkInfoDialog extends DialogFragment {
             else if (place.tag3 == null || place.tag3.isEmpty())
                 selectedPlateType = PlateType.new_aras;
 
-            onGetInfoClicked.charge(selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4);
+            onGetInfoClicked.charge(selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, hasMobile);
 
         });
 
         binding.print.setOnClickListener(view -> {
-
 
             PlateType selectedPlateType = PlateType.simple;
 
@@ -192,8 +192,16 @@ public class ParkInfoDialog extends DialogFragment {
             else if (place.tag3 == null || place.tag3.isEmpty())
                 selectedPlateType = PlateType.new_aras;
 
+            String startTime = place.start;
+            try {
 
-            onGetInfoClicked.print(place.start, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id, debt, balance);
+                startTime = startTime.split(" ")[1];
+
+            } catch (Exception e) {
+                System.out.println("---------> split exception");
+            }
+
+            onGetInfoClicked.print(startTime, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id, debt, balance);
 
         });
 
@@ -235,6 +243,11 @@ public class ParkInfoDialog extends DialogFragment {
                 int carBalance = parkPriceResponse.getCar_balance();
                 balance = carBalance;
 
+                binding.hasMobileStatus.setText(response.body().getUsers_count() == 0 ? "ثبت نشده" : "ثبت شده");
+                binding.hasMobileStatus.setTextColor(getContext().getResources().getColor(response.body().getUsers_count() == 0 ? R.color.red : R.color.dark_green));
+
+                hasMobile = response.body().getUsers_count() > 0;
+
                 binding.paymentArea.setVisibility(View.VISIBLE);
 
                 if (carBalance < 0) {
@@ -266,9 +279,10 @@ public class ParkInfoDialog extends DialogFragment {
                     binding.pay.setOnClickListener(view -> Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
                     binding.pay.setOnLongClickListener(view -> {
 
-                        if (!binding.mobile.getText().toString().isEmpty() &&
-                                !assistant.isMobile(binding.mobile.getText().toString()))
-                            Toast.makeText(getContext(), "شماره موبایل را درست وارد کنید", Toast.LENGTH_SHORT).show();
+                        String mobile = binding.mobile.getText().toString();
+
+                        if (!mobileIsOk(mobile))
+                            Toast.makeText(getContext(), "موبایل را درست وارد کنید", Toast.LENGTH_SHORT).show();
                         else
                             onGetInfoClicked.pay(totalPrice, place, binding.mobile.getText().toString());
                         return false;
@@ -321,12 +335,15 @@ public class ParkInfoDialog extends DialogFragment {
                         totalPrice = parkPrice - carBalance;
 
                         binding.pay.setOnClickListener(view -> Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
+
                         binding.pay.setOnLongClickListener(view -> {
-                            if (!binding.mobile.getText().toString().isEmpty() &&
-                                    !assistant.isMobile(binding.mobile.getText().toString()))
-                                Toast.makeText(getContext(), "شماره موبایل را درست وارد کنید", Toast.LENGTH_SHORT).show();
+
+                            String mobile = binding.mobile.getText().toString();
+
+                            if (!mobileIsOk(mobile))
+                                Toast.makeText(getContext(), "موبایل را درست وارد کنید", Toast.LENGTH_SHORT).show();
                             else
-                                onGetInfoClicked.pay(totalPrice, place,binding.mobile.getText().toString());
+                                onGetInfoClicked.pay(totalPrice, place, binding.mobile.getText().toString());
                             return false;
                         });
 
@@ -350,6 +367,15 @@ public class ParkInfoDialog extends DialogFragment {
                 NewErrorHandler.apiFailureErrorHandler(call, t, getParentFragmentManager(), functionRunnable);
             }
         });
+
+    }
+
+    private boolean mobileIsOk(String mobile) {
+
+        if (mobile.isEmpty())
+            return true;
+
+        return assistant.isMobile(mobile);
 
     }
 

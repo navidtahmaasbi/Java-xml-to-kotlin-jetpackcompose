@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import com.azarpark.watchman.R;
 import com.azarpark.watchman.adapters.ChargeItemListAdapter;
 import com.azarpark.watchman.adapters.SingleSelectListAdapter;
 import com.azarpark.watchman.databinding.PlateChargeDialogBinding;
@@ -39,10 +40,12 @@ public class PlateChargeDialog extends DialogFragment {
     OnPayClicked onPayClicked;
     Place place;
     int selectedAmount = 0;
+    boolean hasMobile = false;
 
-    public PlateChargeDialog(OnPayClicked onPayClicked, Place place) {
+    public PlateChargeDialog(OnPayClicked onPayClicked, Place place, boolean hasMobile) {
         this.onPayClicked = onPayClicked;
         this.place = place;
+        this.hasMobile = hasMobile;
     }
 
     @Nullable
@@ -104,6 +107,9 @@ public class PlateChargeDialog extends DialogFragment {
         items.add(100000);
 
         adapter.setItems(items);
+
+        binding.hasMobileStatus.setText(!hasMobile ? "ثبت نشده" : "ثبت شده");
+        binding.hasMobileStatus.setTextColor(getContext().getResources().getColor(!hasMobile ? R.color.red : R.color.dark_green));
 
         binding.submit.setOnClickListener(view -> {
 

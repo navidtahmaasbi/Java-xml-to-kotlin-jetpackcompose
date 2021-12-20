@@ -22,4 +22,17 @@ public class Place {
     public String tag4;
     public EstimatePrice estimate_price;
     public ExitRequest exit_request;
+
+    public String getPlateString() {
+
+        if (tag2 == null || tag2.isEmpty())
+            return tag1 + "ارس";
+
+        if (tag3 == null || tag3.isEmpty())
+            return tag1 + "ارس" + tag2;
+
+        return tag1 + tag2 + tag3 +"ایران"+ tag4;
+
+
+    }
 }

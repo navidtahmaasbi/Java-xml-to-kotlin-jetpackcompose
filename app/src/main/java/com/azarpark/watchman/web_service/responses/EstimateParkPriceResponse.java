@@ -2,7 +2,7 @@ package com.azarpark.watchman.web_service.responses;
 
 public class EstimateParkPriceResponse {
 
-    int success,price,hours,minutes,car_balance;
+    int success,price,hours,minutes,car_balance,users_count;
     String msg;
     public String description;
 
@@ -46,11 +46,27 @@ public class EstimateParkPriceResponse {
         this.car_balance = car_balance;
     }
 
+    public int getUsers_count() {
+        return users_count;
+    }
+
+    public void setUsers_count(int users_count) {
+        this.users_count = users_count;
+    }
+
     public String getMsg() {
         return msg;
     }
 
     public void setMsg(String msg) {
         this.msg = msg;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

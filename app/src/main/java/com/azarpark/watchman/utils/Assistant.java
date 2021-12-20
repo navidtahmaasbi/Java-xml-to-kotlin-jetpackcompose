@@ -10,11 +10,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Vibrator;
 import android.service.autofill.RegexValidator;
 import android.util.Log;
 import android.view.View;
@@ -50,6 +52,14 @@ public class Assistant {
     public static long generateResNum() {
 
         return System.currentTimeMillis();
+
+    }
+
+    public static String persianToEnglishNumbers(String mobile) {
+
+
+
+        return mobile;
 
     }
 
@@ -109,7 +119,7 @@ public class Assistant {
 
     }
 
-    public Bitmap qrGenerator(String url, int placeID,String tag1,String tag2,String tag3,String tag4) {
+    public Bitmap qrGenerator(String url, int placeID, String tag1, String tag2, String tag3, String tag4) {
 
         Uri uri = Uri.parse(url);
 
@@ -117,18 +127,21 @@ public class Assistant {
         builder.scheme(uri.getScheme())
                 .authority(uri.getAuthority())
                 .appendPath(uri.getPath())
-                /*.fragment("section-name")*/;
+        /*.fragment("section-name")*/;
 
         for (String p : uri.getPathSegments())
             builder.appendPath(p);
 
         for (String q : uri.getQueryParameterNames())
-            builder.appendQueryParameter(q,uri.getQueryParameter(q));
+            builder.appendQueryParameter(q, uri.getQueryParameter(q));
 
         builder.appendQueryParameter(Constants.tag1, tag1);
-        builder.appendQueryParameter(Constants.tag2, tag2);
-        builder.appendQueryParameter(Constants.tag3, tag3);
-        builder.appendQueryParameter(Constants.tag4, tag4);
+        if (tag2 != null)
+            builder.appendQueryParameter(Constants.tag2, tag2);
+        if (tag3 != null)
+            builder.appendQueryParameter(Constants.tag3, tag3);
+        if (tag4 != null)
+            builder.appendQueryParameter(Constants.tag4, tag4);
 
         builder.appendQueryParameter(Constants.place_id, Integer.toString(placeID));
         String myUrl = builder.build().toString();
@@ -367,14 +380,14 @@ public class Assistant {
         return elapsedHours + " ساعت " + elapsedMinutes + " دقیقه";
     }
 
-    public static String getUnixTime(){
+    public static String getUnixTime() {
 
-       return Long.toString(System.currentTimeMillis() / 1000L);
+        return Long.toString(System.currentTimeMillis() / 1000L);
 
     }
 
     @SuppressLint("HardwareIds")
-    public static String getSerialNumber(){
+    public static String getSerialNumber() {
 
         if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.O)
             return android.os.Build.SERIAL;
@@ -383,7 +396,7 @@ public class Assistant {
 
     }
 
-    public static void createNotification(Context context,String title,String message){
+    public static void createNotification(Context context, String title, String message) {
 
         Intent intent = new Intent(context, SplashActivity.class);
 
@@ -408,7 +421,7 @@ public class Assistant {
                 .setContentIntent(pendingIntent);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            builder = builder.setContent(getCustomDesign(context,title, message));
+            builder = builder.setContent(getCustomDesign(context, title, message));
         } else {
             builder = builder.setContentTitle(title)
                     .setContentText(message)
@@ -429,13 +442,46 @@ public class Assistant {
 
     }
 
-    private static RemoteViews getCustomDesign(Context context,String title,
-                                        String message) {
+    private static RemoteViews getCustomDesign(Context context, String title,
+                                               String message) {
         @SuppressLint("RemoteViewLayout") RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.notification);
         remoteViews.setTextViewText(R.id.title, title);
         remoteViews.setTextViewText(R.id.message, message);
         remoteViews.setImageViewResource(R.id.icon, R.drawable.ic_launcher);
         return remoteViews;
+    }
+
+    public static void makeSoundAndVibrate(Context context) {
+
+//         Vibrator vib;
+        MediaPlayer mp;
+
+        mp = MediaPlayer.create(context, R.raw.ding);
+//        vib = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+//        vib.vibrate(500);
+        mp.start();
+
+    }
+
+    public static boolean isValidMobile(String inputString) {
+
+        return true;
+
+//        HashMap<Character, Integer> charCountMap = new HashMap();
+//
+//        char[] strArray = inputString.toCharArray();
+//
+//        for (char c : strArray) {
+//            if (charCountMap.containsKey(c))
+//                charCountMap.put(c, charCountMap.get(c) + 1);
+//            else
+//                charCountMap.put(c, 1);
+//        }
+//
+//        for (Map.Entry entry : charCountMap.entrySet())
+//            if (((int) entry.getValue()) > 5)
+//                return false;
+//        return true;
     }
 
 }

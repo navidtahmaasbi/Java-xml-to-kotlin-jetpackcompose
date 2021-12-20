@@ -68,6 +68,7 @@ public class NewErrorHandler {
 
     public static void apiFailureErrorHandler(Call call, Throwable t, FragmentManager fragmentManager, Runnable runnable) {
 
+        t.printStackTrace();
 
         if (!onfailureDialogIsShowing) {
             onfailureDialogIsShowing = true;

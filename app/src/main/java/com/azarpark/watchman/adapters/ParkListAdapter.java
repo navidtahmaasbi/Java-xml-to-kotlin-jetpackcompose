@@ -151,9 +151,9 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     (oldPlace.exit_request == null && newPlace.exit_request != null) ||
                             (oldPlace.exit_request != null && newPlace.exit_request != null && oldPlace.exit_request.id != newPlace.exit_request.id))) {
 
-                String des = "درخواست خروج جدید در جایگاه " + newPlace.number;
-                Assistant.createNotification(context, "درخواست خروج-" + newPlace.number, des);
-                SharedPreferencesRepository.addToLocalNotifications(new LocalNotification(Long.toString(new Date().getTime()), newPlace.id , newPlace.number,LocalNotification.Type.exitRequest));
+//                String des = "درخواست خروج جدید در جایگاه " + newPlace.number;
+//                Assistant.createNotification(context, "درخواست خروج-" + newPlace.number, des);
+                SharedPreferencesRepository.addToLocalNotifications(new LocalNotification(Long.toString(new Date().getTime()), newPlace.id , newPlace.number,LocalNotification.Type.exitRequest), context);
             }
 
             if (oldPlace != null &&
@@ -161,9 +161,9 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             (!oldPlace.status.equals(PlaceStatus.free_by_sms.toString()) && newPlace.status.equals(PlaceStatus.free_by_sms.toString()))
                     )) {
 
-                String des = "خروج توسط کاربر در " + newPlace.number;
-                Assistant.createNotification(context, "خروج توسط کاربر-" + newPlace.number, des);
-                SharedPreferencesRepository.addToLocalNotifications(new LocalNotification(Long.toString(new Date().getTime()), newPlace.id , newPlace.number,LocalNotification.Type.freeByUser));
+//                String des = "خروج توسط کاربر در " + newPlace.number;
+//                Assistant.createNotification(context, "خروج توسط کاربر-" + newPlace.number, des);
+                SharedPreferencesRepository.addToLocalNotifications(new LocalNotification(Long.toString(new Date().getTime()), newPlace.id , newPlace.number,LocalNotification.Type.freeByUser),context);
 
             }
 

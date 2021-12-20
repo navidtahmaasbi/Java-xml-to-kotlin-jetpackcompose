@@ -62,7 +62,7 @@ public interface API {
                                            @Path("tag4") String tag4,
                                            @Path("amount") int amount,
                                            @Query("flag") int transactionType,
-                                           @Query("mobile") String mobile
+                                           @Query("phone") String mobile
     );
 
     @GET("/api/watchman/exit_request/delete/{place_id}")

@@ -213,7 +213,12 @@ public class ParsianPayment {
 
         Runnable functionRunnable = () -> createTransaction(plateType, tag1, tag2, tag3, tag4, amount, placeID,transactionType,mobile);
 
-        WebService.getClient(context).createTransaction(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(),tag1,tag2,tag3,tag4,amount,transactionType,mobile).enqueue(new Callback<CreateTransactionResponse>() {
+        String t1 = tag1 == null ? "" : tag1;
+        String t2 = tag2 == null ? "-1" : tag2;
+        String t3 = tag3 == null ? "-1" : tag3;
+        String t4 = tag4 == null ? "-1" : tag4;
+
+        WebService.getClient(context).createTransaction(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(),t1,t2,t3,t4,amount,transactionType,mobile).enqueue(new Callback<CreateTransactionResponse>() {
             @Override
             public void onResponse(Call<CreateTransactionResponse> call, Response<CreateTransactionResponse> response) {
 
@@ -433,8 +438,9 @@ public class ParsianPayment {
 
         printTemplateBinding.prices.setText(pricing);
         printTemplateBinding.supportPhone.setText(telephone);
-        printTemplateBinding.description.setText("در صورت عدم حضور پارکیار عدد " + cityID +
-                place.number + " را به شماره " + sms_number + " ارسال کنید");
+
+        printTemplateBinding.description.setText("در صورت عدم حضور پارکیار عبارت '" +
+                place.getPlateString() + "' را به شماره " + sms_number + " ارسال کنید");
 
         printTemplateBinding.qrcode.setImageBitmap(QRGenerator(qr_url + placeID));
 

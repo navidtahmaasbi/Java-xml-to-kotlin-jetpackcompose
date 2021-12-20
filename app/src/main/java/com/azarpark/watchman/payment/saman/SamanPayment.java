@@ -54,7 +54,7 @@ public class SamanPayment {
 
     int STATE_SUCCESSFUL = 0;
 
-    public SamanPayment(FragmentManager fragmentManager,Context context, Activity activity, SamanPaymentCallBack samanPaymentCallBack) {
+    public SamanPayment(FragmentManager fragmentManager, Context context, Activity activity, SamanPaymentCallBack samanPaymentCallBack) {
 
         this.activity = activity;
         this.context = context;
@@ -144,7 +144,7 @@ public class SamanPayment {
 
     public void handleResult(int requestCode, int resultCode, Intent data) {
 
-        System.out.println("----------> handleResult " +resultCode);
+        System.out.println("----------> handleResult " + resultCode);
 
         if (/*resultCode == Activity.RESULT_OK &&*/ requestCode == PAYMENT_REQUEST_CODE) {
 
@@ -263,14 +263,12 @@ public class SamanPayment {
             verifyTransaction(transaction);
 
 
-
-        }
-        else if (resultCode == Activity.RESULT_OK && requestCode == QR_SCANNER_REQUEST_CODE) {
+        } else if (resultCode == Activity.RESULT_OK && requestCode == QR_SCANNER_REQUEST_CODE) {
 
             try {
 
                 String url = data.getStringExtra(SCANNER_RESULT);
-                System.out.println("----------> url : " +url);
+                System.out.println("----------> url : " + url);
                 int placeId = Integer.parseInt(url.split("=")[url.split("=").length - 1]);
                 samanPaymentCallBack.getScannerData(placeId);
 
@@ -291,9 +289,14 @@ public class SamanPayment {
 
     public void createTransaction(String shaba, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID, int transactionType, String mobile) {
 
-        Runnable functionRunnable = () -> createTransaction(shaba,plateType, tag1, tag2, tag3, tag4, amount, placeID,transactionType,mobile);
+        Runnable functionRunnable = () -> createTransaction(shaba, plateType, tag1, tag2, tag3, tag4, amount, placeID, transactionType, mobile);
 
-        WebService.getClient(context).createTransaction(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(),tag1,tag2,tag3,tag4,amount,transactionType,mobile).enqueue(new Callback<CreateTransactionResponse>() {
+        String t1 = tag1 == null ? "" : tag1;
+        String t2 = tag2 == null ? "-1" : tag2;
+        String t3 = tag3 == null ? "-1" : tag3;
+        String t4 = tag4 == null ? "-1" : tag4;
+
+        WebService.getClient(context).createTransaction(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), t1, t2, t3, t4, amount, transactionType, mobile).enqueue(new Callback<CreateTransactionResponse>() {
             @Override
             public void onResponse(Call<CreateTransactionResponse> call, Response<CreateTransactionResponse> response) {
 
@@ -344,9 +347,9 @@ public class SamanPayment {
 
         Runnable functionRunnable = () -> verifyTransaction(transaction);
 
-        WebService.getClient(context).verifyTransaction(SharedPreferencesRepository.getTokenWithPrefix(),transaction.getAmount(),transaction.getOur_token(),
-                transaction.getBank_token(),transaction.getPlaceID(),transaction.getStatus(),transaction.getBank_type(),transaction.getState(),
-                transaction.getCard_number(),transaction.getBank_datetime(),transaction.getTrace_number(),transaction.getResult_message()).enqueue(new Callback<VerifyTransactionResponse>() {
+        WebService.getClient(context).verifyTransaction(SharedPreferencesRepository.getTokenWithPrefix(), transaction.getAmount(), transaction.getOur_token(),
+                transaction.getBank_token(), transaction.getPlaceID(), transaction.getStatus(), transaction.getBank_type(), transaction.getState(),
+                transaction.getCard_number(), transaction.getBank_datetime(), transaction.getTrace_number(), transaction.getResult_message()).enqueue(new Callback<VerifyTransactionResponse>() {
             @Override
             public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
 
