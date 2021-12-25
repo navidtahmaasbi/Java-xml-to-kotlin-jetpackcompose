@@ -154,13 +154,13 @@
             android:textSize="@dimen/_13sdp" />
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/notifications_recyclerview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/notifications_recyclerview"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             android:orientation="horizontal"
-            tools:listitem="@layout/notification_item"
-            app:reverseLayout="true"/>
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:reverseLayout="true"
+            tools:listitem="@layout/notification_item" />
 
         <RelativeLayout
             android:id="@+id/aaabbb"

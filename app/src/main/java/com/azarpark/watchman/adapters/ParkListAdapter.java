@@ -144,6 +144,10 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private void checkForNotification(ArrayList<Place> newItems) {
 
+//        if (SharedPreferencesRepository.getLocalNotifications().size() < 5)
+//            for (int i = 0; i < 5; i++)
+//                SharedPreferencesRepository.addToLocalNotifications(new LocalNotification(Long.toString(new Date().getTime()), 99900, 99900, LocalNotification.Type.exitRequest), context);
+
         for (Place newPlace : newItems) {
 
             Place oldPlace = findPlace(newPlace);
@@ -153,7 +157,7 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
 //                String des = "درخواست خروج جدید در جایگاه " + newPlace.number;
 //                Assistant.createNotification(context, "درخواست خروج-" + newPlace.number, des);
-                SharedPreferencesRepository.addToLocalNotifications(new LocalNotification(Long.toString(new Date().getTime()), newPlace.id , newPlace.number,LocalNotification.Type.exitRequest), context);
+                SharedPreferencesRepository.addToLocalNotifications(new LocalNotification(Long.toString(new Date().getTime()), newPlace.id, newPlace.number, LocalNotification.Type.exitRequest), context);
             }
 
             if (oldPlace != null &&
@@ -163,7 +167,7 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
 //                String des = "خروج توسط کاربر در " + newPlace.number;
 //                Assistant.createNotification(context, "خروج توسط کاربر-" + newPlace.number, des);
-                SharedPreferencesRepository.addToLocalNotifications(new LocalNotification(Long.toString(new Date().getTime()), newPlace.id , newPlace.number,LocalNotification.Type.freeByUser),context);
+                SharedPreferencesRepository.addToLocalNotifications(new LocalNotification(Long.toString(new Date().getTime()), newPlace.id, newPlace.number, LocalNotification.Type.freeByUser), context);
 
             }
 

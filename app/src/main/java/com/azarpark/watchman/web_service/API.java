@@ -74,7 +74,7 @@ public interface API {
 
 
     @GET("/api/watchman/park/free/{placeID}")
-    Call<ExitParkResponse> exitPark(@Header("Authorization") String authToken, @Path("placeID") int placeID);
+    Call<ExitParkResponse> exitPark(@Header("Authorization") String authToken, @Path("placeID") int placeID,@Query("phone") String phone);
 
 
     @GET("/api/watchman/exit_request/{plate_type}/{tag1}/{tag2}/{tag3}/{tag4}")

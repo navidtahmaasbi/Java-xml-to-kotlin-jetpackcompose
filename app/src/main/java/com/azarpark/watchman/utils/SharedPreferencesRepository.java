@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -185,9 +186,18 @@ public class SharedPreferencesRepository {
         ArrayList<LocalNotification> notifications = gson.fromJson(arrayString, new TypeToken<List<LocalNotification>>() {
         }.getType());
 
-        for (LocalNotification n : notifications)
-            if (n.id.equals(notification.id))
-                notifications.remove(n);
+
+        for (Iterator<LocalNotification> it = notifications.iterator();it.hasNext();){
+
+            LocalNotification notif = it.next();
+            if (notif.id.equals(notification.id))
+                it.remove();
+
+        }
+
+//        for (LocalNotification n : notifications)
+//            if (n.id.equals(notification.id))
+//                notifications.remove(n);
 
         setValue(Constants.LOCAL_NOTIFICATIONS, gson.toJson(notifications));
 

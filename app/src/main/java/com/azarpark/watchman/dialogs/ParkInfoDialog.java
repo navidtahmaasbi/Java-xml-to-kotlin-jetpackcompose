@@ -103,7 +103,12 @@ public class ParkInfoDialog extends DialogFragment {
 
         binding.acceptExitRequest.setOnClickListener(view -> Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
         binding.acceptExitRequest.setOnLongClickListener(view -> {
-            onGetInfoClicked.payAsDebt(place);
+            String mobile = binding.mobile.getText().toString();
+
+            if (!mobileIsOk(mobile))
+                Toast.makeText(getContext(), "موبایل را درست وارد کنید", Toast.LENGTH_SHORT).show();
+            else
+                onGetInfoClicked.payAsDebt(place,mobile);
             return false;
         });
 
@@ -166,7 +171,13 @@ public class ParkInfoDialog extends DialogFragment {
 
         binding.payAsDebt.setOnClickListener(view -> Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
         binding.payAsDebt.setOnLongClickListener(view -> {
-            onGetInfoClicked.payAsDebt(place);
+
+            String mobile = binding.mobile.getText().toString();
+
+            if (!mobileIsOk(mobile))
+                Toast.makeText(getContext(), "موبایل را درست وارد کنید", Toast.LENGTH_SHORT).show();
+            else
+            onGetInfoClicked.payAsDebt(place,mobile);
             return false;
         });
 
@@ -310,7 +321,12 @@ public class ParkInfoDialog extends DialogFragment {
                         binding.pay.setOnClickListener(view -> Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
                         binding.pay.setOnLongClickListener(view -> {
 
-                            onGetInfoClicked.payAsDebt(place);
+                            String mobile = binding.mobile.getText().toString();
+
+                            if (!mobileIsOk(mobile))
+                                Toast.makeText(getContext(), "موبایل را درست وارد کنید", Toast.LENGTH_SHORT).show();
+                            else
+                            onGetInfoClicked.payAsDebt(place,mobile);
                             return false;
                         });
 
@@ -326,7 +342,12 @@ public class ParkInfoDialog extends DialogFragment {
                         binding.pay.setOnClickListener(view -> Toast.makeText(getContext(), "برای انجام عملیات روی دکمه نگه دارید", Toast.LENGTH_SHORT).show());
                         binding.pay.setOnLongClickListener(view -> {
 
-                            onGetInfoClicked.payAsDebt(place);
+                            String mobile = binding.mobile.getText().toString();
+
+                            if (!mobileIsOk(mobile))
+                                Toast.makeText(getContext(), "موبایل را درست وارد کنید", Toast.LENGTH_SHORT).show();
+                            else
+                            onGetInfoClicked.payAsDebt(place,mobile);
                             return false;
                         });
 

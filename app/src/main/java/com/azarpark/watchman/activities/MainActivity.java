@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
     //------------------------------------------------------------------------------------------------
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -484,9 +485,9 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void payAsDebt(Place place) {
+            public void payAsDebt(Place place,String mobile) {
 
-                exitPark02(place.id);
+                exitPark02(place.id,mobile);
 
             }
 
@@ -906,13 +907,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void exitPark02(int placeID) {
+    private void exitPark02(int placeID,String mobile) {
 
-        Runnable functionRunnable = () -> exitPark02(placeID);
+        Runnable functionRunnable = () -> exitPark02(placeID,mobile);
         LoadingBar loadingBar = new LoadingBar(MainActivity.this);
         loadingBar.show();
 
-        WebService.getClient(getApplicationContext()).exitPark(SharedPreferencesRepository.getTokenWithPrefix(), placeID).enqueue(new Callback<ExitParkResponse>() {
+        WebService.getClient(getApplicationContext()).exitPark(SharedPreferencesRepository.getTokenWithPrefix(), placeID,mobile).enqueue(new Callback<ExitParkResponse>() {
             @Override
             public void onResponse(Call<ExitParkResponse> call, Response<ExitParkResponse> response) {
 
@@ -1100,6 +1101,5 @@ public class MainActivity extends AppCompatActivity {
 //
 //        return bitmap;
     }
-
 
 }
