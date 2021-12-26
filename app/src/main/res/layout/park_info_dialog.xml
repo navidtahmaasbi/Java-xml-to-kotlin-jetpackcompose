@@ -616,11 +616,26 @@
                 android:orientation="horizontal"
                 android:padding="@dimen/_5sdp">
 
+                <TextView
+                    android:layout_marginRight="@dimen/_2sdp"
+                    android:id="@+id/submit_mobile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/blue_bg_5"
+                    android:fontFamily="@font/iran_sans"
+                    android:gravity="center"
+                    android:text="ثبت شماره"
+                    android:padding="@dimen/_3sdp"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_11sdp" />
+
                 <EditText
                     android:id="@+id/mobile"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/submit_mobile"
                     android:background="@android:color/transparent"
                     android:fontFamily="@font/iran_sans"
                     android:gravity="center"
@@ -628,9 +643,11 @@
                     android:inputType="numberDecimal"
                     android:padding="@dimen/_5sdp"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/_10sdp" />
+                    android:textSize="@dimen/_10sdp"
+                    android:layout_toLeftOf="@+id/icon"/>
 
                 <ImageView
+                    android:id="@+id/icon"
                     android:layout_width="@dimen/_15sdp"
                     android:layout_height="@dimen/_15sdp"
                     android:layout_alignParentRight="true"

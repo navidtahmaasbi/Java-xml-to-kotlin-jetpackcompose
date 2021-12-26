@@ -75,6 +75,13 @@ public class Assistant {
 
     }
 
+    public boolean isValidCharForTag2(String s){
+
+        String validChars = Constants.VALID_CHARS.replace(" ", "");
+        return validChars.contains(s);
+
+    }
+
     public boolean isPersianAlphabet(String s) {
 
         Pattern RTL_CHARACTERS =
@@ -88,13 +95,6 @@ public class Assistant {
     public void showSoftKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-    }
-
-    public void hideSoftKeyboard(Activity activity) {
-
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.HIDE_NOT_ALWAYS, 0);
-
     }
 
     public static void hideKeyboard(Activity activity, View view) {

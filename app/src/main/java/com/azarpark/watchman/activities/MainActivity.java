@@ -463,7 +463,7 @@ public class MainActivity extends AppCompatActivity {
 
         parkInfoDialog = new ParkInfoDialog(new OnGetInfoClicked() {
             @Override
-            public void pay(int price, Place place,String mobile) {
+            public void pay(int price, Place place) {
 
                 PlateType selectedPlateType = PlateType.simple;
 
@@ -478,16 +478,16 @@ public class MainActivity extends AppCompatActivity {
                     parkInfoDialog.dismiss();
 
                 if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
-                    parsianPayment.createTransaction(selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id, Constants.TRANSACTION_TYPE_PARK_PRICE,mobile);
+                    parsianPayment.createTransaction(selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id, Constants.TRANSACTION_TYPE_PARK_PRICE);
                 else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
-                    samanPayment.createTransaction(Constants.NON_CHARGE_SHABA, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id, Constants.TRANSACTION_TYPE_PARK_PRICE,mobile);
+                    samanPayment.createTransaction(Constants.NON_CHARGE_SHABA, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id, Constants.TRANSACTION_TYPE_PARK_PRICE);
 
             }
 
             @Override
-            public void payAsDebt(Place place,String mobile) {
+            public void payAsDebt(Place place) {
 
-                exitPark02(place.id,mobile);
+                exitPark02(place.id);
 
             }
 
@@ -503,12 +503,12 @@ public class MainActivity extends AppCompatActivity {
 
                 parkInfoDialog.dismiss();
 
-                plateChargeDialog = new PlateChargeDialog((amount,mobile) -> {
+                plateChargeDialog = new PlateChargeDialog((amount) -> {
 
                     if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
-                        parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG,mobile);
+                        parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG);
                     else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
-                        samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG,mobile);
+                        samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG);
 
                     plateChargeDialog.dismiss();
 
@@ -846,7 +846,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void parkCar02(ParkBody parkBody, boolean printFactor) {
 
-        assistant.hideSoftKeyboard(MainActivity.this);
+        Assistant.hideKeyboard(MainActivity.this,binding.getRoot());
 
         Runnable functionRunnable = () -> parkCar02(parkBody, printFactor);
         LoadingBar loadingBar = new LoadingBar(MainActivity.this);
@@ -907,13 +907,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void exitPark02(int placeID,String mobile) {
+    private void exitPark02(int placeID) {
 
-        Runnable functionRunnable = () -> exitPark02(placeID,mobile);
+        Runnable functionRunnable = () -> exitPark02(placeID);
         LoadingBar loadingBar = new LoadingBar(MainActivity.this);
         loadingBar.show();
 
-        WebService.getClient(getApplicationContext()).exitPark(SharedPreferencesRepository.getTokenWithPrefix(), placeID,mobile).enqueue(new Callback<ExitParkResponse>() {
+        WebService.getClient(getApplicationContext()).exitPark(SharedPreferencesRepository.getTokenWithPrefix(), placeID).enqueue(new Callback<ExitParkResponse>() {
             @Override
             public void onResponse(Call<ExitParkResponse> call, Response<ExitParkResponse> response) {
 

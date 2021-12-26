@@ -86,7 +86,7 @@ public class NewErrorHandler {
 
             });
 
-            messageDialog.setCancelable(false);
+            messageDialog.setCancelable(true);
             messageDialog.show(fragmentManager, ConfirmDialog.TAG);
         }
 

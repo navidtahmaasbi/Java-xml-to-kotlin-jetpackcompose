@@ -5,9 +5,9 @@ import com.azarpark.watchman.models.Place;
 
 public interface OnGetInfoClicked {
 
-    public void pay(int price, Place place, String mobile);
+    public void pay(int price, Place place);
 
-    public void payAsDebt(Place place,String mobile);
+    public void payAsDebt(Place place);
 
     public void removeExitRequest(Place place);
 

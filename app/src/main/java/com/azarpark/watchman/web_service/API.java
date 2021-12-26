@@ -1,5 +1,6 @@
 package com.azarpark.watchman.web_service;
 
+import com.azarpark.watchman.models.AddMobieToPlateResponse;
 import com.azarpark.watchman.web_service.bodies.LoginBody;
 import com.azarpark.watchman.web_service.bodies.ParkBody;
 import com.azarpark.watchman.web_service.responses.CreateTransactionResponse;
@@ -61,8 +62,7 @@ public interface API {
                                            @Path("tag3") String tag3,
                                            @Path("tag4") String tag4,
                                            @Path("amount") int amount,
-                                           @Query("flag") int transactionType,
-                                           @Query("phone") String mobile
+                                           @Query("flag") int transactionType
     );
 
     @GET("/api/watchman/exit_request/delete/{place_id}")
@@ -74,7 +74,7 @@ public interface API {
 
 
     @GET("/api/watchman/park/free/{placeID}")
-    Call<ExitParkResponse> exitPark(@Header("Authorization") String authToken, @Path("placeID") int placeID,@Query("phone") String phone);
+    Call<ExitParkResponse> exitPark(@Header("Authorization") String authToken, @Path("placeID") int placeID);
 
 
     @GET("/api/watchman/exit_request/{plate_type}/{tag1}/{tag2}/{tag3}/{tag4}")
@@ -110,17 +110,14 @@ public interface API {
     );
 
 
-
-
-
-
-
-
-
-
-
-
-
+    @GET("/api/watchman/plate_add_mobile")
+    Call<AddMobieToPlateResponse> addMobileToPlate(@Header("Authorization") String authToken,
+                                                   @Query("phone") String mobile,
+                                                   @Query("tag1") String tag1,
+                                                   @Query("tag2") String tag2,
+                                                   @Query("tag3") String tag3,
+                                                   @Query("tag4") String tag4
+    );
 
 
 

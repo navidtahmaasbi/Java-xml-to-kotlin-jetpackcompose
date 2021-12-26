@@ -3,6 +3,8 @@ package com.azarpark.watchman.utils;
 public class Constants {
 
     public static final String SHAREDPREFERNCE = "app_needs";
+    public static final String VALID_CHARS = "ب ج د س ص ط ق ل م ن و ه ی ت";
+
     public static final String SUCCESS = "success";
     public static final String DESCRIPTION = "description";
     public static int SAMAN = 1, PASRIAN = 2, SELECTED_PAYMENT = 2 ;//todo release

@@ -22,6 +22,7 @@ import com.azarpark.watchman.databinding.ParkDialogBinding;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnParkClicked;
 import com.azarpark.watchman.models.Place;
+import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.web_service.bodies.ParkBody;
 import com.azarpark.watchman.utils.Assistant;
 
@@ -44,9 +45,9 @@ public class ParkDialog extends DialogFragment {
         binding = ParkDialogBinding.inflate(LayoutInflater.from(getContext()));
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(binding.getRoot());
-        Assistant assistant= new Assistant();
+        Assistant assistant = new Assistant();
 
-        binding.placeNumber.setText(place.number+"");
+        binding.placeNumber.setText(place.number + "");
 
         setSelectedTab(selectedTab);
 
@@ -80,8 +81,8 @@ public class ParkDialog extends DialogFragment {
                 Toast.makeText(getContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
 
             else if (selectedTab == PlateType.simple &&
-                    !assistant.isPersianAlphabet(binding.plateSimpleTag2.getText().toString()))
-                Toast.makeText(getContext(), "حرف وسط پلاک باید فارسی باشد", Toast.LENGTH_SHORT).show();
+                    !assistant.isValidCharForTag2(binding.plateSimpleTag2.getText().toString()))
+                Toast.makeText(getContext(), "حرف وسط پلاک باید یکی از حروف \"" + Constants.VALID_CHARS + "\" باشد", Toast.LENGTH_LONG).show();
 
             else if (selectedTab == PlateType.old_aras &&
                     binding.plateOldAras.getText().toString().length() != 5)
@@ -91,7 +92,7 @@ public class ParkDialog extends DialogFragment {
                     (binding.plateNewArasTag1.getText().toString().length() != 5 ||
                             binding.plateNewArasTag2.getText().toString().length() != 2))
                 Toast.makeText(getContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
-            else if (selectedTab == PlateType.simple){
+            else if (selectedTab == PlateType.simple) {
 
 
                 onParkClicked.clicked(new ParkBody(
@@ -102,19 +103,17 @@ public class ParkDialog extends DialogFragment {
                         "simple",
                         place.id,
                         place.street_id
-                ),binding.printCheckbox.isChecked());
-            }
-            else if (selectedTab == PlateType.old_aras) {
+                ), binding.printCheckbox.isChecked());
+            } else if (selectedTab == PlateType.old_aras) {
 
 
                 onParkClicked.clicked(new ParkBody(
-                binding.plateOldAras.getText().toString(),
-                "old_aras",
+                        binding.plateOldAras.getText().toString(),
+                        "old_aras",
                         place.id,
                         place.street_id
-                ),binding.printCheckbox.isChecked());
-            }
-            else{
+                ), binding.printCheckbox.isChecked());
+            } else {
 
                 onParkClicked.clicked(new ParkBody(
                         binding.plateNewArasTag1.getText().toString(),
@@ -122,7 +121,7 @@ public class ParkDialog extends DialogFragment {
                         "new_aras",
                         place.id,
                         place.street_id
-                ),binding.printCheckbox.isChecked());
+                ), binding.printCheckbox.isChecked());
             }
         });
 
@@ -135,7 +134,7 @@ public class ParkDialog extends DialogFragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                if(binding.plateSimpleTag1.getText().toString().length()==2)     //size is your limit
+                if (binding.plateSimpleTag1.getText().toString().length() == 2)     //size is your limit
                 {
                     binding.plateSimpleTag2.requestFocus();
                 }
@@ -158,7 +157,7 @@ public class ParkDialog extends DialogFragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                if(binding.plateSimpleTag2.getText().toString().length()==1)     //size is your limit
+                if (binding.plateSimpleTag2.getText().toString().length() == 1)     //size is your limit
                 {
                     binding.plateSimpleTag3.requestFocus();
                 }
@@ -181,7 +180,7 @@ public class ParkDialog extends DialogFragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                if(binding.plateSimpleTag3.getText().toString().length()==3)     //size is your limit
+                if (binding.plateSimpleTag3.getText().toString().length() == 3)     //size is your limit
                 {
                     binding.plateSimpleTag4.requestFocus();
                 }
@@ -204,7 +203,7 @@ public class ParkDialog extends DialogFragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                if(binding.plateNewArasTag1.getText().toString().length()==5)     //size is your limit
+                if (binding.plateNewArasTag1.getText().toString().length() == 5)     //size is your limit
                 {
                     binding.plateNewArasTag2.requestFocus();
                 }
