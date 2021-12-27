@@ -218,9 +218,9 @@ public class ParkInfoDialog extends DialogFragment {
 
             if (!assistant.isMobile(mobile))
                 Toast.makeText(getContext(), "موبایل را درست وارد کنید", Toast.LENGTH_SHORT).show();
-            else if (hasMobile){
+            else if (hasMobile) {
 
-                Assistant.hideKeyboard(getActivity(),binding.getRoot());
+                Assistant.hideKeyboard(getActivity(), binding.getRoot());
 
                 confirmDialog = new ConfirmDialog("توجه", "این پلاک دارای شمره تلفن می باشد! آیا از اضافه کردن شماره جدید اطمینان دارید؟", "بله اضافه کن", "انصراف", new ConfirmDialog.ConfirmButtonClicks() {
                     @Override
@@ -236,11 +236,10 @@ public class ParkInfoDialog extends DialogFragment {
                     }
                 });
 
-                confirmDialog.show(getParentFragmentManager(),ConfirmDialog.TAG);
-            }
-            else{
+                confirmDialog.show(getParentFragmentManager(), ConfirmDialog.TAG);
+            } else {
 
-                Assistant.hideKeyboard(getActivity(),binding.getRoot());
+                Assistant.hideKeyboard(getActivity(), binding.getRoot());
                 addMobile(mobile, place.tag1, place.tag2, place.tag3, place.tag4);
             }
 
@@ -256,7 +255,7 @@ public class ParkInfoDialog extends DialogFragment {
         LoadingBar loadingBar = new LoadingBar(getActivity());
         loadingBar.show();
 
-        WebService.getClient(getContext()).addMobileToPlate(SharedPreferencesRepository.getTokenWithPrefix(), mobile, tag1, tag2, tag3, tag4).enqueue(new Callback<AddMobieToPlateResponse>() {
+        WebService.getClient(getContext()).addMobileToPlate(SharedPreferencesRepository.getTokenWithPrefix(), assistant.getPlateType(tag1, tag2, tag3, tag4).toString(), tag1, tag2, tag3, tag4, mobile).enqueue(new Callback<AddMobieToPlateResponse>() {
             @Override
             public void onResponse(Call<AddMobieToPlateResponse> call, Response<AddMobieToPlateResponse> response) {
 

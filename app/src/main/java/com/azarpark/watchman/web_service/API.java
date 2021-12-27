@@ -110,14 +110,24 @@ public interface API {
     );
 
 
-    @GET("/api/watchman/plate_add_mobile")
+//    @GET("/api/watchman/plate_add_mobile")
+//    Call<AddMobieToPlateResponse> addMobileToPlate(@Header("Authorization") String authToken,
+//                                                   @Query("phone") String mobile,
+//                                                   @Query("tag1") String tag1,
+//                                                   @Query("tag2") String tag2,
+//                                                   @Query("tag3") String tag3,
+//                                                   @Query("tag4") String tag4
+//    );
+
+    @GET("/api/watchman/phone/add/{car_type}/{tag1}/{tag2}/{tag3}/{tag4}/{phone}")
     Call<AddMobieToPlateResponse> addMobileToPlate(@Header("Authorization") String authToken,
-                                                   @Query("phone") String mobile,
-                                                   @Query("tag1") String tag1,
-                                                   @Query("tag2") String tag2,
-                                                   @Query("tag3") String tag3,
-                                                   @Query("tag4") String tag4
-    );
+                                                      @Path("car_type") String plateType,
+                                                      @Path("tag1") String tag1,
+                                                      @Path("tag2") String tag2,
+                                                      @Path("tag3") String tag3,
+                                                      @Path("tag4") String tag4,
+                                                      @Path("phone") String phone);
+
 
 
 
