@@ -108,8 +108,8 @@ public class PlateChargeDialog extends DialogFragment {
 
         adapter.setItems(items);
 
-        binding.hasMobileStatus.setText(!hasMobile ? "ثبت نشده" : "ثبت شده");
-        binding.hasMobileStatus.setTextColor(getContext().getResources().getColor(!hasMobile ? R.color.red : R.color.dark_green));
+//        binding.hasMobileStatus.setText(!hasMobile ? "ثبت نشده" : "ثبت شده");
+//        binding.hasMobileStatus.setTextColor(getContext().getResources().getColor(!hasMobile ? R.color.red : R.color.dark_green));
 
         binding.submit.setOnClickListener(view -> {
 

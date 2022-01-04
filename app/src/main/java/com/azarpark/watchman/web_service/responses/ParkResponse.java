@@ -8,6 +8,7 @@ public class ParkResponse {
     String msg,description;
     Info info;
 
+
     public Info getInfo() {
         return info;
     }

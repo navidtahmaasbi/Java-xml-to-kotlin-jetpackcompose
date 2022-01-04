@@ -358,7 +358,8 @@ public class SamanPayment {
 
                 SharedPreferencesRepository.removeFromTransactions02(transaction);
                 Toast.makeText(context, response.body().getDescription(), Toast.LENGTH_SHORT).show();
-                samanPaymentCallBack.onVerifyFinished();
+                if (transaction.getStatus() == 1)
+                    samanPaymentCallBack.onVerifyFinished();
 
             }
 

@@ -211,14 +211,14 @@ public class ParsianPayment {
 
     public void createTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID, int transactionType) {
 
-        Runnable functionRunnable = () -> createTransaction(plateType, tag1, tag2, tag3, tag4, amount, placeID,transactionType);
+        Runnable functionRunnable = () -> createTransaction(plateType, tag1, tag2, tag3, tag4, amount, placeID, transactionType);
 
         String t1 = tag1 == null ? "" : tag1;
         String t2 = tag2 == null ? "-1" : tag2;
         String t3 = tag3 == null ? "-1" : tag3;
         String t4 = tag4 == null ? "-1" : tag4;
 
-        WebService.getClient(context).createTransaction(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(),t1,t2,t3,t4,amount,transactionType).enqueue(new Callback<CreateTransactionResponse>() {
+        WebService.getClient(context).createTransaction(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), t1, t2, t3, t4, amount, transactionType).enqueue(new Callback<CreateTransactionResponse>() {
             @Override
             public void onResponse(Call<CreateTransactionResponse> call, Response<CreateTransactionResponse> response) {
 
@@ -269,9 +269,9 @@ public class ParsianPayment {
 
         Runnable functionRunnable = () -> verifyTransaction02(transaction);
 
-        WebService.getClient(context).verifyTransaction(SharedPreferencesRepository.getTokenWithPrefix(),transaction.getAmount(),transaction.getOur_token(),
-                transaction.getBank_token(),transaction.getPlaceID(),transaction.getStatus(),transaction.getBank_type(),transaction.getState(),
-                transaction.getCard_number(),transaction.getBank_datetime(),transaction.getTrace_number(),transaction.getResult_message()).enqueue(new Callback<VerifyTransactionResponse>() {
+        WebService.getClient(context).verifyTransaction(SharedPreferencesRepository.getTokenWithPrefix(), transaction.getAmount(), transaction.getOur_token(),
+                transaction.getBank_token(), transaction.getPlaceID(), transaction.getStatus(), transaction.getBank_type(), transaction.getState(),
+                transaction.getCard_number(), transaction.getBank_datetime(), transaction.getTrace_number(), transaction.getResult_message()).enqueue(new Callback<VerifyTransactionResponse>() {
             @Override
             public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
 
@@ -286,8 +286,8 @@ public class ParsianPayment {
                 String tag4 = SharedPreferencesRepository.getValue(Constants.TAG4, "0");
 
                 getCarDebtHistory02(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
-
-                parsianPaymentCallBack.onVerifyFinished();
+                if (transaction.getStatus() == 1)
+                    parsianPaymentCallBack.onVerifyFinished();
 
             }
 
@@ -328,7 +328,7 @@ public class ParsianPayment {
 
             @Override
             public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
-               loadingBar.dismiss();
+                loadingBar.dismiss();
                 NewErrorHandler.apiFailureErrorHandler(call, t, fragmentManager, functionRunnable);
             }
         });
@@ -345,69 +345,69 @@ public class ParsianPayment {
 
             printArea.removeAllViews();
 
-            ParsianAfterPaymentPrintTemplateBinding printTemplateBinding = ParsianAfterPaymentPrintTemplateBinding.inflate(LayoutInflater.from(context), printArea, true);
+        ParsianAfterPaymentPrintTemplateBinding printTemplateBinding = ParsianAfterPaymentPrintTemplateBinding.inflate(LayoutInflater.from(context), printArea, true);
 
-            printTemplateBinding.balanceTitle.setText(balance < 0 ? "بدهی پلاک" : "شارژ پلاک");
+        printTemplateBinding.balanceTitle.setText(balance < 0 ? "بدهی پلاک" : "شارژ پلاک");
 
-            printTemplateBinding.balance.setText(balance + " تومان");
+        printTemplateBinding.balance.setText(balance + " تومان");
 
 //            printTemplateBinding.prices.setText(pricing);
 
-            if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.simple) {
+        if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.simple) {
 
-                printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
-                printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
-                printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
+            printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
+            printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
+            printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
 
-                printTemplateBinding.plateSimpleTag1.setText(tag1);
-                printTemplateBinding.plateSimpleTag2.setText(tag2);
-                printTemplateBinding.plateSimpleTag3.setText(tag3);
-                printTemplateBinding.plateSimpleTag4.setText(tag4);
+            printTemplateBinding.plateSimpleTag1.setText(tag1);
+            printTemplateBinding.plateSimpleTag2.setText(tag2);
+            printTemplateBinding.plateSimpleTag3.setText(tag3);
+            printTemplateBinding.plateSimpleTag4.setText(tag4);
 
-            } else if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.old_aras) {
+        } else if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.old_aras) {
 
-                printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
-                printTemplateBinding.plateOldArasArea.setVisibility(View.VISIBLE);
-                printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
+            printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
+            printTemplateBinding.plateOldArasArea.setVisibility(View.VISIBLE);
+            printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
 
-                printTemplateBinding.plateOldArasTag1En.setText(tag1);
-                printTemplateBinding.plateOldArasTag1Fa.setText(tag1);
+            printTemplateBinding.plateOldArasTag1En.setText(tag1);
+            printTemplateBinding.plateOldArasTag1Fa.setText(tag1);
 
-            } else {
+        } else {
 
-                printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
-                printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
-                printTemplateBinding.plateNewArasArea.setVisibility(View.VISIBLE);
+            printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
+            printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
+            printTemplateBinding.plateNewArasArea.setVisibility(View.VISIBLE);
 
-                printTemplateBinding.plateNewArasTag1En.setText(tag1);
-                printTemplateBinding.plateNewArasTag1Fa.setText(tag1);
-                printTemplateBinding.plateNewArasTag2En.setText(tag2);
-                printTemplateBinding.plateNewArasTag2Fa.setText(tag2);
+            printTemplateBinding.plateNewArasTag1En.setText(tag1);
+            printTemplateBinding.plateNewArasTag1Fa.setText(tag1);
+            printTemplateBinding.plateNewArasTag2En.setText(tag2);
+            printTemplateBinding.plateNewArasTag2Fa.setText(tag2);
 
-            }
+        }
 
-            printTemplateBinding.text.setText("\n.");
+        printTemplateBinding.text.setText("\n.");
 
-            try {
+        try {
 
-                printArea.post(() -> {
+            printArea.post(() -> {
 
-                    PrinterManager printer = new PrinterManager();
-                    int setupResult = printer.setupPage(-1, -1);
-                    printer.drawBitmap(getViewBitmap(printTemplateBinding.getRoot()), 0, 0);
-                    int printResult = printer.printPage(0);
-                });
+                PrinterManager printer = new PrinterManager();
+                int setupResult = printer.setupPage(-1, -1);
+                printer.drawBitmap(getViewBitmap(printTemplateBinding.getRoot()), 0, 0);
+                int printResult = printer.printPage(0);
+            });
 
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("----------> Exception  ");
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("----------> Exception  ");
+        }
 
     }
 
     public void printParkInfo(Place place, int placeID, ViewGroup viewGroupForBindFactor, String pricing, String telephone, String sms_number,
-                              String qr_url, int balance) {
+                              String qr_url, int balance, String printDescription) {
 
         String cityID = SharedPreferencesRepository.getValue(Constants.CITY_ID);
 
@@ -439,8 +439,7 @@ public class ParsianPayment {
         printTemplateBinding.prices.setText(pricing);
         printTemplateBinding.supportPhone.setText(telephone);
 
-        printTemplateBinding.description.setText("در صورت عدم حضور پارکیار عبارت '" +
-                place.getPlateString() + "' را به شماره " + sms_number + " ارسال کنید");
+        printTemplateBinding.description.setText(printDescription);
 
         printTemplateBinding.qrcode.setImageBitmap(QRGenerator(qr_url + placeID));
 

@@ -519,9 +519,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void print(String startTime, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID, int debt, int balance) {
+            public void print(String startTime, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID, int debt, int balance, String printDescription, int printCommand) {
 
-                printFactor(placeID, startTime, balance, place);
+                if (printCommand == 1)
+                    printFactor(placeID, startTime, balance, place, printDescription);
 
             }
         }, place);
@@ -531,7 +532,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SuppressLint("SetTextI18n")
-    private void printFactor(int placeID, String startTime, int balance, Place place) {
+    private void printFactor(int placeID, String startTime, int balance, Place place, String printDescription) {
 
         if (Constants.SELECTED_PAYMENT == Constants.PASRIAN) {
 
@@ -607,7 +608,7 @@ public class MainActivity extends AppCompatActivity {
 
             new Handler().postDelayed(() -> {
 
-                parsianPayment.printParkInfo(place, place.id, binding.printArea, pricing, telephone, sms_number, qr_url, balance);
+                parsianPayment.printParkInfo(place, place.id, binding.printArea, pricing, telephone, sms_number, qr_url, balance, printDescription);
 
             }, 500);
 
@@ -626,14 +627,14 @@ public class MainActivity extends AppCompatActivity {
             printTemplateBinding.debt.setText((balance < 0 ? -1 * balance : balance) + "تومان");
             String cityID = SharedPreferencesRepository.getValue(Constants.CITY_ID);
 
-            String sb = "در صورت عدم حضور پارکیار برای خروج عبارت '" +
-                    place.getPlateString() +
-                    "' را به شماره " +
-                    sms_number +
-                    " ارسال کنید" +
-                    "\n ." +
-                    "\n .";
-            printTemplateBinding.description.setText(sb);
+//            String sb = "در صورت عدم حضور پارکیار برای خروج عبارت '" +
+//                    place.getPlateString() +
+//                    "' را به شماره " +
+//                    sms_number +
+//                    " ارسال کنید" +
+//                    "\n ." +
+//                    "\n .";
+            printTemplateBinding.description.setText(printDescription);
             if (balance > 0) {
 
                 printTemplateBinding.balanceTitle.setText("اعتبار پلاک");
@@ -846,7 +847,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void parkCar02(ParkBody parkBody, boolean printFactor) {
 
-        Assistant.hideKeyboard(MainActivity.this,binding.getRoot());
+        Assistant.hideKeyboard(MainActivity.this, binding.getRoot());
 
         Runnable functionRunnable = () -> parkCar02(parkBody, printFactor);
         LoadingBar loadingBar = new LoadingBar(MainActivity.this);
@@ -876,7 +877,7 @@ public class MainActivity extends AppCompatActivity {
                 if (response.body().getInfo().car_balance < 0)
                     debt = -response.body().getInfo().car_balance;
 
-                if (printFactor) {
+                if (printFactor && response.body().getInfo().print_command == 1) {
 
                     Place place = response.body().getInfo().place;
 
@@ -885,11 +886,11 @@ public class MainActivity extends AppCompatActivity {
 
                         startTime = startTime.split(" ")[1];
 
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         System.out.println("---------> split exception");
                     }
 
-                    printFactor(place.id, startTime, response.body().getInfo().car_balance, place);
+                    printFactor(place.id, startTime, response.body().getInfo().car_balance, place, response.body().getInfo().print_description);
 
                 }
 

@@ -30,6 +30,7 @@ import com.azarpark.watchman.activities.SplashActivity;
 import com.azarpark.watchman.download_utils.DownloadController;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.Place;
+import com.google.zxing.common.StringUtils;
 import com.yandex.metrica.YandexMetrica;
 
 import java.net.HttpURLConnection;
@@ -58,12 +59,25 @@ public class Assistant {
     public static String persianToEnglishNumbers(String mobile) {
 
 
-
         return mobile;
 
     }
 
+    public int charCountInString(String string, char ch) {
+
+        int count = 0;
+        for (int i = 0; i < string.length(); i++)
+            if (string.charAt(i) == ch)
+                count++;
+
+        return count;
+    }
+
     public boolean isMobile(String mobile) {
+
+        for (int i = 0; i < mobile.length(); i++)
+            if (charCountInString(mobile, mobile.charAt(i)) > 5)
+                return false;
 
         return mobile.matches("^09\\d{9}$");
 
@@ -75,7 +89,7 @@ public class Assistant {
 
     }
 
-    public boolean isValidCharForTag2(String s){
+    public boolean isValidCharForTag2(String s) {
 
         String validChars = Constants.VALID_CHARS.replace(" ", "");
         return validChars.contains(s);

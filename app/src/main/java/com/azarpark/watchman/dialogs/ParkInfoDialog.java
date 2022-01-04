@@ -54,6 +54,8 @@ public class ParkInfoDialog extends DialogFragment {
     Assistant assistant;
     boolean hasMobile = false;
     ConfirmDialog confirmDialog;
+    String printDescription;
+    int printCommand = 1;
 
     public ParkInfoDialog() {
     }
@@ -192,6 +194,12 @@ public class ParkInfoDialog extends DialogFragment {
 
         binding.print.setOnClickListener(view -> {
 
+            if (printDescription == null || printDescription.isEmpty()){
+
+                Toast.makeText(getContext(), "کمی صبر کنید و دوباره امتحان کنید", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             PlateType selectedPlateType = PlateType.simple;
 
             if (place.tag2 == null || place.tag2.isEmpty())
@@ -201,14 +209,13 @@ public class ParkInfoDialog extends DialogFragment {
 
             String startTime = place.start;
             try {
-
                 startTime = startTime.split(" ")[1];
 
             } catch (Exception e) {
                 System.out.println("---------> split exception");
             }
 
-            onGetInfoClicked.print(startTime, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id, debt, balance);
+            onGetInfoClicked.print(startTime, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id, debt, balance, printDescription, printCommand);
 
         });
 
@@ -222,7 +229,7 @@ public class ParkInfoDialog extends DialogFragment {
 
                 Assistant.hideKeyboard(getActivity(), binding.getRoot());
 
-                confirmDialog = new ConfirmDialog("توجه", "این پلاک دارای شمره تلفن می باشد! آیا از اضافه کردن شماره جدید اطمینان دارید؟", "بله اضافه کن", "انصراف", new ConfirmDialog.ConfirmButtonClicks() {
+                confirmDialog = new ConfirmDialog("توجه", "این پلاک دارای شماره تلفن می باشد! آیا از اضافه کردن شماره جدید اطمینان دارید؟", "بله اضافه کن", "انصراف", new ConfirmDialog.ConfirmButtonClicks() {
                     @Override
                     public void onConfirmClicked() {
                         addMobile(mobile, place.tag1, place.tag2, place.tag3, place.tag4);
@@ -280,7 +287,6 @@ public class ParkInfoDialog extends DialogFragment {
 
     }
 
-
     private void getParkData02(Place place) {
 
         Runnable functionRunnable = () -> getParkData02(place);
@@ -321,6 +327,9 @@ public class ParkInfoDialog extends DialogFragment {
                 hasMobile = response.body().getUsers_count() > 0;
 
                 binding.paymentArea.setVisibility(View.VISIBLE);
+
+                printDescription = response.body().getPrint_description();
+                printCommand = response.body().print_command;
 
                 if (carBalance < 0) {
 
@@ -431,7 +440,6 @@ public class ParkInfoDialog extends DialogFragment {
         });
 
     }
-
 
     @Override
     public void onDestroy() {

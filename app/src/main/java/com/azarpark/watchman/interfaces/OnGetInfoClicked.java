@@ -13,5 +13,5 @@ public interface OnGetInfoClicked {
 
     public void charge(PlateType plateType, String tag1, String tag2, String tag3, String tag4, boolean hasMobile);
 
-    public void print(String startTime, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID, int debt, int balance);
+    public void print(String startTime, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID, int debt, int balance, String printDescription, int printCommand);
 }

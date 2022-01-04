@@ -12,5 +12,7 @@ public class Info {
     public String description;
     public int number;
     public Place place;
+    public String print_description;
+    public int print_command = 1;
 
 }

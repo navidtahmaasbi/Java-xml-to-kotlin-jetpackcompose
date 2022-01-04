@@ -5,6 +5,17 @@ public class EstimateParkPriceResponse {
     int success,price,hours,minutes,car_balance,users_count;
     String msg;
     public String description;
+    String print_description;
+    public int print_command = 1;
+
+
+    public String getPrint_description() {
+        return print_description;
+    }
+
+    public void setPrint_description(String print_description) {
+        this.print_description = print_description;
+    }
 
     public int getSuccess() {
         return success;
