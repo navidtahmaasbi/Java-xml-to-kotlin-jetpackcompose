@@ -106,9 +106,28 @@ public class Assistant {
 
     }
 
-    public void showSoftKeyboard(Activity activity) {
+    public void hideSoftKeyboard(Activity activity) {
+
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+
+        if (imm.isAcceptingText()) {
+            imm.toggleSoftInput(InputMethodManager.RESULT_UNCHANGED_SHOWN, InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+
+
+
+    }
+
+    public void showSoftKeyboard(Activity activity) {
+
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        if (!imm.isAcceptingText()) {
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+        }
+
+
+
     }
 
     public static void hideKeyboard(Activity activity, View view) {
@@ -228,8 +247,15 @@ public class Assistant {
 
         String s = pdate.getShYear() + "-" + pdate.getShMonth() + "-" + pdate.getShDay() + " " + hour + ":" + minute + ":" + second;
 
-        PersianDateFormat pdformater = new PersianDateFormat("Y-m-j g-i");
-        return pdformater.format(pdate);
+        return s;
+
+//        System.out.println("---------> s : " + s);
+
+//        PersianDateFormat pdformater = new PersianDateFormat("Y-m-j g-i");
+//
+//        System.out.println("---------> pdformater.format(pdate) : " + pdformater.format(pdate));
+//
+//        return pdformater.format(pdate);
 
     }
 
@@ -367,6 +393,16 @@ public class Assistant {
 
     }
 
+    public static void printerEvent(String key, String value) {
+
+
+        Map<String, Object> eventParameters = new HashMap<String, Object>();
+        eventParameters.put(key, value);
+
+        YandexMetrica.reportEvent("printer issue", eventParameters);
+
+    }
+
     public String getTimeDifference(Date startDate, Date endDate) {
         //milliseconds
         long different = endDate.getTime() - startDate.getTime();
@@ -406,7 +442,7 @@ public class Assistant {
         if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.O)
             return android.os.Build.SERIAL;
 
-        return "";
+        return "serial";
 
     }
 

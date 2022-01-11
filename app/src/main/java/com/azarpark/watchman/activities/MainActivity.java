@@ -44,6 +44,7 @@ import com.azarpark.watchman.dialogs.PlateChargeDialog;
 import com.azarpark.watchman.enums.PlaceStatus;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnGetInfoClicked;
+import com.azarpark.watchman.interfaces.PrintMessage;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.payment.parsian.ParsianPayment;
@@ -97,6 +98,8 @@ public class MainActivity extends AppCompatActivity {
     int debt = 0;
     ParkResponseDialog parkResponseDialog;
     LocalNotificationsListAdapter localNotificationsListAdapter;
+    int versionCode = 0;
+    String versionName = "";
 
     //------------------------------------------------------------------------------------------------
 
@@ -147,7 +150,8 @@ public class MainActivity extends AppCompatActivity {
 
                     getCarDebtHistory02(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
 
-                }
+                } else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
+                    Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 
                 getPlaces02();
             }
@@ -179,8 +183,6 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        initMenuPopup();
-
         listeners();
 
         binding.filterEdittext.clearFocus();
@@ -201,6 +203,18 @@ public class MainActivity extends AppCompatActivity {
 
         });
         binding.recyclerView.setAdapter(adapter);
+
+        PackageInfo pInfo = null;
+        try {
+            pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            versionCode = pInfo.versionCode;
+            versionName = pInfo.versionName;
+
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        initMenuPopup();
 
     }
 
@@ -339,6 +353,8 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
+        ((TextView) popupView.findViewById(R.id.version)).setText("نسخه " + versionName);
+
 
     }
 
@@ -455,7 +471,7 @@ public class MainActivity extends AppCompatActivity {
         parkDialog = new ParkDialog(this::parkCar02, place);
         parkDialog.show(getSupportFragmentManager(), ParkDialog.TAG);
 
-        assistant.showSoftKeyboard(MainActivity.this);
+        assistant.hideSoftKeyboard(MainActivity.this);
 
     }
 
@@ -481,6 +497,8 @@ public class MainActivity extends AppCompatActivity {
                     parsianPayment.createTransaction(selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id, Constants.TRANSACTION_TYPE_PARK_PRICE);
                 else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
                     samanPayment.createTransaction(Constants.NON_CHARGE_SHABA, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id, Constants.TRANSACTION_TYPE_PARK_PRICE);
+                else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
+                    Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 
             }
 
@@ -509,6 +527,8 @@ public class MainActivity extends AppCompatActivity {
                         parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG);
                     else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
                         samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG);
+                    else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
+                        Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 
                     plateChargeDialog.dismiss();
 
@@ -613,7 +633,8 @@ public class MainActivity extends AppCompatActivity {
             }, 500);
 
 
-        } else if (Constants.SELECTED_PAYMENT == Constants.SAMAN) {
+        }
+        else if (Constants.SELECTED_PAYMENT == Constants.SAMAN) {
 
             binding.printArea.removeAllViews();
 
@@ -621,7 +642,7 @@ public class MainActivity extends AppCompatActivity {
 
             printTemplateBinding.placeId.setText(place.number + "");
 
-            printTemplateBinding.startTime.setText(/*assistant.toJalali(*/startTime/*)*/);
+            printTemplateBinding.startTime.setText(assistant.toJalali(startTime));
             printTemplateBinding.prices.setText(pricing);
             printTemplateBinding.supportPhone.setText(telephone);
             printTemplateBinding.debt.setText((balance < 0 ? -1 * balance : balance) + "تومان");
@@ -634,7 +655,7 @@ public class MainActivity extends AppCompatActivity {
 //                    " ارسال کنید" +
 //                    "\n ." +
 //                    "\n .";
-            printTemplateBinding.description.setText(printDescription);
+            printTemplateBinding.description.setText(printDescription + "\n..\n..");
             if (balance > 0) {
 
                 printTemplateBinding.balanceTitle.setText("اعتبار پلاک");
@@ -689,16 +710,17 @@ public class MainActivity extends AppCompatActivity {
 
             new Handler().postDelayed(() -> {
 
-                //todo
                 samanPayment.printParkInfo(binding.printArea);
 
             }, 500);
 
 
-        }
+        }else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
+            Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 
 
     }
+
 
     @SuppressLint("SetTextI18n")
     private void printMiniFactor(String tag1, String tag2, String tag3, String tag4, int balance) {
@@ -758,6 +780,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         }
+        else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
+            Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 
 
     }
@@ -847,7 +871,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void parkCar02(ParkBody parkBody, boolean printFactor) {
 
-        Assistant.hideKeyboard(MainActivity.this, binding.getRoot());
+
+        assistant.hideSoftKeyboard(MainActivity.this);
 
         Runnable functionRunnable = () -> parkCar02(parkBody, printFactor);
         LoadingBar loadingBar = new LoadingBar(MainActivity.this);
@@ -857,13 +882,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ParkResponse> call, Response<ParkResponse> response) {
 
-                assistant.hideKeyboard(activity, binding.getRoot());
                 loadingBar.dismiss();
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
                     return;
 
+                int printCommand = response.body().getInfo().print_command;
 
-                parkResponseDialog = new ParkResponseDialog(response.body().getInfo().number, response.body().getInfo().price, response.body().getInfo().car_balance, () -> {
+                parkResponseDialog = new ParkResponseDialog(response.body().getInfo().number, response.body().getInfo().price, response.body().getInfo().car_balance, printCommand, () -> {
 
                     parkResponseDialog.dismiss();
 
@@ -872,25 +897,26 @@ public class MainActivity extends AppCompatActivity {
                 parkResponseDialog.show(getSupportFragmentManager(), ParkResponseDialog.TAG);
 
                 Toast.makeText(getApplicationContext(), response.body().getDescription(), Toast.LENGTH_SHORT).show();
-                parkDialog.dismiss();
+                if (parkDialog != null)
+                    parkDialog.dismiss();
 
                 if (response.body().getInfo().car_balance < 0)
                     debt = -response.body().getInfo().car_balance;
 
-                if (printFactor && response.body().getInfo().print_command == 1) {
+                if (printFactor && printCommand == 1) {
 
                     Place place = response.body().getInfo().place;
 
-                    String startTime = place.start;
-                    try {
+//                    String startTime = place.start;
+//                    try {
+//
+//                        startTime = startTime.split(" ")[1];
+//
+//                    } catch (Exception e) {
+//                        System.out.println("---------> split exception");
+//                    }
 
-                        startTime = startTime.split(" ")[1];
-
-                    } catch (Exception e) {
-                        System.out.println("---------> split exception");
-                    }
-
-                    printFactor(place.id, startTime, response.body().getInfo().car_balance, place, response.body().getInfo().print_description);
+                    printFactor(place.id, place.start, response.body().getInfo().car_balance, place, response.body().getInfo().print_description);
 
                 }
 

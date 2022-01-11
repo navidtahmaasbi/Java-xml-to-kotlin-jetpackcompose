@@ -434,7 +434,7 @@ public class ParsianPayment {
         printTemplateBinding.placeId.setText(place.number + "");
         printTemplateBinding.debt.setText(balance + " تومان");
 
-        printTemplateBinding.startTime.setText(place.start);
+        printTemplateBinding.startTime.setText(assistant.toJalali(place.start));
 
         printTemplateBinding.prices.setText(pricing);
         printTemplateBinding.supportPhone.setText(telephone);

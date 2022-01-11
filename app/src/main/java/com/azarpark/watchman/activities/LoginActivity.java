@@ -54,14 +54,14 @@ public class LoginActivity extends AppCompatActivity {
         else if (!assistant.isPassword(binding.password.getText().toString()))
             Toast.makeText(getApplicationContext(), "رمز عبور را درست وارد کنید", Toast.LENGTH_SHORT).show();
         else
-            login(new LoginBody(binding.username.getText().toString(), binding.password.getText().toString()));
+            login(new LoginBody(binding.username.getText().toString(), binding.password.getText().toString()),binding.username.getText().toString());
 
 
     }
 
-    private void login(LoginBody loginBody) {
+    private void login(LoginBody loginBody, String mobile) {
 
-        Runnable functionRunnable = () -> login(loginBody);
+        Runnable functionRunnable = () -> login(loginBody, mobile);
         LoadingBar loadingBar = new LoadingBar(LoginActivity.this);
         loadingBar.show();
 
@@ -75,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 SharedPreferencesRepository.setToken(response.body().access_token);
                 SharedPreferencesRepository.setValue(Constants.REFRESH_TOKEN,response.body().refresh_token);
-                SharedPreferencesRepository.setValue(Constants.USERNAME,response.body().refresh_token);
+                SharedPreferencesRepository.setValue(Constants.USERNAME,mobile);
 
                 Assistant.loginEvent(loginBody.getUsername());
 

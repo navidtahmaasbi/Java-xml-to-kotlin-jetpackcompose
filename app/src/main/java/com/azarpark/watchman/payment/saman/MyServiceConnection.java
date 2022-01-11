@@ -9,6 +9,8 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 
+import com.azarpark.watchman.interfaces.PrintMessage;
+
 import ir.sep.android.Service.IProxy;
 
 public class MyServiceConnection implements ServiceConnection {
@@ -29,14 +31,16 @@ public class MyServiceConnection implements ServiceConnection {
         Log.i("---------->", "onServiceDisconnected(): Disconnected");
     }
 
-    public void print(Bitmap bitmap){
+    public void print(Bitmap bitmap) {
 
-
+        int result = 0;
         try {
-            service.PrintByBitmap(bitmap);
+            result = service.PrintByBitmap(bitmap);
+
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+
 
     }
 

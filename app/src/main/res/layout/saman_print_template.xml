@@ -630,17 +630,7 @@
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="right"
-            android:text="..\n..\n"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_13sdp"
-            app:fontFamily="@font/sahel_fa_num_semi_bold" />
-
-<!--        <androidx.appcompat.widget.LinearLayoutCompat-->
+        <!--        <androidx.appcompat.widget.LinearLayoutCompat-->
 <!--            android:layout_width="match_parent"-->
 <!--            android:layout_height="@dimen/_1sdp"-->
 <!--            android:background="@color/black"/>-->

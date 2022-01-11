@@ -194,7 +194,7 @@ public class ParkInfoDialog extends DialogFragment {
 
         binding.print.setOnClickListener(view -> {
 
-            if (printDescription == null || printDescription.isEmpty()){
+            if (printDescription == null || printDescription.isEmpty()) {
 
                 Toast.makeText(getContext(), "کمی صبر کنید و دوباره امتحان کنید", Toast.LENGTH_SHORT).show();
                 return;
@@ -207,15 +207,15 @@ public class ParkInfoDialog extends DialogFragment {
             else if (place.tag3 == null || place.tag3.isEmpty())
                 selectedPlateType = PlateType.new_aras;
 
-            String startTime = place.start;
-            try {
-                startTime = startTime.split(" ")[1];
+//            String startTime = place.start;
+//            try {
+//                startTime = startTime.split(" ")[1];
+//
+//            } catch (Exception e) {
+//                System.out.println("---------> split exception");
+//            }
 
-            } catch (Exception e) {
-                System.out.println("---------> split exception");
-            }
-
-            onGetInfoClicked.print(startTime, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id, debt, balance, printDescription, printCommand);
+            onGetInfoClicked.print(place.start, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id, debt, balance, printDescription, printCommand);
 
         });
 
@@ -262,7 +262,7 @@ public class ParkInfoDialog extends DialogFragment {
         LoadingBar loadingBar = new LoadingBar(getActivity());
         loadingBar.show();
 
-        WebService.getClient(getContext()).addMobileToPlate(SharedPreferencesRepository.getTokenWithPrefix(), assistant.getPlateType(tag1, tag2, tag3, tag4).toString(), tag1, tag2, tag3, tag4, mobile).enqueue(new Callback<AddMobieToPlateResponse>() {
+        WebService.getClient(getContext()).addMobileToPlate(SharedPreferencesRepository.getTokenWithPrefix(), assistant.getPlateType(tag1, tag2, tag3, tag4).toString(), tag1 != null ? tag1 : "0", tag2!= null ? tag2 : "0", tag3!= null ? tag3 : "0", tag4!= null ? tag4 : "0", mobile).enqueue(new Callback<AddMobieToPlateResponse>() {
             @Override
             public void onResponse(Call<AddMobieToPlateResponse> call, Response<AddMobieToPlateResponse> response) {
 
@@ -330,6 +330,14 @@ public class ParkInfoDialog extends DialogFragment {
 
                 printDescription = response.body().getPrint_description();
                 printCommand = response.body().print_command;
+
+                if (printCommand == 0) {
+
+                    binding.print.setVisibility(View.GONE);
+                    binding.printPlaceholder.setVisibility(View.VISIBLE);
+
+                }
+
 
                 if (carBalance < 0) {
 

@@ -433,6 +433,8 @@ public class DebtCheckActivity extends AppCompatActivity {
             parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_DEBT);
         else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
             samanPayment.createTransaction(Constants.NON_CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_DEBT);
+        else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
+            Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 
     }
 

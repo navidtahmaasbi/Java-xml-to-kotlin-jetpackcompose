@@ -99,6 +99,33 @@
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:visibility="gone"
+                android:id="@+id/print_placeholder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_1sdp"
+                    android:background="@color/light_gray" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/iran_sans"
+                    android:gravity="center"
+                    android:lineSpacingExtra="@dimen/_1sdp"
+                    android:padding="@dimen/_5sdp"
+                    android:text="پلاک دارای شماره تلفن می باشد و قبض به شماره تلفن پیامک شده است"
+                    android:textColor="@color/green"
+                    android:textSize="@dimen/_13sdp" />
+
+
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
         </LinearLayout>
 
         <TextView

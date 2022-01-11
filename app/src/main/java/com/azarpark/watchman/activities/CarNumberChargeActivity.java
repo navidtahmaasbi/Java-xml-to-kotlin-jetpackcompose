@@ -56,7 +56,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         assistant = new Assistant();
-        parsianPayment = new ParsianPayment(binding.printArea,getApplicationContext(), activity, new ParsianPayment.ParsianPaymentCallBack() {
+        parsianPayment = new ParsianPayment(binding.printArea, getApplicationContext(), activity, new ParsianPayment.ParsianPaymentCallBack() {
             @Override
             public void verifyTransaction(Transaction transaction) {
 //                CarNumberChargeActivity.this.verifyTransaction(transaction);
@@ -72,7 +72,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
                 //todo print mimii factor
             }
         }, getSupportFragmentManager());
-        samanPayment = new SamanPayment(getSupportFragmentManager(),getApplicationContext(), CarNumberChargeActivity.this, new SamanPayment.SamanPaymentCallBack() {
+        samanPayment = new SamanPayment(getSupportFragmentManager(), getApplicationContext(), CarNumberChargeActivity.this, new SamanPayment.SamanPaymentCallBack() {
             @Override
             public void verifyTransaction(Transaction transaction) {
 //                CarNumberChargeActivity.this.verifyTransaction(transaction);
@@ -94,7 +94,8 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
                     getCarDebtHistory(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
 
-                }
+                } else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
+                    Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
             }
         });
         binding.plateSimpleTag1.requestFocus();
@@ -459,7 +460,8 @@ public class CarNumberChargeActivity extends AppCompatActivity {
             }, 500);
 
 
-        }
+        } else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
+            Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 
 
     }
@@ -474,9 +476,11 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
 
         if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
-            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1,Constants.TRANSACTION_TYPE_CHAREG);
+            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1, Constants.TRANSACTION_TYPE_CHAREG);
         else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
-            samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1,Constants.TRANSACTION_TYPE_CHAREG);
+            samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1, Constants.TRANSACTION_TYPE_CHAREG);
+        else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
+            Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
     }
 
     private void getCarDebtHistory(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset) {
@@ -496,15 +500,15 @@ public class CarNumberChargeActivity extends AppCompatActivity {
                     return;
 
 
-                                if (selectedTab == PlateType.simple)
-                                    printFactor(tag1,
-                                            tag2,
-                                            tag3,
-                                            tag4, response.body().balance);
-                                else if (selectedTab == PlateType.old_aras)
-                                    printFactor(tag1, "0", "0", "0", response.body().balance);
-                                else
-                                    printFactor(tag1, tag2, "0", "0", response.body().balance);
+                if (selectedTab == PlateType.simple)
+                    printFactor(tag1,
+                            tag2,
+                            tag3,
+                            tag4, response.body().balance);
+                else if (selectedTab == PlateType.old_aras)
+                    printFactor(tag1, "0", "0", "0", response.body().balance);
+                else
+                    printFactor(tag1, tag2, "0", "0", response.body().balance);
 
 
             }

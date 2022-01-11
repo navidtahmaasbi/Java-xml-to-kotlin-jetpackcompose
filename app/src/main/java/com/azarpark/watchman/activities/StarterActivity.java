@@ -3,9 +3,12 @@ package com.azarpark.watchman.activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.azarpark.watchman.R;
@@ -15,6 +18,7 @@ import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.WebService;
+import com.azarpark.watchman.web_service.responses.SendExitCodeResponse;
 
 import java.util.Random;
 
@@ -27,9 +31,12 @@ public class StarterActivity extends AppCompatActivity {
 
     private int code = 5555;
     LoadingBar loadingBar;
-    private final int masterCode = 2369;//todo release
+    private final int masterCode = 4123;//todo release
     Assistant assistant;
-    int tapCount = 0;
+    int showExitCodeInputTapCount = 0;
+    int sendSMSTapCount = 0;
+    int versionCode = 0;
+    String versionName = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,16 +54,30 @@ public class StarterActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.exit_area).setOnClickListener(view -> {
-            tapCount += 1;
+            showExitCodeInputTapCount += 1;
+        });
+
+        findViewById(R.id.send_sms).setOnClickListener(view -> {
+            sendSMSTapCount += 1;
+        });
+
+        findViewById(R.id.send_sms).setOnLongClickListener(view -> {
+
+            if (sendSMSTapCount >= 2){
+
+                Random random = new Random();
+                code = 1000 + random.nextInt(9000);
+                sendExitCode(code);
+
+            }
+
+
+            return true;
         });
 
         findViewById(R.id.exit).setOnLongClickListener(view -> {
 
-            if (tapCount >= 4) {
-
-                Random random = new Random();
-                code = 1000 + random.nextInt(9000);
-                sendExitCode02(code);
+            if (showExitCodeInputTapCount >= 4) {
 
                 findViewById(R.id.password_area).setVisibility(findViewById(R.id.password_area).getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
                 if (findViewById(R.id.password_area).getVisibility() == View.VISIBLE)
@@ -102,6 +123,19 @@ public class StarterActivity extends AppCompatActivity {
 
         });
 
+        PackageInfo pInfo = null;
+        try {
+            pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            versionCode = pInfo.versionCode;
+            versionName = pInfo.versionName;
+
+            String version = "ادامه کار با برنامه\n\nنسخه " + versionName;
+
+            ((TextView)findViewById(R.id.app)).setText(version);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -111,17 +145,17 @@ public class StarterActivity extends AppCompatActivity {
 
     //------------------------------------------------------------------------------------------------------------------------
 
-    private void sendExitCode02(int placeID) {
+    private void sendExitCode(int code) {
 
-        WebService.getClient(getApplicationContext()).deleteExitRequest(SharedPreferencesRepository.getTokenWithPrefix(), placeID).enqueue(new Callback<DeleteExitRequestResponse>() {
+        WebService.getClient(getApplicationContext()).sendExitCode(SharedPreferencesRepository.getTokenWithPrefix(), code).enqueue(new Callback<SendExitCodeResponse>() {
             @Override
-            public void onResponse(Call<DeleteExitRequestResponse> call, Response<DeleteExitRequestResponse> response) {
+            public void onResponse(Call<SendExitCodeResponse> call, Response<SendExitCodeResponse> response) {
 
 
             }
 
             @Override
-            public void onFailure(Call<DeleteExitRequestResponse> call, Throwable t) {
+            public void onFailure(Call<SendExitCodeResponse> call, Throwable t) {
 
             }
         });

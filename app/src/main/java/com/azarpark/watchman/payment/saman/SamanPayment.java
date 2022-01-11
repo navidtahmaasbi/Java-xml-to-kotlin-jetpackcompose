@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.enums.PlateType;
+import com.azarpark.watchman.interfaces.PrintMessage;
 import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.web_service.responses.CreateTransactionResponse;
 import com.azarpark.watchman.web_service.responses.VerifyTransactionResponse;

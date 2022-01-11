@@ -525,7 +525,7 @@
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_30sdp"
+            android:layout_height="@dimen/_35sdp"
             android:orientation="horizontal"
             android:id="@+id/charge_area"
             android:layout_marginTop="@dimen/_10sdp">
@@ -543,32 +543,48 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/_13sdp" />
 
-            <LinearLayout
-
-                android:id="@+id/print"
+            <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:gravity="right|center_vertical"
-                android:orientation="horizontal">
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/print"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="right|center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_marginRight="@dimen/_5sdp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:fontFamily="@font/iran_sans"
+                        android:gravity="center"
+                        android:text="پرینت قبض"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_11sdp" />
+
+                    <ImageView
+                        android:layout_width="@dimen/_15sdp"
+                        android:layout_height="@dimen/_15sdp"
+                        android:src="@drawable/ic_baseline_print_24"
+                        app:tint="@color/dark_green" />
+
+                </LinearLayout>
 
                 <TextView
-                    android:layout_marginRight="@dimen/_5sdp"
-                    android:layout_width="wrap_content"
+                    android:visibility="gone"
+                    android:id="@+id/print_placeholder"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:fontFamily="@font/iran_sans"
-                    android:gravity="center"
-                    android:text="پرینت قبض"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_11sdp" />
+                    android:fontFamily="@font/iran_sans_bold"
+                    android:gravity="center_vertical|right"
+                    android:text="قبض به شماره تلفن ثبت شده ارسال شده است"
+                    android:textColor="@color/text_gray"
+                    android:textSize="@dimen/_9sdp" />
 
-                <ImageView
-                    android:layout_width="@dimen/_15sdp"
-                    android:layout_height="@dimen/_15sdp"
-                    android:src="@drawable/ic_baseline_print_24"
-                    app:tint="@color/dark_green" />
-
-            </LinearLayout>
+            </RelativeLayout>
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>
