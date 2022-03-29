@@ -57,7 +57,14 @@ public class NewErrorHandler {
 
             SharedPreferencesRepository.removeToken();
             context.startActivity(new Intent(context, SplashActivity.class));
-            return true;
+        }
+
+        if (response.code() == HttpURLConnection.HTTP_FORBIDDEN){
+
+            Toast.makeText(context, "شما از طرف پشتیبانی غیر فعال هستید", Toast.LENGTH_SHORT).show();
+            SharedPreferencesRepository.removeToken();
+//            context.startActivity(new Intent(context, SplashActivity.class));
+
         }
 
 //        response.body().toString()

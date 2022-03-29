@@ -572,7 +572,7 @@
             android:gravity="right">
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/description2"
+                android:id="@+id/description"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -593,6 +593,14 @@
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
+            android:layout_height="@dimen/_1sdp"
+            android:background="@color/text_gray"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/_2sdp"
+            android:layout_marginBottom="@dimen/_1sdp"/>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="right"
@@ -605,8 +613,8 @@
                 android:gravity="right"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_8sdp"
-                android:id="@+id/description"
-                android:text="در صورت عدم حضور پارکبان عدد ۱۰۱۰ را به شماره ۱۰۰۰۴۴۰۸۸ ارسال کنید"
+                android:id="@+id/description2"
+                android:text="دیسکریپتیون 2"
                 android:fontFamily="@font/sahel_fa_num_semi_bold" />
 
 

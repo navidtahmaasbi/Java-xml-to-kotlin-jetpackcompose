@@ -406,6 +406,7 @@ public class ParsianPayment {
 
     }
 
+    @SuppressLint("SetTextI18n")
     public void printParkInfo(Place place, int placeID, ViewGroup viewGroupForBindFactor, String pricing, String telephone, String sms_number,
                               String qr_url, int balance, String printDescription) {
 
@@ -415,17 +416,17 @@ public class ParsianPayment {
 
         if (balance > 0) {
 
-            printTemplateBinding.description2.setText("شهروند گرامی؛از این که جز مشتریان خوش حساب ما هستید سپاسگزاریم");
+            printTemplateBinding.description.setText("شهروند گرامی؛از این که جز مشتریان خوش حساب ما هستید سپاسگزاریم. " + printDescription);
             printTemplateBinding.balanceTitle.setText("اعتبار پلاک");
 
         } else if (balance < 0) {
 
-            printTemplateBinding.description2.setText("اخطار: شهروند گرامی؛بدهی پلاک شما بیش از حد مجاز میباشد در صورت عدم پرداخت بدهی مشمول جریمه پارک ممنوع خواهید شد");
+            printTemplateBinding.description.setText("اخطار: شهروند گرامی؛بدهی پلاک شما بیش از حد مجاز میباشد در صورت عدم پرداخت بدهی مشمول جریمه پارک ممنوع خواهید شد. " + printDescription);
             printTemplateBinding.balanceTitle.setText("بدهی پلاک");
 
         } else {
 
-            printTemplateBinding.description2.setText("شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد");
+            printTemplateBinding.description.setText("شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد. " + printDescription);
             printTemplateBinding.balanceTitle.setText("اعتبار پلاک");
         }
 
@@ -439,7 +440,7 @@ public class ParsianPayment {
         printTemplateBinding.prices.setText(pricing);
         printTemplateBinding.supportPhone.setText(telephone);
 
-        printTemplateBinding.description.setText(printDescription);
+        printTemplateBinding.description2.setText(SharedPreferencesRepository.getValue(Constants.print_description_2,""));
 
         printTemplateBinding.qrcode.setImageBitmap(QRGenerator(qr_url + placeID));
 

@@ -115,7 +115,6 @@ public class Assistant {
         }
 
 
-
     }
 
     public void showSoftKeyboard(Activity activity) {
@@ -125,7 +124,6 @@ public class Assistant {
         if (!imm.isAcceptingText()) {
             imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
         }
-
 
 
     }
@@ -393,6 +391,16 @@ public class Assistant {
 
     }
 
+    public static void eventForDuplicateTransactions(String username, String action) {
+
+
+        Map<String, Object> eventParameters = new HashMap<String, Object>();
+        eventParameters.put(username, action);
+
+        YandexMetrica.reportEvent("duplicate transactions", eventParameters);
+
+    }
+
     public static void printerEvent(String key, String value) {
 
 
@@ -406,7 +414,9 @@ public class Assistant {
     public String getTimeDifference(Date startDate, Date endDate) {
         //milliseconds
         long different = endDate.getTime() - startDate.getTime();
-
+        System.out.println("---------> endDate.getTime() : " + endDate.getTime());
+        System.out.println("---------> startDate.getTime() : " + startDate.getTime());
+        System.out.println("---------> different : " + different);
 
         long secondsInMilli = 1000;
         long minutesInMilli = secondsInMilli * 60;
@@ -428,6 +438,56 @@ public class Assistant {
             return elapsedMinutes + " دقیقه";
 
         return elapsedHours + " ساعت " + elapsedMinutes + " دقیقه";
+    }
+
+    public static boolean checkIfVerifyIsPermittedNow() {
+
+        long lastVerifyRequestTime = -100;
+        try {
+            lastVerifyRequestTime = Long.parseLong(SharedPreferencesRepository.getValue(Constants.LAST_VERIFY_REQUEST_TIME, "-100"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assistant.eventForDuplicateTransactions(SharedPreferencesRepository.getValue(Constants.USERNAME), "error: lastVerifyRequestTime111");
+        }
+
+        long now = Long.parseLong(String.valueOf(new Date().getTime()));
+        long difference = now - lastVerifyRequestTime;
+
+        boolean canVerify = lastVerifyRequestTime == -100 || difference > 3000;
+
+        if (!canVerify){
+            Assistant.eventForDuplicateTransactions(SharedPreferencesRepository.getValue(Constants.USERNAME), "verify happened in " + difference + " milli second");
+        }
+
+        return canVerify;
+
+    }
+
+    public static void updateLastVerifyRequestTime() {
+        SharedPreferencesRepository.setValue(Constants.LAST_VERIFY_REQUEST_TIME, String.valueOf(new Date().getTime()));
+    }
+
+    public static void updateLastBankResultTime() {
+        SharedPreferencesRepository.setValue(Constants.LAST_BANK_RESULT_TIME, String.valueOf(new Date().getTime()));
+    }
+
+    public static void checkLastBankResultTime() {
+
+        long lastBankResultTime = -100;
+        try {
+            lastBankResultTime = Long.parseLong(SharedPreferencesRepository.getValue(Constants.LAST_BANK_RESULT_TIME, "0"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assistant.eventForDuplicateTransactions(SharedPreferencesRepository.getValue(Constants.USERNAME), "error: lastVerifyRequestTime222");
+        }
+
+        long now = Long.parseLong(String.valueOf(new Date().getTime()));
+        long a = (now - lastBankResultTime) ;
+
+        if (lastBankResultTime != -100 && a < 3000){
+            Assistant.eventForDuplicateTransactions(SharedPreferencesRepository.getValue(Constants.USERNAME), "bank result happend in " + (now - lastBankResultTime) + " mili second");
+        }
+
     }
 
     public static String getUnixTime() {

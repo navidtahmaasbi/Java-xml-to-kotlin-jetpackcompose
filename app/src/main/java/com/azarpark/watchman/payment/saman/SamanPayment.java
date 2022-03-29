@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,7 +18,6 @@ import androidx.fragment.app.FragmentManager;
 
 import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.enums.PlateType;
-import com.azarpark.watchman.interfaces.PrintMessage;
 import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.web_service.responses.CreateTransactionResponse;
 import com.azarpark.watchman.web_service.responses.VerifyTransactionResponse;
@@ -346,30 +346,32 @@ public class SamanPayment {
 
     public void verifyTransaction(Transaction transaction) {
 
-        Runnable functionRunnable = () -> verifyTransaction(transaction);
+        if (Assistant.checkIfVerifyIsPermittedNow()) {
+            Assistant.updateLastVerifyRequestTime();
+            Runnable functionRunnable = () -> verifyTransaction(transaction);
 
-        WebService.getClient(context).verifyTransaction(SharedPreferencesRepository.getTokenWithPrefix(), transaction.getAmount(), transaction.getOur_token(),
-                transaction.getBank_token(), transaction.getPlaceID(), transaction.getStatus(), transaction.getBank_type(), transaction.getState(),
-                transaction.getCard_number(), transaction.getBank_datetime(), transaction.getTrace_number(), transaction.getResult_message()).enqueue(new Callback<VerifyTransactionResponse>() {
-            @Override
-            public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
+            WebService.getClient(context).verifyTransaction(SharedPreferencesRepository.getTokenWithPrefix(), transaction.getAmount(), transaction.getOur_token(),
+                    transaction.getBank_token(), transaction.getPlaceID(), transaction.getStatus(), transaction.getBank_type(), transaction.getState(),
+                    transaction.getCard_number(), transaction.getBank_datetime(), transaction.getTrace_number(), transaction.getResult_message()).enqueue(new Callback<VerifyTransactionResponse>() {
+                @Override
+                public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
 
-                if (NewErrorHandler.apiResponseHasError(response, context))
-                    return;
+                    if (NewErrorHandler.apiResponseHasError(response, context))
+                        return;
 
-                SharedPreferencesRepository.removeFromTransactions02(transaction);
-                Toast.makeText(context, response.body().getDescription(), Toast.LENGTH_SHORT).show();
-                if (transaction.getStatus() == 1)
-                    samanPaymentCallBack.onVerifyFinished();
+                    SharedPreferencesRepository.removeFromTransactions02(transaction);
+                    Toast.makeText(context, response.body().getDescription(), Toast.LENGTH_SHORT).show();
+                    if (transaction.getStatus() == 1)
+                        samanPaymentCallBack.onVerifyFinished();
 
-            }
+                }
 
-            @Override
-            public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
-                NewErrorHandler.apiFailureErrorHandler(call, t, fragmentManager, functionRunnable);
-            }
-        });
-
+                @Override
+                public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
+                    NewErrorHandler.apiFailureErrorHandler(call, t, fragmentManager, functionRunnable);
+                }
+            });
+        }
     }
 
     public void printParkInfo(ViewGroup viewGroupForBindFactor) {
@@ -382,35 +384,42 @@ public class SamanPayment {
 
     public static Bitmap getViewBitmap(View v) {
 
-        v.clearFocus();
-        v.setPressed(false);
+        Bitmap b = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
 
-        boolean willNotCache = v.willNotCacheDrawing();
-        v.setWillNotCacheDrawing(false);
+        Canvas c = new Canvas(b);
+        v.layout(0, 0, v.getLayoutParams().width, v.getLayoutParams().height);
+        v.draw(c);
+        return b;
 
-        // Reset the drawing cache background color to fully transparent
-        // for the duration of this operation
-        int color = v.getDrawingCacheBackgroundColor();
-        v.setDrawingCacheBackgroundColor(0);
-
-        if (color != 0) {
-            v.destroyDrawingCache();
-        }
-        v.buildDrawingCache();
-        Bitmap cacheBitmap = v.getDrawingCache();
-        if (cacheBitmap == null) {
-            Log.e(TAG, "failed getViewBitmap(" + v + ")", new RuntimeException());
-            return null;
-        }
-
-        Bitmap bitmap = Bitmap.createBitmap(cacheBitmap);
-
-        // Restore the view
-        v.destroyDrawingCache();
-        v.setWillNotCacheDrawing(willNotCache);
-        v.setDrawingCacheBackgroundColor(color);
-
-        return bitmap;
+//        v.clearFocus();
+//        v.setPressed(false);
+//
+//        boolean willNotCache = v.willNotCacheDrawing();
+//        v.setWillNotCacheDrawing(false);
+//
+//        // Reset the drawing cache background color to fully transparent
+//        // for the duration of this operation
+//        int color = v.getDrawingCacheBackgroundColor();
+//        v.setDrawingCacheBackgroundColor(0);
+//
+//        if (color != 0) {
+//            v.destroyDrawingCache();
+//        }
+//        v.buildDrawingCache();
+//        Bitmap cacheBitmap = v.getDrawingCache();
+//        if (cacheBitmap == null) {
+//            Log.e(TAG, "failed getViewBitmap(" + v + ")", new RuntimeException());
+//            return null;
+//        }
+//
+//        Bitmap bitmap = Bitmap.createBitmap(cacheBitmap);
+//
+//        // Restore the view
+//        v.destroyDrawingCache();
+//        v.setWillNotCacheDrawing(willNotCache);
+//        v.setDrawingCacheBackgroundColor(color);
+//
+//        return bitmap;
     }
 
     private String getBundleString(Bundle b) {

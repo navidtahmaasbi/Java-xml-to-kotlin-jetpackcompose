@@ -5,9 +5,11 @@ public class Constants {
     public static final String SHAREDPREFERNCE = "app_needs";
     public static final String VALID_CHARS = "ب ج د س ص ط ق ل م ن و ه ی ت ع";
 
+    public static final String LAST_VERIFY_REQUEST_TIME = "LAST_VERIFY_REQUEST_TIME";
+    public static final String LAST_BANK_RESULT_TIME = "LAST_BANK_RESULT_TIME";
     public static final String SUCCESS = "success";
     public static final String DESCRIPTION = "description";
-    public static int NOTHING = 0, SAMAN = 1, PASRIAN = 2, SELECTED_PAYMENT = 2 ;//todo release
+    public static int NOTHING = 0, SAMAN = 1, PASRIAN = 2, SELECTED_PAYMENT = 1 ;//todo release
     public static int TRANSACTION_TYPE_CHAREG = 1, TRANSACTION_TYPE_DEBT = 2, TRANSACTION_TYPE_PARK_PRICE = 3;
     public static int MIN_PRICE_FOR_PAYMENT = 100;
     public static String NON_CHARGE_SHABA = "IR540550100470106230710001", CHARGE_SHABA = "IR270550100470106230710002";
@@ -48,5 +50,5 @@ public class Constants {
     public static String tag2 = "tag2";
     public static String tag3 = "tag3";
     public static String tag4 = "tag4";
-
+    public static String print_description_2 = "print_description_2";
 }

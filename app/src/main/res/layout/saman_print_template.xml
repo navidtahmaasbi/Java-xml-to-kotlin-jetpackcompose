@@ -583,7 +583,7 @@
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/description2"
+                android:id="@+id/description"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -597,10 +597,18 @@
                 android:layout_width="@dimen/_8sdp"
                 android:layout_height="@dimen/_8sdp"
                 android:layout_marginLeft="@dimen/_5sdp"
-                android:layout_marginTop="@dimen/_2sdp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:src="@drawable/ic_checked_circle" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_1sdp"
+            android:layout_marginTop="@dimen/_2sdp"
+            android:layout_marginBottom="@dimen/_1sdp"
+            android:background="@color/text_gray"
+            android:orientation="horizontal" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
@@ -610,12 +618,12 @@
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/description"
+                android:id="@+id/description2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="right"
-                android:text="در صورت عدم حضور پارکبان عدد ۱۰۱۰ را به شماره ۱۰۰۰۴۴۰۸۸ ارسال کنید"
+                android:text="دیسکریپتیون 3"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_13sdp"
                 app:fontFamily="@font/sahel_fa_num_semi_bold" />
@@ -625,7 +633,7 @@
                 android:layout_width="@dimen/_8sdp"
                 android:layout_height="@dimen/_8sdp"
                 android:layout_marginLeft="@dimen/_5sdp"
-                android:layout_marginTop="@dimen/_3sdp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:src="@drawable/ic_checked_circle" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>

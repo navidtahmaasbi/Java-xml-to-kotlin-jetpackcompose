@@ -38,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -75,7 +76,6 @@ public class ParkInfoDialog extends DialogFragment {
     public ParkInfoDialog(OnGetInfoClicked onGetInfoClicked, Place place) {
         this.onGetInfoClicked = onGetInfoClicked;
         this.place = place;
-
     }
 
     @NonNull
@@ -93,14 +93,17 @@ public class ParkInfoDialog extends DialogFragment {
         try {
 
 
-            Date now = Calendar.getInstance().getTime();
+            Date now = new Date();
 
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-M-dd hh:mm:ss");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date startDate = simpleDateFormat.parse(place.start);
 
             String startTime = place.start;
             startTime = startTime.split(" ")[1];
-            binding.startTime.setText(startTime + " - " + assistant.getTimeDifference(startDate, now));
+
+            String s = assistant.getTimeDifference(startDate, now);
+
+            binding.startTime.setText(startTime + " - " + s);
 
 
         } catch (Exception e) {

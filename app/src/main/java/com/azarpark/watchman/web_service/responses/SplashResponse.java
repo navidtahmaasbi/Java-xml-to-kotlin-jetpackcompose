@@ -13,4 +13,5 @@ public class SplashResponse {
     public String about_us_url;
     public String guide_url;
     public Update update;
+    public String print_description2;
 }

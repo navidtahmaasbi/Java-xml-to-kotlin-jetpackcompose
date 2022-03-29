@@ -44,7 +44,6 @@ import com.azarpark.watchman.dialogs.PlateChargeDialog;
 import com.azarpark.watchman.enums.PlaceStatus;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnGetInfoClicked;
-import com.azarpark.watchman.interfaces.PrintMessage;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.payment.parsian.ParsianPayment;
@@ -231,6 +230,8 @@ public class MainActivity extends AppCompatActivity {
 
         parsianPayment.handleResult(requestCode, resultCode, data);
 
+//        Assistant.checkLastBankResultTime();
+//        Assistant.updateLastBankResultTime();
         samanPayment.handleResult(requestCode, resultCode, data);
 
 
@@ -548,7 +549,6 @@ public class MainActivity extends AppCompatActivity {
         }, place);
         parkInfoDialog.show(getSupportFragmentManager(), ParkDialog.TAG);
 
-
     }
 
     @SuppressLint("SetTextI18n")
@@ -655,20 +655,23 @@ public class MainActivity extends AppCompatActivity {
 //                    " ارسال کنید" +
 //                    "\n ." +
 //                    "\n .";
-            printTemplateBinding.description.setText(printDescription + "\n..\n..");
+//            printTemplateBinding.description.setText(printDescription);
             if (balance > 0) {
 
                 printTemplateBinding.balanceTitle.setText("اعتبار پلاک");
-                printTemplateBinding.description2.setText("شهروند گرامی؛از این که جز مشتریان خوش حساب ما هستید سپاسگزاریم");
+                printTemplateBinding.description.setText("شهروند گرامی؛از این که جز مشتریان خوش حساب ما هستید سپاسگزاریم. " + printDescription);
             } else if (balance < 0) {
 
                 printTemplateBinding.balanceTitle.setText("بدهی پلاک");
-                printTemplateBinding.description2.setText("اخطار: شهروند گرامی؛بدهی پلاک شما بیش از حد مجاز میباشد در صورت عدم پرداخت بدهی مشمول جریمه پارک ممنوع خواهید شد");
+                printTemplateBinding.description.setText("اخطار: شهروند گرامی؛بدهی پلاک شما بیش از حد مجاز میباشد در صورت عدم پرداخت بدهی مشمول جریمه پارک ممنوع خواهید شد. " + printDescription);
             } else {
 
                 printTemplateBinding.balanceTitle.setText("بدهی پلاک");
-                printTemplateBinding.description2.setText("شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد");
+                printTemplateBinding.description.setText("شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد. ");
             }
+
+
+            printTemplateBinding.description2.setText(SharedPreferencesRepository.getValue(Constants.print_description_2) +"\n..");
 
 //            printTemplateBinding.debtArea.setVisibility(balance < 0 ? View.VISIBLE : View.GONE);
 
@@ -720,7 +723,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-
 
     @SuppressLint("SetTextI18n")
     private void printMiniFactor(String tag1, String tag2, String tag3, String tag4, int balance) {

@@ -141,7 +141,7 @@ public class SplashActivity extends AppCompatActivity {
             SharedPreferencesRepository.setValue(Constants.SUB_DOMAIN, cities.get(position).subdomain);
             SharedPreferencesRepository.setValue(Constants.CITY_ID, cities.get(position).id + "");
 
-            WebService.changeClientURL(cities.get(position).subdomain);
+//            WebService.changeClientURL(cities.get(position).subdomain);
 
             SplashActivity.this.finish();
             if (SharedPreferencesRepository.getToken().isEmpty()) {
@@ -166,7 +166,7 @@ public class SplashActivity extends AppCompatActivity {
         Runnable functionRunnable = this::getCities;
         binding.loadingBar.setVisibility(View.VISIBLE);
 
-        WebService.getInitialClient().getCities().enqueue(new Callback<GetCitiesResponse>() {
+        WebService.getClient(getApplicationContext()).getCities().enqueue(new Callback<GetCitiesResponse>() {
             @Override
             public void onResponse(Call<GetCitiesResponse> call, Response<GetCitiesResponse> response) {
 
@@ -197,7 +197,7 @@ public class SplashActivity extends AppCompatActivity {
             public void onResponse(Call<SplashResponse> call, Response<SplashResponse> response) {
 
                 binding.loadingBar.setVisibility(View.INVISIBLE);
-                if (NewErrorHandler.apiResponseHasError(response, getApplicationContext())) {
+                if (NewErrorHandler.apiResponseHasError(response, SplashActivity.this)) {
                     binding.retry.setVisibility(View.VISIBLE);
                     return;
                 }
@@ -210,6 +210,7 @@ public class SplashActivity extends AppCompatActivity {
                 SharedPreferencesRepository.setValue(Constants.rules_url, response.body().rules_url);
                 SharedPreferencesRepository.setValue(Constants.about_us_url, response.body().about_us_url);
                 SharedPreferencesRepository.setValue(Constants.guide_url, response.body().guide_url);
+                SharedPreferencesRepository.setValue(Constants.print_description_2, response.body().print_description2);
 
                 try {
                     PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);

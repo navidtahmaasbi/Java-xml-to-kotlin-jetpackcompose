@@ -20,69 +20,68 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class WebService {
 
-    private static Retrofit retrofit = null,initialRetrofit = null;
-    private static API initialAPI = null, api = null;
+    private static Retrofit retrofit = null;
+    private static API api = null;
+    private static OkHttpClient okHttpClient = null;
 
-    public static API getInitialClient() {
+    WebService() {
+        okHttpClient = getOkHttpClient();
 
-        if (initialRetrofit == null)
-            initialRetrofit = new Retrofit.Builder()
-                    .baseUrl(Constants.INITIAL_BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .client(getUnsafeOkHttpClient())
-                    .build();
-
-        if (initialAPI == null)
-            initialAPI = initialRetrofit.create(API.class);
-
-        return initialAPI;
-
-    }
-
-    public static API getClient(Context context) {
-
-        String baseURL = Constants.BASE_URL_FIRST_PART + SharedPreferencesRepository.getValue(Constants.SUB_DOMAIN) + Constants.BASE_URL_SECOND_PART;
-
-        if (retrofit == null)
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(baseURL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .client(getUnsafeOkHttpClient())
-                    .build();
-
-        if (api == null)
-            api = retrofit.create(API.class);
-
-        return api;
-
-    }
-
-    public static void changeClientURL(String subDomain) {
-
-        String baseURL = Constants.BASE_URL_FIRST_PART + subDomain + Constants.BASE_URL_SECOND_PART;
+        String baseURL = "https://tabriz.backend1.azarpark.irana.app";
+        if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
+            baseURL = "https://tabriz.backend1.azarpark.irana.app";
+        else if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
+            baseURL = "https://sarab.backend1.azarpark.irana.app";
 
         retrofit = new Retrofit.Builder()
                 .baseUrl(baseURL)
                 .addConverterFactory(GsonConverterFactory.create())
-                .client(getUnsafeOkHttpClient())
+                .client(okHttpClient)
                 .build();
 
         api = retrofit.create(API.class);
-
     }
 
-    public static void setBaseUrl(String url) {
-        Constants.BASE_URL = url;
+    public static API getClient(Context context) {
+        if (api == null){
+            okHttpClient = getOkHttpClient();
 
-        retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(getUnsafeOkHttpClient())
-                .build();
+            String baseURL = "https://tabriz.backend1.azarpark.irana.app";
+            if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
+                baseURL = "https://tabriz.backend1.azarpark.irana.app";
+            else if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
+                baseURL = "https://sarab.backend1.azarpark.irana.app";
 
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(baseURL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(okHttpClient)
+                    .build();
+
+            api = retrofit.create(API.class);
+        }
+        return api;
     }
 
-    private static OkHttpClient getUnsafeOkHttpClient() {
+//    public static void changeClientURL(String subDomain) {
+//
+//        String baseURL = Constants.BASE_URL_FIRST_PART + subDomain + Constants.BASE_URL_SECOND_PART;
+//
+//        if (okHttpClient == null)
+//            okHttpClient = getOkHttpClient();
+//
+//        retrofit = new Retrofit.Builder()
+//                .baseUrl(baseURL)
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .client(okHttpClient)
+//                .build();
+//
+//        api = retrofit.create(API.class);
+//
+//    }
+
+    private static OkHttpClient getOkHttpClient() {
+
         try {
             // Create a trust manager that does not validate certificate chains
             final TrustManager[] trustAllCerts = new TrustManager[]{
@@ -121,7 +120,7 @@ public class WebService {
 
             if (BuildConfig.DEBUG) {
                 HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-                interceptor.setLevel(HttpLoggingInterceptor.Level.BODY) ;
+                interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
                 builder.addInterceptor(interceptor);
             }
 
