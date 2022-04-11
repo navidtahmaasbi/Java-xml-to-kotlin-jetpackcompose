@@ -61,6 +61,7 @@ import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.NewErrorHandler;
 import com.azarpark.watchman.web_service.WebService;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -301,6 +302,15 @@ public class MainActivity extends AppCompatActivity {
         });
         popupView.findViewById(R.id.car_number_charge).setOnClickListener(view -> {
             startActivity(new Intent(MainActivity.this, CarNumberChargeActivity.class));
+            popupWindow.dismiss();
+        });
+        popupView.findViewById(R.id.pay_and_exit_parked_plate).setOnClickListener(view -> {
+            startActivity(new Intent(MainActivity.this, PayAndExitParkedPlateActivity.class));
+            popupWindow.dismiss();
+        });
+
+        popupView.findViewById(R.id.income_statistics).setOnClickListener(view -> {
+            startActivity(new Intent(MainActivity.this, IncomeStatisticsActivity.class));
             popupWindow.dismiss();
         });
         popupView.findViewById(R.id.help).setOnClickListener(view -> {
@@ -667,7 +677,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
 
                 printTemplateBinding.balanceTitle.setText("بدهی پلاک");
-                printTemplateBinding.description.setText("شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد. ");
+                printTemplateBinding.description.setText("شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد. " + printDescription);
             }
 
 
@@ -783,7 +793,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
         else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
-            Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان انجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 
 
     }

@@ -1,18 +1,27 @@
 package com.azarpark.watchman.activities;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import com.azarpark.watchman.MyLocationManager;
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.databinding.ActivityPayAndExitParkedPlateBinding;
 import com.azarpark.watchman.dialogs.LoadingBar;
@@ -27,6 +36,18 @@ import com.azarpark.watchman.web_service.NewErrorHandler;
 import com.azarpark.watchman.web_service.WebService;
 import com.azarpark.watchman.web_service.responses.DebtHistoryResponse;
 import com.azarpark.watchman.web_service.responses.EstimateParkPriceResponse;
+import com.azarpark.watchman.web_service.responses.ExitParkResponse;
+import com.azarpark.watchman.web_service.responses.ParkedPlatePlaceIDResponse;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -202,42 +223,13 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
             }
         });
 
-        binding.payment.setOnClickListener(view -> {
-
-            if (selectedTab == PlateType.simple)
-                paymentRequest(debt,
-                        selectedTab,
-                        binding.plateSimpleTag1.getText().toString(),
-                        binding.plateSimpleTag2.getText().toString(),
-                        binding.plateSimpleTag3.getText().toString(),
-                        binding.plateSimpleTag4.getText().toString(),
-                        -1
-                );
-            else if (selectedTab == PlateType.old_aras)
-                paymentRequest(debt,
-                        selectedTab,
-                        binding.plateOldAras.getText().toString(),
-                        "0",
-                        "0",
-                        "0",
-                        -1
-                );
-            else if (selectedTab == PlateType.new_aras)
-                paymentRequest(debt,
-                        selectedTab,
-                        binding.plateNewArasTag1.getText().toString(),
-                        binding.plateNewArasTag2.getText().toString(),
-                        "0",
-                        "0",
-                        -1
-                );
-
-        });
 
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        binding.debtArea.setVisibility(View.GONE);
 
         parsianPayment.handleResult(requestCode, resultCode, data);
 
@@ -376,10 +368,9 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
 
         Assistant.hideKeyboard(PayAndExitParkedPlateActivity.this, binding.getRoot());
 
-        //todo change this request to getPlaceId
-        WebService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, 10, 0).enqueue(new Callback<DebtHistoryResponse>() {
+        WebService.getClient(getApplicationContext()).getParkedPlatePlaceId(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4).enqueue(new Callback<ParkedPlatePlaceIDResponse>() {
             @Override
-            public void onResponse(@NonNull Call<DebtHistoryResponse> call, @NonNull Response<DebtHistoryResponse> response) {
+            public void onResponse(@NonNull Call<ParkedPlatePlaceIDResponse> call, @NonNull Response<ParkedPlatePlaceIDResponse> response) {
 
 
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext())) {
@@ -388,18 +379,17 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
                     return;
                 }
 
-                //todo get place_id from response.body()
-//                if (response.body().place_id = null) {
-//                    loadingBar.dismiss();
-//                    Toast.makeText(getApplicationContext(), "این پلاک در هیچ جایگاهی پارک نیست", Toast.LENGTH_SHORT).show();
-//                } else
-                getParkData(0, plateType, tag1, tag2, tag3, tag4);
+                if (response.body().place == null) {
+                    loadingBar.dismiss();
+                    Toast.makeText(getApplicationContext(), "این پلاک در هیچ جایگاهی پارک نیست", Toast.LENGTH_SHORT).show();
+                } else
+                    getParkData(response.body().place.id, plateType, tag1, tag2, tag3, tag4);
 
 
             }
 
             @Override
-            public void onFailure(@NonNull Call<DebtHistoryResponse> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<ParkedPlatePlaceIDResponse> call, @NonNull Throwable t) {
                 loadingBar.dismiss();
                 NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }
@@ -413,7 +403,7 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
 
         WebService.getClient(PayAndExitParkedPlateActivity.this).estimatePArkPrice(SharedPreferencesRepository.getTokenWithPrefix(), placeId).enqueue(new Callback<EstimateParkPriceResponse>() {
             @Override
-            public void onResponse(Call<EstimateParkPriceResponse> call, Response<EstimateParkPriceResponse> response) {
+            public void onResponse(@NonNull Call<EstimateParkPriceResponse> call, @NonNull Response<EstimateParkPriceResponse> response) {
 
                 loadingBar.dismiss();
                 if (NewErrorHandler.apiResponseHasError(response, PayAndExitParkedPlateActivity.this))
@@ -428,12 +418,15 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
 
                 binding.carBalanceTitle.setText(carBalance >= 0 ? "اعتبار پلاک" : "بدهی پلاک");
                 binding.carBalance.setTextColor(getResources().getColor(carBalance >= 0 ? R.color.green : R.color.red));
+                binding.carBalance.setText((carBalance < 0 ? (carBalance * -1):carBalance) + " تومان");
+                binding.parkPrice.setText(parkPrice + " تومان");
                 binding.payment.setVisibility(debt < 0 ? View.VISIBLE : View.GONE);
 
                 if (debt < 0) {
 
-                    binding.debtSum.setText(NumberFormat.getNumberInstance(Locale.US).format((debt - 1) + " تومان"));
-                    binding.payment.setOnClickListener(view -> {
+                    binding.debtSum.setText((debt*-1) + " تومان");
+                    binding.payment.setOnClickListener(view -> Toast.makeText(getApplicationContext(), "برای انجام عملیات دکمه را نگه دارید", Toast.LENGTH_SHORT).show());
+                    binding.payment.setOnLongClickListener(view -> {
 
                         if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
                             parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, (debt * -1), placeId, Constants.TRANSACTION_TYPE_PARK_PRICE);
@@ -442,10 +435,21 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
                         else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
                             Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان انجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 
+                        return true;
                     });
+
+                    binding.debtSumArea.setVisibility(View.VISIBLE);
+                    binding.payment.setVisibility(View.VISIBLE);
+                    binding.exitPark.setVisibility(View.GONE);
                 } else {
-                    binding.debtSum.setVisibility(View.GONE);
+                    binding.debtSumArea.setVisibility(View.GONE);
                     binding.payment.setVisibility(View.GONE);
+                    binding.exitPark.setVisibility(View.VISIBLE);
+                    binding.exitPark.setOnClickListener(view -> Toast.makeText(getApplicationContext(), "برای انجام عملیات دکمه را نگه دارید", Toast.LENGTH_SHORT).show());
+                    binding.exitPark.setOnLongClickListener(view -> {
+                        exitPark(placeId);
+                        return true;
+                    });
                 }
 
                 binding.debtArea.setVisibility(View.VISIBLE);
@@ -453,7 +457,7 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<EstimateParkPriceResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<EstimateParkPriceResponse> call, @NonNull Throwable t) {
                 loadingBar.dismiss();
                 NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }
@@ -461,15 +465,39 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
 
     }
 
-    public void paymentRequest(int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
+    private void exitPark(int placeID) {
 
-        if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
-            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_DEBT);
-        else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
-            samanPayment.createTransaction(Constants.NON_CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_DEBT);
-        else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
-            Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
+        Runnable functionRunnable = () -> exitPark(placeID);
+        LoadingBar loadingBar = new LoadingBar(PayAndExitParkedPlateActivity.this);
+        loadingBar.show();
+
+        WebService.getClient(getApplicationContext()).exitPark(SharedPreferencesRepository.getTokenWithPrefix(), placeID).enqueue(new Callback<ExitParkResponse>() {
+            @Override
+            public void onResponse(Call<ExitParkResponse> call, Response<ExitParkResponse> response) {
+
+                loadingBar.dismiss();
+                if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
+                    return;
+
+                binding.debtArea.setVisibility(View.GONE);
+                Toast.makeText(getApplicationContext(), "خروج با موفقیت ثبت شد", Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onFailure(Call<ExitParkResponse> call, Throwable t) {
+                loadingBar.dismiss();
+                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
+            }
+        });
 
     }
+
+
+
+
+    //----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 
 }

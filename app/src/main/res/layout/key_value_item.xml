@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/_10sdp"
+    android:background="@drawable/white_bg_5"
+    android:padding="@dimen/_5sdp">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="@dimen/_10sdp"
+        android:layout_toLeftOf="@+id/key"
+        android:fontFamily="@font/iran_sans_fa_num"
+        android:gravity="left"
+        android:text="1400-12-20 15:30"
+        android:textColor="@color/text_gray"
+        android:textSize="@dimen/_11sdp" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/key"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:fontFamily="@font/iran_sans_fa_num_bold"
+        android:maxWidth="@dimen/_180sdp"
+        android:text="مهلت تحویل سفارش "
+        android:textColor="@color/text_gray"
+        android:textSize="@dimen/_11sdp" />
+</RelativeLayout>

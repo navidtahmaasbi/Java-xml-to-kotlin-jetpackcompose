@@ -16,6 +16,7 @@
         android:background="@color/blue">
 
         <ImageView
+            android:id="@+id/back"
             android:layout_width="@dimen/_45sdp"
             android:layout_height="@dimen/_45sdp"
             android:layout_alignParentRight="true"
@@ -23,8 +24,7 @@
             android:padding="@dimen/_15sdp"
             android:rotation="-90"
             android:src="@drawable/ic_arrow_down"
-            app:tint="@color/white"
-            android:id="@+id/back"/>
+            app:tint="@color/white" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -33,7 +33,7 @@
             android:layout_marginRight="@dimen/_10sdp"
             android:layout_toLeftOf="@+id/back"
             android:fontFamily="@font/iran_sans_bold"
-            android:text="پرداخت و خروج پلاک پارک شده"
+            android:text="استعلام پارک جاری"
             android:textColor="@color/white"
             android:textSize="@dimen/_13sdp" />
 
@@ -45,8 +45,8 @@
             android:onClick="onBarcodeIconClicked"
             android:padding="@dimen/_10sdp"
             android:src="@drawable/ic_qr_code"
-            app:tint="@color/white"
-            android:visibility="invisible"/>
+            android:visibility="invisible"
+            app:tint="@color/white" />
 
 
     </RelativeLayout>
@@ -374,7 +374,7 @@
                         android:paddingTop="@dimen/_8sdp"
                         android:paddingRight="@dimen/_40sdp"
                         android:paddingBottom="@dimen/_8sdp"
-                        android:text="مشاهده بدهی"
+                        android:text="استعلام"
                         android:textColor="@color/white" />
 
                 </LinearLayout>
@@ -391,7 +391,7 @@
                     android:background="@drawable/selected_background"
                     android:orientation="vertical"
                     android:padding="@dimen/_10sdp"
-                    android:visibility="">
+                    android:visibility="gone">
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
@@ -453,7 +453,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:layout_marginTop="@dimen/_15sdp">
+                        android:layout_marginTop="@dimen/_15sdp"
+                        android:id="@+id/debt_sum_area">
 
                         <TextView
                             android:id="@+id/debt_sum"
@@ -490,29 +491,28 @@
                         android:paddingTop="@dimen/_8sdp"
                         android:paddingRight="@dimen/_40sdp"
                         android:paddingBottom="@dimen/_8sdp"
-                        android:text="پرداخت بدهی"
+                        android:text="پرداخت بدهی و خروج"
+                        android:textColor="@color/white" />
+
+                    <TextView
+                        android:id="@+id/exit_park"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/_20sdp"
+                        android:background="@drawable/blue_bg_5"
+                        android:fontFamily="@font/iran_sans"
+                        android:gravity="center"
+                        android:paddingLeft="@dimen/_40sdp"
+                        android:paddingTop="@dimen/_8sdp"
+                        android:paddingRight="@dimen/_40sdp"
+                        android:paddingBottom="@dimen/_8sdp"
+                        android:text="خروج از پارک"
                         android:textColor="@color/white" />
 
                 </LinearLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="@dimen/_20sdp"
-                    android:fontFamily="@font/iran_sans_bold"
-                    android:text="تاریخچه پارک"
-                    android:layout_gravity="right"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_13sdp" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:nestedScrollingEnabled="false"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:itemCount="40"
-                    tools:listitem="@layout/debt_list_item" />
 
             </LinearLayout>
 

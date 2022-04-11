@@ -120,7 +120,7 @@ public class WebService {
 
             if (BuildConfig.DEBUG) {
                 HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-                interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+//                interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
                 builder.addInterceptor(interceptor);
             }
 

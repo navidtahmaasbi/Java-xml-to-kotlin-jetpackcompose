@@ -3,9 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.azarpark.watchman">
 
-    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
+    <uses-permission
+        android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -23,6 +26,9 @@
         android:roundIcon="@drawable/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.Watchman">
+        <activity
+            android:name=".activities.IncomeStatisticsActivity"
+            android:exported="false" />
 
         <receiver
             android:name=".AutoStartService"
@@ -64,22 +70,24 @@
             android:name=".activities.DebtListActivity"
             android:exported="true" />
         <activity
+            android:name=".activities.PayAndExitParkedPlateActivity"
+            android:exported="true" />
+        <activity
             android:name=".activities.ExitRequestListActivity"
             android:exported="true" />
         <activity
             android:name=".activities.StarterActivity"
             android:exported="true">
 
-            <!--todo release-->
+            <!-- todo release -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.HOME" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.MONKEY" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
-
         </activity>
         <activity
             android:name=".activities.MainActivity"
@@ -90,11 +98,9 @@
             android:exported="true"
             android:label="@string/title_activity_login"
             android:theme="@style/Theme.Watchman.NoActionBar" />
-
         <activity
             android:name=".activities.SplashActivity"
-            android:exported="true">
-        </activity>
+            android:exported="true"></activity>
     </application>
 
 </manifest>

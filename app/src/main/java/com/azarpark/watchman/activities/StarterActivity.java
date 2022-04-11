@@ -31,7 +31,7 @@ public class StarterActivity extends AppCompatActivity {
 
     private int code = 5555;
     LoadingBar loadingBar;
-    private final int masterCode = 7854;//todo release
+    private final int masterCode = 4631;//todo release
     Assistant assistant;
     int showExitCodeInputTapCount = 0;
     int sendSMSTapCount = 0;

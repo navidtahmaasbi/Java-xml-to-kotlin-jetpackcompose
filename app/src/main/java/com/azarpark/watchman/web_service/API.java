@@ -1,6 +1,8 @@
 package com.azarpark.watchman.web_service;
 
+import com.azarpark.watchman.activities.IncomeStatisticsActivity;
 import com.azarpark.watchman.models.AddMobieToPlateResponse;
+import com.azarpark.watchman.models.IncomeStatisticsResponse;
 import com.azarpark.watchman.web_service.bodies.LoginBody;
 import com.azarpark.watchman.web_service.bodies.ParkBody;
 import com.azarpark.watchman.web_service.responses.CreateTransactionResponse;
@@ -13,6 +15,7 @@ import com.azarpark.watchman.web_service.responses.GetCitiesResponse;
 import com.azarpark.watchman.web_service.responses.LoginResponse;
 import com.azarpark.watchman.web_service.responses.LogoutResponse;
 import com.azarpark.watchman.web_service.responses.ParkResponse;
+import com.azarpark.watchman.web_service.responses.ParkedPlatePlaceIDResponse;
 import com.azarpark.watchman.web_service.responses.PlacesResponse;
 import com.azarpark.watchman.web_service.responses.SendExitCodeResponse;
 import com.azarpark.watchman.web_service.responses.SplashResponse;
@@ -53,6 +56,18 @@ public interface API {
                                   @Path("limit") int limit,
                                   @Path("offset") int offset
     );
+
+    @GET("/api/watchman/parking_status/{plate_type}/{tag1}/{tag2}/{tag3}/{tag4}")
+    Call<ParkedPlatePlaceIDResponse> getParkedPlatePlaceId(@Header("Authorization") String authToken,
+                                                           @Path("plate_type") String plateType,
+                                                           @Path("tag1") String tag1,
+                                                           @Path("tag2") String tag2,
+                                                           @Path("tag3") String tag3,
+                                                           @Path("tag4") String tag4
+    );
+
+    @GET("/api/watchman/income_statistics")
+    Call<IncomeStatisticsResponse> getIncomeStatistics(@Header("Authorization") String authToken);
 
     @GET("/api/watchman/create_transaction/{plate_type}/{tag1}/{tag2}/{tag3}/{tag4}/{amount}")
     Call<CreateTransactionResponse> createTransaction(@Header("Authorization") String authToken,
@@ -110,14 +125,6 @@ public interface API {
     );
 
 
-//    @GET("/api/watchman/plate_add_mobile")
-//    Call<AddMobieToPlateResponse> addMobileToPlate(@Header("Authorization") String authToken,
-//                                                   @Query("phone") String mobile,
-//                                                   @Query("tag1") String tag1,
-//                                                   @Query("tag2") String tag2,
-//                                                   @Query("tag3") String tag3,
-//                                                   @Query("tag4") String tag4
-//    );
 
     @GET("/api/watchman/phone/add/{car_type}/{tag1}/{tag2}/{tag3}/{tag4}/{phone}")
     Call<AddMobieToPlateResponse> addMobileToPlate(@Header("Authorization") String authToken,
