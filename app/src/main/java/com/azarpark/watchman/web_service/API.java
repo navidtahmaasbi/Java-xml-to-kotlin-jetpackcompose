@@ -3,6 +3,7 @@ package com.azarpark.watchman.web_service;
 import com.azarpark.watchman.activities.IncomeStatisticsActivity;
 import com.azarpark.watchman.models.AddMobieToPlateResponse;
 import com.azarpark.watchman.models.IncomeStatisticsResponse;
+import com.azarpark.watchman.models.WatchmanTimeResponse;
 import com.azarpark.watchman.web_service.bodies.LoginBody;
 import com.azarpark.watchman.web_service.bodies.ParkBody;
 import com.azarpark.watchman.web_service.responses.CreateTransactionResponse;
@@ -57,6 +58,13 @@ public interface API {
                                   @Path("offset") int offset
     );
 
+    @GET("/api/watchman/times/submit/{type}/{latitude}/{longitude}")
+    Call<WatchmanTimeResponse> setWatchmanTime(@Header("Authorization") String authToken,
+                                               @Path("type") String type,
+                                               @Path("latitude") String latitude,
+                                               @Path("longitude") String longitude
+    );
+
     @GET("/api/watchman/parking_status/{plate_type}/{tag1}/{tag2}/{tag3}/{tag4}")
     Call<ParkedPlatePlaceIDResponse> getParkedPlatePlaceId(@Header("Authorization") String authToken,
                                                            @Path("plate_type") String plateType,
@@ -66,7 +74,7 @@ public interface API {
                                                            @Path("tag4") String tag4
     );
 
-    @GET("/api/watchman/income_statistics")
+    @GET("/api/watchman/income/statistics")
     Call<IncomeStatisticsResponse> getIncomeStatistics(@Header("Authorization") String authToken);
 
     @GET("/api/watchman/create_transaction/{plate_type}/{tag1}/{tag2}/{tag3}/{tag4}/{amount}")

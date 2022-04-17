@@ -27,6 +27,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Watchman">
         <activity
+            android:name=".activities.WatchmanTimesActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.IncomeStatisticsActivity"
             android:exported="false" />
 
@@ -100,7 +103,7 @@
             android:theme="@style/Theme.Watchman.NoActionBar" />
         <activity
             android:name=".activities.SplashActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
     </application>
 
 </manifest>

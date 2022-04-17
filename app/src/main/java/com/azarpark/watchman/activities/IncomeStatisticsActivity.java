@@ -12,6 +12,7 @@ import com.azarpark.watchman.databinding.KeyValueItemBinding;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.IncomeStatisticsResponse;
+import com.azarpark.watchman.models.KeyValueModel;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.NewErrorHandler;
@@ -47,11 +48,11 @@ public class IncomeStatisticsActivity extends AppCompatActivity {
                 loadingBar.dismiss();
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
                     return;
-//                binding.content.addView(getKeyValueItem("ماه قبل", "9000000"));
-//                binding.content.addView(getKeyValueItem("این ماه", "4000000"));
-//                binding.content.addView(getKeyValueItem("دیروز", "500000"));
-//                binding.content.addView(getKeyValueItem("امروز", "200000"));
+
+                for (KeyValueModel item : response.body().items)
+                    binding.content.addView(getKeyValueItem(item.key, item.value));
             }
+
             @Override
             public void onFailure(@NonNull Call<IncomeStatisticsResponse> call, @NonNull Throwable t) {
                 loadingBar.dismiss();
@@ -59,10 +60,6 @@ public class IncomeStatisticsActivity extends AppCompatActivity {
             }
         });
 
-        binding.content.addView(getKeyValueItem("ماه قبل", "9000000"));
-        binding.content.addView(getKeyValueItem("این ماه", "4000000"));
-        binding.content.addView(getKeyValueItem("دیروز", "500000"));
-        binding.content.addView(getKeyValueItem("امروز", "200000"));
     }
 
     private View getKeyValueItem(String text, String value) {
@@ -70,5 +67,9 @@ public class IncomeStatisticsActivity extends AppCompatActivity {
         keyValueItem.key.setText(text);
         keyValueItem.value.setText(value);
         return keyValueItem.getRoot();
+    }
+
+    public void myOnBackPressed(View view) {
+        onBackPressed();
     }
 }

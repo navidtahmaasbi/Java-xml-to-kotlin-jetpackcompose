@@ -1,5 +1,6 @@
 package com.azarpark.watchman.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -309,6 +310,11 @@ public class MainActivity extends AppCompatActivity {
             popupWindow.dismiss();
         });
 
+        popupView.findViewById(R.id.watchman_times).setOnClickListener(view -> {
+            startActivity(new Intent(MainActivity.this, WatchmanTimesActivity.class));
+            popupWindow.dismiss();
+        });
+
         popupView.findViewById(R.id.income_statistics).setOnClickListener(view -> {
             startActivity(new Intent(MainActivity.this, IncomeStatisticsActivity.class));
             popupWindow.dismiss();
@@ -566,74 +572,6 @@ public class MainActivity extends AppCompatActivity {
 
         if (Constants.SELECTED_PAYMENT == Constants.PASRIAN) {
 
-//            binding.printArea.removeAllViews();
-//
-//            SamanPrintTemplateBinding printTemplateBinding = SamanPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
-//
-//            printTemplateBinding.placeId.setText(place.number + "");
-//
-//            printTemplateBinding.startTime.setText(assistant.toJalali(startTime));
-//            printTemplateBinding.prices.setText(pricing);
-//            printTemplateBinding.supportPhone.setText(telephone);
-//            printTemplateBinding.debt.setText((-1 * balance) + "تومان");
-//            String cityID = SharedPreferencesRepository.getValue(SharedPreferencesRepository.CITY_ID);
-//
-//            String sb = "در صورت عدم حضور پارکیار برای خروج عدد " +
-//                    cityID +
-//                    place.number +
-//                    " را به شماره " +
-//                    sms_number +
-//                    " ارسال کنید" +
-//                    "\n ." +
-//                    "\n .";
-//            printTemplateBinding.description.setText(sb);
-//            if (balance > 0)
-//                printTemplateBinding.description2.setText("شهروند گرامی؛از این که جز مشتریان خوش حساب ما هستید سپاسگزاریم");
-//            else if (balance < 0)
-//                printTemplateBinding.description2.setText("اخطار: شهروند گرامی؛بدهی پلاک شما بیش از حد مجاز میباشد در صورت عدم پرداخت بدهی مشمول جریمه پارک ممنوع خواهید شد");
-//            else
-//                printTemplateBinding.description2.setText("شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد");
-//
-//            printTemplateBinding.debtArea.setVisibility(balance < 0 ? View.VISIBLE : View.GONE);
-//
-//            printTemplateBinding.qrcode.setImageBitmap(assistant.qrGenerator(qr_url + placeID));
-//
-//            Gson gson = new Gson();
-//
-//
-//            if (assistant.getPlateType(place) == PlateType.simple) {
-//
-//                printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
-//                printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
-//                printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
-//
-//                printTemplateBinding.plateSimpleTag1.setText(place.tag1);
-//                printTemplateBinding.plateSimpleTag2.setText(place.tag2);
-//                printTemplateBinding.plateSimpleTag3.setText(place.tag3);
-//                printTemplateBinding.plateSimpleTag4.setText(place.tag4);
-//
-//            } else if (assistant.getPlateType(place) == PlateType.old_aras) {
-//
-//                printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
-//                printTemplateBinding.plateOldArasArea.setVisibility(View.VISIBLE);
-//                printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
-//
-//                printTemplateBinding.plateOldArasTag1En.setText(place.tag1);
-//                printTemplateBinding.plateOldArasTag1Fa.setText(place.tag1);
-//
-//            } else {
-//
-//                printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
-//                printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
-//                printTemplateBinding.plateNewArasArea.setVisibility(View.VISIBLE);
-//
-//                printTemplateBinding.plateNewArasTag1En.setText(place.tag1);
-//                printTemplateBinding.plateNewArasTag1Fa.setText(place.tag1);
-//                printTemplateBinding.plateNewArasTag2En.setText(place.tag2);
-//                printTemplateBinding.plateNewArasTag2Fa.setText(place.tag2);
-//
-//            }
-
             binding.printArea.removeAllViews();
 
             new Handler().postDelayed(() -> {
@@ -647,7 +585,6 @@ public class MainActivity extends AppCompatActivity {
         else if (Constants.SELECTED_PAYMENT == Constants.SAMAN) {
 
             binding.printArea.removeAllViews();
-
             SamanPrintTemplateBinding printTemplateBinding = SamanPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
 
             printTemplateBinding.placeId.setText(place.number + "");
@@ -656,16 +593,7 @@ public class MainActivity extends AppCompatActivity {
             printTemplateBinding.prices.setText(pricing);
             printTemplateBinding.supportPhone.setText(telephone);
             printTemplateBinding.debt.setText((balance < 0 ? -1 * balance : balance) + "تومان");
-            String cityID = SharedPreferencesRepository.getValue(Constants.CITY_ID);
 
-//            String sb = "در صورت عدم حضور پارکیار برای خروج عبارت '" +
-//                    place.getPlateString() +
-//                    "' را به شماره " +
-//                    sms_number +
-//                    " ارسال کنید" +
-//                    "\n ." +
-//                    "\n .";
-//            printTemplateBinding.description.setText(printDescription);
             if (balance > 0) {
 
                 printTemplateBinding.balanceTitle.setText("اعتبار پلاک");
@@ -680,13 +608,8 @@ public class MainActivity extends AppCompatActivity {
                 printTemplateBinding.description.setText("شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد. " + printDescription);
             }
 
-
             printTemplateBinding.description2.setText(SharedPreferencesRepository.getValue(Constants.print_description_2) +"\n..");
-
-//            printTemplateBinding.debtArea.setVisibility(balance < 0 ? View.VISIBLE : View.GONE);
-
             printTemplateBinding.qrcode.setImageBitmap(assistant.qrGenerator(qr_url, placeID, place.tag1, place.tag2, place.tag3, place.tag4));
-
 
             if (assistant.getPlateType(place) == PlateType.simple) {
 
@@ -746,9 +669,6 @@ public class MainActivity extends AppCompatActivity {
             printTemplateBinding.balanceTitle.setText(balance < 0 ? "بدهی پلاک" : "شارژ پلاک");
 
             printTemplateBinding.balance.setText(balance + " تومان");
-
-//            printTemplateBinding.prices.setText(pricing);
-
             if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.simple) {
 
                 printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
@@ -892,7 +812,7 @@ public class MainActivity extends AppCompatActivity {
 
         WebService.getClient(getApplicationContext()).parkCar(SharedPreferencesRepository.getTokenWithPrefix(), parkBody).enqueue(new Callback<ParkResponse>() {
             @Override
-            public void onResponse(Call<ParkResponse> call, Response<ParkResponse> response) {
+            public void onResponse(@NonNull Call<ParkResponse> call, @NonNull Response<ParkResponse> response) {
 
                 loadingBar.dismiss();
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
@@ -938,7 +858,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<ParkResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<ParkResponse> call, @NonNull Throwable t) {
                 loadingBar.dismiss();
                 NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }

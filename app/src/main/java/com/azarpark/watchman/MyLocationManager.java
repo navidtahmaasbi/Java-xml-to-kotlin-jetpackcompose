@@ -41,15 +41,13 @@ public class MyLocationManager {
     private final int REQUEST_CHECK_SETTINGS = 2060;
     private final Context context;
     private final Activity activity;
-    private final OnLocationReceive onLocationReceive;
 
-    public MyLocationManager(Context context, Activity activity, OnLocationReceive onLocationReceive) {
+    public MyLocationManager(Context context, Activity activity) {
         this.context = context;
         this.activity = activity;
-        this.onLocationReceive = onLocationReceive;
     }
 
-    public void requestCurrentLocation() {
+    public void requestCurrentLocation(OnLocationReceive onLocationReceive) {
 
         if (!checkLocationPermissions()) {
             Toast.makeText(context, "دسترسی مکانیابی را قبول کنید و دوباره تلاش کنید", Toast.LENGTH_SHORT).show();
@@ -58,7 +56,7 @@ public class MyLocationManager {
             Toast.makeText(context, "جی پی اس دستگاه را روشن کنید و دوباره تلاش کنید", Toast.LENGTH_SHORT).show();
             displayLocationSettingsRequest();
         } else
-            getCurrentLocation();
+            getCurrentLocation(onLocationReceive);
 
     }
 
@@ -72,7 +70,7 @@ public class MyLocationManager {
         ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
     }
 
-    public boolean gpsIsEnabled() {
+    private boolean gpsIsEnabled() {
 
         LocationManager manager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         return manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -118,7 +116,7 @@ public class MyLocationManager {
         });
     }
 
-    private void getCurrentLocation() {
+    private void getCurrentLocation(OnLocationReceive onLocationReceive) {
         LocationRequest locationRequest = new LocationRequest();
         locationRequest.setInterval(10000);
         locationRequest.setFastestInterval(3000);
