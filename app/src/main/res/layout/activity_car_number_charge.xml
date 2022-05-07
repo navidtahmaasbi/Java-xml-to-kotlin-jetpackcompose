@@ -44,8 +44,7 @@
             android:padding="@dimen/_15sdp"
             android:rotation="-90"
             android:src="@drawable/ic_arrow_down"
-            app:tint="@color/white"
-            />
+            app:tint="@color/white" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -407,11 +406,32 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <TextView
+<!--    <TextView-->
+<!--        android:id="@+id/submit"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:layout_gravity="center_horizontal"-->
+<!--        android:layout_marginStart="@dimen/_10sdp"-->
+<!--        android:layout_marginTop="@dimen/_10sdp"-->
+<!--        android:layout_marginEnd="@dimen/_10sdp"-->
+<!--        android:layout_marginBottom="@dimen/_10sdp"-->
+<!--        android:background="@drawable/blue_bg_5"-->
+<!--        android:fontFamily="@font/iran_sans"-->
+<!--        android:gravity="center"-->
+<!--        android:paddingLeft="@dimen/_40sdp"-->
+<!--        android:paddingTop="@dimen/_8sdp"-->
+<!--        android:paddingRight="@dimen/_40sdp"-->
+<!--        android:paddingBottom="@dimen/_8sdp"-->
+<!--        android:text="شارژ"-->
+<!--        android:textColor="@color/white" />-->
+
+    <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
         android:id="@+id/submit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal"
         android:layout_marginStart="@dimen/_10sdp"
         android:layout_marginTop="@dimen/_10sdp"
@@ -425,6 +445,8 @@
         android:paddingRight="@dimen/_40sdp"
         android:paddingBottom="@dimen/_8sdp"
         android:text="شارژ"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        app:spinning_bar_color="@color/red" />
+
 
 </RelativeLayout>

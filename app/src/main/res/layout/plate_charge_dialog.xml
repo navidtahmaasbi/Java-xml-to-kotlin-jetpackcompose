@@ -372,7 +372,7 @@
 
 <!--        </LinearLayout>-->
 
-        <TextView
+        <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
             android:id="@+id/submit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -389,7 +389,8 @@
             android:paddingRight="@dimen/_40sdp"
             android:paddingBottom="@dimen/_10sdp"
             android:text="شارژ"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            app:spinning_bar_color="@color/red"/>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

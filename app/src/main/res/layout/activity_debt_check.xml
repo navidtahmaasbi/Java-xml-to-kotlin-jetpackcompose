@@ -421,7 +421,7 @@
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
-                    <TextView
+                    <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
                         android:id="@+id/payment"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

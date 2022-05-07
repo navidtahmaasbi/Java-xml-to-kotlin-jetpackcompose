@@ -17,7 +17,7 @@
     </LinearLayout>
 
     <RelativeLayout
-        android:paddingTop="@dimen/_15sdp"
+        android:paddingTop="@dimen/_5sdp"
         android:paddingRight="@dimen/_25sdp"
         android:paddingLeft="@dimen/_25sdp"
         android:layout_width="match_parent"
@@ -399,10 +399,62 @@
 
         </androidx.cardview.widget.CardView>
 
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:layout_weight="1"
+            app:cardCornerRadius="@dimen/_10sdp">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/vacation"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:gravity="center_vertical|right"
+                    android:layout_marginRight="@dimen/_20sdp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:fontFamily="@font/iran_sans_bold"
+                        android:text="مرخصی"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_18sdp" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical|left"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="@dimen/_35sdp"
+                        android:layout_height="@dimen/_35sdp"
+                        android:src="@drawable/ic_baseline_account_balance_wallet_24"
+                        app:tint="@color/red" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </androidx.cardview.widget.CardView>
+
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="@dimen/_60sdp"
+            android:layout_marginTop="@dimen/_30sdp"
             android:layout_weight="2"
             android:gravity="center_horizontal"
             android:orientation="horizontal">
@@ -448,7 +500,7 @@
                     app:tint="@color/white" />
 
                 <TextView
-                    android:layout_marginTop="@dimen/_40sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/iran_sans_fa_num"

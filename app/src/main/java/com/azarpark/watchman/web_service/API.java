@@ -2,6 +2,7 @@ package com.azarpark.watchman.web_service;
 
 import com.azarpark.watchman.activities.IncomeStatisticsActivity;
 import com.azarpark.watchman.models.AddMobieToPlateResponse;
+import com.azarpark.watchman.models.GetVacationsResponse;
 import com.azarpark.watchman.models.IncomeStatisticsResponse;
 import com.azarpark.watchman.models.WatchmanTimeResponse;
 import com.azarpark.watchman.web_service.bodies.LoginBody;
@@ -107,6 +108,9 @@ public interface API {
                                      @Path("tag2") String tag2,
                                      @Path("tag3") String tag3,
                                      @Path("tag4") String tag4);
+
+    @GET("/api/watchman/vacations")
+    Call<GetVacationsResponse> getVacations(@Header("Authorization") String authToken);
 
     @GET("/api/watchman/logout")
     Call<LogoutResponse> logout(@Header("Authorization") String authToken);

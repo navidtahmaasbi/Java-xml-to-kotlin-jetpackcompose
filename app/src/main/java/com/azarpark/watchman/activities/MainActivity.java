@@ -301,6 +301,10 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, DebtCheckActivity.class));
             popupWindow.dismiss();
         });
+        popupView.findViewById(R.id.vacation).setOnClickListener(view -> {
+            startActivity(new Intent(MainActivity.this, VacationActivity.class));
+            popupWindow.dismiss();
+        });
         popupView.findViewById(R.id.car_number_charge).setOnClickListener(view -> {
             startActivity(new Intent(MainActivity.this, CarNumberChargeActivity.class));
             popupWindow.dismiss();
@@ -541,13 +545,17 @@ public class MainActivity extends AppCompatActivity {
                 plateChargeDialog = new PlateChargeDialog((amount) -> {
 
                     if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
-                        parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG);
+                        parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG,()->{
+                            plateChargeDialog.dismiss();
+                        });
                     else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
-                        samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG);
+                        samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG,()->{
+                            plateChargeDialog.dismiss();
+                        });
                     else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
                         Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 
-                    plateChargeDialog.dismiss();
+
 
                 }, place, hasMobile);
 

@@ -1,5 +1,6 @@
 package com.azarpark.watchman.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -206,37 +207,39 @@ public class DebtCheckActivity extends AppCompatActivity {
             }
         });
 
-        binding.payment.setOnClickListener(view -> {
+        binding.payment.setOnClickListener(this::payment);
 
-            if (selectedTab == PlateType.simple)
-                paymentRequest(debt,
-                        selectedTab,
-                        binding.plateSimpleTag1.getText().toString(),
-                        binding.plateSimpleTag2.getText().toString(),
-                        binding.plateSimpleTag3.getText().toString(),
-                        binding.plateSimpleTag4.getText().toString(),
-                        -1
-                );
-            else if (selectedTab == PlateType.old_aras)
-                paymentRequest(debt,
-                        selectedTab,
-                        binding.plateOldAras.getText().toString(),
-                        "0",
-                        "0",
-                        "0",
-                        -1
-                );
-            else if (selectedTab == PlateType.new_aras)
-                paymentRequest(debt,
-                        selectedTab,
-                        binding.plateNewArasTag1.getText().toString(),
-                        binding.plateNewArasTag2.getText().toString(),
-                        "0",
-                        "0",
-                        -1
-                );
+    }
 
-        });
+    private void payment(View view){
+
+        if (selectedTab == PlateType.simple)
+            paymentRequest(debt,
+                    selectedTab,
+                    binding.plateSimpleTag1.getText().toString(),
+                    binding.plateSimpleTag2.getText().toString(),
+                    binding.plateSimpleTag3.getText().toString(),
+                    binding.plateSimpleTag4.getText().toString(),
+                    -1
+            );
+        else if (selectedTab == PlateType.old_aras)
+            paymentRequest(debt,
+                    selectedTab,
+                    binding.plateOldAras.getText().toString(),
+                    "0",
+                    "0",
+                    "0",
+                    -1
+            );
+        else if (selectedTab == PlateType.new_aras)
+            paymentRequest(debt,
+                    selectedTab,
+                    binding.plateNewArasTag1.getText().toString(),
+                    binding.plateNewArasTag2.getText().toString(),
+                    "0",
+                    "0",
+                    -1
+            );
 
     }
 
@@ -397,7 +400,7 @@ public class DebtCheckActivity extends AppCompatActivity {
 
         WebService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
             @Override
-            public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
+            public void onResponse(@NonNull Call<DebtHistoryResponse> call, @NonNull Response<DebtHistoryResponse> response) {
 
                 loadingBar.dismiss();
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
@@ -419,7 +422,7 @@ public class DebtCheckActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<DebtHistoryResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<DebtHistoryResponse> call, @NonNull Throwable t) {
                 loadingBar.dismiss();
                 NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }
@@ -429,10 +432,19 @@ public class DebtCheckActivity extends AppCompatActivity {
 
     public void paymentRequest(int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
 
+        binding.payment.startAnimation();
+        binding.payment.setOnClickListener(null);
+
         if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
-            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_DEBT);
+            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_DEBT, ()->{
+                binding.payment.revertAnimation();
+                binding.payment.setOnClickListener(this::payment);
+            });
         else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
-            samanPayment.createTransaction(Constants.NON_CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_DEBT);
+            samanPayment.createTransaction(Constants.NON_CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_DEBT, ()->{
+                binding.payment.revertAnimation();
+                binding.payment.setOnClickListener(this::payment);
+            });
         else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
             Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 

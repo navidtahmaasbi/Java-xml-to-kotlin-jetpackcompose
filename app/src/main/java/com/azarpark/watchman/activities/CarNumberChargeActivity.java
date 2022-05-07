@@ -124,59 +124,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
         });
 
-        binding.submit.setOnClickListener(view -> {
-
-            System.out.println("----------> binding.submit");
-
-
-            if (selectedTab == PlateType.simple && !assistant.simplePlateIsValid(
-                    binding.plateSimpleTag1.getText().toString(),
-                    binding.plateSimpleTag2.getText().toString(),
-                    binding.plateSimpleTag3.getText().toString(),
-                    binding.plateSimpleTag4.getText().toString()
-            ))
-                Toast.makeText(getApplicationContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
-            else if (selectedTab == PlateType.old_aras &&
-                    binding.plateOldAras.getText().toString().length() != 5)
-                Toast.makeText(getApplicationContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
-
-            else if (selectedTab == PlateType.new_aras &&
-                    (binding.plateNewArasTag1.getText().toString().length() != 5 ||
-                            binding.plateNewArasTag2.getText().toString().length() != 2))
-                Toast.makeText(getApplicationContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
-            else if (selectedAmount == 0)
-                Toast.makeText(getApplicationContext(), "مبلغ شارژ را انتخاب کنید", Toast.LENGTH_SHORT).show();
-            else if (selectedTab == PlateType.simple)
-                charge(
-                        Integer.toString(selectedAmount),
-                        selectedTab,
-                        binding.plateSimpleTag1.getText().toString(),
-                        binding.plateSimpleTag2.getText().toString(),
-                        binding.plateSimpleTag3.getText().toString(),
-                        binding.plateSimpleTag4.getText().toString()
-                );
-            else if (!assistant.isNumber(Integer.toString(selectedAmount)))
-                Toast.makeText(getApplicationContext(), "مبلغ شارژ را درست وارد کنید", Toast.LENGTH_SHORT).show();
-            else if (selectedAmount < Constants.MIN_PRICE_FOR_PAYMENT)
-                Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید کمتر از " + Constants.MIN_PRICE_FOR_PAYMENT + " تومان باشد", Toast.LENGTH_SHORT).show();
-            else if (selectedTab == PlateType.old_aras)
-                charge(
-                        Integer.toString(selectedAmount),
-                        selectedTab,
-                        binding.plateOldAras.getText().toString(),
-                        "0", "0", "0"
-
-
-                );
-            else
-                charge(
-                        Integer.toString(selectedAmount),
-                        selectedTab,
-                        binding.plateNewArasTag1.getText().toString(),
-                        binding.plateNewArasTag2.getText().toString(),
-                        "0", "0"
-                );
-        });
+        binding.submit.setOnClickListener(this::submit);
 
         binding.plateSimpleTag1.addTextChangedListener(new TextWatcher() {
             @Override
@@ -326,6 +274,56 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
     }
 
+    private void submit(View view){
+            if (selectedTab == PlateType.simple && !assistant.simplePlateIsValid(
+                    binding.plateSimpleTag1.getText().toString(),
+                    binding.plateSimpleTag2.getText().toString(),
+                    binding.plateSimpleTag3.getText().toString(),
+                    binding.plateSimpleTag4.getText().toString()
+            ))
+                Toast.makeText(getApplicationContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
+            else if (selectedTab == PlateType.old_aras &&
+                    binding.plateOldAras.getText().toString().length() != 5)
+                Toast.makeText(getApplicationContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
+
+            else if (selectedTab == PlateType.new_aras &&
+                    (binding.plateNewArasTag1.getText().toString().length() != 5 ||
+                            binding.plateNewArasTag2.getText().toString().length() != 2))
+                Toast.makeText(getApplicationContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
+            else if (selectedAmount == 0)
+                Toast.makeText(getApplicationContext(), "مبلغ شارژ را انتخاب کنید", Toast.LENGTH_SHORT).show();
+            else if (selectedTab == PlateType.simple)
+                charge(
+                        Integer.toString(selectedAmount),
+                        selectedTab,
+                        binding.plateSimpleTag1.getText().toString(),
+                        binding.plateSimpleTag2.getText().toString(),
+                        binding.plateSimpleTag3.getText().toString(),
+                        binding.plateSimpleTag4.getText().toString()
+                );
+            else if (!assistant.isNumber(Integer.toString(selectedAmount)))
+                Toast.makeText(getApplicationContext(), "مبلغ شارژ را درست وارد کنید", Toast.LENGTH_SHORT).show();
+            else if (selectedAmount < Constants.MIN_PRICE_FOR_PAYMENT)
+                Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید کمتر از " + Constants.MIN_PRICE_FOR_PAYMENT + " تومان باشد", Toast.LENGTH_SHORT).show();
+            else if (selectedTab == PlateType.old_aras)
+                charge(
+                        Integer.toString(selectedAmount),
+                        selectedTab,
+                        binding.plateOldAras.getText().toString(),
+                        "0", "0", "0"
+
+
+                );
+            else
+                charge(
+                        Integer.toString(selectedAmount),
+                        selectedTab,
+                        binding.plateNewArasTag1.getText().toString(),
+                        binding.plateNewArasTag2.getText().toString(),
+                        "0", "0"
+                );
+    }
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -470,15 +468,21 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
     private void charge(String amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4) {
 
-        System.out.println("----------> charge");
-
+        binding.submit.setOnClickListener(null);
+        binding.submit.startAnimation();
         amount = amount.replace(",", "");
 
 
         if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
-            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1, Constants.TRANSACTION_TYPE_CHAREG);
+            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1, Constants.TRANSACTION_TYPE_CHAREG, () -> {
+                binding.submit.revertAnimation();
+                binding.submit.setOnClickListener(this::submit);
+            });
         else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
-            samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1, Constants.TRANSACTION_TYPE_CHAREG);
+            samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1, Constants.TRANSACTION_TYPE_CHAREG , ()->{
+                binding.submit.revertAnimation();
+                binding.submit.setOnClickListener(this::submit);
+            });
         else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
             Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
     }

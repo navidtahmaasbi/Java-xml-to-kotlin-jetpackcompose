@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="@dimen/_10sdp"
+    android:background="@drawable/dialog_background">
+
+    <RadioGroup
+        android:id="@+id/vacation_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:orientation="horizontal"
+        android:layoutDirection="rtl">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <androidx.appcompat.widget.AppCompatRadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="روزانه"
+            android:fontFamily="@font/iran_sans"
+            android:id="@+id/daily"
+            android:checked="true"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <androidx.appcompat.widget.AppCompatRadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ساعتی"
+            android:fontFamily="@font/iran_sans"
+            android:id="@+id/hourly"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/date"
+        app:layout_constraintTop_toBottomOf="@id/vacation_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/iran_sans_fa_num"
+        android:text="تاریخ : انتخاب کنید"
+        android:padding="@dimen/_8sdp"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:background="@drawable/white_bg_5"
+        android:layout_marginRight="@dimen/_15sdp"
+        android:layout_marginLeft="@dimen/_15sdp"
+        android:gravity="center"
+        android:textSize="@dimen/_15sdp"/>
+
+    <TextView
+        android:layout_marginTop="@dimen/_15sdp"
+        android:id="@+id/start_time"
+        app:layout_constraintTop_toBottomOf="@id/date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/iran_sans_fa_num"
+        android:text="ساعت شروع : انتخاب کنید"
+        android:padding="@dimen/_8sdp"
+        android:background="@drawable/white_bg_5"
+        android:layout_marginRight="@dimen/_15sdp"
+        android:layout_marginLeft="@dimen/_15sdp"
+        android:gravity="center"
+        android:textSize="@dimen/_15sdp"/>
+
+    <TextView
+        android:layout_marginTop="@dimen/_15sdp"
+        android:id="@+id/end_time"
+        app:layout_constraintTop_toBottomOf="@id/start_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/iran_sans_fa_num"
+        android:text="ساعت پایان : انتخاب کنید"
+        android:padding="@dimen/_8sdp"
+        android:background="@drawable/white_bg_5"
+        android:layout_marginRight="@dimen/_15sdp"
+        android:layout_marginLeft="@dimen/_15sdp"
+        android:gravity="center"
+        android:textSize="@dimen/_15sdp"/>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        app:layout_constraintTop_toBottomOf="@+id/end_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_25sdp"
+        android:layout_marginRight="@dimen/_15sdp"
+        android:layout_marginLeft="@dimen/_15sdp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/cancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginRight="@dimen/_2sdp"
+            android:layout_weight="1"
+            android:background="@drawable/selected_background"
+            android:fontFamily="@font/iran_sans"
+            android:gravity="center"
+            android:paddingTop="@dimen/_8sdp"
+            android:paddingBottom="@dimen/_8sdp"
+            android:text="لغو"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/_10sdp" />
+
+        <TextView
+            android:id="@+id/confirm"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="@dimen/_2sdp"
+            android:layout_weight="1"
+            android:background="@drawable/blue_bg_5"
+            android:fontFamily="@font/iran_sans"
+            android:gravity="center"
+            android:paddingTop="@dimen/_8sdp"
+            android:paddingBottom="@dimen/_8sdp"
+            android:text="تایید"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_10sdp" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

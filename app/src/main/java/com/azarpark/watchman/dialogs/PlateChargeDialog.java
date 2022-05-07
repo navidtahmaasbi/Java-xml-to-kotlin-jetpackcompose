@@ -116,6 +116,8 @@ public class PlateChargeDialog extends DialogFragment {
 //            String s = binding.amount.getText().toString().replace(",","");
 //            int price = Integer.parseInt(s);
 
+            binding.submit.startAnimation();
+
             Assistant assistant = new Assistant();
 
             if (selectedAmount == 0)
