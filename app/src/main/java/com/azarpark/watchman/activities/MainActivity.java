@@ -62,7 +62,6 @@ import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.NewErrorHandler;
 import com.azarpark.watchman.web_service.WebService;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -101,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
     LocalNotificationsListAdapter localNotificationsListAdapter;
     int versionCode = 0;
     String versionName = "";
+    WebService webService = new WebService();
 
     //------------------------------------------------------------------------------------------------
 
@@ -281,7 +281,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
     //-------------------------------------------------------- initialize
 
     private void initMenuPopup() {
@@ -301,8 +300,13 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, DebtCheckActivity.class));
             popupWindow.dismiss();
         });
+        popupView.findViewById(R.id.impresst).setOnClickListener(view -> {
+            startActivity(new Intent(MainActivity.this, ImprestActivity.class));
+            popupWindow.dismiss();
+        });
+
         popupView.findViewById(R.id.vacation).setOnClickListener(view -> {
-            startActivity(new Intent(MainActivity.this, VacationActivity.class));
+            startActivity(new Intent(MainActivity.this, VacationsActivity.class));
             popupWindow.dismiss();
         });
         popupView.findViewById(R.id.car_number_charge).setOnClickListener(view -> {
@@ -338,6 +342,16 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             popupWindow.dismiss();
         });
+
+//        popupView.findViewById(R.id.about_us).setOnLongClickListener(new View.OnLongClickListener() {
+//            @Override
+//            public boolean onLongClick(View view) {
+//
+//                startActivity(new Intent(MainActivity.this, PaymentTestActivity.class));
+//
+//                return false;
+//            }
+//        });
         popupView.findViewById(R.id.rules).setOnClickListener(view -> {
 
             Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
@@ -735,9 +749,9 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        WebService.getClient(getApplicationContext()).getPlaces(SharedPreferencesRepository.getTokenWithPrefix()).enqueue(new Callback<PlacesResponse>() {
+        webService.getClient(getApplicationContext()).getPlaces(SharedPreferencesRepository.getTokenWithPrefix()).enqueue(new Callback<PlacesResponse>() {
             @Override
-            public void onResponse(Call<PlacesResponse> call, Response<PlacesResponse> response) {
+            public void onResponse(@NonNull Call<PlacesResponse> call, @NonNull Response<PlacesResponse> response) {
 
                 binding.refreshLayout.setRefreshing(false);
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
@@ -801,7 +815,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<PlacesResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<PlacesResponse> call, @NonNull Throwable t) {
                 binding.refreshLayout.setRefreshing(false);
 //                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }
@@ -818,7 +832,7 @@ public class MainActivity extends AppCompatActivity {
         LoadingBar loadingBar = new LoadingBar(MainActivity.this);
         loadingBar.show();
 
-        WebService.getClient(getApplicationContext()).parkCar(SharedPreferencesRepository.getTokenWithPrefix(), parkBody).enqueue(new Callback<ParkResponse>() {
+        webService.getClient(getApplicationContext()).parkCar(SharedPreferencesRepository.getTokenWithPrefix(), parkBody).enqueue(new Callback<ParkResponse>() {
             @Override
             public void onResponse(@NonNull Call<ParkResponse> call, @NonNull Response<ParkResponse> response) {
 
@@ -880,7 +894,7 @@ public class MainActivity extends AppCompatActivity {
         LoadingBar loadingBar = new LoadingBar(MainActivity.this);
         loadingBar.show();
 
-        WebService.getClient(getApplicationContext()).exitPark(SharedPreferencesRepository.getTokenWithPrefix(), placeID).enqueue(new Callback<ExitParkResponse>() {
+        webService.getClient(getApplicationContext()).exitPark(SharedPreferencesRepository.getTokenWithPrefix(), placeID).enqueue(new Callback<ExitParkResponse>() {
             @Override
             public void onResponse(Call<ExitParkResponse> call, Response<ExitParkResponse> response) {
 
@@ -909,7 +923,7 @@ public class MainActivity extends AppCompatActivity {
         LoadingBar loadingBar = new LoadingBar(MainActivity.this);
         loadingBar.show();
 
-        WebService.getClient(getApplicationContext()).deleteExitRequest(SharedPreferencesRepository.getTokenWithPrefix(), placeID).enqueue(new Callback<DeleteExitRequestResponse>() {
+        webService.getClient(getApplicationContext()).deleteExitRequest(SharedPreferencesRepository.getTokenWithPrefix(), placeID).enqueue(new Callback<DeleteExitRequestResponse>() {
             @Override
             public void onResponse(Call<DeleteExitRequestResponse> call, Response<DeleteExitRequestResponse> response) {
 
@@ -937,7 +951,7 @@ public class MainActivity extends AppCompatActivity {
 
         Runnable functionRunnable = () -> verifyUnverifiedTransaction02(transaction);
 
-        WebService.getClient(getApplicationContext()).verifyTransaction(SharedPreferencesRepository.getTokenWithPrefix(), transaction.getAmount(),
+        webService.getClient(getApplicationContext()).verifyTransaction(SharedPreferencesRepository.getTokenWithPrefix(), transaction.getAmount(),
                 transaction.getOur_token(), transaction.getBank_token(), transaction.getPlaceID(), transaction.getStatus(), transaction.getBank_type(),
                 transaction.getState(), transaction.getCard_number(), transaction.getBank_datetime(), transaction.getTrace_number(),
                 transaction.getResult_message()).enqueue(new Callback<VerifyTransactionResponse>() {
@@ -966,7 +980,7 @@ public class MainActivity extends AppCompatActivity {
         LoadingBar loadingBar = new LoadingBar(MainActivity.this);
         loadingBar.show();
 
-        WebService.getClient(getApplicationContext()).logout(SharedPreferencesRepository.getTokenWithPrefix()).enqueue(new Callback<LogoutResponse>() {
+        webService.getClient(getApplicationContext()).logout(SharedPreferencesRepository.getTokenWithPrefix()).enqueue(new Callback<LogoutResponse>() {
             @Override
             public void onResponse(Call<LogoutResponse> call, Response<LogoutResponse> response) {
 
@@ -997,7 +1011,7 @@ public class MainActivity extends AppCompatActivity {
 
         Runnable functionRunnable = () -> getCarDebtHistory02(plateType, tag1, tag2, tag3, tag4, limit, offset);
 
-        WebService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
+        webService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
             @Override
             public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
 

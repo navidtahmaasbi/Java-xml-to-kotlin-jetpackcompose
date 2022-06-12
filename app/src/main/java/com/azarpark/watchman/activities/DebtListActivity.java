@@ -23,6 +23,7 @@ public class DebtListActivity extends AppCompatActivity {
     ActivityDebtListBinding binding;
     LoadingBar loadingBar;
     DebtListAdapter adapter = new DebtListAdapter();
+    WebService webService = new WebService();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +66,7 @@ public class DebtListActivity extends AppCompatActivity {
         LoadingBar loadingBar = new LoadingBar(DebtListActivity.this);
         loadingBar.show();
 
-        WebService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
+        webService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
             @Override
             public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
 

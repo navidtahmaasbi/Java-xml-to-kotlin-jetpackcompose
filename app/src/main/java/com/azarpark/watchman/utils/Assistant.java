@@ -257,6 +257,51 @@ public class Assistant {
 
     }
 
+    public String toJalaliWithoutTime(String date) {
+
+        int year = Integer.parseInt(date.substring(0, 4));
+        int month = Integer.parseInt(date.substring(5, 7));
+        int day = Integer.parseInt(date.substring(8, 10));
+
+        PersianDate pdate = new PersianDate();
+
+        pdate.setGrgYear(year);
+        pdate.setGrgMonth(month);
+        pdate.setGrgDay(day);
+
+        String s = pdate.getShYear() + "-" + pdate.getShMonth() + "-" + pdate.getShDay();
+
+        return s;
+
+//        System.out.println("---------> s : " + s);
+
+//        PersianDateFormat pdformater = new PersianDateFormat("Y-m-j g-i");
+//
+//        System.out.println("---------> pdformater.format(pdate) : " + pdformater.format(pdate));
+//
+//        return pdformater.format(pdate);
+
+    }
+
+    public String jalaliToMiladi(int year, int month, int day) {
+
+        PersianDate pdate = new PersianDate();
+        pdate.setShYear(year);
+        pdate.setShMonth(month);
+        pdate.setShDay(day);
+
+        String s =
+                pdate.getGrgYear() +
+                "-" +
+                (pdate.getGrgMonth() < 10 ? "0" : "") +
+                pdate.getGrgMonth() +
+                "-" +
+                (pdate.getGrgDay() < 10 ? "0" : "") +
+                pdate.getGrgDay();
+
+        return s;
+    }
+
     public String formatAmount(int num) {
         DecimalFormat decimalFormat = new DecimalFormat();
         DecimalFormatSymbols decimalFormateSymbol = new DecimalFormatSymbols();
@@ -455,7 +500,7 @@ public class Assistant {
 
         boolean canVerify = lastVerifyRequestTime == -100 || difference > 3000;
 
-        if (!canVerify){
+        if (!canVerify) {
             Assistant.eventForDuplicateTransactions(SharedPreferencesRepository.getValue(Constants.USERNAME), "verify happened in " + difference + " milli second");
         }
 
@@ -482,9 +527,9 @@ public class Assistant {
         }
 
         long now = Long.parseLong(String.valueOf(new Date().getTime()));
-        long a = (now - lastBankResultTime) ;
+        long a = (now - lastBankResultTime);
 
-        if (lastBankResultTime != -100 && a < 3000){
+        if (lastBankResultTime != -100 && a < 3000) {
             Assistant.eventForDuplicateTransactions(SharedPreferencesRepository.getValue(Constants.USERNAME), "bank result happend in " + (now - lastBankResultTime) + " mili second");
         }
 

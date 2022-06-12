@@ -48,6 +48,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
     SamanPayment samanPayment;
     Assistant assistant;
     private int selectedAmount = 0;
+    WebService webService = new WebService();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -493,7 +494,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         LoadingBar loadingBar = new LoadingBar(CarNumberChargeActivity.this);
         loadingBar.show();
 
-        WebService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
+        webService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
             @Override
             public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
 

@@ -28,6 +28,8 @@ public class WatchmanTimesActivity extends AppCompatActivity {
     MyLocationManager myLocationManager;
     LoadingBar loadingBar;
     ConfirmDialog confirmDialog;
+    WebService webService = new WebService();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,7 +77,7 @@ public class WatchmanTimesActivity extends AppCompatActivity {
 
     public void setTime(String type, double latitude, double longitude) {
         Runnable functionRunnable = () -> setTime(type, latitude, longitude);
-        WebService.getClient(getApplicationContext()).setWatchmanTime(SharedPreferencesRepository.getTokenWithPrefix(), type, Double.toString(latitude), Double.toString(longitude))
+        webService.getClient(getApplicationContext()).setWatchmanTime(SharedPreferencesRepository.getTokenWithPrefix(), type, Double.toString(latitude), Double.toString(longitude))
                 .enqueue(new Callback<WatchmanTimeResponse>() {
                     @Override
                     public void onResponse(@NonNull Call<WatchmanTimeResponse> call, @NonNull Response<WatchmanTimeResponse> response) {

@@ -48,6 +48,7 @@ public class SplashActivity extends AppCompatActivity {
     Assistant assistant;
     int versionCode = 0;
     String versionName = "";
+    WebService webService = new WebService();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,7 +167,7 @@ public class SplashActivity extends AppCompatActivity {
         Runnable functionRunnable = this::getCities;
         binding.loadingBar.setVisibility(View.VISIBLE);
 
-        WebService.getClient(getApplicationContext()).getCities().enqueue(new Callback<GetCitiesResponse>() {
+       webService.getClient(getApplicationContext()).getCities().enqueue(new Callback<GetCitiesResponse>() {
             @Override
             public void onResponse(Call<GetCitiesResponse> call, Response<GetCitiesResponse> response) {
 
@@ -192,7 +193,7 @@ public class SplashActivity extends AppCompatActivity {
         binding.loadingBar.setVisibility(View.VISIBLE);
         binding.retry.setVisibility(View.INVISIBLE);
 
-        WebService.getClient(getApplicationContext()).getSplash(SharedPreferencesRepository.getTokenWithPrefix(), versionCode).enqueue(new Callback<SplashResponse>() {
+        webService.getClient(getApplicationContext()).getSplash(SharedPreferencesRepository.getTokenWithPrefix(), versionCode).enqueue(new Callback<SplashResponse>() {
             @Override
             public void onResponse(Call<SplashResponse> call, Response<SplashResponse> response) {
 

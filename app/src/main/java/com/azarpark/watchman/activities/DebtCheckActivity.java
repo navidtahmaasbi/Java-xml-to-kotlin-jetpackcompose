@@ -48,6 +48,7 @@ public class DebtCheckActivity extends AppCompatActivity {
     ParsianPayment parsianPayment;
     SamanPayment samanPayment;
     Assistant assistant;
+    WebService webService = new WebService();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -398,7 +399,7 @@ public class DebtCheckActivity extends AppCompatActivity {
 
         Assistant.hideKeyboard(DebtCheckActivity.this, binding.getRoot());
 
-        WebService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
+        webService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
             @Override
             public void onResponse(@NonNull Call<DebtHistoryResponse> call, @NonNull Response<DebtHistoryResponse> response) {
 

@@ -29,6 +29,7 @@ import com.azarpark.watchman.web_service.NewErrorHandler;
 import com.azarpark.watchman.web_service.WebService;
 import com.google.gson.Gson;
 
+import java.util.Date;
 import java.util.Set;
 
 import br.com.simplepass.loadingbutton.customViews.CircularProgressButton;
@@ -48,6 +49,7 @@ public class SamanPayment {
     SamanPaymentCallBack samanPaymentCallBack;
     MessageDialog messageDialog;
     FragmentManager fragmentManager;
+    WebService webService = new WebService();
 
     private String STATE = "State",
             REF_NUM = "RefNum",
@@ -113,6 +115,7 @@ public class SamanPayment {
 
     }
 
+
     public void tashimPaymentRequest(String shaba, String resNum, int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
 
         System.out.println("----------> tashimPaymentRequest ");
@@ -141,6 +144,25 @@ public class SamanPayment {
 
         intent.setComponent(new ComponentName("ir.sep.android.smartpos", "ir.sep.android.smartpos.ThirdPartyActivity"));
 
+        activity.startActivityForResult(intent, PAYMENT_REQUEST_CODE);
+
+    }
+
+    public void testPaymentRequest(String shaba, String resNum, int amount) {
+
+        System.out.println("----------> testPaymentRequest ");
+
+        String[] param = new String[1];
+        param[0] = "0:" + (amount) + ":" + shaba;
+
+
+        Intent intent = new Intent();
+        intent.putExtra("TransType", 3);
+        intent.putExtra("Amount", String.valueOf(amount));
+        intent.putExtra("ResNum", resNum);
+        intent.putExtra("AppId", "0");
+        intent.putExtra("Tashim", param);
+        intent.setComponent(new ComponentName("ir.sep.android.smartpos", "ir.sep.android.smartpos.ThirdPartyActivity"));
         activity.startActivityForResult(intent, PAYMENT_REQUEST_CODE);
 
     }
@@ -299,7 +321,7 @@ public class SamanPayment {
         String t3 = tag3 == null ? "-1" : tag3;
         String t4 = tag4 == null ? "-1" : tag4;
 
-        WebService.getClient(context).createTransaction(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), t1, t2, t3, t4, amount, transactionType).enqueue(new Callback<CreateTransactionResponse>() {
+        webService.getClient(context).createTransaction(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), t1, t2, t3, t4, amount, transactionType).enqueue(new Callback<CreateTransactionResponse>() {
             @Override
             public void onResponse(@NonNull Call<CreateTransactionResponse> call, @NonNull Response<CreateTransactionResponse> response) {
 
@@ -359,7 +381,7 @@ public class SamanPayment {
         String t3 = tag3 == null ? "-1" : tag3;
         String t4 = tag4 == null ? "-1" : tag4;
 
-        WebService.getClient(context).createTransaction(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), t1, t2, t3, t4,
+        webService.getClient(context).createTransaction(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), t1, t2, t3, t4,
                 amount, transactionType).enqueue(new Callback<CreateTransactionResponse>() {
             @Override
             public void onResponse(@NonNull Call<CreateTransactionResponse> call, @NonNull Response<CreateTransactionResponse> response) {
@@ -413,7 +435,7 @@ public class SamanPayment {
             Assistant.updateLastVerifyRequestTime();
             Runnable functionRunnable = () -> verifyTransaction(transaction);
 
-            WebService.getClient(context).verifyTransaction(SharedPreferencesRepository.getTokenWithPrefix(), transaction.getAmount(), transaction.getOur_token(),
+            webService.getClient(context).verifyTransaction(SharedPreferencesRepository.getTokenWithPrefix(), transaction.getAmount(), transaction.getOur_token(),
                     transaction.getBank_token(), transaction.getPlaceID(), transaction.getStatus(), transaction.getBank_type(), transaction.getState(),
                     transaction.getCard_number(), transaction.getBank_datetime(), transaction.getTrace_number(), transaction.getResult_message()).enqueue(new Callback<VerifyTransactionResponse>() {
                 @Override

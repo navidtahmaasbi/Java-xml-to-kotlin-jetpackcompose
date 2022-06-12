@@ -67,6 +67,7 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
     ParsianPayment parsianPayment;
     SamanPayment samanPayment;
     Assistant assistant;
+    WebService webService = new WebService();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -368,7 +369,7 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
 
         Assistant.hideKeyboard(PayAndExitParkedPlateActivity.this, binding.getRoot());
 
-        WebService.getClient(getApplicationContext()).getParkedPlatePlaceId(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4).enqueue(new Callback<ParkedPlatePlaceIDResponse>() {
+        webService.getClient(getApplicationContext()).getParkedPlatePlaceId(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4).enqueue(new Callback<ParkedPlatePlaceIDResponse>() {
             @Override
             public void onResponse(@NonNull Call<ParkedPlatePlaceIDResponse> call, @NonNull Response<ParkedPlatePlaceIDResponse> response) {
 
@@ -401,7 +402,7 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
 
         Runnable functionRunnable = () -> getParkData(placeId, plateType, tag1, tag2, tag3, tag4);
 
-        WebService.getClient(PayAndExitParkedPlateActivity.this).estimatePArkPrice(SharedPreferencesRepository.getTokenWithPrefix(), placeId).enqueue(new Callback<EstimateParkPriceResponse>() {
+        webService.getClient(PayAndExitParkedPlateActivity.this).estimatePArkPrice(SharedPreferencesRepository.getTokenWithPrefix(), placeId).enqueue(new Callback<EstimateParkPriceResponse>() {
             @Override
             public void onResponse(@NonNull Call<EstimateParkPriceResponse> call, @NonNull Response<EstimateParkPriceResponse> response) {
 
@@ -471,7 +472,7 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
         LoadingBar loadingBar = new LoadingBar(PayAndExitParkedPlateActivity.this);
         loadingBar.show();
 
-        WebService.getClient(getApplicationContext()).exitPark(SharedPreferencesRepository.getTokenWithPrefix(), placeID).enqueue(new Callback<ExitParkResponse>() {
+        webService.getClient(getApplicationContext()).exitPark(SharedPreferencesRepository.getTokenWithPrefix(), placeID).enqueue(new Callback<ExitParkResponse>() {
             @Override
             public void onResponse(Call<ExitParkResponse> call, Response<ExitParkResponse> response) {
 

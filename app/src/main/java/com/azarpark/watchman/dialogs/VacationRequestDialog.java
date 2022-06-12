@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,6 +25,8 @@ import com.azarpark.watchman.databinding.VacationRequestDialogBinding;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnGetInfoClicked;
 import com.azarpark.watchman.models.AddMobieToPlateResponse;
+import com.azarpark.watchman.models.CreateImpressedResponse;
+import com.azarpark.watchman.models.CreateVacationResponse;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
@@ -50,6 +53,13 @@ public class VacationRequestDialog extends DialogFragment {
     public static final String TAG = "VacationRequestDialog";
     VacationRequestDialogBinding binding;
     Assistant assistant;
+    WebService webService = new WebService();
+    DialogActions dialogActions;
+    String selectedType = "daily";
+    String selectedDate = null;
+    String selectedStart = null;
+    String selectedEnd = null;
+
 
     @Nullable
     @Override
@@ -60,7 +70,8 @@ public class VacationRequestDialog extends DialogFragment {
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
-    public VacationRequestDialog() {
+    public VacationRequestDialog(DialogActions dialogActions) {
+        this.dialogActions = dialogActions;
     }
 
     @NonNull
@@ -68,7 +79,7 @@ public class VacationRequestDialog extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
 
         binding = VacationRequestDialogBinding.inflate(LayoutInflater.from(getContext()));
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setView(binding.getRoot());
 
         assistant = new Assistant();
@@ -79,9 +90,10 @@ public class VacationRequestDialog extends DialogFragment {
             DatePickerDialog datePickerDialog = DatePickerDialog.newInstance(
                     (view1, year, monthOfYear, dayOfMonth) -> {
                         monthOfYear++;
-                        String date = year + "/" + (monthOfYear<10?"0":"") + monthOfYear + "/" + dayOfMonth;
+                        String date = year + "/" + (monthOfYear < 10 ? "0" : "") + monthOfYear + "/" + dayOfMonth;
                         binding.date.setText("تاریخ : " + date);
                         binding.date.setTextColor(getContext().getResources().getColor(R.color.black));
+                        selectedDate = assistant.jalaliToMiladi(year, monthOfYear, dayOfMonth);
                     },
                     persianCalendar.getPersianYear(),
                     persianCalendar.getPersianMonth(),
@@ -98,6 +110,7 @@ public class VacationRequestDialog extends DialogFragment {
             TimePickerDialog timePickerDialog = TimePickerDialog.newInstance(
                     (TimePickerDialog.OnTimeSetListener) (view12, hourOfDay, minute) -> {
                         String time = hourOfDay + ":" + minute;
+                        selectedStart = time;
                         binding.startTime.setText("ساعت شروع : " + time);
                         binding.startTime.setTextColor(getContext().getResources().getColor(R.color.black));
                     },
@@ -117,6 +130,7 @@ public class VacationRequestDialog extends DialogFragment {
             TimePickerDialog timePickerDialog = TimePickerDialog.newInstance(
                     (TimePickerDialog.OnTimeSetListener) (view12, hourOfDay, minute) -> {
                         String time = hourOfDay + ":" + minute;
+                        selectedEnd = time;
                         binding.endTime.setText("ساعت پایان : " + time);
                         binding.endTime.setTextColor(getContext().getResources().getColor(R.color.black));
                     },
@@ -130,35 +144,55 @@ public class VacationRequestDialog extends DialogFragment {
         });
 
         binding.confirm.setOnClickListener(view -> {
-            dismiss();
+            if (selectedDate == null) {
+                Toast.makeText(requireContext(), "تاریخ را انتخاب کنید", Toast.LENGTH_SHORT).show();
+            } else if (selectedType.equals("hourly") && selectedStart == null) {
+                Toast.makeText(requireContext(), "ساعت شروع را انتخاب کنید", Toast.LENGTH_SHORT).show();
+            } else if (selectedType.equals("hourly") && selectedEnd == null) {
+                Toast.makeText(requireContext(), "ساعت پایان را انتخاب کنید", Toast.LENGTH_SHORT).show();
+            } else {
+                if (selectedType.equals("daily")) {
+                    selectedStart = "7:00";
+                    selectedEnd = "7:00";
+                }
+                createImpressed(selectedDate, selectedType, selectedStart, selectedEnd);
+            }
         });
 
         binding.cancel.setOnClickListener(view -> {
             dismiss();
         });
 
+        binding.vacationType.setOnCheckedChangeListener((radioGroup, i) -> {
+            binding.startTime.setVisibility(i == R.id.hourly ? View.VISIBLE : View.GONE);
+            binding.endTime.setVisibility(i == R.id.hourly ? View.VISIBLE : View.GONE);
+            selectedType = i == R.id.hourly?"hourly":"daily";
+        });
+
         return builder.create();
     }
 
-    private void createVacation() {
+    private void createImpressed(String date, String type, String start, String end) {
 
-        Runnable functionRunnable = () -> createVacation();
+        Runnable functionRunnable = () -> createImpressed(type, date, start, end);
         LoadingBar loadingBar = new LoadingBar(getActivity());
         loadingBar.show();
 
-        WebService.getClient(getContext()).estimatePArkPrice(SharedPreferencesRepository.getTokenWithPrefix(), 0).enqueue(new Callback<EstimateParkPriceResponse>() {
+        webService.getClient(getContext()).createVacation(SharedPreferencesRepository.getTokenWithPrefix(), date, type, start, end).enqueue(new Callback<CreateVacationResponse>() {
             @Override
-            public void onResponse(@NonNull Call<EstimateParkPriceResponse> call, @NonNull Response<EstimateParkPriceResponse> response) {
+            public void onResponse(@NonNull Call<CreateVacationResponse> call, @NonNull Response<CreateVacationResponse> response) {
 
                 loadingBar.dismiss();
                 if (NewErrorHandler.apiResponseHasError(response, getContext()))
                     return;
 
+                Toast.makeText(requireContext(), response.body().description, Toast.LENGTH_SHORT).show();
+                dialogActions.intrestCreated();
 
             }
 
             @Override
-            public void onFailure(@NonNull Call<EstimateParkPriceResponse> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<CreateVacationResponse> call, @NonNull Throwable t) {
                 loadingBar.dismiss();
                 NewErrorHandler.apiFailureErrorHandler(call, t, getParentFragmentManager(), functionRunnable);
             }
@@ -170,5 +204,9 @@ public class VacationRequestDialog extends DialogFragment {
     public void onDestroy() {
         super.onDestroy();
         binding = null;
+    }
+
+    public static interface DialogActions {
+        public void intrestCreated();
     }
 }

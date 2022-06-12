@@ -33,6 +33,7 @@ public class ExitRequestActivity extends AppCompatActivity {
     MessageDialog messageDialog;
     private PlateType selectedTab = PlateType.simple;
     Activity activity = this;
+    WebService webService = new WebService();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -271,7 +272,7 @@ public class ExitRequestActivity extends AppCompatActivity {
         loadingBar.show();
 
 
-        WebService.getClient(getApplicationContext()).exitRequest(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4).enqueue(new Callback<ExitRequestResponse>() {
+        webService.getClient(getApplicationContext()).exitRequest(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4).enqueue(new Callback<ExitRequestResponse>() {
             @Override
             public void onResponse(Call<ExitRequestResponse> call, Response<ExitRequestResponse> response) {
 

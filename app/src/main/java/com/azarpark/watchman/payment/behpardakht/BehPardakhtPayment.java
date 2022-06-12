@@ -39,6 +39,7 @@ public class BehPardakhtPayment {
     private final Gson gson;
     private final Activity activity;
     private final Context context;
+    WebService webService = new WebService();
 
     private String BEH_PARDAKHT = "beh_pardakht";
     FragmentManager fragmentManager;
@@ -115,7 +116,7 @@ public class BehPardakhtPayment {
         String t3 = tag3 == null ? "-1" : tag3;
         String t4 = tag4 == null ? "-1" : tag4;
 
-        WebService.getClient(context).createTransaction(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(),
+        webService.getClient(context).createTransaction(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(),
                 t1, t2, t3, t4, amount, transactionType).enqueue(new Callback<CreateTransactionResponse>() {
             @Override
             public void onResponse(@NonNull Call<CreateTransactionResponse> call, @NonNull Response<CreateTransactionResponse> response) {
@@ -176,7 +177,7 @@ public class BehPardakhtPayment {
         String t3 = tag3 == null ? "-1" : tag3;
         String t4 = tag4 == null ? "-1" : tag4;
 
-        WebService.getClient(context).createTransaction(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), t1, t2, t3, t4,
+        webService.getClient(context).createTransaction(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), t1, t2, t3, t4,
                 amount, transactionType).enqueue(new Callback<CreateTransactionResponse>() {
             @Override
             public void onResponse(@NonNull Call<CreateTransactionResponse> call, @NonNull Response<CreateTransactionResponse> response) {
@@ -244,7 +245,7 @@ public class BehPardakhtPayment {
             Assistant.updateLastVerifyRequestTime();
             Runnable functionRunnable = () -> verifyTransaction(transaction);
 
-            WebService.getClient(context).verifyTransaction(SharedPreferencesRepository.getTokenWithPrefix(), transaction.getAmount(), transaction.getOur_token(),
+            webService.getClient(context).verifyTransaction(SharedPreferencesRepository.getTokenWithPrefix(), transaction.getAmount(), transaction.getOur_token(),
                     transaction.getBank_token(), transaction.getPlaceID(), transaction.getStatus(), transaction.getBank_type(), transaction.getState(),
                     transaction.getCard_number(), transaction.getBank_datetime(), transaction.getTrace_number(), transaction.getResult_message()).enqueue(new Callback<VerifyTransactionResponse>() {
                 @Override

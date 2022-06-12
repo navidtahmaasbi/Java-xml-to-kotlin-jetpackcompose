@@ -30,10 +30,8 @@ import retrofit2.Response;
 public class LoginActivity extends AppCompatActivity {
 
     ActivityLoginBinding binding;
-    ConfirmDialog confirmDialog;
-    Activity activity = this;
     Assistant assistant;
-
+    WebService webService = new WebService();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
         LoadingBar loadingBar = new LoadingBar(LoginActivity.this);
         loadingBar.show();
 
-        WebService.getClient(getApplicationContext()).login( loginBody).enqueue(new Callback<LoginResponse>() {
+        webService.getClient(getApplicationContext()).login( loginBody).enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
 

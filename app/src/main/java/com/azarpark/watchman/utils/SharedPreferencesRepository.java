@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 
 public class SharedPreferencesRepository {
 
-
     public static void checkTransactions() {
 
 

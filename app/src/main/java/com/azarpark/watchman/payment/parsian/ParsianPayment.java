@@ -55,6 +55,7 @@ public class ParsianPayment {
     String tag3;
     String tag4;
     int placeID;
+    WebService webService = new WebService();
 
     Context context;
     Activity activity;
@@ -222,7 +223,7 @@ public class ParsianPayment {
         String t3 = tag3 == null ? "-1" : tag3;
         String t4 = tag4 == null ? "-1" : tag4;
 
-        WebService.getClient(context).createTransaction(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), t1, t2, t3, t4, amount, transactionType).enqueue(new Callback<CreateTransactionResponse>() {
+        webService.getClient(context).createTransaction(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), t1, t2, t3, t4, amount, transactionType).enqueue(new Callback<CreateTransactionResponse>() {
             @Override
             public void onResponse(@NonNull Call<CreateTransactionResponse> call, @NonNull Response<CreateTransactionResponse> response) {
 
@@ -282,7 +283,7 @@ public class ParsianPayment {
         String t3 = tag3 == null ? "-1" : tag3;
         String t4 = tag4 == null ? "-1" : tag4;
 
-        WebService.getClient(context).createTransaction(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), t1, t2, t3, t4, amount, transactionType).enqueue(new Callback<CreateTransactionResponse>() {
+        webService.getClient(context).createTransaction(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), t1, t2, t3, t4, amount, transactionType).enqueue(new Callback<CreateTransactionResponse>() {
             @Override
             public void onResponse(@NonNull Call<CreateTransactionResponse> call, @NonNull Response<CreateTransactionResponse> response) {
 
@@ -333,7 +334,7 @@ public class ParsianPayment {
 
         Runnable functionRunnable = () -> verifyTransaction02(transaction);
 
-        WebService.getClient(context).verifyTransaction(SharedPreferencesRepository.getTokenWithPrefix(), transaction.getAmount(), transaction.getOur_token(),
+        webService.getClient(context).verifyTransaction(SharedPreferencesRepository.getTokenWithPrefix(), transaction.getAmount(), transaction.getOur_token(),
                 transaction.getBank_token(), transaction.getPlaceID(), transaction.getStatus(), transaction.getBank_type(), transaction.getState(),
                 transaction.getCard_number(), transaction.getBank_datetime(), transaction.getTrace_number(), transaction.getResult_message()).enqueue(new Callback<VerifyTransactionResponse>() {
             @Override
@@ -369,7 +370,7 @@ public class ParsianPayment {
         LoadingBar loadingBar = new LoadingBar(activity);
         loadingBar.show();
 
-        WebService.getClient(context).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
+        webService.getClient(context).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
             @Override
             public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
 

@@ -1,9 +1,13 @@
 package com.azarpark.watchman.web_service;
 
-import com.azarpark.watchman.activities.IncomeStatisticsActivity;
 import com.azarpark.watchman.models.AddMobieToPlateResponse;
+import com.azarpark.watchman.models.CreateImpressedResponse;
+import com.azarpark.watchman.models.CreateVacationResponse;
+import com.azarpark.watchman.models.GetImprestsResponse;
 import com.azarpark.watchman.models.GetVacationsResponse;
 import com.azarpark.watchman.models.IncomeStatisticsResponse;
+import com.azarpark.watchman.models.RemoveImpressedResponse;
+import com.azarpark.watchman.models.RemoveVacationResponse;
 import com.azarpark.watchman.models.WatchmanTimeResponse;
 import com.azarpark.watchman.web_service.bodies.LoginBody;
 import com.azarpark.watchman.web_service.bodies.ParkBody;
@@ -96,6 +100,33 @@ public interface API {
     @GET("/api/watchman/park/estimate/{id}")
     Call<EstimateParkPriceResponse> estimatePArkPrice(@Header("Authorization") String authToken, @Path("id") int id);
 
+    @GET("/api/watchman/imprest/add/{amount}")
+    Call<CreateImpressedResponse> createImprest(@Header("Authorization") String authToken, @Path("amount") String amount);
+
+    @GET("/api/watchman/imprest/remove/{id}")
+    Call<RemoveImpressedResponse> deleteImprest(@Header("Authorization") String authToken, @Path("id") int id);
+
+    @GET("/api/watchman/imprests/1000/0")
+    Call<GetImprestsResponse> getImprests(@Header("Authorization") String authToken);
+
+
+
+    @GET("/api/watchman/vacation/add/{date}/{type}/{start}/{end}")
+    Call<CreateVacationResponse> createVacation(@Header("Authorization") String authToken,
+                                                @Path("date") String date,
+                                                @Path("type") String type,
+                                                @Path("start") String start,
+                                                @Path("end") String end
+                                                 );
+
+    @GET("/api/watchman/vacation/remove/{id}")
+    Call<RemoveVacationResponse> deleteVacation(@Header("Authorization") String authToken, @Path("id") int id);
+
+    @GET("/api/watchman/vacation/1000/0")
+    Call<GetVacationsResponse> getVacations(@Header("Authorization") String authToken);
+
+
+
 
     @GET("/api/watchman/park/free/{placeID}")
     Call<ExitParkResponse> exitPark(@Header("Authorization") String authToken, @Path("placeID") int placeID);
@@ -108,9 +139,6 @@ public interface API {
                                      @Path("tag2") String tag2,
                                      @Path("tag3") String tag3,
                                      @Path("tag4") String tag4);
-
-    @GET("/api/watchman/vacations")
-    Call<GetVacationsResponse> getVacations(@Header("Authorization") String authToken);
 
     @GET("/api/watchman/logout")
     Call<LogoutResponse> logout(@Header("Authorization") String authToken);

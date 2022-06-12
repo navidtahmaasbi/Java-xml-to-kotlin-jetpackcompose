@@ -31,12 +31,13 @@ public class StarterActivity extends AppCompatActivity {
 
     private int code = 5555;
     LoadingBar loadingBar;
-    private final int masterCode = 4631;//todo release
+    private final int masterCode = 7964;//todo release
     Assistant assistant;
     int showExitCodeInputTapCount = 0;
     int sendSMSTapCount = 0;
     int versionCode = 0;
     String versionName = "";
+    WebService webService = new WebService();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,7 +148,7 @@ public class StarterActivity extends AppCompatActivity {
 
     private void sendExitCode(int code) {
 
-        WebService.getClient(getApplicationContext()).sendExitCode(SharedPreferencesRepository.getTokenWithPrefix(), code).enqueue(new Callback<SendExitCodeResponse>() {
+        webService.getClient(getApplicationContext()).sendExitCode(SharedPreferencesRepository.getTokenWithPrefix(), code).enqueue(new Callback<SendExitCodeResponse>() {
             @Override
             public void onResponse(Call<SendExitCodeResponse> call, Response<SendExitCodeResponse> response) {
 

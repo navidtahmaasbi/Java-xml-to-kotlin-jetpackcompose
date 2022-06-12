@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".activities.VacationActivity"
+    tools:context=".activities.ImprestActivity"
     android:background="@color/light_gray">
 
     <RelativeLayout
@@ -34,7 +34,7 @@
             android:layout_marginRight="@dimen/_10sdp"
             android:layout_toLeftOf="@+id/back"
             android:fontFamily="@font/iran_sans_bold"
-            android:text="مرخصی"
+            android:text="مساعده"
             android:textColor="@color/white"
             android:textSize="@dimen/_13sdp" />
 
@@ -59,8 +59,23 @@
         app:layout_constraintTop_toBottomOf="@+id/action_bar"
         app:layout_constraintVertical_bias="0.0"
         tools:itemCount="20"
-        tools:listitem="@layout/vacation_item"
+        tools:listitem="@layout/impressed_item"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/place_holder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:fontFamily="@font/iran_sans_bold"
+        android:text="موردی برای نمایش وجود ندارد"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_13sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/recycler_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/action_bar" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"

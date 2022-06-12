@@ -27,6 +27,7 @@ public class IncomeStatisticsActivity extends AppCompatActivity {
 
     ActivityIncomeStatisticsBinding binding;
     LoadingBar loadingBar;
+    WebService webService = new WebService();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +42,7 @@ public class IncomeStatisticsActivity extends AppCompatActivity {
         Runnable functionRunnable = this::getIncomeStatistics;
         loadingBar.show();
         Assistant.hideKeyboard(this, binding.getRoot());
-        WebService.getClient(getApplicationContext()).getIncomeStatistics(SharedPreferencesRepository.getTokenWithPrefix()).enqueue(new Callback<IncomeStatisticsResponse>() {
+        webService.getClient(getApplicationContext()).getIncomeStatistics(SharedPreferencesRepository.getTokenWithPrefix()).enqueue(new Callback<IncomeStatisticsResponse>() {
             @Override
             public void onResponse(@NonNull Call<IncomeStatisticsResponse> call, @NonNull Response<IncomeStatisticsResponse> response) {
 

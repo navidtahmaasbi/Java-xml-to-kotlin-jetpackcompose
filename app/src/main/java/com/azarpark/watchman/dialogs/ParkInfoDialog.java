@@ -57,6 +57,7 @@ public class ParkInfoDialog extends DialogFragment {
     ConfirmDialog confirmDialog;
     String printDescription;
     int printCommand = 1;
+    WebService webService = new WebService();
 
     public ParkInfoDialog() {
     }
@@ -265,7 +266,7 @@ public class ParkInfoDialog extends DialogFragment {
         LoadingBar loadingBar = new LoadingBar(getActivity());
         loadingBar.show();
 
-        WebService.getClient(getContext()).addMobileToPlate(SharedPreferencesRepository.getTokenWithPrefix(), assistant.getPlateType(tag1, tag2, tag3, tag4).toString(), tag1 != null ? tag1 : "0", tag2!= null ? tag2 : "0", tag3!= null ? tag3 : "0", tag4!= null ? tag4 : "0", mobile).enqueue(new Callback<AddMobieToPlateResponse>() {
+        webService.getClient(getContext()).addMobileToPlate(SharedPreferencesRepository.getTokenWithPrefix(), assistant.getPlateType(tag1, tag2, tag3, tag4).toString(), tag1 != null ? tag1 : "0", tag2!= null ? tag2 : "0", tag3!= null ? tag3 : "0", tag4!= null ? tag4 : "0", mobile).enqueue(new Callback<AddMobieToPlateResponse>() {
             @Override
             public void onResponse(Call<AddMobieToPlateResponse> call, Response<AddMobieToPlateResponse> response) {
 
@@ -296,7 +297,7 @@ public class ParkInfoDialog extends DialogFragment {
         LoadingBar loadingBar = new LoadingBar(getActivity());
         loadingBar.show();
 
-        WebService.getClient(getContext()).estimatePArkPrice(SharedPreferencesRepository.getTokenWithPrefix(), place.id).enqueue(new Callback<EstimateParkPriceResponse>() {
+       webService.getClient(getContext()).estimatePArkPrice(SharedPreferencesRepository.getTokenWithPrefix(), place.id).enqueue(new Callback<EstimateParkPriceResponse>() {
             @Override
             public void onResponse(Call<EstimateParkPriceResponse> call, Response<EstimateParkPriceResponse> response) {
 

@@ -20,12 +20,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class WebService {
 
-    private static Retrofit retrofit = null;
-    private static API api = null;
-    private static OkHttpClient okHttpClient = null;
+    private final API api;
 
-    WebService() {
-        okHttpClient = getOkHttpClient();
+    public WebService() {
+        OkHttpClient okHttpClient = getOkHttpClient();
 
         String baseURL = "https://tabriz.backend1.azarpark.irana.app";
         if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
@@ -33,7 +31,7 @@ public class WebService {
         else if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
             baseURL = "https://sarab.backend1.azarpark.irana.app";
 
-        retrofit = new Retrofit.Builder()
+        Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseURL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(okHttpClient)
@@ -42,24 +40,24 @@ public class WebService {
         api = retrofit.create(API.class);
     }
 
-    public static API getClient(Context context) {
-        if (api == null){
-            okHttpClient = getOkHttpClient();
-
-            String baseURL = "https://tabriz.backend1.azarpark.irana.app";
-            if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
-                baseURL = "https://tabriz.backend1.azarpark.irana.app";
-            else if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
-                baseURL = "https://sarab.backend1.azarpark.irana.app";
-
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(baseURL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .client(okHttpClient)
-                    .build();
-
-            api = retrofit.create(API.class);
-        }
+    public API getClient(Context context) {
+//        if (api == null){
+//            okHttpClient = getOkHttpClient();
+//
+//            String baseURL = "https://tabriz.backend1.azarpark.irana.app";
+//            if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
+//                baseURL = "https://tabriz.backend1.azarpark.irana.app";
+//            else if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
+//                baseURL = "https://sarab.backend1.azarpark.irana.app";
+//
+//            retrofit = new Retrofit.Builder()
+//                    .baseUrl(baseURL)
+//                    .addConverterFactory(GsonConverterFactory.create())
+//                    .client(okHttpClient)
+//                    .build();
+//
+//            api = retrofit.create(API.class);
+//        }
         return api;
     }
 
