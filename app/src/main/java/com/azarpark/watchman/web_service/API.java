@@ -100,8 +100,12 @@ public interface API {
     @GET("/api/watchman/park/estimate/{id}")
     Call<EstimateParkPriceResponse> estimatePArkPrice(@Header("Authorization") String authToken, @Path("id") int id);
 
-    @GET("/api/watchman/imprest/add/{amount}")
-    Call<CreateImpressedResponse> createImprest(@Header("Authorization") String authToken, @Path("amount") String amount);
+    @GET("/api/watchman/imprest/add/{amount}/{card_number}/{bank_account_number}/{bank_account_name}")
+    Call<CreateImpressedResponse> createImprest(@Header("Authorization") String authToken,
+                                                @Path("amount") String amount,
+                                                @Path("card_number") String cardNumber,
+                                                @Path("bank_account_number")String bankAccountNumber,
+                                                @Path("bank_account_name")String bankAccountName);
 
     @GET("/api/watchman/imprest/remove/{id}")
     Call<RemoveImpressedResponse> deleteImprest(@Header("Authorization") String authToken, @Path("id") int id);

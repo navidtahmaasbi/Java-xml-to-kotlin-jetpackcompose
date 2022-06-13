@@ -8,7 +8,7 @@ import android.widget.Toast;
 import com.azarpark.watchman.adapters.ImprestListAdapter;
 import com.azarpark.watchman.databinding.ActivityImprestBinding;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
-import com.azarpark.watchman.dialogs.ImpressedRequestDialog;
+import com.azarpark.watchman.dialogs.ImprestRequestDialog;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.dialogs.VacationRequestDialog;
 import com.azarpark.watchman.models.GetImprestsResponse;
@@ -25,7 +25,7 @@ public class ImprestActivity extends AppCompatActivity {
 
     ActivityImprestBinding binding;
     ImprestListAdapter imprestListAdapter;
-    ImpressedRequestDialog imprestRequestDialog;
+    ImprestRequestDialog imprestRequestDialog;
     ConfirmDialog confirmDialog;
     WebService webService = new WebService();
 
@@ -58,7 +58,7 @@ public class ImprestActivity extends AppCompatActivity {
 
         binding.fab.setOnClickListener(view -> {
 
-            imprestRequestDialog = new ImpressedRequestDialog(() -> {
+            imprestRequestDialog = new ImprestRequestDialog(() -> {
 
                 imprestRequestDialog.dismiss();
                 getListItems();

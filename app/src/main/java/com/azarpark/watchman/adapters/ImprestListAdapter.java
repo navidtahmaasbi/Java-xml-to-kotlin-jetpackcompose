@@ -35,7 +35,7 @@ public class ImprestListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         ItemViewHolder viewHolder = (ItemViewHolder) holder;
 
-        viewHolder.binding.delete.setVisibility(items.get(position).status.equals("watchman_added") ? View.GONE : View.VISIBLE);
+        viewHolder.binding.delete.setVisibility(!items.get(position).status.equals("watchman_added") ? View.GONE : View.VISIBLE);
         viewHolder.binding.delete.setOnClickListener(view -> {
             if (!items.get(position).status.equals("watchman_added"))
                 onAction.onRemove(items.get(position).id);
@@ -49,6 +49,8 @@ public class ImprestListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         viewHolder.binding.title.setText(items.get(position).amount + " تومان");
         viewHolder.binding.status.setText(getStatus(items.get(position).status));
         viewHolder.binding.description.setText(assistant.toJalali(items.get(position).created_at));
+        String amount = items.get(position).accepted_amount == null?"درانتظار":items.get(position).accepted_amount + " تومان";
+        viewHolder.binding.acceptedAmount.setText("مبلغ تایید شده : " + amount);
 
     }
 
