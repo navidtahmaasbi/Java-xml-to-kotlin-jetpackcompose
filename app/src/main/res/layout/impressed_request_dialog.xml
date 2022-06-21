@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="@dimen/_10sdp"
+    android:background="@drawable/dialog_background">
+
+    <EditText
+        android:id="@+id/amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/white_bg_5"
+        android:fontFamily="@font/iran_sans_fa_num"
+        android:gravity="center"
+        android:inputType="number"
+        android:padding="@dimen/_8sdp"
+        android:hint="مقدار مساعده را به تومان وارد کنید"
+        android:textSize="@dimen/_15sdp"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="32dp" />
+
+    <TextView
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/iran_sans"
+        android:layout_marginRight="@dimen/_10sdp"
+        android:layout_marginLeft="@dimen/_10sdp"
+        android:text="از بین شماره کارت یا شماره حساب میتوانید یکی از انها یا هر دو را وارد کنید"
+        android:textColor="@color/black"
+        android:id="@+id/hint"
+        app:layout_constraintTop_toBottomOf="@+id/amount"/>
+
+
+    <EditText
+        android:layout_marginTop="@dimen/_10sdp"
+        android:id="@+id/card_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/white_bg_5"
+        android:fontFamily="@font/iran_sans_fa_num"
+        android:gravity="center"
+        android:inputType="number"
+        android:padding="@dimen/_8sdp"
+        android:hint="شماره کارت خود را وارد کنید"
+        android:textSize="@dimen/_15sdp"
+        app:layout_constraintTop_toBottomOf="@+id/hint"
+        tools:layout_editor_absoluteX="32dp" />
+
+    <EditText
+        android:layout_marginTop="@dimen/_10sdp"
+        android:id="@+id/bank_account_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/white_bg_5"
+        android:fontFamily="@font/iran_sans_fa_num"
+        android:gravity="center"
+        android:inputType="number"
+        android:padding="@dimen/_8sdp"
+        android:hint="شماره حساب خود را وارد کنید"
+        android:textSize="@dimen/_15sdp"
+        app:layout_constraintTop_toBottomOf="@+id/card_number"
+        tools:layout_editor_absoluteX="32dp" />
+
+    <EditText
+        android:layout_marginTop="@dimen/_10sdp"
+        android:id="@+id/bank_account_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/white_bg_5"
+        android:fontFamily="@font/iran_sans_fa_num"
+        android:gravity="center"
+        android:padding="@dimen/_8sdp"
+        android:hint="نام صاحب حساب یا شماره کارت را وارد کنید"
+        android:textSize="@dimen/_15sdp"
+        app:layout_constraintTop_toBottomOf="@+id/bank_account_number"
+        tools:layout_editor_absoluteX="32dp" />
+
+
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        app:layout_constraintTop_toBottomOf="@+id/bank_account_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_25sdp"
+        android:layout_marginRight="@dimen/_15sdp"
+        android:layout_marginLeft="@dimen/_15sdp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/cancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginRight="@dimen/_2sdp"
+            android:layout_weight="1"
+            android:background="@drawable/selected_background"
+            android:fontFamily="@font/iran_sans"
+            android:gravity="center"
+            android:paddingTop="@dimen/_8sdp"
+            android:paddingBottom="@dimen/_8sdp"
+            android:text="لغو"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/_10sdp" />
+
+        <TextView
+            android:id="@+id/confirm"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="@dimen/_2sdp"
+            android:layout_weight="1"
+            android:background="@drawable/blue_bg_5"
+            android:fontFamily="@font/iran_sans"
+            android:gravity="center"
+            android:paddingTop="@dimen/_8sdp"
+            android:paddingBottom="@dimen/_8sdp"
+            android:text="تایید"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_10sdp" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

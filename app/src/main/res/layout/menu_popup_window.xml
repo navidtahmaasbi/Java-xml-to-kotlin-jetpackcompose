@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layoutDirection="ltr"
+    android:background="@color/popup_background"
+    android:clickable="true">
+
+    <LinearLayout
+        android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/exit_request"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="@dimen/_10sdp"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="@dimen/_60sdp"
+                    android:layout_height="@dimen/_60sdp"
+                    android:src="@drawable/logout"
+                    app:tint="@color/blue"/>
+
+                <TextView
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:fontFamily="@font/iran_sans"
+                    android:textColor="@color/blue"
+                    android:textSize="@dimen/_13sdp"
+                    android:text="درخواست خروج"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/debt_inquiry"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="@dimen/_10sdp"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="@dimen/_60sdp"
+                    android:layout_height="@dimen/_60sdp"
+                    android:src="@drawable/list"
+                    app:tint="@color/blue"/>
+
+                <TextView
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:fontFamily="@font/iran_sans"
+                    android:textColor="@color/blue"
+                    android:textSize="@dimen/_13sdp"
+                    android:text="استعلام بدهی"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/car_number_charge"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="@dimen/_10sdp"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="@dimen/_60sdp"
+                    android:layout_height="@dimen/_60sdp"
+                    android:src="@drawable/ic_wallet"
+                    app:tint="@color/blue"/>
+
+                <TextView
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:fontFamily="@font/iran_sans"
+                    android:textColor="@color/blue"
+                    android:textSize="@dimen/_13sdp"
+                    android:text="شارژ پلاک"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/help"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="@dimen/_10sdp"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="@dimen/_60sdp"
+                    android:layout_height="@dimen/_60sdp"
+                    android:src="@drawable/ic_help"
+                    app:tint="@color/blue"/>
+
+                <TextView
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:fontFamily="@font/iran_sans"
+                    android:textColor="@color/blue"
+                    android:textSize="@dimen/_13sdp"
+                    android:text="راهنما"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/about_us"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="@dimen/_10sdp"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="@dimen/_60sdp"
+                    android:layout_height="@dimen/_60sdp"
+                    android:src="@drawable/ic_help"
+                    app:tint="@color/blue"/>
+
+                <TextView
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:fontFamily="@font/iran_sans"
+                    android:textColor="@color/blue"
+                    android:textSize="@dimen/_13sdp"
+                    android:text="درباره ما"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/rules"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="@dimen/_10sdp"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="@dimen/_60sdp"
+                    android:layout_height="@dimen/_60sdp"
+                    android:src="@drawable/list"
+                    app:tint="@color/blue"/>
+
+                <TextView
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:fontFamily="@font/iran_sans"
+                    android:textColor="@color/blue"
+                    android:textSize="@dimen/_13sdp"
+                    android:text="قوانین و شرایط استفاده"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/logout"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="@dimen/_10sdp"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="@dimen/_60sdp"
+                    android:layout_height="@dimen/_60sdp"
+                    android:src="@drawable/logout"
+                    app:tint="@color/red" />
+
+                <TextView
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:fontFamily="@font/iran_sans"
+                    android:textColor="@color/red"
+                    android:textSize="@dimen/_13sdp"
+                    android:text="خروج از حساب کاربری"/>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/_20sdp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:fontFamily="@font/iran_sans"
+                android:textColor="@color/blue"
+                android:textSize="@dimen/_13sdp"
+                android:text="لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم "
+            />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

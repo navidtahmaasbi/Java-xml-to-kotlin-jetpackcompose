@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layoutDirection="ltr"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/_10sdp"
+        android:background="@drawable/dialog_background"
+        android:orientation="vertical"
+        android:padding="@dimen/_20sdp">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:fontFamily="@font/iran_sans_bold"
+            android:text="عنوان"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/_13sdp" />
+
+        <TextView
+            android:id="@+id/message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:fontFamily="@font/iran_sans"
+            android:text="متن سوال متن سوال متن سوال متن سوال متن سوال ؟"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/_11sdp" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:orientation="horizontal">
+
+            <!--        <TextView-->
+            <!--            android:id="@+id/cancel"-->
+            <!--            android:fontFamily="@font/iran_sans"-->
+            <!--            android:layout_width="0dp"-->
+            <!--            android:layout_weight="1"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            android:text="لغو"-->
+            <!--            android:paddingTop="@dimen/_8sdp"-->
+            <!--            android:paddingBottom="@dimen/_8sdp"-->
+            <!--            android:gravity="center"-->
+            <!--            android:layout_gravity="center_horizontal"-->
+            <!--            android:textColor="@color/text_gray"-->
+            <!--            android:textSize="@dimen/_10sdp"-->
+            <!--            android:layout_marginRight="@dimen/_2sdp"-->
+            <!--            android:background="@drawable/selected_background"/>-->
+
+            <TextView
+                android:id="@+id/confirm"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:background="@drawable/blue_bg_5"
+                android:fontFamily="@font/iran_sans"
+                android:gravity="center"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_8sdp"
+                android:text="تایید"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_10sdp" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</LinearLayout>

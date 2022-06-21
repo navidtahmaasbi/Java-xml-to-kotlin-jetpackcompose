@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_gravity="right"
+    android:layout_margin="@dimen/_5sdp"
+    android:background="@drawable/selected_background">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:textColor="@color/white"
+        android:fontFamily="@font/iran_sans_fa_num"
+        android:textSize="@dimen/_10sdp"
+        android:text="متوجه شدم"
+        android:id="@+id/submit"
+        android:background="@drawable/red_background"
+        android:gravity="center"
+        android:padding="@dimen/_5sdp"
+    />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:padding="@dimen/_5sdp"
+        android:orientation="vertical"
+        android:layout_gravity="right">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:fontFamily="@font/iran_sans_fa_num"
+            android:textSize="@dimen/_10sdp"
+            android:text="خروج توسط کاربر"
+            android:id="@+id/title"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:fontFamily="@font/iran_sans_fa_num"
+            android:textSize="@dimen/_10sdp"
+            android:text="جایگاه 999"
+            android:id="@+id/description"/>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_margin="@dimen/_5sdp"
+    android:padding="@dimen/_5sdp"
+    android:layoutDirection="ltr"
+    android:background="@drawable/selected_background"
+    android:gravity="center"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/title"
+    android:fontFamily="@font/iran_sans_fa_num_bold"
+    android:text="تبریز"
+    android:layout_marginTop="@dimen/_5sdp"
+    android:textColor="@color/text_gray"
+    android:textSize="@dimen/_15sdp">
+
+</TextView>
