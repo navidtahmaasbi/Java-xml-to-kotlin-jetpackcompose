@@ -29,6 +29,8 @@ import com.azarpark.watchman.R;
 import com.azarpark.watchman.activities.SplashActivity;
 import com.azarpark.watchman.download_utils.DownloadController;
 import com.azarpark.watchman.enums.PlateType;
+import com.azarpark.watchman.models.MyDate;
+import com.azarpark.watchman.models.MyTime;
 import com.azarpark.watchman.models.Place;
 import com.google.zxing.common.StringUtils;
 import com.yandex.metrica.YandexMetrica;
@@ -220,11 +222,22 @@ public class Assistant {
         sb.append(pdate.getHour());
         sb.append(":");
         sb.append(pdate.getMinute());
-//        sb.append(":");
-//        sb.append(pdate.getSecond());
-//        sb.append(":");
 
         return sb.toString();
+
+    }
+
+    public static MyDate getDate() {
+
+        PersianDate pDate = new PersianDate();
+        return new MyDate(pDate.getShYear(), pDate.getShMonth(), pDate.getShDay());
+
+    }
+
+    public static MyTime getMyTime() {
+
+        PersianDate pDate = new PersianDate();
+        return new MyTime(pDate.getHour(), pDate.getMinute());
 
     }
 
@@ -243,17 +256,7 @@ public class Assistant {
         pdate.setGrgMonth(month);
         pdate.setGrgDay(day);
 
-        String s = pdate.getShYear() + "-" + pdate.getShMonth() + "-" + pdate.getShDay() + " " + hour + ":" + minute + ":" + second;
-
-        return s;
-
-//        System.out.println("---------> s : " + s);
-
-//        PersianDateFormat pdformater = new PersianDateFormat("Y-m-j g-i");
-//
-//        System.out.println("---------> pdformater.format(pdate) : " + pdformater.format(pdate));
-//
-//        return pdformater.format(pdate);
+        return pdate.getShYear() + "-" + pdate.getShMonth() + "-" + pdate.getShDay() + " " + hour + ":" + minute + ":" + second;
 
     }
 
@@ -637,6 +640,38 @@ public class Assistant {
 //            if (((int) entry.getValue()) > 5)
 //                return false;
 //        return true;
+    }
+
+    public static String getImprestStatus(String englishStatus) {
+        switch (englishStatus) {
+            case "watchman_added":
+                return "ثبت شده توسط پارکبان";
+            case "supervisor_accepted":
+                return "درانتظار تایید";
+            case "supervisor_rejected":
+            case "financial_rejected":
+                return "رد شده";
+            case "financial_accepted":
+                return "تایید شده";
+            default:
+                return englishStatus;
+        }
+    }
+
+    public static String getVacationStatus(String englishStatus) {
+        switch (englishStatus) {
+            case "watchman_added":
+                return "ثبت شده توسط پارکبان";
+            case "supervisor_accepted":
+                return "درانتظار تایید";
+            case "supervisor_rejected":
+            case "main_supervisor_rejected":
+                return "رد شده";
+            case "main_supervisor_accepted":
+                return "تایید شده";
+            default:
+                return englishStatus;
+        }
     }
 
 }

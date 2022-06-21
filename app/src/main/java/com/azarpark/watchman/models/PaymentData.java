@@ -6,10 +6,10 @@ public class PaymentData {
     private int applicationId;/// Mandatory
     private String totalAmount;/// Mandatory
     private TransactionType transactionType;/// Mandatory
+    private String accountId;/// Complementary
     private String billID;
     private String payID;
     private String payerId;/// Optional
-    private String accountId;/// Complementary
     private String paymentDetail;/// Complementary
     private String merchantMessage;/// Optional
     private String merchantAdditionalData;/// Optional
@@ -23,14 +23,24 @@ public class PaymentData {
         this.totalAmount = totalAmount;
         this.transactionType = transactionType;
     }
+//    public PaymentData(String versionName, String sessionId, int applicationId, String totalAmount, String paymentDetail) {
+//        this.versionName = versionName;
+//        this.sessionId = sessionId;
+//        this.applicationId = applicationId;
+//        this.totalAmount = totalAmount;
+//        this.transactionType = TransactionType.MULTIPAYMENT;
+//        this.paymentDetail = paymentDetail;
+//    }
 
-    public PaymentData(String versionName, String sessionId, int applicationId, String totalAmount, String paymentDetail) {
+    //uses for several account payment
+    public PaymentData(String versionName, String sessionId, int applicationId, String totalAmount, String accountId, String[] extras)  {
         this.versionName = versionName;
         this.sessionId = sessionId;
         this.applicationId = applicationId;
         this.totalAmount = totalAmount;
-        this.transactionType = TransactionType.MULTIPAYMENT;
-        this.paymentDetail = paymentDetail;
+        this.transactionType = TransactionType.PAYMENT;
+        this.accountId = accountId;
+        this.extras = extras;
     }
 
     public enum TransactionType {

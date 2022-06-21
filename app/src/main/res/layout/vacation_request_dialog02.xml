@@ -70,20 +70,21 @@
         android:text="تاریخ : انتخاب کنید"
         android:textSize="@dimen/_15sdp" />
 
+
     <TextView
-        android:background="@drawable/white_bg_5"
-        android:layout_marginLeft="@dimen/_15sdp"
-        android:layout_marginTop="@dimen/_15sdp"
-        android:layout_marginRight="@dimen/_15sdp"
-        android:padding="@dimen/_8sdp"
         android:id="@+id/start_time"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/_15sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:layout_marginRight="@dimen/_15sdp"
+        android:background="@drawable/white_bg_5"
         android:fontFamily="@font/iran_sans_fa_num"
         android:gravity="center"
+        android:padding="@dimen/_8sdp"
         android:text="ساعت شروع : انتخاب کنید"
         android:textSize="@dimen/_15sdp"
-        android:visibility="gone" />
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/end_time"
@@ -98,7 +99,7 @@
         android:padding="@dimen/_8sdp"
         android:text="ساعت پایان : انتخاب کنید"
         android:textSize="@dimen/_15sdp"
-        android:visibility="gone" />
+        android:visibility="gone"/>
 
     <TextView
         android:layout_marginTop="@dimen/_10sdp"

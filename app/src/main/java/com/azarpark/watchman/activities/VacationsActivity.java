@@ -11,7 +11,9 @@ import com.azarpark.watchman.adapters.VacationListAdapter;
 import com.azarpark.watchman.databinding.ActivityVacationsBinding;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.LoadingBar;
+import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.dialogs.VacationRequestDialog;
+import com.azarpark.watchman.dialogs.VacationRequestDialog02;
 import com.azarpark.watchman.models.GetImprestsResponse;
 import com.azarpark.watchman.models.GetVacationsResponse;
 import com.azarpark.watchman.models.RemoveImpressedResponse;
@@ -28,9 +30,11 @@ public class VacationsActivity extends AppCompatActivity {
 
     ActivityVacationsBinding binding;
     VacationListAdapter vacationListAdapter;
-    VacationRequestDialog vacationRequestDialog;
+    VacationRequestDialog02 vacationRequestDialog;
     ConfirmDialog confirmDialog;
     WebService webService = new WebService();
+    MessageDialog messageDialog;
+    boolean messageHasShown = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +64,7 @@ public class VacationsActivity extends AppCompatActivity {
 
         binding.fab.setOnClickListener(view -> {
 
-            vacationRequestDialog = new VacationRequestDialog(() -> {
+            vacationRequestDialog = new VacationRequestDialog02(() -> {
 
                 vacationRequestDialog.dismiss();
                 getListItems();
@@ -75,6 +79,26 @@ public class VacationsActivity extends AppCompatActivity {
             getListItems();
         });
 
+    }
+
+    private void showMessage(){
+        StringBuilder message = new StringBuilder();
+        message.append("* درخواست مرخصی ساعتی نباید بیشتر از 2 ساعت باشد.");
+        message.append("\n");
+        message.append("* درخواست مرخصی روزانه باید 24 ساعت قبل اعلام شود.");
+        message.append("\n");
+        message.append("* حق مرخصی 2 روز در ماه می باشد.");
+        message.append("\n");
+        message.append("* در صورت ترک کار بعد از رد مرخصی، غیبت ثبت خواهد شد.");
+
+        messageDialog = new MessageDialog("توجه", message.toString(), "متوجه شدم", () -> {
+            messageDialog.dismiss();
+        });
+        messageDialog.setCancelable(false);
+        if(!messageHasShown){
+            messageHasShown = true;
+            messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
+        }
     }
 
     private void removeVacation(int id) {
@@ -121,6 +145,8 @@ public class VacationsActivity extends AppCompatActivity {
                     return;
                 vacationListAdapter.setItems(response.body().vacations);
                 binding.placeHolder.setVisibility(response.body().vacations.isEmpty()? View.VISIBLE:View.GONE);
+
+                showMessage();
             }
 
             @Override

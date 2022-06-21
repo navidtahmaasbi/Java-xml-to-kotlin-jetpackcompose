@@ -41,24 +41,33 @@
             android:layout_height="?android:attr/actionBarSize"
             android:background="@color/blue">
 
-            <!--        <ImageView-->
-            <!--            android:id="@+id/menu_toggle"-->
-            <!--            android:layout_width="@dimen/_45sdp"-->
-            <!--            android:layout_height="@dimen/_45sdp"-->
-            <!--            android:layout_alignParentRight="true"-->
-            <!--            android:onClick="onMenuToggleClicked"-->
-            <!--            android:padding="@dimen/_10sdp"-->
-            <!--            android:src="@drawable/ic_menu"-->
-            <!--            app:tint="@color/white" />-->
-
             <ImageView
-                android:layout_width="@dimen/_100sdp"
+                android:id="@+id/logo"
+                android:layout_width="@dimen/_60sdp"
                 android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
                 android:onClick="onMenuToggleClicked"
                 android:padding="@dimen/_10sdp"
                 android:src="@drawable/ic_logo_type"
                 app:tint="@color/white" />
+
+            <TextView
+                android:id="@+id/income_statistics"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_toLeftOf="@+id/logo"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingRight="@dimen/_15sdp"
+                android:paddingLeft="@dimen/_15sdp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/_5sdp"
+                android:fontFamily="@font/iran_sans_bold"
+                android:text="درآمد"
+
+                android:background="@drawable/red_background02"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_13sdp" />
 
             <ImageView
                 android:id="@+id/barcode"
@@ -70,21 +79,11 @@
                 android:src="@drawable/ic_qr_code"
                 app:tint="@color/white" />
 
-            <ImageView
-                android:id="@+id/refresh"
-                android:layout_width="@dimen/_45sdp"
-                android:layout_height="@dimen/_45sdp"
-                android:layout_toRightOf="@+id/barcode"
-                android:padding="@dimen/_13sdp"
-                android:src="@drawable/refresh"
-                android:visibility="gone"
-                app:tint="@color/white" />
-
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/exit_requests"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/_45sdp"
-                android:layout_toRightOf="@+id/refresh"
+                android:layout_toRightOf="@+id/barcode"
                 android:gravity="center_vertical"
                 android:onClick="onExitRequestIconClicked"
                 android:paddingLeft="@dimen/_5sdp"
@@ -104,7 +103,8 @@
                     android:layout_marginRight="@dimen/_5sdp"
                     android:fontFamily="@font/iran_sans"
                     android:text="درخواست های خروج"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_10sdp" />
 
 
                 <RelativeLayout

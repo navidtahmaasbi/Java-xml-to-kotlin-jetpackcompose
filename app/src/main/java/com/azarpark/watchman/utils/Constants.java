@@ -21,6 +21,10 @@ public class Constants {
     public static String UNSYCNCED_RES_NUMS = "unsynced_res_nums";
     public static String LOCAL_NOTIFICATIONS = "LOCAL_NOTIFICATIONS";
     public static String place_id = "place_id";
+    public static String ESTEHGAGI = "استحقاقی";
+    public static String ESTELAJI = "استعلاجی";
+    public static String TASHVIGI = "تشویقی";
+    public static String BEDUNE_HUGUG = "بدون حقوق";
 
 
     public static String

@@ -4,12 +4,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.os.Message;
 import android.view.View;
 import android.widget.Toast;
 
 import com.azarpark.watchman.databinding.ActivityIncomeStatisticsBinding;
 import com.azarpark.watchman.databinding.KeyValueItemBinding;
 import com.azarpark.watchman.dialogs.LoadingBar;
+import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.IncomeStatisticsResponse;
 import com.azarpark.watchman.models.KeyValueModel;
@@ -28,6 +30,8 @@ public class IncomeStatisticsActivity extends AppCompatActivity {
     ActivityIncomeStatisticsBinding binding;
     LoadingBar loadingBar;
     WebService webService = new WebService();
+    MessageDialog messageDialog;
+    boolean messageHasShown = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +56,8 @@ public class IncomeStatisticsActivity extends AppCompatActivity {
 
                 for (KeyValueModel item : response.body().items)
                     binding.content.addView(getKeyValueItem(item.key, item.value));
+
+                showMessage();
             }
 
             @Override
@@ -61,6 +67,34 @@ public class IncomeStatisticsActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void showMessage(){
+        StringBuilder message = new StringBuilder();
+        message.append("کارکرد شما به صورت جمع موارد زیر حساب میشود");
+        message.append("\n\n");
+        message.append("- شارژ");
+        message.append("\n");
+        message.append("- دریافتی + دریافتی بدهی");
+        message.append("\n");
+        message.append("- کسر شارژ");
+        message.append("\n");
+        message.append("- ثبت شماره تلفن");
+        message.append("\n");
+        message.append("- نصب اپلیکیشن با کد معرف شما");
+        message.append("\n");
+        message.append("- ثبت پارک شهروند");
+        message.append("\n");
+
+        messageDialog = new MessageDialog("توجه", message.toString(), "متوجه شدم", () -> {
+            messageDialog.dismiss();
+        });
+
+        messageDialog.setCancelable(false);
+        if(!messageHasShown){
+            messageHasShown = true;
+            messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
+        }
     }
 
     private View getKeyValueItem(String text, String value) {

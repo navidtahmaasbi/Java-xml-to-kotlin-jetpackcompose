@@ -35,9 +35,9 @@ public class VacationListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         ItemViewHolder viewHolder = (ItemViewHolder) holder;
         Vacation vacation = items.get(position);
-        viewHolder.binding.delete.setVisibility(items.get(position).status.equals("watchman_added") ? View.GONE : View.VISIBLE);
+        viewHolder.binding.delete.setVisibility(items.get(position).status.equals("watchman_added") ? View.VISIBLE : View.GONE);
         viewHolder.binding.delete.setOnClickListener(view -> {
-            if (!items.get(position).status.equals("watchman_added"))
+            if (items.get(position).status.equals("watchman_added"))
             onAction.onRemove(vacation.id);
         });
 
@@ -46,26 +46,14 @@ public class VacationListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         } else
             viewHolder.binding.lastItemPadding.setVisibility(View.VISIBLE);
 
-        viewHolder.binding.title.setText(vacation.type.equals("daily") ? "روزانه" : "ساعتی");
-        viewHolder.binding.status.setText(getStatus(vacation.status));
+        viewHolder.binding.title.setText((vacation.type.equals("daily") ? "روزانه" : "ساعتی" ) + "(" + vacation.vacation_type + ")");
+        viewHolder.binding.status.setText(Assistant.getVacationStatus(vacation.status));
         String startTime = vacation.type.equals("daily") ? "" : " از " + vacation.from_time;
         String endTime = vacation.type.equals("daily") ? "" : " تا " + vacation.to_time;
         viewHolder.binding.description.setText(assistant.toJalaliWithoutTime(vacation.vacation_date) + startTime + endTime);
-        viewHolder.binding.createdAt.setText("ایجاد شده در " + assistant.toJalali(vacation.created_at));
+        String description = vacation.description == null || vacation.description.isEmpty() ? "" : " به دلیل " + vacation.description;
+        viewHolder.binding.createdAt.setText("ایجاد شده در " + assistant.toJalali(vacation.created_at) + description);
 
-    }
-
-    private String getStatus(String englishStatus) {
-        switch (englishStatus) {
-            case "watchman_added":
-                return "ثبت شده توسط پارکبان";
-            case "supervisor_accepted":
-                return "تایید شده توسط بازرس";
-            case "supervisor_rejected":
-                return "رد شده توسط بازرس";
-            default:
-                return "معادل فارسی ثبت نشده";
-        }
     }
 
     @SuppressLint("NotifyDataSetChanged")

@@ -217,6 +217,8 @@ public class MainActivity extends AppCompatActivity {
 
         initMenuPopup();
 
+        binding.incomeStatistics.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, IncomeStatisticsActivity.class)));
+
     }
 
     @Override

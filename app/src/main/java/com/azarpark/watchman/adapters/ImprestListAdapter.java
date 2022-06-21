@@ -47,25 +47,13 @@ public class ImprestListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             viewHolder.binding.lastItemPadding.setVisibility(View.VISIBLE);
 
         viewHolder.binding.title.setText(items.get(position).amount + " تومان");
-        viewHolder.binding.status.setText(getStatus(items.get(position).status));
+        viewHolder.binding.status.setText(Assistant.getImprestStatus(items.get(position).status));
         viewHolder.binding.description.setText(assistant.toJalali(items.get(position).created_at));
         String amount = items.get(position).accepted_amount == null?"درانتظار":items.get(position).accepted_amount + " تومان";
         viewHolder.binding.acceptedAmount.setText("مبلغ تایید شده : " + amount);
 
     }
 
-    private String getStatus(String englishStatus) {
-        switch (englishStatus) {
-            case "watchman_added":
-                return "ثبت شده توسط پارکبان";
-            case "supervisor_accepted":
-                return "تایید شده توسط بازرس";
-            case "supervisor_rejected":
-                return "رد شده توسط بازرس";
-            default:
-                return "معادل فارسی ثبت نشده";
-        }
-    }
 
     @SuppressLint("NotifyDataSetChanged")
     public void setItems(ArrayList<Imprest> items) {

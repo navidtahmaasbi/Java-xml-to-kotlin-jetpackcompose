@@ -2,15 +2,12 @@ package com.azarpark.watchman.dialogs;
 
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,29 +16,16 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.azarpark.watchman.R;
-import com.azarpark.watchman.activities.DebtListActivity;
-import com.azarpark.watchman.databinding.ParkInfoDialogBinding;
 import com.azarpark.watchman.databinding.VacationRequestDialogBinding;
-import com.azarpark.watchman.enums.PlateType;
-import com.azarpark.watchman.interfaces.OnGetInfoClicked;
-import com.azarpark.watchman.models.AddMobieToPlateResponse;
-import com.azarpark.watchman.models.CreateImpressedResponse;
 import com.azarpark.watchman.models.CreateVacationResponse;
-import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.utils.Assistant;
+import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.NewErrorHandler;
 import com.azarpark.watchman.web_service.WebService;
-import com.azarpark.watchman.web_service.responses.EstimateParkPriceResponse;
 import com.mohamadamin.persianmaterialdatetimepicker.date.DatePickerDialog;
-import com.mohamadamin.persianmaterialdatetimepicker.time.RadialPickerLayout;
 import com.mohamadamin.persianmaterialdatetimepicker.time.TimePickerDialog;
 import com.mohamadamin.persianmaterialdatetimepicker.utils.PersianCalendar;
-
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -56,6 +40,7 @@ public class VacationRequestDialog extends DialogFragment {
     WebService webService = new WebService();
     DialogActions dialogActions;
     String selectedType = "daily";
+    String selectedVacationType = Constants.ESTEHGAGI;
     String selectedDate = null;
     String selectedStart = null;
     String selectedEnd = null;
@@ -128,7 +113,7 @@ public class VacationRequestDialog extends DialogFragment {
             PersianDate persianDate = new PersianDate();
 
             TimePickerDialog timePickerDialog = TimePickerDialog.newInstance(
-                    (TimePickerDialog.OnTimeSetListener) (view12, hourOfDay, minute) -> {
+                    (view12, hourOfDay, minute) -> {
                         String time = hourOfDay + ":" + minute;
                         selectedEnd = time;
                         binding.endTime.setText("ساعت پایان : " + time);
@@ -138,7 +123,7 @@ public class VacationRequestDialog extends DialogFragment {
                     persianDate.getMinute(),
                     false
             );
-
+            timePickerDialog.setStartTime(10,0);
             timePickerDialog.show(getActivity().getFragmentManager(), "timePickerDialog");
 
         });
@@ -150,12 +135,12 @@ public class VacationRequestDialog extends DialogFragment {
                 Toast.makeText(requireContext(), "ساعت شروع را انتخاب کنید", Toast.LENGTH_SHORT).show();
             } else if (selectedType.equals("hourly") && selectedEnd == null) {
                 Toast.makeText(requireContext(), "ساعت پایان را انتخاب کنید", Toast.LENGTH_SHORT).show();
-            } else {
+            } else  {
                 if (selectedType.equals("daily")) {
                     selectedStart = "7:00";
                     selectedEnd = "7:00";
                 }
-                createImpressed(selectedDate, selectedType, selectedStart, selectedEnd);
+                createImprest(selectedDate, selectedType, selectedStart, selectedEnd, selectedVacationType, binding.beduneHugugReason.getText().toString());
             }
         });
 
@@ -163,22 +148,26 @@ public class VacationRequestDialog extends DialogFragment {
             dismiss();
         });
 
-        binding.vacationType.setOnCheckedChangeListener((radioGroup, i) -> {
+        binding.type.setOnCheckedChangeListener((radioGroup, i) -> {
             binding.startTime.setVisibility(i == R.id.hourly ? View.VISIBLE : View.GONE);
             binding.endTime.setVisibility(i == R.id.hourly ? View.VISIBLE : View.GONE);
             selectedType = i == R.id.hourly?"hourly":"daily";
         });
 
+        binding.vacationType.setOnCheckedChangeListener((radioGroup, i) -> {
+            selectedVacationType = i == R.id.estehgagi? Constants.ESTEHGAGI :i == R.id.estelaji?Constants.ESTELAJI:i == R.id.tashvigi?Constants.TASHVIGI:Constants.BEDUNE_HUGUG;
+        });
+
         return builder.create();
     }
 
-    private void createImpressed(String date, String type, String start, String end) {
+    private void createImprest(String date, String type, String start, String end, String vacationType, String description) {
 
-        Runnable functionRunnable = () -> createImpressed(type, date, start, end);
+        Runnable functionRunnable = () -> createImprest(date,type, start, end, vacationType, description);
         LoadingBar loadingBar = new LoadingBar(getActivity());
         loadingBar.show();
 
-        webService.getClient(getContext()).createVacation(SharedPreferencesRepository.getTokenWithPrefix(), date, type, start, end).enqueue(new Callback<CreateVacationResponse>() {
+        webService.getClient(getContext()).createVacation(SharedPreferencesRepository.getTokenWithPrefix(), date, type, start, end, vacationType, description).enqueue(new Callback<CreateVacationResponse>() {
             @Override
             public void onResponse(@NonNull Call<CreateVacationResponse> call, @NonNull Response<CreateVacationResponse> response) {
 
