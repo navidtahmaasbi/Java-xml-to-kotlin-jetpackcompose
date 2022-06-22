@@ -58,6 +58,16 @@ public class Assistant {
 
     }
 
+    public long getDateDifferenceInMinutes(Date d1, Date d2) {
+
+        long diff = d2.getTime() - d1.getTime();
+        long seconds = diff / 1000;
+        long minutes = seconds / 60;
+
+        return minutes;
+
+    }
+
     public static String persianToEnglishNumbers(String mobile) {
 
 

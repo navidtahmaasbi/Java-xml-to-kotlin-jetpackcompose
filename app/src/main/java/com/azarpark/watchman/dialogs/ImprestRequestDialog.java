@@ -17,6 +17,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.azarpark.watchman.databinding.ImpressedRequestDialogBinding;
 import com.azarpark.watchman.models.CreateImpressedResponse;
+import com.azarpark.watchman.models.MyDate;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.NewErrorHandler;
@@ -33,6 +34,7 @@ public class ImprestRequestDialog extends DialogFragment {
     Assistant assistant;
     WebService webService = new WebService();
     DialogActions dialogActions;
+    int imprestLimit;
 
     @Nullable
     @Override
@@ -55,6 +57,14 @@ public class ImprestRequestDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setView(binding.getRoot());
 
+        int day = Assistant.getDate().day;
+        if (day >25 || day <= 5)
+            imprestLimit = 1000000;
+        else if (day <= 15)
+            imprestLimit = 2000000;
+        else
+            imprestLimit = 3000000;
+
         assistant = new Assistant();
 
         binding.confirm.setOnClickListener(view -> {
@@ -64,6 +74,8 @@ public class ImprestRequestDialog extends DialogFragment {
             final String bankAccountName = binding.bankAccountName.getText().toString();
             if (amount.isEmpty()) {
                 Toast.makeText(requireContext(), "مبلغ را وارد کنید", Toast.LENGTH_SHORT).show();
+            }else if (Integer.parseInt(amount) > imprestLimit) {
+                Toast.makeText(requireContext(), "محدودیت مساعده در این تاریخ برابر " + imprestLimit + " تومان میباشد.", Toast.LENGTH_SHORT).show();
             }else if (cardNumber.isEmpty() && bankAccountNumber.isEmpty()) {
                 Toast.makeText(requireContext(), "شماره کارت یا شماره حساب را وارد کنید", Toast.LENGTH_SHORT).show();
             } else if(!cardNumber.isEmpty() && cardNumber.length() != 16){
@@ -71,7 +83,6 @@ public class ImprestRequestDialog extends DialogFragment {
             }else if(bankAccountName.isEmpty()){
                 Toast.makeText(requireContext(), "نام صاحب حساب یا شماره کارت را وارد کنید", Toast.LENGTH_SHORT).show();
             }else{
-
                 createImpressed(amount, cardNumber.isEmpty()?"0":cardNumber, bankAccountNumber.isEmpty()?"0":bankAccountNumber, bankAccountName);
             }
         });
