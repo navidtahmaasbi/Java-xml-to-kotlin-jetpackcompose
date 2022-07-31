@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -15,6 +17,8 @@ import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.PaymentData;
 import com.azarpark.watchman.models.PaymentResult;
 import com.azarpark.watchman.models.Transaction;
+import com.azarpark.watchman.payment.behpardakht.device.Device;
+import com.azarpark.watchman.payment.behpardakht.device.IPosPrinterEvent;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
@@ -23,10 +27,13 @@ import com.azarpark.watchman.web_service.WebService;
 import com.azarpark.watchman.web_service.responses.CreateTransactionResponse;
 import com.azarpark.watchman.web_service.responses.VerifyTransactionResponse;
 import com.google.gson.Gson;
+import com.pax.gl.page.IPage;
+import com.pax.gl.page.PaxGLPage;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 
 public class BehPardakhtPayment {
 
@@ -36,18 +43,24 @@ public class BehPardakhtPayment {
     private final Activity activity;
     private final Context context;
     WebService webService = new WebService();
+    private static final String ARG_SECTION_NUMBER = "section_number";
+    private static Device device;
 
     private final String BEH_PARDAKHT = "beh_pardakht";
     FragmentManager fragmentManager;
-    public static int PAYMENT_REQUEST_CODE = 1003;
+    public static int PAYMENT_REQUEST_CODE = 105;
     BehPardakhtPaymentCallBack behPardakhtPaymentCallBack;
 
-    public BehPardakhtPayment(Activity activity, Context context, FragmentManager fragmentManager, BehPardakhtPaymentCallBack behPardakhtPaymentCallBack) {
+    public BehPardakhtPayment(Activity activity,
+                              Context context,
+                              FragmentManager fragmentManager,
+                              BehPardakhtPaymentCallBack behPardakhtPaymentCallBack) {
         this.activity = activity;
         this.context = context;
         this.behPardakhtPaymentCallBack = behPardakhtPaymentCallBack;
         this.fragmentManager = fragmentManager;
         gson = new Gson();
+        device = Device.getInstance(context);
     }
 
     public void verifyTransaction(Transaction transaction) {
@@ -61,6 +74,8 @@ public class BehPardakhtPayment {
                     transaction.getCard_number(), transaction.getBank_datetime(), transaction.getTrace_number(), transaction.getResult_message()).enqueue(new Callback<VerifyTransactionResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<VerifyTransactionResponse> call, @NonNull Response<VerifyTransactionResponse> response) {
+
+                    System.out.println("---------> rerereer : "  +gson.toJson(response.body()));
 
                     if (NewErrorHandler.apiResponseHasError(response, context))
                         return;
@@ -223,6 +238,19 @@ public class BehPardakhtPayment {
 
     public void handleOnActivityResult(int requestCode, int resultCode, Intent data) {
 
+        if (requestCode == Constants.QR_SCANER_REQUEST_CODE && resultCode ==  PAYMENT_REQUEST_CODE && data != null){
+                try {
+
+                    String scannedData = data.getExtras().getString(Constants.QR_DATA);
+                    int placeId = Integer.parseInt(scannedData.split("=")[scannedData.split("=").length - 1]);
+                    behPardakhtPaymentCallBack.getScannerData(placeId);
+
+                } catch (Exception e) {
+                    Toast.makeText(context, "معتبر نمیباشد", Toast.LENGTH_LONG).show();
+                }
+
+        }
+
         if (requestCode != PAYMENT_REQUEST_CODE) {
             System.out.println("----------> This result is not for Behpardakht payment");
         } else if (resultCode != Activity.RESULT_OK) {
@@ -230,17 +258,18 @@ public class BehPardakhtPayment {
         } else {
             PaymentResult paymentResult = gson.fromJson(data.getStringExtra("PaymentResult"), PaymentResult.class);
 
+            System.out.println("---------> resss : " + data.getStringExtra("PaymentResult"));
             Transaction transaction = new Transaction(
                     Integer.toString(Integer.parseInt(paymentResult.transactionAmount) / 10),
                     paymentResult.sessionId,
-                    Integer.toString(paymentResult.retrievalReferencedNumber),
-                    Integer.parseInt(paymentResult.extras[0]),
-                    paymentResult.resultCode == 0 ? 1 : 0,
+                    paymentResult.referenceID,
+                    Integer.parseInt(SharedPreferencesRepository.getValue(Constants.PLACE_ID, "-1")),
+                    paymentResult.resultCode.equals("000") ? 1 : 0,
                     BEH_PARDAKHT,
-                    paymentResult.resultDescription,
+                    paymentResult.resultDescription == null?"":paymentResult.resultDescription,
                     paymentResult.maskedCardNumber,
                     paymentResult.dateOfTransaction,
-                    Integer.toString(paymentResult.retrievalReferencedNumber),
+                    paymentResult.referenceID,
                     paymentResult.resultDescription,
                     paymentResult.dateOfTransaction
             );
@@ -277,6 +306,56 @@ public class BehPardakhtPayment {
 
     public interface LoadingListener {
         void onCreateTransactionFinished();
+    }
+
+    public Bitmap generateBitmap(View view)  {
+        PaxGLPage iPaxGLPage = PaxGLPage.getInstance(context);
+        IPage page = iPaxGLPage.createPage();
+
+        page.addLine().addUnit(buildBitmap(view), IPage.EAlign.CENTER);
+
+        int width = 384;
+        Bitmap bitmap = iPaxGLPage.pageToBitmap(page, width);
+        return bitmap;
+    }
+
+    public void print(View view){
+        new Printer(view).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    private class Printer extends AsyncTask {
+
+        View view;
+
+        Printer(View view){
+            this.view = view;
+        }
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+
+            try {
+                device.print(generateBitmap(view), new IPosPrinterEvent() {
+                    @Override
+                    public void onPrintStarted() {
+
+                    }
+
+                    @Override
+                    public void onPrinterError(String error, boolean isPaperError) {
+
+                    }
+
+                    @Override
+                    public void onPrintEnd() {
+
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
     }
 
 }

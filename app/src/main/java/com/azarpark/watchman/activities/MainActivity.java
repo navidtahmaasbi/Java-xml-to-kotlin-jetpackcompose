@@ -47,6 +47,7 @@ import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnGetInfoClicked;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.models.Transaction;
+import com.azarpark.watchman.payment.behpardakht.BehPardakhtPayment;
 import com.azarpark.watchman.payment.parsian.ParsianPayment;
 import com.azarpark.watchman.payment.saman.SamanPayment;
 import com.azarpark.watchman.web_service.bodies.ParkBody;
@@ -94,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
     Timer timer;
     ParsianPayment parsianPayment;
     SamanPayment samanPayment;
+    BehPardakhtPayment behPardakhtPayment;
     Assistant assistant;
     int debt = 0;
     ParkResponseDialog parkResponseDialog;
@@ -155,6 +157,22 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 
                 getPlaces02();
+            }
+        });
+        behPardakhtPayment = new BehPardakhtPayment(this, this, getSupportFragmentManager(), new BehPardakhtPayment.BehPardakhtPaymentCallBack() {
+            @Override
+            public void verifyTransaction(Transaction transaction) {
+
+            }
+
+            @Override
+            public void getScannerData(int placeID) {
+                handleScannedPlaceID(placeID);
+            }
+
+            @Override
+            public void onVerifyFinished() {
+
             }
         });
 
@@ -233,10 +251,8 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         parsianPayment.handleResult(requestCode, resultCode, data);
-
-//        Assistant.checkLastBankResultTime();
-//        Assistant.updateLastBankResultTime();
         samanPayment.handleResult(requestCode, resultCode, data);
+        behPardakhtPayment.handleOnActivityResult(requestCode, resultCode, data);
 
 
     }
@@ -474,9 +490,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void onBarcodeIconClicked(View view) {
 
-        if (Constants.SELECTED_PAYMENT == Constants.PASRIAN) {
+        if (Constants.SELECTED_PAYMENT == Constants.PASRIAN || Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT) {
 
-            startActivityForResult(new Intent(MainActivity.this, QRScanerActivity.class), ParsianPayment.QR_SCANER_REQUEST_CODE);
+            startActivityForResult(new Intent(MainActivity.this, QRScanerActivity.class), Constants.QR_SCANER_REQUEST_CODE);
 
         } else {
 
@@ -534,6 +550,8 @@ public class MainActivity extends AppCompatActivity {
                     parsianPayment.createTransaction(selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id, Constants.TRANSACTION_TYPE_PARK_PRICE);
                 else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
                     samanPayment.createTransaction(Constants.NON_CHARGE_SHABA, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id, Constants.TRANSACTION_TYPE_PARK_PRICE);
+                else if (Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT)
+                    behPardakhtPayment.createTransaction(Constants.NON_CHARGE_SHABA, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id, Constants.TRANSACTION_TYPE_PARK_PRICE);
                 else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
                     Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 
@@ -566,6 +584,10 @@ public class MainActivity extends AppCompatActivity {
                         });
                     else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
                         samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG,()->{
+                            plateChargeDialog.dismiss();
+                        });
+                    else if (Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT)
+                        behPardakhtPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG,()->{
                             plateChargeDialog.dismiss();
                         });
                     else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
@@ -675,6 +697,76 @@ public class MainActivity extends AppCompatActivity {
             }, 500);
 
 
+        } else if (Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT) {
+
+
+                binding.printArea.removeAllViews();
+                SamanPrintTemplateBinding printTemplateBinding = SamanPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
+
+                printTemplateBinding.placeId.setText(place.number + "");
+
+                printTemplateBinding.startTime.setText(assistant.toJalali(startTime));
+                printTemplateBinding.prices.setText(pricing);
+                printTemplateBinding.supportPhone.setText(telephone);
+                printTemplateBinding.debt.setText((balance < 0 ? -1 * balance : balance) + "تومان");
+
+                if (balance > 0) {
+
+                    printTemplateBinding.balanceTitle.setText("اعتبار پلاک");
+                    printTemplateBinding.description.setText("شهروند گرامی؛از این که جز مشتریان خوش حساب ما هستید سپاسگزاریم. " + printDescription);
+                } else if (balance < 0) {
+
+                    printTemplateBinding.balanceTitle.setText("بدهی پلاک");
+                    printTemplateBinding.description.setText("اخطار: شهروند گرامی؛بدهی پلاک شما بیش از حد مجاز میباشد در صورت عدم پرداخت بدهی مشمول جریمه پارک ممنوع خواهید شد. " + printDescription);
+                } else {
+
+                    printTemplateBinding.balanceTitle.setText("بدهی پلاک");
+                    printTemplateBinding.description.setText("شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد. " + printDescription);
+                }
+
+                printTemplateBinding.description2.setText(SharedPreferencesRepository.getValue(Constants.print_description_2) +"\n..");
+                printTemplateBinding.qrcode.setImageBitmap(assistant.qrGenerator(qr_url, placeID, place.tag1, place.tag2, place.tag3, place.tag4));
+
+                if (assistant.getPlateType(place) == PlateType.simple) {
+
+                    printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
+                    printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
+                    printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
+
+                    printTemplateBinding.plateSimpleTag1.setText(place.tag1);
+                    printTemplateBinding.plateSimpleTag2.setText(place.tag2);
+                    printTemplateBinding.plateSimpleTag3.setText(place.tag3);
+                    printTemplateBinding.plateSimpleTag4.setText(place.tag4);
+
+                } else if (assistant.getPlateType(place) == PlateType.old_aras) {
+
+                    printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
+                    printTemplateBinding.plateOldArasArea.setVisibility(View.VISIBLE);
+                    printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
+
+                    printTemplateBinding.plateOldArasTag1En.setText(place.tag1);
+                    printTemplateBinding.plateOldArasTag1Fa.setText(place.tag1);
+
+                } else {
+
+                    printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
+                    printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
+                    printTemplateBinding.plateNewArasArea.setVisibility(View.VISIBLE);
+
+                    printTemplateBinding.plateNewArasTag1En.setText(place.tag1);
+                    printTemplateBinding.plateNewArasTag1Fa.setText(place.tag1);
+                    printTemplateBinding.plateNewArasTag2En.setText(place.tag2);
+                    printTemplateBinding.plateNewArasTag2Fa.setText(place.tag2);
+
+                }
+
+                new Handler().postDelayed(() -> {
+
+                    behPardakhtPayment.printParkInfo(binding.printArea);
+
+                }, 500);
+
+
         }else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
             Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 
@@ -735,6 +827,57 @@ public class MainActivity extends AppCompatActivity {
             }, 500);
 
 
+        }else if (Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT) {
+
+            binding.printArea.removeAllViews();
+
+            SamanAfterPaymentPrintTemplateBinding printTemplateBinding = SamanAfterPaymentPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
+
+            printTemplateBinding.balanceTitle.setText(balance < 0 ? "بدهی پلاک" : "شارژ پلاک");
+
+            printTemplateBinding.balance.setText(balance + " تومان");
+            if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.simple) {
+
+                printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
+                printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
+                printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
+
+                printTemplateBinding.plateSimpleTag1.setText(tag1);
+                printTemplateBinding.plateSimpleTag2.setText(tag2);
+                printTemplateBinding.plateSimpleTag3.setText(tag3);
+                printTemplateBinding.plateSimpleTag4.setText(tag4);
+
+            } else if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.old_aras) {
+
+                printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
+                printTemplateBinding.plateOldArasArea.setVisibility(View.VISIBLE);
+                printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
+
+                printTemplateBinding.plateOldArasTag1En.setText(tag1);
+                printTemplateBinding.plateOldArasTag1Fa.setText(tag1);
+
+            } else {
+
+                printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
+                printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
+                printTemplateBinding.plateNewArasArea.setVisibility(View.VISIBLE);
+
+                printTemplateBinding.plateNewArasTag1En.setText(tag1);
+                printTemplateBinding.plateNewArasTag1Fa.setText(tag1);
+                printTemplateBinding.plateNewArasTag2En.setText(tag2);
+                printTemplateBinding.plateNewArasTag2Fa.setText(tag2);
+
+            }
+
+            printTemplateBinding.text.setText("\n.\n.\n.");
+
+            new Handler().postDelayed(() -> {
+
+                behPardakhtPayment.printParkInfo(binding.printArea);
+
+            }, 500);
+
+
         }
         else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
             Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان انجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
@@ -744,14 +887,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void getPlaces02() {
 
-        Runnable functionRunnable = () -> getPlaces02();
-        if (placesLoadedForFirstTime) {
-
-            placesLoadedForFirstTime = false;
-
-        }
 
         webService.getClient(getApplicationContext()).getPlaces(SharedPreferencesRepository.getTokenWithPrefix()).enqueue(new Callback<PlacesResponse>() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onResponse(@NonNull Call<PlacesResponse> call, @NonNull Response<PlacesResponse> response) {
 
@@ -759,7 +897,7 @@ public class MainActivity extends AppCompatActivity {
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
                     return;
 
-                if (!updatePopUpIsShowed && version != 0 && response.body().update.last_version > version) {
+                if (!updatePopUpIsShowed && version != 0 && response.body() != null && response.body().update.last_version > version) {
 
                     updatePopUpIsShowed = true;
 
@@ -776,13 +914,14 @@ public class MainActivity extends AppCompatActivity {
 
                 } else {
 
-                    if (watchManName != null)
+                    if (watchManName != null && response.body() != null)
                         watchManName.setText(response.body().watchman.name);
 
                     exitRequestCount = 0;
                     ArrayList<Place> myPlaces = new ArrayList<>();
                     ArrayList<Integer> exitRequestPlaceIDs = new ArrayList<>();
 
+                    if (response.body() != null)
                     myPlaces.addAll(response.body().watchman.places);
                     for (Place place : response.body().watchman.places)
                         if (place.exit_request != null) {

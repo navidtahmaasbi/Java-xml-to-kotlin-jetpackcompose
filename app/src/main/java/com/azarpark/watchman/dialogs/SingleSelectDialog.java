@@ -44,7 +44,6 @@ public class SingleSelectDialog extends DialogFragment {
 
         if (getDialog() != null && getDialog().getWindow() != null) {
             getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//            getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         }
 
         return super.onCreateView(inflater, container, savedInstanceState);
@@ -71,9 +70,9 @@ public class SingleSelectDialog extends DialogFragment {
         return builder.create();
     }
 
-    public static interface OnItemSelected {
+    public interface OnItemSelected {
 
-        public void select(int position);
+        void select(int position);
 
     }
 

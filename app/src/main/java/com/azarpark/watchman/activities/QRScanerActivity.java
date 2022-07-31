@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.payment.parsian.ParsianPayment;
 import com.azarpark.watchman.utils.Assistant;
+import com.azarpark.watchman.utils.Constants;
 import com.budiyev.android.codescanner.CodeScanner;
 import com.budiyev.android.codescanner.CodeScannerView;
 import com.budiyev.android.codescanner.DecodeCallback;
@@ -30,8 +31,8 @@ public class QRScanerActivity extends AppCompatActivity {
 //            Toast.makeText(QRScanerActivity.this, result.getText(), Toast.LENGTH_SHORT).show();
 
             Intent intent = new Intent();
-            intent.putExtra(ParsianPayment.QR_DATA,result.getText());
-            setResult(ParsianPayment.QR_SCANER_REQUEST_CODE,intent);
+            intent.putExtra(Constants.QR_DATA,result.getText());
+            setResult(Constants.QR_SCANER_REQUEST_CODE,intent);
             QRScanerActivity.this.finish();
         }));
         scannerView.setOnClickListener(view -> mCodeScanner.startPreview());

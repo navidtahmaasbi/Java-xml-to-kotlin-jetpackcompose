@@ -7,12 +7,15 @@ import android.os.Bundle;
 
 import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.LoadingBar;
+import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.web_service.bodies.LoginBody;
 import com.azarpark.watchman.web_service.responses.LoginResponse;
 import com.azarpark.watchman.utils.Assistant;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.Message;
 import android.view.View;
 import android.widget.Toast;
 
@@ -32,6 +35,7 @@ public class LoginActivity extends AppCompatActivity {
     ActivityLoginBinding binding;
     Assistant assistant;
     WebService webService = new WebService();
+    ConfirmDialog confirmDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +56,25 @@ public class LoginActivity extends AppCompatActivity {
         else if (!assistant.isPassword(binding.password.getText().toString()))
             Toast.makeText(getApplicationContext(), "رمز عبور را درست وارد کنید", Toast.LENGTH_SHORT).show();
         else
-            login(new LoginBody(binding.username.getText().toString(), binding.password.getText().toString()),binding.username.getText().toString());
+            showConfirmation();
+
+
+    }
+
+    private void showConfirmation() {
+
+        confirmDialog = new ConfirmDialog("پذیرش قوانین", Constants.rules, "تایید", "عدم تایید", new ConfirmDialog.ConfirmButtonClicks() {
+            @Override
+            public void onConfirmClicked() {
+                login(new LoginBody(binding.username.getText().toString(), binding.password.getText().toString()), binding.username.getText().toString());
+            }
+
+            @Override
+            public void onCancelClicked() {
+                confirmDialog.dismiss();
+            }
+        });
+        confirmDialog.show(getSupportFragmentManager(),MessageDialog.TAG);
 
 
     }
@@ -63,17 +85,18 @@ public class LoginActivity extends AppCompatActivity {
         LoadingBar loadingBar = new LoadingBar(LoginActivity.this);
         loadingBar.show();
 
-        webService.getClient(getApplicationContext()).login( loginBody).enqueue(new Callback<LoginResponse>() {
+        webService.getClient(getApplicationContext()).login(loginBody).enqueue(new Callback<LoginResponse>() {
             @Override
-            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+            public void onResponse(@NonNull Call<LoginResponse> call, @NonNull Response<LoginResponse> response) {
 
                 loadingBar.dismiss();
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
                     return;
 
-                SharedPreferencesRepository.setToken(response.body().access_token);
-                SharedPreferencesRepository.setValue(Constants.REFRESH_TOKEN,response.body().refresh_token);
-                SharedPreferencesRepository.setValue(Constants.USERNAME,mobile);
+                if (response.body() != null)
+                    SharedPreferencesRepository.setToken(response.body().access_token);
+                SharedPreferencesRepository.setValue(Constants.REFRESH_TOKEN, response.body().refresh_token);
+                SharedPreferencesRepository.setValue(Constants.USERNAME, mobile);
 
                 Assistant.loginEvent(loginBody.getUsername());
 
@@ -82,7 +105,7 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<LoginResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<LoginResponse> call, @NonNull Throwable t) {
                 loadingBar.dismiss();
                 NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }

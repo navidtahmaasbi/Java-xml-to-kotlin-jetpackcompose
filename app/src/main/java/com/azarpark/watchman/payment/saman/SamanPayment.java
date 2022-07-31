@@ -42,7 +42,7 @@ public class SamanPayment {
 
     Activity activity;
     Context context;
-    public static int PAYMENT_REQUEST_CODE = 1003;
+    public static int PAYMENT_REQUEST_CODE = 104;
     public static int QR_SCANNER_REQUEST_CODE = 1004;
     public IProxy service;
     public MyServiceConnection connection;
