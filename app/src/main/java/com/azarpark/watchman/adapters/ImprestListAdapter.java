@@ -37,19 +37,19 @@ public class ImprestListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         viewHolder.binding.delete.setVisibility(!items.get(position).status.equals("watchman_added") ? View.GONE : View.VISIBLE);
         viewHolder.binding.delete.setOnClickListener(view -> {
-            if (!items.get(position).status.equals("watchman_added"))
+            if (items.get(position).status.equals("watchman_added"))
                 onAction.onRemove(items.get(position).id);
         });
 
-        if (position < items.size()) {
+        if (position < items.size()-1) {
             viewHolder.binding.lastItemPadding.setVisibility(View.GONE);
         } else
             viewHolder.binding.lastItemPadding.setVisibility(View.VISIBLE);
 
-        viewHolder.binding.title.setText(items.get(position).amount + " تومان");
+        viewHolder.binding.title.setText(assistant.numberFormat(items.get(position).amount) + " تومان");
         viewHolder.binding.status.setText(Assistant.getImprestStatus(items.get(position).status));
         viewHolder.binding.description.setText(assistant.toJalali(items.get(position).created_at));
-        String amount = items.get(position).accepted_amount == null?"درانتظار":items.get(position).accepted_amount + " تومان";
+        String amount = items.get(position).accepted_amount == null?"درانتظار":assistant.numberFormat(items.get(position).accepted_amount) + " تومان";
         viewHolder.binding.acceptedAmount.setText("مبلغ تایید شده : " + amount);
 
     }
@@ -78,9 +78,7 @@ public class ImprestListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    public static interface OnAction {
-
-        public void onRemove(int id);
-
+    public interface OnAction {
+        void onRemove(int id);
     }
 }

@@ -140,7 +140,6 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                 long minutes = place.end != null ? assistant.getDateDifferenceInMinutes(sdf.parse(place.end), new Date()) : -1;
                 viewHolder.binding.getRoot().setBackgroundResource(minutes == -1? R.drawable.gray_bg_5_02 :minutes > 60 ? R.drawable.red_bg_5 : minutes > 20 ? R.drawable.orange_bg_5 : R.drawable.white_bg_5);
-                System.out.println("----------> " + place.number + " : " + minutes + " - " + place.end);
 
             } catch (ParseException ex) {
                 Log.v("Exception", ex.getLocalizedMessage());

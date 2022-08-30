@@ -2,10 +2,13 @@ package com.azarpark.watchman.web_service;
 
 import com.azarpark.watchman.models.AddMobieToPlateResponse;
 import com.azarpark.watchman.models.CreateImpressedResponse;
+import com.azarpark.watchman.models.CreateTicketResponse;
 import com.azarpark.watchman.models.CreateVacationResponse;
 import com.azarpark.watchman.models.GetImprestsResponse;
+import com.azarpark.watchman.models.GetTicketsResponse;
 import com.azarpark.watchman.models.GetVacationsResponse;
 import com.azarpark.watchman.models.IncomeStatisticsResponse;
+import com.azarpark.watchman.models.IncomeStatisticsResponse02;
 import com.azarpark.watchman.models.RemoveImpressedResponse;
 import com.azarpark.watchman.models.RemoveVacationResponse;
 import com.azarpark.watchman.models.WatchmanTimeResponse;
@@ -29,6 +32,7 @@ import com.azarpark.watchman.web_service.responses.VerifyTransactionResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.Field;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
@@ -82,6 +86,9 @@ public interface API {
     @GET("/api/watchman/income/statistics")
     Call<IncomeStatisticsResponse> getIncomeStatistics(@Header("Authorization") String authToken);
 
+    @GET("/api/watchman/income/statistics2")
+    Call<IncomeStatisticsResponse02> getIncomeStatistics02(@Header("Authorization") String authToken);
+
     @GET("/api/watchman/create_transaction/{plate_type}/{tag1}/{tag2}/{tag3}/{tag4}/{amount}")
     Call<CreateTransactionResponse> createTransaction(@Header("Authorization") String authToken,
                                                       @Path("plate_type") String plateType,
@@ -100,18 +107,27 @@ public interface API {
     @GET("/api/watchman/park/estimate/{id}")
     Call<EstimateParkPriceResponse> estimatePArkPrice(@Header("Authorization") String authToken, @Path("id") int id);
 
-    @GET("/api/watchman/imprest/add/{amount}/{card_number}/{bank_account_number}/{bank_account_name}")
+    @GET("/api/watchman/imprest/add2/{amount}/{bank_account_type}/{bank_account_number}/{bank_account_name}")
     Call<CreateImpressedResponse> createImprest(@Header("Authorization") String authToken,
                                                 @Path("amount") String amount,
-                                                @Path("card_number") String cardNumber,
+                                                @Path("bank_account_type") String type,
                                                 @Path("bank_account_number") String bankAccountNumber,
                                                 @Path("bank_account_name") String bankAccountName);
+
+    @POST("/api/watchman/ticket/add")
+    Call<CreateTicketResponse> createTicket(@Header("Authorization") String authToken,
+                                            @Field("title") String title,
+                                            @Field("description") String description
+    );
 
     @GET("/api/watchman/imprest/remove/{id}")
     Call<RemoveImpressedResponse> deleteImprest(@Header("Authorization") String authToken, @Path("id") int id);
 
     @GET("/api/watchman/imprests/1000/0")
     Call<GetImprestsResponse> getImprests(@Header("Authorization") String authToken);
+
+    @GET("/api/watchman/tickets/1000/0")
+    Call<GetTicketsResponse> getTickets(@Header("Authorization") String authToken);
 
 
     @GET("/api/watchman/vacation/add/{date}/{type}/{start}/{end}/{vacation_type}")

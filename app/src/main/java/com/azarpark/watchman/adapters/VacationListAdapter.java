@@ -41,7 +41,7 @@ public class VacationListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             onAction.onRemove(vacation.id);
         });
 
-        if (position < items.size()) {
+        if (position < items.size()-1) {
             viewHolder.binding.lastItemPadding.setVisibility(View.GONE);
         } else
             viewHolder.binding.lastItemPadding.setVisibility(View.VISIBLE);

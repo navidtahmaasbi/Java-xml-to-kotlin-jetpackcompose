@@ -42,12 +42,10 @@ public class ImprestActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         imprestListAdapter = new ImprestListAdapter(id -> {
-
             confirmDialog = new ConfirmDialog("توجه", "ایا از حذف مساعده اطمینان دارید؟", "بله حذف کن", "انصراف", new ConfirmDialog.ConfirmButtonClicks() {
                 @Override
                 public void onConfirmClicked() {
                     removeImprest(id);
-
                 }
 
                 @Override

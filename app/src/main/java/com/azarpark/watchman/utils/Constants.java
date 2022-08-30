@@ -9,7 +9,7 @@ public class Constants {
     public static final String LAST_BANK_RESULT_TIME = "LAST_BANK_RESULT_TIME";
     public static final String SUCCESS = "success";
     public static final String DESCRIPTION = "description";
-    public static int NOTHING = 0, SAMAN = 1, PASRIAN = 2, BEH_PARDAKHT = 3, SELECTED_PAYMENT =1 ;//todo release
+    public static int NOTHING = 0, SAMAN = 1, PASRIAN = 2, BEH_PARDAKHT = 3, SELECTED_PAYMENT =2 ;//todo release
     public static int TRANSACTION_TYPE_CHAREG = 1, TRANSACTION_TYPE_DEBT = 2, TRANSACTION_TYPE_PARK_PRICE = 3;
     public static int MIN_PRICE_FOR_PAYMENT = 100;
     public static String NON_CHARGE_SHABA = "IR540550100470106230710001", CHARGE_SHABA = "IR270550100470106230710002";
@@ -60,4 +60,7 @@ public class Constants {
     public static String START_WORK = "start_work";
     public static String END_WORK = "end_work";
     public static String rules = "اینجانب با انتخاب گزینه تایید ضمن قبول آشنایی کامل و اخذ آموزش از شرکت آیریک راه پایه کلیه مسئولیت های ناشی از استفاده نام کاربری و گذرواژه خود در اپلیکیشن پارکبانی تحت اختیار را به عهده میگیرم";
+    public static String cardNumber = "card_number";
+    public static String shabaNumber = "shaba_number";
+    public static String accountNumber = "account_number";
 }

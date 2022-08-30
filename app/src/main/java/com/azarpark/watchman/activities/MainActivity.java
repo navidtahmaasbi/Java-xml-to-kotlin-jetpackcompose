@@ -33,6 +33,7 @@ import com.azarpark.watchman.R;
 import com.azarpark.watchman.adapters.LocalNotificationsListAdapter;
 import com.azarpark.watchman.adapters.ParkListAdapter;
 import com.azarpark.watchman.databinding.ActivityMainBinding;
+import com.azarpark.watchman.databinding.BehpardakhtPrintTemplateBinding;
 import com.azarpark.watchman.databinding.SamanAfterPaymentPrintTemplateBinding;
 import com.azarpark.watchman.databinding.SamanPrintTemplateBinding;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
@@ -235,7 +236,7 @@ public class MainActivity extends AppCompatActivity {
 
         initMenuPopup();
 
-        binding.incomeStatistics.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, IncomeStatisticsActivity.class)));
+        binding.incomeStatistics.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, IncomeStatisticsActivity02.class)));
 
     }
 
@@ -342,7 +343,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         popupView.findViewById(R.id.income_statistics).setOnClickListener(view -> {
-            startActivity(new Intent(MainActivity.this, IncomeStatisticsActivity.class));
+            startActivity(new Intent(MainActivity.this, IncomeStatisticsActivity02.class));
             popupWindow.dismiss();
         });
         popupView.findViewById(R.id.help).setOnClickListener(view -> {
@@ -699,9 +700,10 @@ public class MainActivity extends AppCompatActivity {
 
         } else if (Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT) {
 
+            System.out.println("---------> print");
 
                 binding.printArea.removeAllViews();
-                SamanPrintTemplateBinding printTemplateBinding = SamanPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
+                BehpardakhtPrintTemplateBinding printTemplateBinding = BehpardakhtPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
 
                 printTemplateBinding.placeId.setText(place.number + "");
 
@@ -760,11 +762,11 @@ public class MainActivity extends AppCompatActivity {
 
                 }
 
-                new Handler().postDelayed(() -> {
+//                new Handler().postDelayed(() -> {
 
-                    behPardakhtPayment.printParkInfo(binding.printArea);
+                    behPardakhtPayment.print(binding.printArea);
 
-                }, 500);
+//                }, 500);
 
 
         }else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
@@ -873,7 +875,7 @@ public class MainActivity extends AppCompatActivity {
 
             new Handler().postDelayed(() -> {
 
-                behPardakhtPayment.printParkInfo(binding.printArea);
+                behPardakhtPayment.print(binding.printArea);
 
             }, 500);
 

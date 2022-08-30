@@ -1,6 +1,10 @@
 package com.azarpark.watchman.web_service.responses;
 
+import com.azarpark.watchman.models.KeyValueModel;
 import com.azarpark.watchman.models.Update;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 public class SplashResponse {
 
@@ -14,4 +18,5 @@ public class SplashResponse {
     public String guide_url;
     public Update update;
     public String print_description2;
+    public ArrayList<KeyValueModel> watchman_detail;
 }

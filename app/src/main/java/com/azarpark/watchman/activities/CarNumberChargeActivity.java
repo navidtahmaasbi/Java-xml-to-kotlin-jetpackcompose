@@ -282,7 +282,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         ArrayList<Integer> items = new ArrayList<>();
 
         //todo release
-        items.add(1000);
+//        items.add(1000);
         items.add(10000);
         items.add(20000);
         items.add(30000);

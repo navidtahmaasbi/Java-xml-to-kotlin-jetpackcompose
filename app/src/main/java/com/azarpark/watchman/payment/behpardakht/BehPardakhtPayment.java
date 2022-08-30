@@ -3,11 +3,18 @@ package com.azarpark.watchman.payment.behpardakht;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -96,11 +103,6 @@ public class BehPardakhtPayment {
         }
     }
 
-    public void printParkInfo(ViewGroup viewGroupForBindFactor) {
-
-        //todo implement
-
-    }
 
     public void createTransaction(String shaba, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID
             , int transactionType, LoadingListener loadingListener) {
@@ -277,22 +279,81 @@ public class BehPardakhtPayment {
         }
     }
 
-    private static Bitmap convertLayout(View v) {
+
+    public static Bitmap getViewBitmap02(View view) {
+
+
+        view.setDrawingCacheEnabled(true);
+
+        view.buildDrawingCache();
+
+        return view.getDrawingCache();
+
+//        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+//        Canvas canvas = new Canvas(returnedBitmap);
+//        Drawable bgDrawable = view.getBackground();
+//        if (bgDrawable != null)
+//            bgDrawable.draw(canvas);
+//        else
+//            canvas.drawColor(Color.WHITE);
+//        view.draw(canvas);
+//        return returnedBitmap;
+
+
+//        v.clearFocus();
+//        v.setPressed(false);
+//
+//        boolean willNotCache = v.willNotCacheDrawing();
+//        v.setWillNotCacheDrawing(false);
+//
+//        // Reset the drawing cache background color to fully transparent
+//        // for the duration of this operation
+//        int color = v.getDrawingCacheBackgroundColor();
+//        v.setDrawingCacheBackgroundColor(0);
+//
+//        if (color != 0) {
+//            v.destroyDrawingCache();
+//        }
+//        v.buildDrawingCache();
+//        Bitmap cacheBitmap = v.getDrawingCache();
+//        if (cacheBitmap == null) {
+//            Log.e(TAG, "failed getViewBitmap(" + v + ")", new RuntimeException());
+//            return null;
+//        }
+//
+//        Bitmap bitmap = Bitmap.createBitmap(cacheBitmap);
+//
+//        // Restore the view
+//        v.destroyDrawingCache();
+//        v.setWillNotCacheDrawing(willNotCache);
+//        v.setDrawingCacheBackgroundColor(color);
+//
+//        return bitmap;
+    }
+
+    private Bitmap buildBitmap(View v) {
+
         v.setDrawingCacheEnabled(true);
         v.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
         v.layout(0, 0, v.getMeasuredWidth(), v.getMeasuredHeight());
         v.buildDrawingCache(true);
-        Bitmap b = Bitmap.createBitmap(v.getDrawingCache());
+        Bitmap originalBitmap = Bitmap.createBitmap(v.getDrawingCache());
         v.setDrawingCacheEnabled(false); // clear drawing cache return b;
-        return b;
-    }
-
-    private Bitmap buildBitmap(View v) {
-        Bitmap originalBitmap = convertLayout(v);
         if (originalBitmap == null || originalBitmap.getWidth() == 0 || originalBitmap.getHeight() == 0) {
             return null;
         }
         return originalBitmap;
+    }
+
+    public static Bitmap getViewBitmap(View v) {
+
+        Bitmap b = Bitmap.createBitmap(300, 500, Bitmap.Config.ARGB_8888);
+
+        Canvas c = new Canvas(b);
+        v.layout(0, 0, v.getLayoutParams().width, v.getLayoutParams().height);
+        v.draw(c);
+        return b;
+
     }
 
     public interface BehPardakhtPaymentCallBack {
@@ -320,22 +381,57 @@ public class BehPardakhtPayment {
     }
 
     public void print(View view){
-        new Printer(view).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                view.getHeight(); //height is ready
+
+                Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(returnedBitmap);
+                Drawable bgDrawable =view.getBackground();
+                if (bgDrawable!=null) {
+                    bgDrawable.draw(canvas);
+                }   else{
+                    canvas.drawColor(Color.WHITE);
+                }
+                view.draw(canvas);
+
+                new Printer(returnedBitmap).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+            }
+        });
+
+
+    }
+
+    private Bitmap getBitmapFromView(View view) {
+        Bitmap returnedBitmap = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(),Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(returnedBitmap);
+        Drawable bgDrawable =view.getBackground();
+        if (bgDrawable!=null) {
+            bgDrawable.draw(canvas);
+        }   else{
+            canvas.drawColor(Color.WHITE);
+        }
+        view.draw(canvas);
+        return returnedBitmap;
     }
 
     private class Printer extends AsyncTask {
 
-        View view;
+        Bitmap bitmap;
 
-        Printer(View view){
-            this.view = view;
+        Printer(Bitmap bitmap){
+            this.bitmap = bitmap;
         }
 
         @Override
         protected Object doInBackground(Object[] objects) {
 
             try {
-                device.print(generateBitmap(view), new IPosPrinterEvent() {
+                device.print(bitmap, new IPosPrinterEvent() {
                     @Override
                     public void onPrintStarted() {
 
@@ -343,7 +439,7 @@ public class BehPardakhtPayment {
 
                     @Override
                     public void onPrinterError(String error, boolean isPaperError) {
-
+                        System.out.println("---------> error : "+error);
                     }
 
                     @Override
@@ -355,6 +451,47 @@ public class BehPardakhtPayment {
                 e.printStackTrace();
             }
             return null;
+        }
+    }
+
+
+
+
+    public Bitmap decodeResource(Resources res, int resId, int dstWidth, int dstHeight)
+    {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(res, resId, options);
+        options.inJustDecodeBounds = false;
+
+        options.inSampleSize = calculateSampleSize(options.outWidth, options.outHeight, dstWidth,
+                dstHeight);
+
+        options = new BitmapFactory.Options();
+        //May use null here as well. The funciton may interpret the pre-used options variable in ways hard to tell.
+        Bitmap unscaledBitmap = BitmapFactory.decodeResource(res, resId, options);
+
+        if(unscaledBitmap == null)
+        {
+            Log.e("ERR","Failed to decode resource - " + resId + " " + res.toString());
+            return null;
+        }
+
+        return unscaledBitmap;
+    }
+
+    public static int calculateSampleSize(int srcWidth, int srcHeight, int dstWidth, int dstHeight)
+    {
+        final float srcAspect = (float)srcWidth / (float)srcHeight;
+        final float dstAspect = (float)dstWidth / (float)dstHeight;
+
+        if (srcAspect > dstAspect)
+        {
+            return srcWidth / dstWidth;
+        }
+        else
+        {
+            return srcHeight / dstHeight;
         }
     }
 

@@ -53,6 +53,11 @@ public class NewErrorHandler {
             return false;
         }
 
+        if (response.code() == HttpURLConnection.HTTP_BAD_REQUEST) {
+
+            Toast.makeText(context, "درخواست اشتباه. احتمالا رمز عبور را اشتباه وارد کرده اید", Toast.LENGTH_LONG).show();
+        }
+
         if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
 
             SharedPreferencesRepository.removeToken();
@@ -63,11 +68,8 @@ public class NewErrorHandler {
 
             Toast.makeText(context, "شما از طرف پشتیبانی غیر فعال هستید", Toast.LENGTH_SHORT).show();
             SharedPreferencesRepository.removeToken();
-//            context.startActivity(new Intent(context, SplashActivity.class));
 
         }
-
-//        response.body().toString()
 
         return true;
 

@@ -193,9 +193,11 @@ public class Assistant {
 
         try {
 
-            int a = Integer.parseInt(amount);
+            long a = Long.parseLong(amount);
         } catch (Exception e) {
 
+            System.out.println("---------> eee : " );
+            e.printStackTrace();
             return false;
         }
 
@@ -672,4 +674,8 @@ public class Assistant {
         }
     }
 
+    public String numberFormat(String s) {
+        DecimalFormat formatter = new DecimalFormat("#,###,###");
+        return formatter.format(Integer.parseInt(s));
+    }
 }

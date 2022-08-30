@@ -20,10 +20,11 @@
         android:text="مقدار مساعده از تاریخ 26 هر ماه تا 5 ماه بعد یک میلیون تومان, از 6 هر ماه تا 15 همان ماه دو میلیون تومان و از 16 تا 25 همان ماه سه میلیون تومان می باشد"
         android:textColor="@color/black"
         android:layout_marginBottom="@dimen/_5sdp"
+        android:textSize="@dimen/_8sdp"
         app:layout_constraintTop_toBottomOf="@+id/amount"/>
 
     <TextView
-        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_5sdp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/iran_sans"
@@ -31,6 +32,7 @@
         android:layout_marginLeft="@dimen/_10sdp"
         android:text="مقدار مساعده را به تومان وارد کنید"
         android:textColor="@color/black"
+        android:textSize="@dimen/_9sdp"
         android:layout_marginBottom="@dimen/_5sdp"
         app:layout_constraintTop_toBottomOf="@+id/amount"/>
 
@@ -44,26 +46,48 @@
         android:inputType="number"
         android:padding="@dimen/_8sdp"
         android:hint="مقدار مساعده"
-        android:textSize="@dimen/_15sdp"
+        android:textSize="@dimen/_11sdp"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="32dp" />
 
-    <TextView
-        android:layout_marginTop="@dimen/_10sdp"
+    <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/iran_sans"
-        android:layout_marginRight="@dimen/_10sdp"
-        android:layout_marginLeft="@dimen/_10sdp"
-        android:text="از بین شماره کارت یا شماره حساب میتوانید یکی از انها یا هر دو را وارد کنید"
-        android:textColor="@color/black"
-        android:id="@+id/hint"
-        app:layout_constraintTop_toBottomOf="@+id/amount"/>
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:id="@+id/type">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="شماره شبا"
+            android:layoutDirection="rtl"
+            android:fontFamily="@font/iran_sans_fa_num"
+            android:id="@+id/shaba" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="شماره حساب"
+            android:layoutDirection="rtl"
+            android:fontFamily="@font/iran_sans_fa_num"
+            android:id="@+id/bank_account_number"/>
+
+        <RadioButton
+            android:checked="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="شماره کارت"
+            android:layoutDirection="rtl"
+            android:fontFamily="@font/iran_sans_fa_num"
+            android:id="@+id/card_number"/>
+
+    </RadioGroup>
 
 
     <EditText
         android:layout_marginTop="@dimen/_10sdp"
-        android:id="@+id/card_number"
+        android:id="@+id/input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/white_bg_5"
@@ -71,23 +95,8 @@
         android:gravity="center"
         android:inputType="number"
         android:padding="@dimen/_8sdp"
-        android:hint="شماره کارت خود را وارد کنید"
-        android:textSize="@dimen/_15sdp"
-        app:layout_constraintTop_toBottomOf="@+id/hint"
-        tools:layout_editor_absoluteX="32dp" />
-
-    <EditText
-        android:layout_marginTop="@dimen/_10sdp"
-        android:id="@+id/bank_account_number"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/white_bg_5"
-        android:fontFamily="@font/iran_sans_fa_num"
-        android:gravity="center"
-        android:inputType="number"
-        android:padding="@dimen/_8sdp"
-        android:hint="شماره حساب خود را وارد کنید"
-        android:textSize="@dimen/_15sdp"
+        android:hint="شماره کارت را وارد کنید"
+        android:textSize="@dimen/_11sdp"
         app:layout_constraintTop_toBottomOf="@+id/card_number"
         tools:layout_editor_absoluteX="32dp" />
 
@@ -101,7 +110,7 @@
         android:gravity="center"
         android:padding="@dimen/_8sdp"
         android:hint="نام صاحب حساب یا شماره کارت را وارد کنید"
-        android:textSize="@dimen/_15sdp"
+        android:textSize="@dimen/_11sdp"
         app:layout_constraintTop_toBottomOf="@+id/bank_account_number"
         tools:layout_editor_absoluteX="32dp" />
 

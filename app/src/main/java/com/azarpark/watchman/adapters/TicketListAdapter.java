@@ -1,0 +1,78 @@
+package com.azarpark.watchman.adapters;
+
+import android.annotation.SuppressLint;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.azarpark.watchman.databinding.ImpressedItemBinding;
+import com.azarpark.watchman.models.Imprest;
+import com.azarpark.watchman.models.Ticket;
+import com.azarpark.watchman.utils.Assistant;
+
+import java.util.ArrayList;
+
+public class TicketListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    private ArrayList<Ticket> items = new ArrayList<>();
+    Assistant assistant = new Assistant();
+
+
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new ItemViewHolder(ImpressedItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+
+        ItemViewHolder viewHolder = (ItemViewHolder) holder;
+
+//        viewHolder.binding.delete.setVisibility(!items.get(position).status.equals("watchman_added") ? View.GONE : View.VISIBLE);
+//        viewHolder.binding.delete.setOnClickListener(view -> {
+//            if (!items.get(position).status.equals("watchman_added"))
+//                onAction.onRemove(items.get(position).id);
+//        });
+//
+//        if (position < items.size()) {
+//            viewHolder.binding.lastItemPadding.setVisibility(View.GONE);
+//        } else
+//            viewHolder.binding.lastItemPadding.setVisibility(View.VISIBLE);
+//
+//        viewHolder.binding.title.setText(items.get(position).amount + " تومان");
+//        viewHolder.binding.status.setText(Assistant.getImprestStatus(items.get(position).status));
+//        viewHolder.binding.description.setText(assistant.toJalali(items.get(position).created_at));
+//        String amount = items.get(position).accepted_amount == null?"درانتظار":items.get(position).accepted_amount + " تومان";
+//        viewHolder.binding.acceptedAmount.setText("مبلغ تایید شده : " + amount);
+
+    }
+
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void setItems(ArrayList<Ticket> items) {
+
+        this.items = items;
+        notifyDataSetChanged();
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return items.size();
+    }
+
+    public static class ItemViewHolder extends RecyclerView.ViewHolder {
+
+        ImpressedItemBinding binding;
+
+        public ItemViewHolder(@NonNull ImpressedItemBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
+    }
+
+}
