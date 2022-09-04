@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.azarpark.watchman.databinding.ImpressedItemBinding;
+import com.azarpark.watchman.databinding.ImprestItemBinding;
 import com.azarpark.watchman.models.Imprest;
 import com.azarpark.watchman.utils.Assistant;
 
@@ -27,7 +27,7 @@ public class ImprestListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ItemViewHolder(ImpressedItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
+        return new ItemViewHolder(ImprestItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
     }
 
     @Override
@@ -70,9 +70,9 @@ public class ImprestListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
 
-        ImpressedItemBinding binding;
+        ImprestItemBinding binding;
 
-        public ItemViewHolder(@NonNull ImpressedItemBinding binding) {
+        public ItemViewHolder(@NonNull ImprestItemBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }

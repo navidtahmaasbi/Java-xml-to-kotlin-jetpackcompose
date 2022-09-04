@@ -8,8 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.azarpark.watchman.databinding.ImpressedItemBinding;
-import com.azarpark.watchman.models.Imprest;
+import com.azarpark.watchman.databinding.TicketItemBinding;
 import com.azarpark.watchman.models.Ticket;
 import com.azarpark.watchman.utils.Assistant;
 
@@ -19,12 +18,17 @@ public class TicketListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private ArrayList<Ticket> items = new ArrayList<>();
     Assistant assistant = new Assistant();
+    OnItemClicked onItemClicked;
+
+    public TicketListAdapter(OnItemClicked onItemClicked){
+        this.onItemClicked = onItemClicked;
+    }
 
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ItemViewHolder(ImpressedItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
+        return new ItemViewHolder(TicketItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
     }
 
     @Override
@@ -32,22 +36,15 @@ public class TicketListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         ItemViewHolder viewHolder = (ItemViewHolder) holder;
 
-//        viewHolder.binding.delete.setVisibility(!items.get(position).status.equals("watchman_added") ? View.GONE : View.VISIBLE);
-//        viewHolder.binding.delete.setOnClickListener(view -> {
-//            if (!items.get(position).status.equals("watchman_added"))
-//                onAction.onRemove(items.get(position).id);
-//        });
-//
-//        if (position < items.size()) {
-//            viewHolder.binding.lastItemPadding.setVisibility(View.GONE);
-//        } else
-//            viewHolder.binding.lastItemPadding.setVisibility(View.VISIBLE);
-//
-//        viewHolder.binding.title.setText(items.get(position).amount + " تومان");
-//        viewHolder.binding.status.setText(Assistant.getImprestStatus(items.get(position).status));
-//        viewHolder.binding.description.setText(assistant.toJalali(items.get(position).created_at));
-//        String amount = items.get(position).accepted_amount == null?"درانتظار":items.get(position).accepted_amount + " تومان";
-//        viewHolder.binding.acceptedAmount.setText("مبلغ تایید شده : " + amount);
+        Ticket ticket = items.get(position);
+
+        viewHolder.binding.getRoot().setOnClickListener(view -> onItemClicked.onClick(ticket));
+
+        viewHolder.binding.title.setText(ticket.subject);
+        viewHolder.binding.date.setText(ticket.created_at_j);
+//        viewHolder.binding.description.setText(ticket.watchman_ticket_details.get(0).description);
+
+        viewHolder.binding.bottomPadding.setVisibility(position == items.size()-1? View.VISIBLE:View.GONE);
 
     }
 
@@ -62,17 +59,21 @@ public class TicketListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public int getItemCount() {
-        return items.size();
+     return items.size();
     }
 
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
 
-        ImpressedItemBinding binding;
+        TicketItemBinding binding;
 
-        public ItemViewHolder(@NonNull ImpressedItemBinding binding) {
+        public ItemViewHolder(@NonNull TicketItemBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
+    }
+
+    public interface OnItemClicked{
+        public void onClick(Ticket ticket);
     }
 
 }

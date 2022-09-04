@@ -2,9 +2,11 @@ package com.azarpark.watchman.web_service;
 
 import com.azarpark.watchman.models.AddMobieToPlateResponse;
 import com.azarpark.watchman.models.CreateImpressedResponse;
+import com.azarpark.watchman.models.CreateTicketMessageResponse;
 import com.azarpark.watchman.models.CreateTicketResponse;
 import com.azarpark.watchman.models.CreateVacationResponse;
 import com.azarpark.watchman.models.GetImprestsResponse;
+import com.azarpark.watchman.models.GetTicketResponse;
 import com.azarpark.watchman.models.GetTicketsResponse;
 import com.azarpark.watchman.models.GetVacationsResponse;
 import com.azarpark.watchman.models.IncomeStatisticsResponse;
@@ -33,6 +35,7 @@ import com.azarpark.watchman.web_service.responses.VerifyTransactionResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
@@ -114,10 +117,18 @@ public interface API {
                                                 @Path("bank_account_number") String bankAccountNumber,
                                                 @Path("bank_account_name") String bankAccountName);
 
-    @POST("/api/watchman/ticket/add")
+    @FormUrlEncoded
+    @POST("/api/watchman/watchman_ticket/store")
     Call<CreateTicketResponse> createTicket(@Header("Authorization") String authToken,
-                                            @Field("title") String title,
+                                            @Field("subject") String title,
                                             @Field("description") String description
+    );
+
+    @FormUrlEncoded
+    @POST("/api/watchman/watchman_ticket/detail/store/{ticket_id}")
+    Call<CreateTicketMessageResponse> createTicketMessage(@Header("Authorization") String authToken,
+                                                          @Path("ticket_id") int ticket_id,
+                                                          @Field("description") String description
     );
 
     @GET("/api/watchman/imprest/remove/{id}")
@@ -126,8 +137,12 @@ public interface API {
     @GET("/api/watchman/imprests/1000/0")
     Call<GetImprestsResponse> getImprests(@Header("Authorization") String authToken);
 
-    @GET("/api/watchman/tickets/1000/0")
+    @GET("/api/watchman/watchman_ticket/1000/0")
     Call<GetTicketsResponse> getTickets(@Header("Authorization") String authToken);
+
+    @GET("/api/watchman/watchman_ticket/{ticket_id}")
+    Call<GetTicketResponse> getTicket(@Header("Authorization") String authToken,
+                                      @Path("ticket_id") int ticket_id);
 
 
     @GET("/api/watchman/vacation/add/{date}/{type}/{start}/{end}/{vacation_type}")

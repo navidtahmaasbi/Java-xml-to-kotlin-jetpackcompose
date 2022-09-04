@@ -28,6 +28,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Watchman">
         <activity
+            android:name=".activities.TicketMessagesActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.TicketsActivity"
             android:exported="false" />
         <activity
@@ -54,7 +57,6 @@
         <activity
             android:name=".activities.IncomeStatisticsActivity"
             android:exported="false" />
-
         <activity
             android:name=".activities.IncomeStatisticsActivity02"
             android:exported="false" />

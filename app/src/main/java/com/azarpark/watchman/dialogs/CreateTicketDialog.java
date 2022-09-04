@@ -89,7 +89,7 @@ public class CreateTicketDialog extends DialogFragment {
                     return;
 
                 if (response.body() != null)
-                    Toast.makeText(requireContext(), response.body().description, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), response.body().msg, Toast.LENGTH_SHORT).show();
                 dialogActions.ticketCreated();
 
             }

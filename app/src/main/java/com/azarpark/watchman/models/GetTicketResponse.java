@@ -2,10 +2,10 @@ package com.azarpark.watchman.models;
 
 import java.util.ArrayList;
 
-public class GetTicketsResponse {
+public class GetTicketResponse {
 
     public int success;
     public String msg, description;
-    public ArrayList<Ticket> tickets;
+    public Ticket ticket;
 
 }

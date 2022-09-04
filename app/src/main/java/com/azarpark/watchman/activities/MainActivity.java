@@ -3,6 +3,7 @@ package com.azarpark.watchman.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ComponentName;
@@ -16,6 +17,7 @@ import android.graphics.drawable.Drawable;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -342,6 +344,11 @@ public class MainActivity extends AppCompatActivity {
             popupWindow.dismiss();
         });
 
+        popupView.findViewById(R.id.tickets).setOnClickListener(view -> {
+            startActivity(new Intent(MainActivity.this, TicketsActivity.class));
+            popupWindow.dismiss();
+        });
+
         popupView.findViewById(R.id.income_statistics).setOnClickListener(view -> {
             startActivity(new Intent(MainActivity.this, IncomeStatisticsActivity02.class));
             popupWindow.dismiss();
@@ -489,7 +496,13 @@ public class MainActivity extends AppCompatActivity {
 //            Toast.makeText(getApplicationContext(), "درخواست خروج ندارید", Toast.LENGTH_SHORT).show();
     }
 
+
     public void onBarcodeIconClicked(View view) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, 5023);
+            return;
+        }
 
         if (Constants.SELECTED_PAYMENT == Constants.PASRIAN || Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT) {
 
@@ -580,20 +593,19 @@ public class MainActivity extends AppCompatActivity {
                 plateChargeDialog = new PlateChargeDialog((amount) -> {
 
                     if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
-                        parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG,()->{
+                        parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG, () -> {
                             plateChargeDialog.dismiss();
                         });
                     else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
-                        samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG,()->{
+                        samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG, () -> {
                             plateChargeDialog.dismiss();
                         });
                     else if (Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT)
-                        behPardakhtPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG,()->{
+                        behPardakhtPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG, () -> {
                             plateChargeDialog.dismiss();
                         });
                     else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
                         Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
-
 
 
                 }, place, hasMobile);
@@ -628,8 +640,7 @@ public class MainActivity extends AppCompatActivity {
             }, 500);
 
 
-        }
-        else if (Constants.SELECTED_PAYMENT == Constants.SAMAN) {
+        } else if (Constants.SELECTED_PAYMENT == Constants.SAMAN) {
 
             binding.printArea.removeAllViews();
             SamanPrintTemplateBinding printTemplateBinding = SamanPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
@@ -655,7 +666,7 @@ public class MainActivity extends AppCompatActivity {
                 printTemplateBinding.description.setText("شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد. " + printDescription);
             }
 
-            printTemplateBinding.description2.setText(SharedPreferencesRepository.getValue(Constants.print_description_2) +"\n..");
+            printTemplateBinding.description2.setText(SharedPreferencesRepository.getValue(Constants.print_description_2) + "\n..");
             printTemplateBinding.qrcode.setImageBitmap(assistant.qrGenerator(qr_url, placeID, place.tag1, place.tag2, place.tag3, place.tag4));
 
             if (assistant.getPlateType(place) == PlateType.simple) {
@@ -702,74 +713,74 @@ public class MainActivity extends AppCompatActivity {
 
             System.out.println("---------> print");
 
-                binding.printArea.removeAllViews();
-                BehpardakhtPrintTemplateBinding printTemplateBinding = BehpardakhtPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
+            binding.printArea.removeAllViews();
+            BehpardakhtPrintTemplateBinding printTemplateBinding = BehpardakhtPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
 
-                printTemplateBinding.placeId.setText(place.number + "");
+            printTemplateBinding.placeId.setText(place.number + "");
 
-                printTemplateBinding.startTime.setText(assistant.toJalali(startTime));
-                printTemplateBinding.prices.setText(pricing);
-                printTemplateBinding.supportPhone.setText(telephone);
-                printTemplateBinding.debt.setText((balance < 0 ? -1 * balance : balance) + "تومان");
+            printTemplateBinding.startTime.setText(assistant.toJalali(startTime));
+            printTemplateBinding.prices.setText(pricing);
+            printTemplateBinding.supportPhone.setText(telephone);
+            printTemplateBinding.debt.setText((balance < 0 ? -1 * balance : balance) + "تومان");
 
-                if (balance > 0) {
+            if (balance > 0) {
 
-                    printTemplateBinding.balanceTitle.setText("اعتبار پلاک");
-                    printTemplateBinding.description.setText("شهروند گرامی؛از این که جز مشتریان خوش حساب ما هستید سپاسگزاریم. " + printDescription);
-                } else if (balance < 0) {
+                printTemplateBinding.balanceTitle.setText("اعتبار پلاک");
+                printTemplateBinding.description.setText("شهروند گرامی؛از این که جز مشتریان خوش حساب ما هستید سپاسگزاریم. " + printDescription);
+            } else if (balance < 0) {
 
-                    printTemplateBinding.balanceTitle.setText("بدهی پلاک");
-                    printTemplateBinding.description.setText("اخطار: شهروند گرامی؛بدهی پلاک شما بیش از حد مجاز میباشد در صورت عدم پرداخت بدهی مشمول جریمه پارک ممنوع خواهید شد. " + printDescription);
-                } else {
+                printTemplateBinding.balanceTitle.setText("بدهی پلاک");
+                printTemplateBinding.description.setText("اخطار: شهروند گرامی؛بدهی پلاک شما بیش از حد مجاز میباشد در صورت عدم پرداخت بدهی مشمول جریمه پارک ممنوع خواهید شد. " + printDescription);
+            } else {
 
-                    printTemplateBinding.balanceTitle.setText("بدهی پلاک");
-                    printTemplateBinding.description.setText("شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد. " + printDescription);
-                }
+                printTemplateBinding.balanceTitle.setText("بدهی پلاک");
+                printTemplateBinding.description.setText("شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد. " + printDescription);
+            }
 
-                printTemplateBinding.description2.setText(SharedPreferencesRepository.getValue(Constants.print_description_2) +"\n..");
-                printTemplateBinding.qrcode.setImageBitmap(assistant.qrGenerator(qr_url, placeID, place.tag1, place.tag2, place.tag3, place.tag4));
+            printTemplateBinding.description2.setText(SharedPreferencesRepository.getValue(Constants.print_description_2) + "\n..");
+            printTemplateBinding.qrcode.setImageBitmap(assistant.qrGenerator(qr_url, placeID, place.tag1, place.tag2, place.tag3, place.tag4));
 
-                if (assistant.getPlateType(place) == PlateType.simple) {
+            if (assistant.getPlateType(place) == PlateType.simple) {
 
-                    printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
-                    printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
-                    printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
+                printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
+                printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
+                printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
 
-                    printTemplateBinding.plateSimpleTag1.setText(place.tag1);
-                    printTemplateBinding.plateSimpleTag2.setText(place.tag2);
-                    printTemplateBinding.plateSimpleTag3.setText(place.tag3);
-                    printTemplateBinding.plateSimpleTag4.setText(place.tag4);
+                printTemplateBinding.plateSimpleTag1.setText(place.tag1);
+                printTemplateBinding.plateSimpleTag2.setText(place.tag2);
+                printTemplateBinding.plateSimpleTag3.setText(place.tag3);
+                printTemplateBinding.plateSimpleTag4.setText(place.tag4);
 
-                } else if (assistant.getPlateType(place) == PlateType.old_aras) {
+            } else if (assistant.getPlateType(place) == PlateType.old_aras) {
 
-                    printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
-                    printTemplateBinding.plateOldArasArea.setVisibility(View.VISIBLE);
-                    printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
+                printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
+                printTemplateBinding.plateOldArasArea.setVisibility(View.VISIBLE);
+                printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
 
-                    printTemplateBinding.plateOldArasTag1En.setText(place.tag1);
-                    printTemplateBinding.plateOldArasTag1Fa.setText(place.tag1);
+                printTemplateBinding.plateOldArasTag1En.setText(place.tag1);
+                printTemplateBinding.plateOldArasTag1Fa.setText(place.tag1);
 
-                } else {
+            } else {
 
-                    printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
-                    printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
-                    printTemplateBinding.plateNewArasArea.setVisibility(View.VISIBLE);
+                printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
+                printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
+                printTemplateBinding.plateNewArasArea.setVisibility(View.VISIBLE);
 
-                    printTemplateBinding.plateNewArasTag1En.setText(place.tag1);
-                    printTemplateBinding.plateNewArasTag1Fa.setText(place.tag1);
-                    printTemplateBinding.plateNewArasTag2En.setText(place.tag2);
-                    printTemplateBinding.plateNewArasTag2Fa.setText(place.tag2);
+                printTemplateBinding.plateNewArasTag1En.setText(place.tag1);
+                printTemplateBinding.plateNewArasTag1Fa.setText(place.tag1);
+                printTemplateBinding.plateNewArasTag2En.setText(place.tag2);
+                printTemplateBinding.plateNewArasTag2Fa.setText(place.tag2);
 
-                }
+            }
 
 //                new Handler().postDelayed(() -> {
 
-                    behPardakhtPayment.print(binding.printArea);
+            behPardakhtPayment.print(binding.printArea);
 
 //                }, 500);
 
 
-        }else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
+        } else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
             Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 
 
@@ -829,7 +840,7 @@ public class MainActivity extends AppCompatActivity {
             }, 500);
 
 
-        }else if (Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT) {
+        } else if (Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT) {
 
             binding.printArea.removeAllViews();
 
@@ -880,8 +891,7 @@ public class MainActivity extends AppCompatActivity {
             }, 500);
 
 
-        }
-        else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
+        } else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
             Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان انجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 
 
@@ -924,7 +934,7 @@ public class MainActivity extends AppCompatActivity {
                     ArrayList<Integer> exitRequestPlaceIDs = new ArrayList<>();
 
                     if (response.body() != null)
-                    myPlaces.addAll(response.body().watchman.places);
+                        myPlaces.addAll(response.body().watchman.places);
                     for (Place place : response.body().watchman.places)
                         if (place.exit_request != null) {
                             exitRequestCount++;
