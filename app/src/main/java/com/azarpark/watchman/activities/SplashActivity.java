@@ -1,6 +1,7 @@
 package com.azarpark.watchman.activities;
 
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
@@ -20,6 +21,7 @@ import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.dialogs.SingleSelectDialog;
 import com.azarpark.watchman.models.City;
+import com.azarpark.watchman.models.KeyValueModel;
 import com.azarpark.watchman.web_service.responses.GetCitiesResponse;
 import com.azarpark.watchman.web_service.responses.SplashResponse;
 import com.azarpark.watchman.utils.Assistant;
@@ -195,7 +197,7 @@ public class SplashActivity extends AppCompatActivity {
 
         webService.getClient(getApplicationContext()).getSplash(SharedPreferencesRepository.getTokenWithPrefix(), versionCode).enqueue(new Callback<SplashResponse>() {
             @Override
-            public void onResponse(Call<SplashResponse> call, Response<SplashResponse> response) {
+            public void onResponse(@NonNull Call<SplashResponse> call, @NonNull Response<SplashResponse> response) {
 
                 binding.loadingBar.setVisibility(View.INVISIBLE);
                 if (NewErrorHandler.apiResponseHasError(response, SplashActivity.this)) {
@@ -212,6 +214,16 @@ public class SplashActivity extends AppCompatActivity {
                 SharedPreferencesRepository.setValue(Constants.about_us_url, response.body().about_us_url);
                 SharedPreferencesRepository.setValue(Constants.guide_url, response.body().guide_url);
                 SharedPreferencesRepository.setValue(Constants.print_description_2, response.body().print_description2);
+
+                for (KeyValueModel keyValue : response.body().watchman_detail) {
+                    if (keyValue.key.equals(Constants.cardNumber)){
+                        SharedPreferencesRepository.setValue(Constants.cardNumber, keyValue.value);
+                    }else if (keyValue.key.equals(Constants.shabaNumber)){
+                        SharedPreferencesRepository.setValue(Constants.shabaNumber, keyValue.value);
+                    }else if (keyValue.key.equals(Constants.accountNumber)){
+                        SharedPreferencesRepository.setValue(Constants.accountNumber, keyValue.value);
+                    }
+                }
 
                 try {
                     PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);

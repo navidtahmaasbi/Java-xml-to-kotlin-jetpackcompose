@@ -4,14 +4,22 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/10/AppData/Local/Android/Sdk/platforms/android-31/data/res/layout/splash_screen_view.xml" value="0.36666666666666664" />
+        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/drawable/blue_bg_5.xml" value="0.35625" />
+        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/drawable/blue_circle.xml" value="0.35625" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/drawable/dialog_background.xml" value="0.3828125" />
+        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/drawable/divider.xml" value="0.35625" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/drawable/empty_tall_divider.xml" value="0.3769230769230769" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/drawable/gray_bg_5.xml" value="0.3769230769230769" />
+        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/drawable/gray_bg_5_02.xml" value="0.35625" />
+        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/drawable/light_blue_bg_5.xml" value="0.35625" />
+        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/drawable/orange_bg_5.xml" value="0.35625" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/drawable/red_background.xml" value="0.37592592592592594" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/drawable/red_background02.xml" value="0.3769230769230769" />
+        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/drawable/red_bg_5.xml" value="0.35625" />
+        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/drawable/red_circle.xml" value="0.35625" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/drawable/selected_background.xml" value="0.37592592592592594" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/activity_car_number_charge.xml" value="0.36666666666666664" />
-        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/activity_debt_check.xml" value="0.5" />
+        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/activity_debt_check.xml" value="0.2" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/activity_impressed.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/activity_imprest.xml" value="0.3411458333333333" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/activity_income_statistics.xml" value="0.36666666666666664" />
@@ -22,10 +30,13 @@
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/activity_qrscaner.xml" value="0.203125" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/activity_splash.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/activity_starter.xml" value="0.36666666666666664" />
+        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/activity_ticket_messages.xml" value="0.3359375" />
+        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/activity_tickets.xml" value="0.3359375" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/activity_vacation.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/activity_vacations.xml" value="0.3411458333333333" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/activity_watchman_times.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/amount_item.xml" value="0.36666666666666664" />
+        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/behpardakht_print_template.xml" value="0.5" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/confirm_dialog.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/date_select_dialog.xml" value="0.3359375" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/debt_list_item.xml" value="0.36666666666666664" />
@@ -33,12 +44,15 @@
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/free_park_item.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/full_park_item.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/impressed_item.xml" value="0.36666666666666664" />
-        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/impressed_request_dialog.xml" value="0.36666666666666664" />
+        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/impressed_request_dialog.xml" value="0.33" />
+        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/income_item.xml" value="0.3359375" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/key_value_item.xml" value="0.36666666666666664" />
+        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/left_message_item.xml" value="0.3359375" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/loadingbar.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/menu_popup_window.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/menu_popup_window03.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/message_dialog.xml" value="0.36666666666666664" />
+        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/new_ticket_dialog.xml" value="0.3359375" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/notification.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/notification_item.xml" value="0.33" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/park_dialog.xml" value="0.36666666666666664" />
@@ -47,10 +61,12 @@
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/parsian_after_payment_print_template.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/plate_charge_dialog.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/print_template.xml" value="0.36666666666666664" />
+        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/right_message_item.xml" value="0.3359375" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/saman_after_payment_print_template.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/saman_print_template.xml" value="0.33" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/single_select_dialog.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/single_select_item.xml" value="0.36666666666666664" />
+        <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/ticket_item.xml" value="0.33" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/time_select_dialog.xml" value="0.33125" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/vacation_item.xml" value="0.36666666666666664" />
         <entry key="..\:/ayrik_rah_paye/watchman/watchman_android/app/src/main/res/layout/vacation_request_dialog.xml" value="0.36666666666666664" />

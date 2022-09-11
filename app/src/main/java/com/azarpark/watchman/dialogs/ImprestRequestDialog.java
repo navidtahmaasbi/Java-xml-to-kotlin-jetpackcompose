@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,7 @@ import androidx.fragment.app.DialogFragment;
 import com.azarpark.watchman.databinding.ImpressedRequestDialogBinding;
 import com.azarpark.watchman.models.CreateImpressedResponse;
 import com.azarpark.watchman.utils.Assistant;
+import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.NewErrorHandler;
 import com.azarpark.watchman.web_service.WebService;
@@ -33,6 +35,7 @@ public class ImprestRequestDialog extends DialogFragment {
     Assistant assistant;
     WebService webService = new WebService();
     DialogActions dialogActions;
+    int imprestLimit;
 
     @Nullable
     @Override
@@ -55,24 +58,57 @@ public class ImprestRequestDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setView(binding.getRoot());
 
+        String cardNumber = SharedPreferencesRepository.getValue(Constants.cardNumber, "");
+        String accountNumber = SharedPreferencesRepository.getValue(Constants.accountNumber, "");
+        String shabaNumber = SharedPreferencesRepository.getValue(Constants.shabaNumber, "");
+
+        int day = Assistant.getDate().day;
+        if (day > 25 || day <= 5)
+            imprestLimit = 1000000;
+        else if (day <= 15)
+            imprestLimit = 2000000;
+        else
+            imprestLimit = 3000000;
+
+        if (!cardNumber.isEmpty())
+            binding.input.setText(cardNumber);
+
+        binding.type.setOnCheckedChangeListener((radioGroup, i) -> {
+            if (radioGroup.getCheckedRadioButtonId() == binding.cardNumber.getId()) {
+                binding.input.setHint("شماره کارت را درست وارد کنید");
+                if (!cardNumber.isEmpty())
+                    binding.input.setText(cardNumber);
+            } else if (radioGroup.getCheckedRadioButtonId() == binding.bankAccountNumber.getId()) {
+                binding.input.setHint("شماره حساب را درست وارد کنید");
+                if (!accountNumber.isEmpty())
+                    binding.input.setText(accountNumber);
+            } else if (radioGroup.getCheckedRadioButtonId() == binding.shaba.getId()) {
+                binding.input.setHint("شماره شبا را درست وارد کنید");
+                if (!shabaNumber.isEmpty())
+                    binding.input.setText(shabaNumber);
+            }
+        });
+
         assistant = new Assistant();
 
         binding.confirm.setOnClickListener(view -> {
             final String amount = binding.amount.getText().toString();
-            final String cardNumber = binding.cardNumber.getText().toString();
-            final String bankAccountNumber = binding.bankAccountNumber.getText().toString();
+            final String input = binding.input.getText().toString();
             final String bankAccountName = binding.bankAccountName.getText().toString();
             if (amount.isEmpty()) {
                 Toast.makeText(requireContext(), "مبلغ را وارد کنید", Toast.LENGTH_SHORT).show();
-            }else if (cardNumber.isEmpty() && bankAccountNumber.isEmpty()) {
-                Toast.makeText(requireContext(), "شماره کارت یا شماره حساب را وارد کنید", Toast.LENGTH_SHORT).show();
-            } else if(!cardNumber.isEmpty() && cardNumber.length() != 16){
+            } else if (Integer.parseInt(amount) > imprestLimit) {
+                Toast.makeText(requireContext(), "محدودیت مساعده در این تاریخ برابر " + imprestLimit + " تومان میباشد.", Toast.LENGTH_SHORT).show();
+            } else if (binding.type.getCheckedRadioButtonId() == binding.cardNumber.getId() && !isCardNumber(input)) {
                 Toast.makeText(requireContext(), "شماره کارت را درست وارد کنید", Toast.LENGTH_SHORT).show();
-            }else if(bankAccountName.isEmpty()){
+            } else if (binding.type.getCheckedRadioButtonId() == binding.bankAccountNumber.getId() && !isBankAccountNumber(input)) {
+                Toast.makeText(requireContext(), "شماره حساب را درست وارد کنید", Toast.LENGTH_SHORT).show();
+            } else if (binding.type.getCheckedRadioButtonId() == binding.shaba.getId() && !isShaba(input)) {
+                Toast.makeText(requireContext(), "شماره شبا را درست وارد کنید", Toast.LENGTH_SHORT).show();
+            } else if (bankAccountName.isEmpty()) {
                 Toast.makeText(requireContext(), "نام صاحب حساب یا شماره کارت را وارد کنید", Toast.LENGTH_SHORT).show();
-            }else{
-
-                createImpressed(amount, cardNumber.isEmpty()?"0":cardNumber, bankAccountNumber.isEmpty()?"0":bankAccountNumber, bankAccountName);
+            } else {
+                createImpressed(amount, getBankAccountNumberType(binding.type.getCheckedRadioButtonId()), input, bankAccountName);
             }
         });
 
@@ -81,13 +117,34 @@ public class ImprestRequestDialog extends DialogFragment {
         return builder.create();
     }
 
-    private void createImpressed(String amount,String cardNumber,String bankAccountNumber,String bankAccountName) {
+    private boolean isCardNumber(String input) {
+        return assistant.isNumber(input) && input.length() == 16;
+    }
 
-        Runnable functionRunnable = () -> createImpressed(amount, cardNumber, bankAccountNumber, bankAccountName);
+    private boolean isBankAccountNumber(String input) {
+        return assistant.isNumber(input);
+    }
+
+    private boolean isShaba(String input) {
+        return assistant.isNumber(input) && input.length() == 24;
+    }
+
+    private String getBankAccountNumberType(int checkedRadioButtonId) {
+        if (checkedRadioButtonId == binding.cardNumber.getId())
+            return "card_number";
+        if (checkedRadioButtonId == binding.bankAccountNumber.getId())
+            return "bank_account_number";
+        return "shaba";
+
+    }
+
+    private void createImpressed(String amount, String type, String bankAccountNumber, String bankAccountName) {
+
+        Runnable functionRunnable = () -> createImpressed(amount, type, bankAccountNumber, bankAccountName);
         LoadingBar loadingBar = new LoadingBar(getActivity());
         loadingBar.show();
 
-        webService.getClient(getContext()).createImprest(SharedPreferencesRepository.getTokenWithPrefix(), amount, cardNumber, bankAccountNumber, bankAccountName).enqueue(new Callback<CreateImpressedResponse>() {
+        webService.getClient(getContext()).createImprest(SharedPreferencesRepository.getTokenWithPrefix(), amount, type, bankAccountNumber, bankAccountName).enqueue(new Callback<CreateImpressedResponse>() {
             @Override
             public void onResponse(@NonNull Call<CreateImpressedResponse> call, @NonNull Response<CreateImpressedResponse> response) {
 
@@ -96,7 +153,7 @@ public class ImprestRequestDialog extends DialogFragment {
                     return;
 
                 Toast.makeText(requireContext(), response.body().description, Toast.LENGTH_SHORT).show();
-                dialogActions.intrestCreated();
+                dialogActions.imtrestCreated();
 
             }
 
@@ -115,8 +172,8 @@ public class ImprestRequestDialog extends DialogFragment {
         binding = null;
     }
 
-    public static interface DialogActions {
-        public void intrestCreated();
+    public interface DialogActions {
+        void imtrestCreated();
     }
 
 }

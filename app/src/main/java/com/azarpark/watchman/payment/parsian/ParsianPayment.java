@@ -46,9 +46,7 @@ import retrofit2.Response;
 public class ParsianPayment {
 
     public static int PAYMENT_REQUEST_CODE = 103;
-    public static String QR_DATA = "qr_data";
     String PARSIAN = "parsian";
-    public static int QR_SCANER_REQUEST_CODE = 350;
     PlateType plateType;
     String tag1;
     String tag2;
@@ -192,13 +190,13 @@ public class ParsianPayment {
 //            parsianPaymentCallBack.verifyTransaction(transaction);
 
 
-        } else if (requestCode == QR_SCANER_REQUEST_CODE) {
+        } else if (requestCode == Constants.QR_SCANER_REQUEST_CODE) {
 
             if (data != null) {
 
                 try {
 
-                    String scannedData = data.getExtras().getString(QR_DATA);
+                    String scannedData = data.getExtras().getString(Constants.QR_DATA);
                     int placeId = Integer.parseInt(scannedData.split("=")[scannedData.split("=").length - 1]);
                     parsianPaymentCallBack.getScannerData(placeId);
 

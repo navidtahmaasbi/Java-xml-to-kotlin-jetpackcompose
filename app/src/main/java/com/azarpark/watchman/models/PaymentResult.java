@@ -8,7 +8,7 @@ public class PaymentResult {
     public String transactionAmount;               /// Mandatory,
     public String billID;
     public String payID;
-    public int resultCode;                         /// Mandatory
+    public String resultCode;                         /// Mandatory
     public String resultDescription;               /// Optional
     public int retrievalReferencedNumber;          /// Mandatory
     public String referenceID;                     /// Mandatory

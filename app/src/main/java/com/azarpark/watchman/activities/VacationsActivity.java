@@ -2,11 +2,9 @@ package com.azarpark.watchman.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
-
 import com.azarpark.watchman.adapters.VacationListAdapter;
 import com.azarpark.watchman.databinding.ActivityVacationsBinding;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
@@ -14,14 +12,11 @@ import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.dialogs.VacationRequestDialog;
 import com.azarpark.watchman.dialogs.VacationRequestDialog02;
-import com.azarpark.watchman.models.GetImprestsResponse;
 import com.azarpark.watchman.models.GetVacationsResponse;
-import com.azarpark.watchman.models.RemoveImpressedResponse;
 import com.azarpark.watchman.models.RemoveVacationResponse;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.NewErrorHandler;
 import com.azarpark.watchman.web_service.WebService;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -60,9 +55,10 @@ public class VacationsActivity extends AppCompatActivity {
 
         });
         binding.recyclerView.setAdapter(vacationListAdapter);
-        getListItems();
 
-        binding.fab.setOnClickListener(view -> {
+        binding.getList.setOnClickListener(view -> getListItems());
+
+        binding.create.setOnClickListener(view -> {
 
             vacationRequestDialog = new VacationRequestDialog02(() -> {
 
@@ -75,27 +71,26 @@ public class VacationsActivity extends AppCompatActivity {
 
         binding.back.setOnClickListener(view -> onBackPressed());
 
-        binding.refresh.setOnClickListener(view -> {
-            getListItems();
-        });
+        binding.refresh.setOnClickListener(view -> getListItems());
+
+        showMessage();
 
     }
 
-    private void showMessage(){
-        StringBuilder message = new StringBuilder();
-        message.append("* درخواست مرخصی ساعتی نباید بیشتر از 2 ساعت باشد.");
-        message.append("\n");
-        message.append("* درخواست مرخصی روزانه باید 24 ساعت قبل اعلام شود.");
-        message.append("\n");
-        message.append("* حق مرخصی 2 روز در ماه می باشد.");
-        message.append("\n");
-        message.append("* در صورت ترک کار بعد از رد مرخصی، غیبت ثبت خواهد شد.");
+    private void showMessage() {
 
-        messageDialog = new MessageDialog("توجه", message.toString(), "متوجه شدم", () -> {
-            messageDialog.dismiss();
-        });
+        String message = "* درخواست مرخصی ساعتی نباید بیشتر از 3 ساعت باشد." +
+                "\n" +
+                "* جمع مرخصی ها در ماه 2.5 روز می باشد." +
+                "\n" +
+                "* درخواست مرخصی روزانه باید یک روز قبل تا ساعت 16 اعلام شود." +
+                "\n" +
+                "* حق مرخصی 2 روز در ماه می باشد." +
+                "\n" +
+                "* در صورت ترک کار بعد از عدم تایید مرخصی، غیبت ثبت خواهد شد.";
+        messageDialog = new MessageDialog("توجه", message, "متوجه شدم", () -> messageDialog.dismiss());
         messageDialog.setCancelable(false);
-        if(!messageHasShown){
+        if (!messageHasShown) {
             messageHasShown = true;
             messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
         }
@@ -116,7 +111,8 @@ public class VacationsActivity extends AppCompatActivity {
                     return;
 
                 confirmDialog.dismiss();
-                Toast.makeText(getApplicationContext(), response.body().description, Toast.LENGTH_SHORT).show();
+                if (response.body() != null)
+                    Toast.makeText(getApplicationContext(), response.body().description, Toast.LENGTH_SHORT).show();
                 getListItems();
 
             }
@@ -132,7 +128,7 @@ public class VacationsActivity extends AppCompatActivity {
 
     private void getListItems() {
 
-        Runnable functionRunnable = () -> getListItems();
+        Runnable functionRunnable = this::getListItems;
         LoadingBar loadingBar = new LoadingBar(this);
         loadingBar.show();
 
@@ -143,10 +139,10 @@ public class VacationsActivity extends AppCompatActivity {
                 loadingBar.dismiss();
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
                     return;
-                vacationListAdapter.setItems(response.body().vacations);
-                binding.placeHolder.setVisibility(response.body().vacations.isEmpty()? View.VISIBLE:View.GONE);
+                if (response.body() != null)
+                    vacationListAdapter.setItems(response.body().vacations);
+                binding.placeHolder.setVisibility(response.body().vacations.isEmpty() ? View.VISIBLE : View.GONE);
 
-                showMessage();
             }
 
             @Override

@@ -145,8 +145,8 @@ public class VacationRequestDialog02 extends DialogFragment {
                     Toast.makeText(requireContext(), "ساعت انتخاب شده نمیتواند قبل از الان باشد", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (differenceIsMoreThan2Hours(selectedStart, hour, minute)) {
-                    Toast.makeText(requireContext(), "مرخصی روزانه نمیتواند بیشتر از 2 ساعت باشد لطفا میزان کمتری انتخاب کنید", Toast.LENGTH_SHORT).show();
+                if (differenceIsMoreThan3Hours(selectedStart, hour, minute)) {
+                    Toast.makeText(requireContext(), "مرخصی روزانه نمیتواند بیشتر از 3 ساعت باشد لطفا میزان کمتری انتخاب کنید", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 String time = hour + ":" + minute;
@@ -192,12 +192,12 @@ public class VacationRequestDialog02 extends DialogFragment {
         return builder.create();
     }
 
-    private boolean differenceIsMoreThan2Hours(String selectedStart, int endHour, int endMinute) {
+    private boolean differenceIsMoreThan3Hours(String selectedStart, int endHour, int endMinute) {
         int startHour = Integer.parseInt(selectedStart.split(":")[0]);
         int startMinute = Integer.parseInt(selectedStart.split(":")[1]);
         int startMinutes = startHour * 60 + startMinute;
         int endMinutes = endHour * 60 + endMinute;
-        return endMinutes - startMinutes > 120;
+        return endMinutes - startMinutes > 180;
     }
 
     private MyTime stringToMyTime(String time) {

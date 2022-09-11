@@ -2,7 +2,6 @@ package com.azarpark.watchman.utils;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -16,26 +15,18 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Vibrator;
-import android.service.autofill.RegexValidator;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.RemoteViews;
-
 import androidx.core.app.NotificationCompat;
-
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.activities.SplashActivity;
-import com.azarpark.watchman.download_utils.DownloadController;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.MyDate;
 import com.azarpark.watchman.models.MyTime;
 import com.azarpark.watchman.models.Place;
-import com.google.zxing.common.StringUtils;
 import com.yandex.metrica.YandexMetrica;
-
-import java.net.HttpURLConnection;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Date;
@@ -43,18 +34,25 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
-import retrofit2.http.Url;
 import saman.zamani.persiandate.PersianDate;
-import saman.zamani.persiandate.PersianDateFormat;
 
 public class Assistant {
 
     public static long generateResNum() {
 
         return System.currentTimeMillis();
+
+    }
+
+    public long getDateDifferenceInMinutes(Date d1, Date d2) {
+
+        long diff = d2.getTime() - d1.getTime();
+        long seconds = diff / 1000;
+        long minutes = seconds / 60;
+
+        return minutes;
 
     }
 
@@ -195,9 +193,11 @@ public class Assistant {
 
         try {
 
-            int a = Integer.parseInt(amount);
+            long a = Long.parseLong(amount);
         } catch (Exception e) {
 
+            System.out.println("---------> eee : " );
+            e.printStackTrace();
             return false;
         }
 
@@ -674,4 +674,8 @@ public class Assistant {
         }
     }
 
+    public String numberFormat(String s) {
+        DecimalFormat formatter = new DecimalFormat("#,###,###");
+        return formatter.format(Integer.parseInt(s));
+    }
 }

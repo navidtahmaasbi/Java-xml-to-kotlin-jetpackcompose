@@ -2,14 +2,15 @@
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/_10sdp"
-    android:padding="@dimen/_5sdp">
+    android:orientation="vertical"
+    android:paddingRight="@dimen/_10sdp"
+    android:paddingLeft="@dimen/_10sdp">
 
     <RelativeLayout
         android:background="@drawable/white_bg_5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/_10sdp"
+        android:padding="@dimen/_5sdp"
         >
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -30,11 +31,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:fontFamily="@font/iran_sans_fa_num_bold"
+            android:fontFamily="@font/iran_sans_fa_num"
             android:maxWidth="@dimen/_180sdp"
             android:text="مهلت تحویل سفارش "
             android:textColor="@color/text_gray"
             android:textSize="@dimen/_11sdp" />
     </RelativeLayout>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_1sdp"
+        android:background="#DEDEDE"/>
 
 </androidx.appcompat.widget.LinearLayoutCompat>

@@ -26,7 +26,7 @@ public class WebService {
         OkHttpClient okHttpClient = getOkHttpClient();
 
         String baseURL = "https://tabriz.backend1.azarpark.irana.app";
-        if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
+        if (Constants.SELECTED_PAYMENT == Constants.SAMAN || Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT)
             baseURL = "https://tabriz.backend1.azarpark.irana.app";
         else if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
             baseURL = "https://sarab.backend1.azarpark.irana.app";

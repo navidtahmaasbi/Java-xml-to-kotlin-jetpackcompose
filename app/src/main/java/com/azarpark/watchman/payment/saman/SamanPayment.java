@@ -42,7 +42,7 @@ public class SamanPayment {
 
     Activity activity;
     Context context;
-    public static int PAYMENT_REQUEST_CODE = 1003;
+    public static int PAYMENT_REQUEST_CODE = 104;
     public static int QR_SCANNER_REQUEST_CODE = 1004;
     public IProxy service;
     public MyServiceConnection connection;
@@ -476,35 +476,6 @@ public class SamanPayment {
         v.draw(c);
         return b;
 
-//        v.clearFocus();
-//        v.setPressed(false);
-//
-//        boolean willNotCache = v.willNotCacheDrawing();
-//        v.setWillNotCacheDrawing(false);
-//
-//        // Reset the drawing cache background color to fully transparent
-//        // for the duration of this operation
-//        int color = v.getDrawingCacheBackgroundColor();
-//        v.setDrawingCacheBackgroundColor(0);
-//
-//        if (color != 0) {
-//            v.destroyDrawingCache();
-//        }
-//        v.buildDrawingCache();
-//        Bitmap cacheBitmap = v.getDrawingCache();
-//        if (cacheBitmap == null) {
-//            Log.e(TAG, "failed getViewBitmap(" + v + ")", new RuntimeException());
-//            return null;
-//        }
-//
-//        Bitmap bitmap = Bitmap.createBitmap(cacheBitmap);
-//
-//        // Restore the view
-//        v.destroyDrawingCache();
-//        v.setWillNotCacheDrawing(willNotCache);
-//        v.setDrawingCacheBackgroundColor(color);
-//
-//        return bitmap;
     }
 
     private String getBundleString(Bundle b) {

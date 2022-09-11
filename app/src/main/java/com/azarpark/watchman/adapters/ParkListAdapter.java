@@ -3,6 +3,7 @@ package com.azarpark.watchman.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
 import java.text.DateFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -71,10 +73,20 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             viewHolder.binding.placeStatus.setBackgroundColor(place.status.equals(PlaceStatus.full_by_user.toString()) ? context.getResources().getColor(R.color.orange) : context.getResources().getColor(R.color.dark_blue));
 
-            if (place.estimate_price.price > 0)
-                viewHolder.binding.paymentStatus.setText("پولی");
-            else
-                viewHolder.binding.paymentStatus.setText("رایگان");
+            int balance = place.car.balance;
+            if (balance >= 0) {
+
+                String s = Integer.toString(balance);
+                s = s.replace("-", "");
+                viewHolder.binding.paymentStatus.setText(s);
+                viewHolder.binding.paymentStatus.setBackgroundColor(context.getResources().getColor(R.color.green));
+
+            } else {
+
+                viewHolder.binding.paymentStatus.setText(Integer.toString(balance));
+                viewHolder.binding.paymentStatus.setBackgroundColor(context.getResources().getColor(R.color.red));
+
+            }
 
             if (assistant.getPlateType(place) == PlateType.simple) {
 
@@ -120,10 +132,21 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         } else {
 
             FreeParkModelViewHolder viewHolder = (FreeParkModelViewHolder) holder;
-
             viewHolder.binding.placeNumber.setText(Integer.toString(place.number));
-
             viewHolder.binding.getRoot().setOnClickListener(view -> onItemClicked.itemClicked(filteredItems.get(position)));
+
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            try {
+
+                long minutes = place.end != null ? assistant.getDateDifferenceInMinutes(sdf.parse(place.end), new Date()) : -1;
+                viewHolder.binding.getRoot().setBackgroundResource(minutes == -1? R.drawable.gray_bg_5_02 :minutes > 60 ? R.drawable.red_bg_5 : minutes > 20 ? R.drawable.orange_bg_5 : R.drawable.white_bg_5);
+
+            } catch (ParseException ex) {
+                Log.v("Exception", ex.getLocalizedMessage());
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("---------> null pointed exception : " + place.number);
+            }
 
         }
 

@@ -19,6 +19,7 @@ import com.azarpark.watchman.databinding.ActivityDebtCheckBinding;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.Transaction;
+import com.azarpark.watchman.payment.behpardakht.BehPardakhtPayment;
 import com.azarpark.watchman.payment.parsian.ParsianPayment;
 import com.azarpark.watchman.payment.saman.SamanPayment;
 import com.azarpark.watchman.web_service.responses.DebtHistoryResponse;
@@ -47,6 +48,7 @@ public class DebtCheckActivity extends AppCompatActivity {
     Activity activity = this;
     ParsianPayment parsianPayment;
     SamanPayment samanPayment;
+    BehPardakhtPayment behPardakhtPayment;
     Assistant assistant;
     WebService webService = new WebService();
 
@@ -87,6 +89,22 @@ public class DebtCheckActivity extends AppCompatActivity {
             @Override
             public void onVerifyFinished() {
 
+            }
+        });
+
+        behPardakhtPayment = new BehPardakhtPayment(this, this, getSupportFragmentManager(), new BehPardakhtPayment.BehPardakhtPaymentCallBack() {
+            @Override
+            public void verifyTransaction(Transaction transaction) {
+                //dont need to do any thing in CarNumberActivity
+            }
+
+            @Override
+            public void getScannerData(int placeID) {
+                //dont need to do any thing in CarNumberActivity
+            }
+
+            @Override
+            public void onVerifyFinished() {
             }
         });
 
@@ -250,6 +268,8 @@ public class DebtCheckActivity extends AppCompatActivity {
         parsianPayment.handleResult(requestCode, resultCode, data);
 
         samanPayment.handleResult(requestCode, resultCode, data);
+
+        behPardakhtPayment.handleOnActivityResult(requestCode, resultCode, data);
 
         loadData(false);
     }
@@ -443,6 +463,11 @@ public class DebtCheckActivity extends AppCompatActivity {
             });
         else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
             samanPayment.createTransaction(Constants.NON_CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_DEBT, ()->{
+                binding.payment.revertAnimation();
+                binding.payment.setOnClickListener(this::payment);
+            });
+        else if (Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT)
+            behPardakhtPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG, () -> {
                 binding.payment.revertAnimation();
                 binding.payment.setOnClickListener(this::payment);
             });

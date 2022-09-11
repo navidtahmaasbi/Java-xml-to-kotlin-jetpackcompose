@@ -42,12 +42,10 @@ public class ImprestActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         imprestListAdapter = new ImprestListAdapter(id -> {
-
             confirmDialog = new ConfirmDialog("توجه", "ایا از حذف مساعده اطمینان دارید؟", "بله حذف کن", "انصراف", new ConfirmDialog.ConfirmButtonClicks() {
                 @Override
                 public void onConfirmClicked() {
                     removeImprest(id);
-
                 }
 
                 @Override
@@ -59,9 +57,8 @@ public class ImprestActivity extends AppCompatActivity {
 
         });
         binding.recyclerView.setAdapter(imprestListAdapter);
-        getListItems();
 
-        binding.fab.setOnClickListener(view -> {
+        binding.create.setOnClickListener(view -> {
 
             imprestRequestDialog = new ImprestRequestDialog(() -> {
 
@@ -74,9 +71,11 @@ public class ImprestActivity extends AppCompatActivity {
 
         binding.back.setOnClickListener(view -> onBackPressed());
 
-        binding.refresh.setOnClickListener(view -> {
-            getListItems();
-        });
+        binding.refresh.setOnClickListener(view -> getListItems());
+
+        binding.getList.setOnClickListener(view -> getListItems());
+
+        showMessage();
 
     }
 
@@ -140,7 +139,6 @@ public class ImprestActivity extends AppCompatActivity {
                 imprestListAdapter.setItems(response.body().imprests);
                 binding.placeHolder.setVisibility(response.body().imprests.isEmpty() ? View.VISIBLE : View.GONE);
 
-                showMessage();
 
             }
 

@@ -10,7 +10,7 @@ public class Place {
     public Object user_id;
     public int car_id;
     public String start;
-    public Object end;
+    public String end;
     public int price;
     public int period;
     public Object is_requested;
@@ -22,6 +22,7 @@ public class Place {
     public String tag4;
     public EstimatePrice estimate_price;
     public ExitRequest exit_request;
+    public Car car;
 
     public String getPlateString() {
 

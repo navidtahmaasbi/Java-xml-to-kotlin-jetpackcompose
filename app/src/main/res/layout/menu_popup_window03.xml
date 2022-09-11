@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#E6000000"
     android:layoutDirection="ltr"
-    android:id="@+id/root"
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/print_root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:id="@+id/print_root">
+        android:orientation="vertical">
 
     </LinearLayout>
 
     <RelativeLayout
-        android:paddingTop="@dimen/_5sdp"
-        android:paddingRight="@dimen/_25sdp"
-        android:paddingLeft="@dimen/_25sdp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/_25sdp"
+        android:paddingTop="@dimen/_5sdp"
+        android:paddingRight="@dimen/_25sdp">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/logout"
@@ -98,10 +98,10 @@
                 android:orientation="vertical">
 
                 <androidx.cardview.widget.CardView
-                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_50sdp"
                     android:layout_marginTop="@dimen/_40sdp"
+                    android:visibility="gone"
                     app:cardCornerRadius="@dimen/_10sdp">
 
                     <androidx.appcompat.widget.LinearLayoutCompat
@@ -114,9 +114,9 @@
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
+                            android:layout_marginRight="@dimen/_20sdp"
                             android:layout_weight="2"
                             android:gravity="center_vertical|right"
-                            android:layout_marginRight="@dimen/_20sdp"
                             android:orientation="vertical">
 
                             <TextView
@@ -149,10 +149,10 @@
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
-                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_50sdp"
                     android:layout_marginTop="@dimen/_20sdp"
+                    android:visibility="gone"
                     app:cardCornerRadius="@dimen/_10sdp">
 
                     <androidx.appcompat.widget.LinearLayoutCompat
@@ -165,9 +165,9 @@
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
+                            android:layout_marginRight="@dimen/_20sdp"
                             android:layout_weight="2"
                             android:gravity="center_vertical|right"
-                            android:layout_marginRight="@dimen/_20sdp"
                             android:orientation="vertical">
 
                             <TextView
@@ -202,14 +202,14 @@
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/_5sdp"
                     android:orientation="horizontal">
 
                     <androidx.cardview.widget.CardView
-                        android:layout_marginRight="@dimen/_5sdp"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="@dimen/_50sdp"
-                        android:layout_marginTop="@dimen/_20sdp"
+                        android:layout_marginRight="@dimen/_5sdp"
+                        android:layout_weight="1"
                         app:cardCornerRadius="@dimen/_10sdp">
 
                         <androidx.appcompat.widget.LinearLayoutCompat
@@ -222,9 +222,9 @@
                             <androidx.appcompat.widget.LinearLayoutCompat
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
+                                android:layout_marginRight="@dimen/_20sdp"
                                 android:layout_weight="2"
                                 android:gravity="center_vertical|right"
-                                android:layout_marginRight="@dimen/_20sdp"
                                 android:orientation="vertical">
 
                                 <TextView
@@ -245,8 +245,8 @@
                                 android:orientation="vertical">
 
                                 <ImageView
-                                    android:layout_width="@dimen/_35sdp"
-                                    android:layout_height="@dimen/_35sdp"
+                                    android:layout_width="@dimen/_25sdp"
+                                    android:layout_height="@dimen/_25sdp"
                                     android:src="@drawable/ic_baseline_receipt_long_24"
                                     app:tint="@color/red" />
 
@@ -257,11 +257,10 @@
                     </androidx.cardview.widget.CardView>
 
                     <androidx.cardview.widget.CardView
-                        android:layout_marginLeft="@dimen/_5sdp"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="@dimen/_50sdp"
-                        android:layout_marginTop="@dimen/_20sdp"
+                        android:layout_marginLeft="@dimen/_5sdp"
+                        android:layout_weight="1"
                         app:cardCornerRadius="@dimen/_10sdp">
 
                         <androidx.appcompat.widget.LinearLayoutCompat
@@ -274,15 +273,14 @@
                             <androidx.appcompat.widget.LinearLayoutCompat
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
+                                android:layout_marginRight="@dimen/_20sdp"
                                 android:layout_weight="2"
                                 android:gravity="center_vertical|right"
-                                android:layout_marginRight="@dimen/_20sdp"
                                 android:orientation="vertical">
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-
                                     android:fontFamily="@font/iran_sans_bold"
                                     android:text="شارژ پلاک"
                                     android:textColor="@color/black"
@@ -298,8 +296,8 @@
                                 android:orientation="vertical">
 
                                 <ImageView
-                                    android:layout_width="@dimen/_35sdp"
-                                    android:layout_height="@dimen/_35sdp"
+                                    android:layout_width="@dimen/_25sdp"
+                                    android:layout_height="@dimen/_25sdp"
                                     android:src="@drawable/ic_baseline_account_balance_wallet_24"
                                     app:tint="@color/red" />
 
@@ -314,7 +312,7 @@
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_50sdp"
-                    android:layout_marginTop="@dimen/_20sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
                     app:cardCornerRadius="@dimen/_10sdp">
 
                     <androidx.appcompat.widget.LinearLayoutCompat
@@ -327,9 +325,9 @@
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
+                            android:layout_marginRight="@dimen/_20sdp"
                             android:layout_weight="2"
                             android:gravity="center_vertical|right"
-                            android:layout_marginRight="@dimen/_20sdp"
                             android:orientation="vertical">
 
                             <TextView
@@ -365,14 +363,14 @@
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:paddingTop="@dimen/_10sdp">
 
                     <androidx.cardview.widget.CardView
                         android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_marginRight="@dimen/_5sdp"
                         android:layout_height="@dimen/_50sdp"
-                        android:layout_marginTop="@dimen/_20sdp"
+                        android:layout_marginRight="@dimen/_5sdp"
+                        android:layout_weight="1"
                         app:cardCornerRadius="@dimen/_10sdp">
 
                         <androidx.appcompat.widget.LinearLayoutCompat
@@ -385,9 +383,9 @@
                             <androidx.appcompat.widget.LinearLayoutCompat
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
+                                android:layout_marginRight="@dimen/_20sdp"
                                 android:layout_weight="2"
                                 android:gravity="center_vertical|right"
-                                android:layout_marginRight="@dimen/_20sdp"
                                 android:orientation="vertical">
 
                                 <TextView
@@ -397,7 +395,7 @@
                                     android:fontFamily="@font/iran_sans_bold"
                                     android:text="درآمد"
                                     android:textColor="@color/black"
-                                    android:textSize="@dimen/_18sdp" />
+                                    android:textSize="@dimen/_13sdp" />
 
                             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -409,8 +407,8 @@
                                 android:orientation="vertical">
 
                                 <ImageView
-                                    android:layout_width="@dimen/_35sdp"
-                                    android:layout_height="@dimen/_35sdp"
+                                    android:layout_width="@dimen/_25sdp"
+                                    android:layout_height="@dimen/_25sdp"
                                     android:src="@drawable/ic_baseline_account_balance_wallet_24"
                                     app:tint="@color/red" />
 
@@ -422,10 +420,9 @@
 
                     <androidx.cardview.widget.CardView
                         android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_marginLeft="@dimen/_5sdp"
                         android:layout_height="@dimen/_50sdp"
-                        android:layout_marginTop="@dimen/_20sdp"
+                        android:layout_marginLeft="@dimen/_5sdp"
+                        android:layout_weight="1"
                         app:cardCornerRadius="@dimen/_10sdp">
 
                         <androidx.appcompat.widget.LinearLayoutCompat
@@ -438,9 +435,9 @@
                             <androidx.appcompat.widget.LinearLayoutCompat
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
+                                android:layout_marginRight="@dimen/_20sdp"
                                 android:layout_weight="2"
                                 android:gravity="center_vertical|right"
-                                android:layout_marginRight="@dimen/_20sdp"
                                 android:orientation="vertical">
 
                                 <TextView
@@ -449,7 +446,7 @@
                                     android:fontFamily="@font/iran_sans_bold"
                                     android:text="مساعده"
                                     android:textColor="@color/black"
-                                    android:textSize="@dimen/_18sdp" />
+                                    android:textSize="@dimen/_13sdp" />
 
                             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -461,8 +458,8 @@
                                 android:orientation="vertical">
 
                                 <ImageView
-                                    android:layout_width="@dimen/_35sdp"
-                                    android:layout_height="@dimen/_35sdp"
+                                    android:layout_width="@dimen/_25sdp"
+                                    android:layout_height="@dimen/_25sdp"
                                     android:src="@drawable/ic_baseline_monetization_on_24"
                                     app:tint="@color/red" />
 
@@ -477,7 +474,7 @@
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_50sdp"
-                    android:layout_marginTop="@dimen/_20sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
                     app:cardCornerRadius="@dimen/_10sdp">
 
                     <androidx.appcompat.widget.LinearLayoutCompat
@@ -490,15 +487,14 @@
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
+                            android:layout_marginRight="@dimen/_20sdp"
                             android:layout_weight="2"
                             android:gravity="center_vertical|right"
-                            android:layout_marginRight="@dimen/_20sdp"
                             android:orientation="vertical">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-
                                 android:fontFamily="@font/iran_sans_bold"
                                 android:text="مرخصی"
                                 android:textColor="@color/black"
@@ -525,6 +521,117 @@
 
                 </androidx.cardview.widget.CardView>
 
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+<!--                    <androidx.cardview.widget.CardView-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="@dimen/_50sdp"-->
+<!--                        android:layout_marginTop="@dimen/_20sdp"-->
+<!--                        android:layout_marginRight="@dimen/_5sdp"-->
+<!--                        android:layout_weight="1"-->
+<!--                        app:cardCornerRadius="@dimen/_10sdp">-->
+
+<!--                        <androidx.appcompat.widget.LinearLayoutCompat-->
+<!--                            android:id="@+id/income_statistics"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="match_parent"-->
+<!--                            android:gravity="center"-->
+<!--                            android:orientation="horizontal">-->
+
+<!--                            <androidx.appcompat.widget.LinearLayoutCompat-->
+<!--                                android:layout_width="0dp"-->
+<!--                                android:layout_height="match_parent"-->
+<!--                                android:layout_marginRight="@dimen/_20sdp"-->
+<!--                                android:layout_weight="2"-->
+<!--                                android:gravity="center_vertical|right"-->
+<!--                                android:orientation="vertical">-->
+
+<!--                                <TextView-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+
+<!--                                    android:fontFamily="@font/iran_sans_bold"-->
+<!--                                    android:text="درآمد"-->
+<!--                                    android:textColor="@color/black"-->
+<!--                                    android:textSize="@dimen/_13sdp" />-->
+
+<!--                            </androidx.appcompat.widget.LinearLayoutCompat>-->
+
+<!--                            <androidx.appcompat.widget.LinearLayoutCompat-->
+<!--                                android:layout_width="0dp"-->
+<!--                                android:layout_height="match_parent"-->
+<!--                                android:layout_weight="1"-->
+<!--                                android:gravity="center_vertical|left"-->
+<!--                                android:orientation="vertical">-->
+
+<!--                                <ImageView-->
+<!--                                    android:layout_width="@dimen/_25sdp"-->
+<!--                                    android:layout_height="@dimen/_25sdp"-->
+<!--                                    android:src="@drawable/ic_baseline_account_balance_wallet_24"-->
+<!--                                    app:tint="@color/red" />-->
+
+<!--                            </androidx.appcompat.widget.LinearLayoutCompat>-->
+
+<!--                        </androidx.appcompat.widget.LinearLayoutCompat>-->
+
+<!--                    </androidx.cardview.widget.CardView>-->
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/_50sdp"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:layout_weight="1"
+                        app:cardCornerRadius="@dimen/_10sdp">
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:id="@+id/tickets"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginRight="@dimen/_20sdp"
+                                android:layout_weight="2"
+                                android:gravity="center_vertical|right"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/iran_sans_bold"
+                                    android:text="تیکت"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/_18sdp" />
+
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:gravity="center_vertical|left"
+                                android:orientation="vertical">
+
+                                <ImageView
+                                    android:layout_width="@dimen/_35sdp"
+                                    android:layout_height="@dimen/_35sdp"
+                                    android:src="@drawable/ic_baseline_receipt_long_24"
+                                    app:tint="@color/red" />
+
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    </androidx.cardview.widget.CardView>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
             </androidx.appcompat.widget.LinearLayoutCompat>
 
         </ScrollView>
@@ -532,90 +639,104 @@
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:paddingTop="@dimen/_10sdp"
             android:paddingBottom="@dimen/_10sdp">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/iran_sans_fa_num"
+                android:gravity="center"
+                android:text="شماره پشتیبانی : 04191001357"
+                android:layout_gravity="right"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_11sdp"
+                android:layout_marginBottom="@dimen/_10sdp"/>
 
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:id="@+id/rules"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="horizontal">
 
-                <ImageView
-                    android:layout_width="@dimen/_35sdp"
-                    android:layout_height="@dimen/_35sdp"
-                    android:padding="@dimen/_8sdp"
-                    android:src="@drawable/ic_baseline_privacy_tip_24"
-                    app:tint="@color/white" />
-
-                <TextView
-                    android:layout_width="wrap_content"
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/rules"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/iran_sans"
+                    android:layout_weight="1"
                     android:gravity="center"
-                    android:text="قوانین"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_11sdp" />
+                    android:orientation="vertical">
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
+                    <ImageView
+                        android:layout_width="@dimen/_35sdp"
+                        android:layout_height="@dimen/_35sdp"
+                        android:padding="@dimen/_8sdp"
+                        android:src="@drawable/ic_baseline_privacy_tip_24"
+                        app:tint="@color/white" />
 
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/iran_sans"
+                        android:gravity="center"
+                        android:text="قوانین"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_11sdp" />
 
-                <ImageView
-                    android:layout_width="@dimen/_45sdp"
-                    android:layout_height="@dimen/_45sdp"
-                    android:src="@drawable/cancel"
-                    app:tint="@color/white" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <TextView
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:layout_width="wrap_content"
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/iran_sans_fa_num"
+                    android:layout_weight="1"
                     android:gravity="center"
-                    android:text="نسخه برنامه"
-                    android:id="@+id/version"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_12sdp"
-                    />
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="@dimen/_45sdp"
+                        android:layout_height="@dimen/_45sdp"
+                        android:src="@drawable/cancel"
+                        app:tint="@color/white" />
+
+                    <TextView
+                        android:id="@+id/version"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:fontFamily="@font/iran_sans_fa_num"
+                        android:gravity="center"
+                        android:text="نسخه برنامه"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_12sdp" />
 
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:id="@+id/help"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:layout_width="@dimen/_35sdp"
-                    android:layout_height="@dimen/_35sdp"
-                    android:padding="@dimen/_8sdp"
-                    android:src="@drawable/ic_help"
-                    app:tint="@color/white" />
-
-                <TextView
-                    android:layout_width="wrap_content"
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/help"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-
-                    android:fontFamily="@font/iran_sans"
+                    android:layout_weight="1"
                     android:gravity="center"
-                    android:text="راهنما"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_11sdp" />
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="@dimen/_35sdp"
+                        android:layout_height="@dimen/_35sdp"
+                        android:padding="@dimen/_8sdp"
+                        android:src="@drawable/ic_help"
+                        app:tint="@color/white" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/iran_sans"
+                        android:gravity="center"
+                        android:text="راهنما"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_11sdp" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 

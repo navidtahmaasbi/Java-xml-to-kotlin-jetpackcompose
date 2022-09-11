@@ -17,6 +17,7 @@
         android:layout_margin="@dimen/_10sdp">
 
         <TextView
+
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -30,12 +31,14 @@
             android:id="@+id/question"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:lineSpacingExtra="8dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/_10sdp"
             android:fontFamily="@font/iran_sans"
-            android:text="متن سوال متن سوال متن سوال متن سوال متن سوال ؟"
+            android:text="متن سوال متن سوال\n متن سوال متن سوال متن سوال ؟"
             android:textColor="@color/text_gray"
             android:textSize="@dimen/_11sdp" />
+
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"

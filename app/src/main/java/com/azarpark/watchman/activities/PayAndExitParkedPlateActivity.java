@@ -27,6 +27,7 @@ import com.azarpark.watchman.databinding.ActivityPayAndExitParkedPlateBinding;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.Transaction;
+import com.azarpark.watchman.payment.behpardakht.BehPardakhtPayment;
 import com.azarpark.watchman.payment.parsian.ParsianPayment;
 import com.azarpark.watchman.payment.saman.SamanPayment;
 import com.azarpark.watchman.utils.Assistant;
@@ -66,6 +67,7 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
     Activity activity = this;
     ParsianPayment parsianPayment;
     SamanPayment samanPayment;
+    BehPardakhtPayment behPardakhtPayment;
     Assistant assistant;
     WebService webService = new WebService();
 
@@ -107,6 +109,22 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
             @Override
             public void onVerifyFinished() {
 
+            }
+        });
+
+        behPardakhtPayment = new BehPardakhtPayment(this, this, getSupportFragmentManager(), new BehPardakhtPayment.BehPardakhtPaymentCallBack() {
+            @Override
+            public void verifyTransaction(Transaction transaction) {
+                //dont need to do any thing in CarNumberActivity
+            }
+
+            @Override
+            public void getScannerData(int placeID) {
+                //dont need to do any thing in CarNumberActivity
+            }
+
+            @Override
+            public void onVerifyFinished() {
             }
         });
 
@@ -235,6 +253,8 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
         parsianPayment.handleResult(requestCode, resultCode, data);
 
         samanPayment.handleResult(requestCode, resultCode, data);
+
+        behPardakhtPayment.handleOnActivityResult(requestCode, resultCode, data);
 
     }
 
@@ -419,13 +439,13 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
 
                 binding.carBalanceTitle.setText(carBalance >= 0 ? "اعتبار پلاک" : "بدهی پلاک");
                 binding.carBalance.setTextColor(getResources().getColor(carBalance >= 0 ? R.color.green : R.color.red));
-                binding.carBalance.setText((carBalance < 0 ? (carBalance * -1):carBalance) + " تومان");
+                binding.carBalance.setText((carBalance < 0 ? (carBalance * -1) : carBalance) + " تومان");
                 binding.parkPrice.setText(parkPrice + " تومان");
                 binding.payment.setVisibility(debt < 0 ? View.VISIBLE : View.GONE);
 
                 if (debt < 0) {
 
-                    binding.debtSum.setText((debt*-1) + " تومان");
+                    binding.debtSum.setText((debt * -1) + " تومان");
                     binding.payment.setOnClickListener(view -> Toast.makeText(getApplicationContext(), "برای انجام عملیات دکمه را نگه دارید", Toast.LENGTH_SHORT).show());
                     binding.payment.setOnLongClickListener(view -> {
 
@@ -433,6 +453,8 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
                             parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, (debt * -1), placeId, Constants.TRANSACTION_TYPE_PARK_PRICE);
                         else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
                             samanPayment.createTransaction(Constants.NON_CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, (debt * -1), placeId, Constants.TRANSACTION_TYPE_PARK_PRICE);
+                        else if (Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT)
+                            behPardakhtPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, (debt * -1), -1, Constants.TRANSACTION_TYPE_CHAREG);
                         else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
                             Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان انجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 
@@ -495,7 +517,6 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------------------------
-
 
 
 }

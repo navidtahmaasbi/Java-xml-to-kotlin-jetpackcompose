@@ -10,8 +10,8 @@ android {
         applicationId "com.azarpark.watchman"
         minSdk 21
         targetSdk 31
-        versionCode 25//todo release
-        versionName "1.25"//todo release
+        versionCode 28//todo release
+        versionName "1.28"//todo release
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -40,6 +40,8 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment:2.3.5'
     implementation 'androidx.navigation:navigation-ui:2.3.5'
     implementation files('libs\\platform_sdk_v4.1.0326.jar')
+    implementation files('libs\\NeptuneLiteApi_V2.03.00_20180208.jar')
+    implementation files('libs\\GLPage_V1.03.00_20181030.jar')
     implementation 'com.google.android.gms:play-services-location:19.0.1'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'

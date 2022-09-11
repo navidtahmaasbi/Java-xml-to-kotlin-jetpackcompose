@@ -41,7 +41,6 @@ public class ConfirmDialog extends DialogFragment {
 
         if (getDialog() != null && getDialog().getWindow() != null) {
             getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//            getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         }
 
         return super.onCreateView(inflater, container, savedInstanceState);
@@ -50,9 +49,8 @@ public class ConfirmDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-//        return super.onCreateDialog(savedInstanceState);
         binding = ConfirmDialogBinding.inflate(LayoutInflater.from(getContext()));
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setView(binding.getRoot());
 
         binding.title.setText(title);
@@ -67,11 +65,9 @@ public class ConfirmDialog extends DialogFragment {
         return builder.create();
     }
 
-    public static interface ConfirmButtonClicks {
-
-        public void onConfirmClicked();
-
-        public void onCancelClicked();
+    public  interface ConfirmButtonClicks {
+        void onConfirmClicked();
+        void onCancelClicked();
     }
 
 
