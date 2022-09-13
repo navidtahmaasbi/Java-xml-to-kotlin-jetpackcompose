@@ -48,7 +48,11 @@ public interface API {
     Call<GetCitiesResponse> getCities();
 
     @GET("/api/watchman/splash")
-    Call<SplashResponse> getSplash(@Header("Authorization") String authToken, @Query("version_code") int versionCode);
+    Call<SplashResponse> getSplash(
+            @Header("Authorization") String authToken,
+            @Query("version_code") int versionCode,
+            @Query("serial_number") String serialNumber
+            );
 
     @POST("oauth/token")
     Call<LoginResponse> login(@Body LoginBody body);

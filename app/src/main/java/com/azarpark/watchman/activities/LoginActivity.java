@@ -66,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
         confirmDialog = new ConfirmDialog("پذیرش قوانین", Constants.rules, "تایید", "عدم تایید", new ConfirmDialog.ConfirmButtonClicks() {
             @Override
             public void onConfirmClicked() {
-                login(new LoginBody(binding.username.getText().toString(), binding.password.getText().toString(), android.os.Build.SERIAL), binding.username.getText().toString());
+                login(new LoginBody(binding.username.getText().toString(), binding.password.getText().toString()), binding.username.getText().toString());
             }
 
             @Override

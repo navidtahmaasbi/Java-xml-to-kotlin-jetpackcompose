@@ -8,6 +8,8 @@ import java.util.ArrayList;
 
 public class SplashResponse {
 
+    public int success;
+    public String msg, description;
     public String qr_url;
     public int refresh_time;
     public String telephone;

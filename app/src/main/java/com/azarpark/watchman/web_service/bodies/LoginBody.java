@@ -7,10 +7,9 @@ public class LoginBody {
             grant_type = "password",
             username, password, serial_number;
 
-    public LoginBody(String username, String password, String serialNumber) {
+    public LoginBody(String username, String password) {
         this.username = username;
         this.password = password;
-        serial_number = serialNumber;
     }
 
     public String getUsername() {

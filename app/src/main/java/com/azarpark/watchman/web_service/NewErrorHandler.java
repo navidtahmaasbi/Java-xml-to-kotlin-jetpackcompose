@@ -1,11 +1,13 @@
 package com.azarpark.watchman.web_service;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
 import androidx.fragment.app.FragmentManager;
 
+import com.azarpark.watchman.activities.LoginActivity;
 import com.azarpark.watchman.activities.SplashActivity;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.MessageDialog;
@@ -39,9 +41,13 @@ public class NewErrorHandler {
             try {
                 JSONObject responseObject = new JSONObject(gson.toJson(response.body()));
 
+                if (responseObject.has("msg") && responseObject.getString("msg").equals("logout")){
+                    SharedPreferencesRepository.removeToken();
+                }
+
                 if (responseObject.has(Constants.SUCCESS) && !responseObject.getString(Constants.SUCCESS).equals("1")) {
 
-                    Toast.makeText(context, responseObject.has(Constants.DESCRIPTION) ? responseObject.getString(Constants.DESCRIPTION) : responseObject.getString(Constants.SUCCESS), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, responseObject.has(Constants.DESCRIPTION) ? responseObject.getString(Constants.DESCRIPTION) : responseObject.getString(Constants.SUCCESS), Toast.LENGTH_LONG).show();
                     return true;
                 }
 

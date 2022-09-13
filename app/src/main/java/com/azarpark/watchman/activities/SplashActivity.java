@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -189,13 +190,14 @@ public class SplashActivity extends AppCompatActivity {
 
     }
 
+    @SuppressLint("HardwareIds")
     private void getSplash() {
 
         Runnable functionRunnable = this::getSplash;
         binding.loadingBar.setVisibility(View.VISIBLE);
         binding.retry.setVisibility(View.INVISIBLE);
 
-        webService.getClient(getApplicationContext()).getSplash(SharedPreferencesRepository.getTokenWithPrefix(), versionCode).enqueue(new Callback<SplashResponse>() {
+        webService.getClient(getApplicationContext()).getSplash(SharedPreferencesRepository.getTokenWithPrefix(), versionCode, android.os.Build.SERIAL).enqueue(new Callback<SplashResponse>() {
             @Override
             public void onResponse(@NonNull Call<SplashResponse> call, @NonNull Response<SplashResponse> response) {
 
