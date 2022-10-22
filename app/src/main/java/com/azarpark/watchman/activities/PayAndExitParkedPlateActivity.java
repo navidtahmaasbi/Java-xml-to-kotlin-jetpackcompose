@@ -454,7 +454,7 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
                         else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
                             samanPayment.createTransaction(Constants.NON_CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, (debt * -1), placeId, Constants.TRANSACTION_TYPE_PARK_PRICE);
                         else if (Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT)
-                            behPardakhtPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, (debt * -1), -1, Constants.TRANSACTION_TYPE_CHAREG);
+                            behPardakhtPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, (debt * -1), -1, Constants.TRANSACTION_TYPE_PARK_PRICE);
                         else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
                             Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان انجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 
