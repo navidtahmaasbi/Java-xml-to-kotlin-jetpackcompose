@@ -445,16 +445,25 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
 
                 if (debt < 0) {
 
-                    binding.debtSum.setText((debt * -1) + " تومان");
+                    binding.debtSum.setText(String.valueOf(debt * -1));
                     binding.payment.setOnClickListener(view -> Toast.makeText(getApplicationContext(), "برای انجام عملیات دکمه را نگه دارید", Toast.LENGTH_SHORT).show());
                     binding.payment.setOnLongClickListener(view -> {
 
-                        if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
-                            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, (debt * -1), placeId, Constants.TRANSACTION_TYPE_PARK_PRICE);
+                        String debtSumStringValue = binding.debtSum.getText().toString();
+                        int debtSumIntegerValue = 0;
+                        try { debtSumIntegerValue = Integer.parseInt(debtSumStringValue); }catch (Exception ignored){}
+                        if (!assistant.isNumber(debtSumStringValue))
+                            Toast.makeText(getApplicationContext(), "مبلغ را درست وارد کنید", Toast.LENGTH_SHORT).show();
+                        else if (debtSumIntegerValue < Constants.MIN_PRICE_FOR_PAYMENT)
+                            Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید کمتر از " + Constants.MIN_PRICE_FOR_PAYMENT + " تومان باشد", Toast.LENGTH_SHORT).show();
+                        else if (debtSumIntegerValue > Constants.MAX_PRICE_FOR_PAYMENT)
+                            Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید بیشتر از " + Constants.MIN_PRICE_FOR_PAYMENT + " تومان باشد", Toast.LENGTH_SHORT).show();
+                        else if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
+                            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, debtSumIntegerValue, placeId, Constants.TRANSACTION_TYPE_PARK_PRICE);
                         else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
-                            samanPayment.createTransaction(Constants.NON_CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, (debt * -1), placeId, Constants.TRANSACTION_TYPE_PARK_PRICE);
+                            samanPayment.createTransaction(Constants.NON_CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, debtSumIntegerValue, placeId, Constants.TRANSACTION_TYPE_PARK_PRICE);
                         else if (Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT)
-                            behPardakhtPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, (debt * -1), -1, Constants.TRANSACTION_TYPE_PARK_PRICE);
+                            behPardakhtPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, debtSumIntegerValue, -1, Constants.TRANSACTION_TYPE_PARK_PRICE);
                         else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
                             Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان انجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 

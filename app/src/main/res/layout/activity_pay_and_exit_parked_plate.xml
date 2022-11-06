@@ -456,14 +456,17 @@
                         android:layout_marginTop="@dimen/_15sdp"
                         android:id="@+id/debt_sum_area">
 
-                        <TextView
+                        <EditText
                             android:id="@+id/debt_sum"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:fontFamily="@font/iran_sans_fa_num_bold"
                             android:gravity="right"
+                            android:background="@drawable/unselected_background"
                             android:text="-15000 تومان"
+                            android:inputType="numberDecimal"
+                            android:padding="@dimen/_5sdp"
                             android:textColor="@color/red"
                             android:textSize="@dimen/_13sdp" />
 

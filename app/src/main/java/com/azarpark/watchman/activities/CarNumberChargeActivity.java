@@ -33,7 +33,9 @@ import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.NewErrorHandler;
 import com.azarpark.watchman.web_service.WebService;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -239,42 +241,44 @@ public class CarNumberChargeActivity extends AppCompatActivity {
             }
         });
 
-//        binding.amount.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//
-//                adapter.clearSelectedItem();
-//
-//                if (!charSequence.toString().isEmpty()){
-//
-//                    binding.amount.removeTextChangedListener(this);
-//                    String amount = charSequence.toString();
-//                    amount = amount.replace(",","");
-//                    binding.amount.setText(assistant.formatAmount(Integer.parseInt(amount)));
-//
-//                    binding.amount.setSelection(binding.amount.getText().length());
-//
-//                    binding.amount.addTextChangedListener(this);
-//                }
-//
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable editable) {
-//
-//            }
-//        });
+        binding.amount.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                adapter.clearSelectedItem();
+
+                if (!charSequence.toString().isEmpty()){
+
+                    binding.amount.removeTextChangedListener(this);
+                    String stringValue  = charSequence.toString();
+                    if (assistant.isNumber(stringValue)) {
+                        stringValue = stringValue.replace(",", "");
+                        int integerValue = Integer.parseInt(stringValue);
+                        binding.amount.setText(assistant.formatAmount(integerValue));
+                        binding.amount.setSelection(binding.amount.getText().length());
+                        binding.amount.addTextChangedListener(this);
+                        selectedAmount = integerValue;
+                    }
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
 
         adapter = new ChargeItemListAdapter(amount -> {
 
             selectedAmount = amount;
 
-//            binding.amount.setText(NumberFormat.getNumberInstance(Locale.US).format(amount));
+            binding.amount.setText(NumberFormat.getNumberInstance(Locale.US).format(amount));
 
         }, getApplicationContext());
         binding.recyclerView.setAdapter(adapter);
@@ -282,7 +286,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         ArrayList<Integer> items = new ArrayList<>();
 
         //todo release
-//        items.add(1000);
+        items.add(1000);
         items.add(10000);
         items.add(20000);
         items.add(30000);
@@ -313,6 +317,15 @@ public class CarNumberChargeActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
         else if (selectedAmount == 0)
             Toast.makeText(getApplicationContext(), "مبلغ شارژ را انتخاب کنید", Toast.LENGTH_SHORT).show();
+
+        else if (!assistant.isNumber(Integer.toString(selectedAmount)))
+            Toast.makeText(getApplicationContext(), "مبلغ شارژ را درست وارد کنید", Toast.LENGTH_SHORT).show();
+        else if (selectedAmount < Constants.MIN_PRICE_FOR_PAYMENT)
+            Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید کمتر از " + Constants.MIN_PRICE_FOR_PAYMENT + " تومان باشد", Toast.LENGTH_SHORT).show();
+        else if (selectedAmount > Constants.MAX_PRICE_FOR_PAYMENT)
+            Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید بیشتر از " + Constants.MIN_PRICE_FOR_PAYMENT + " تومان باشد", Toast.LENGTH_SHORT).show();
+        else if (selectedAmount % 100 != 0)
+            Toast.makeText(getApplicationContext(), "مبلغ رند انتخاب کنید", Toast.LENGTH_SHORT).show();
         else if (selectedTab == PlateType.simple)
             charge(
                     Integer.toString(selectedAmount),
@@ -322,10 +335,6 @@ public class CarNumberChargeActivity extends AppCompatActivity {
                     binding.plateSimpleTag3.getText().toString(),
                     binding.plateSimpleTag4.getText().toString()
             );
-        else if (!assistant.isNumber(Integer.toString(selectedAmount)))
-            Toast.makeText(getApplicationContext(), "مبلغ شارژ را درست وارد کنید", Toast.LENGTH_SHORT).show();
-        else if (selectedAmount < Constants.MIN_PRICE_FOR_PAYMENT)
-            Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید کمتر از " + Constants.MIN_PRICE_FOR_PAYMENT + " تومان باشد", Toast.LENGTH_SHORT).show();
         else if (selectedTab == PlateType.old_aras)
             charge(
                     Integer.toString(selectedAmount),

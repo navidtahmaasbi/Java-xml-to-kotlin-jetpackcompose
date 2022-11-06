@@ -74,8 +74,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/submit"
-        android:background="@color/gray"
-        android:layout_below="@+id/action_bar">
+        android:layout_below="@+id/action_bar"
+        android:background="@color/gray">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
@@ -372,23 +372,23 @@
 
             </LinearLayout>
 
-<!--            <EditText-->
-<!--                android:id="@+id/amount"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:layout_marginLeft="@dimen/_15sdp"-->
-<!--                android:layout_marginRight="@dimen/_15sdp"-->
-<!--                android:layout_marginBottom="@dimen/_10sdp"-->
-<!--                android:background="@drawable/selected_background"-->
-<!--                android:fontFamily="@font/iran_sans_fa_num"-->
-<!--                android:gravity="center"-->
-<!--                android:hint="مبلغ شارژ به تومان"-->
-<!--                android:inputType="numberDecimal"-->
-<!--                android:maxLength="9"-->
-<!--                android:paddingTop="@dimen/_8sdp"-->
-<!--                android:paddingBottom="@dimen/_8sdp"-->
-<!--                android:textColor="@color/blue" />-->
+                        <EditText
+                            android:id="@+id/amount"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="@dimen/_15sdp"
+                            android:layout_marginRight="@dimen/_15sdp"
+                            android:layout_marginBottom="@dimen/_10sdp"
+                            android:background="@drawable/selected_background"
+                            android:fontFamily="@font/iran_sans_fa_num"
+                            android:gravity="center"
+                            android:hint="مبلغ شارژ به تومان"
+                            android:inputType="numberDecimal"
+                            android:maxLength="9"
+                            android:paddingTop="@dimen/_8sdp"
+                            android:paddingBottom="@dimen/_8sdp"
+                            android:textColor="@color/blue" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view"

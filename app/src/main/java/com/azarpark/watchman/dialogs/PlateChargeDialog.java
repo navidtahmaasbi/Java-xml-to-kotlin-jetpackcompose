@@ -67,30 +67,43 @@ public class PlateChargeDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(binding.getRoot());
 
-//        binding.amount.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//
-//                adapter.clearSelectedItem();
-//
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable editable) {
-//
-//            }
-//        });
+        Assistant assistant = new Assistant();
+
+        binding.amount.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                adapter.clearSelectedItem();
+
+                binding.amount.removeTextChangedListener(this);
+                String stringValue  = charSequence.toString();
+                if (assistant.isNumber(stringValue)) {
+                    stringValue = stringValue.replace(",", "");
+                    int integerValue = Integer.parseInt(stringValue);
+                    binding.amount.setText(assistant.formatAmount(integerValue));
+                    binding.amount.setSelection(binding.amount.getText().length());
+                    binding.amount.addTextChangedListener(this);
+                    selectedAmount = integerValue;
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
 
         adapter = new ChargeItemListAdapter(amount -> {
 
             selectedAmount = amount;
 
-//            binding.amount.setText(NumberFormat.getNumberInstance(Locale.US).format(amount));
+            binding.amount.setText(NumberFormat.getNumberInstance(Locale.US).format(amount));
 
         }, getContext());
         binding.recyclerView.setAdapter(adapter);
@@ -98,7 +111,7 @@ public class PlateChargeDialog extends DialogFragment {
         ArrayList<Integer> items = new ArrayList<>();
 
         //todo release
-//        items.add(1000);
+        items.add(1000);
         items.add(10000);
         items.add(20000);
         items.add(30000);
@@ -107,18 +120,7 @@ public class PlateChargeDialog extends DialogFragment {
         items.add(100000);
 
         adapter.setItems(items);
-
-//        binding.hasMobileStatus.setText(!hasMobile ? "ثبت نشده" : "ثبت شده");
-//        binding.hasMobileStatus.setTextColor(getContext().getResources().getColor(!hasMobile ? R.color.red : R.color.dark_green));
-
         binding.submit.setOnClickListener(view -> {
-
-//            String s = binding.amount.getText().toString().replace(",","");
-//            int price = Integer.parseInt(s);
-
-            binding.submit.startAnimation();
-
-            Assistant assistant = new Assistant();
 
             if (selectedAmount == 0)
                 Toast.makeText(getContext(), "مبلغ شارژ را انتخاب کنید", Toast.LENGTH_SHORT).show();
@@ -126,11 +128,14 @@ public class PlateChargeDialog extends DialogFragment {
                 Toast.makeText(getContext(), "مبلغ شارژ را درست وارد کنید", Toast.LENGTH_SHORT).show();
             else if (selectedAmount < Constants.MIN_PRICE_FOR_PAYMENT)
                 Toast.makeText(getContext(), "مبلغ شارژ نباید کمتر از " + Constants.MIN_PRICE_FOR_PAYMENT + " تومان باشد", Toast.LENGTH_SHORT).show();
-//            else if (!binding.mobile.getText().toString().isEmpty() && !assistant.isMobile(binding.mobile.getText().toString()))
-//                Toast.makeText(getContext(), "شماره موبایل را درست وارد کنید", Toast.LENGTH_SHORT).show();
-            else
+            else if (selectedAmount > Constants.MAX_PRICE_FOR_PAYMENT)
+                Toast.makeText(getContext(), "مبلغ شارژ نباید بیشتر از " + Constants.MIN_PRICE_FOR_PAYMENT + " تومان باشد", Toast.LENGTH_SHORT).show();
+            else if (selectedAmount % 100 != 0)
+                Toast.makeText(getContext(), "مبلغ رند انتخاب کنید", Toast.LENGTH_SHORT).show();
+            else {
+                binding.submit.startAnimation();
                 onPayClicked.pay(selectedAmount);
-
+            }
 
         });
 
@@ -187,7 +192,7 @@ public class PlateChargeDialog extends DialogFragment {
 
     public interface OnPayClicked {
 
-        public void pay(int amount);
+        void pay(int amount);
 
     }
 
