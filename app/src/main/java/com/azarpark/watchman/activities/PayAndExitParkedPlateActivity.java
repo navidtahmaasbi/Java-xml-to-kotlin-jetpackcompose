@@ -128,6 +128,33 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
             }
         });
 
+        binding.debtSum.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                binding.debtSum.removeTextChangedListener(this);
+                String stringValue  = charSequence.toString();
+                if (assistant.isNumber(stringValue)) {
+                    stringValue = stringValue.replace(",", "");
+                    int integerValue = Integer.parseInt(stringValue);
+                    binding.debtSum.setText(assistant.formatAmount(integerValue));
+                    binding.debtSum.setSelection(binding.debtSum.getText().length());
+                    binding.debtSum.addTextChangedListener(this);
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
         binding.plateSimpleTag1.requestFocus();
 
         binding.plateSimpleSelector.setOnClickListener(view -> {
@@ -449,7 +476,7 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
                     binding.payment.setOnClickListener(view -> Toast.makeText(getApplicationContext(), "برای انجام عملیات دکمه را نگه دارید", Toast.LENGTH_SHORT).show());
                     binding.payment.setOnLongClickListener(view -> {
 
-                        String debtSumStringValue = binding.debtSum.getText().toString();
+                        String debtSumStringValue = binding.debtSum.getText().toString().replaceAll(",","");
                         int debtSumIntegerValue = 0;
                         try { debtSumIntegerValue = Integer.parseInt(debtSumStringValue); }catch (Exception ignored){}
                         if (!assistant.isNumber(debtSumStringValue))
@@ -458,14 +485,21 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید کمتر از " + Constants.MIN_PRICE_FOR_PAYMENT + " تومان باشد", Toast.LENGTH_SHORT).show();
                         else if (debtSumIntegerValue > Constants.MAX_PRICE_FOR_PAYMENT)
                             Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید بیشتر از " + Constants.MIN_PRICE_FOR_PAYMENT + " تومان باشد", Toast.LENGTH_SHORT).show();
-                        else if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
+                        else if (Constants.SELECTED_PAYMENT == Constants.PASRIAN){
+                            loadingBar.show();
                             parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, debtSumIntegerValue, placeId, Constants.TRANSACTION_TYPE_PARK_PRICE);
-                        else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
+                        }
+                        else if (Constants.SELECTED_PAYMENT == Constants.SAMAN){
+                            loadingBar.show();
                             samanPayment.createTransaction(Constants.NON_CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, debtSumIntegerValue, placeId, Constants.TRANSACTION_TYPE_PARK_PRICE);
-                        else if (Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT)
+                        }
+                        else if (Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT){
+                            loadingBar.show();
                             behPardakhtPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, debtSumIntegerValue, -1, Constants.TRANSACTION_TYPE_PARK_PRICE);
-                        else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
+                        }
+                        else if (Constants.SELECTED_PAYMENT == Constants.NOTHING) {
                             Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان انجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
+                        }
 
                         return true;
                     });
@@ -503,6 +537,8 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
         LoadingBar loadingBar = new LoadingBar(PayAndExitParkedPlateActivity.this);
         loadingBar.show();
 
+        loadingBar.show();
+
         webService.getClient(getApplicationContext()).exitPark(SharedPreferencesRepository.getTokenWithPrefix(), placeID).enqueue(new Callback<ExitParkResponse>() {
             @Override
             public void onResponse(Call<ExitParkResponse> call, Response<ExitParkResponse> response) {
@@ -523,6 +559,12 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onStop() {
+        loadingBar.dismiss();
+        super.onStop();
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------------------------

@@ -475,7 +475,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:fontFamily="@font/iran_sans"
-                            android:text="جمع"
+                            android:text="جمع (تومان)"
                             android:textColor="@color/text_gray"
                             android:textSize="@dimen/_13sdp" />
 

@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:layoutDirection="ltr"
+    android:paddingBottom="@dimen/_10sdp"
+    android:background="@drawable/dialog_background"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/_10sdp"
-        android:background="@drawable/dialog_background"
+        android:layout_above="@+id/submit"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:layout_marginBottom="@dimen/_10sdp"
         android:orientation="vertical"
         android:padding="@dimen/_20sdp">
 
@@ -273,22 +278,22 @@
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <EditText
-                    android:id="@+id/amount"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="@dimen/_15sdp"
-                    android:layout_marginRight="@dimen/_15sdp"
-                    android:layout_marginBottom="@dimen/_10sdp"
-                    android:background="@drawable/selected_background"
-                    android:fontFamily="@font/iran_sans_fa_num"
-                    android:gravity="center"
-                    android:hint="مبلغ شارژ به تومان"
-                    android:inputType="numberDecimal"
-                    android:paddingTop="@dimen/_8sdp"
-                    android:paddingBottom="@dimen/_8sdp"
-                    android:textColor="@color/blue" />
+        <EditText
+            android:id="@+id/amount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="@dimen/_15sdp"
+            android:layout_marginRight="@dimen/_15sdp"
+            android:layout_marginBottom="@dimen/_10sdp"
+            android:background="@drawable/selected_background"
+            android:fontFamily="@font/iran_sans_fa_num"
+            android:gravity="center"
+            android:hint="مبلغ شارژ به تومان"
+            android:inputType="numberDecimal"
+            android:paddingTop="@dimen/_8sdp"
+            android:paddingBottom="@dimen/_8sdp"
+            android:textColor="@color/blue" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"
@@ -301,97 +306,99 @@
             tools:itemCount="3"
             tools:listitem="@layout/amount_item" />
 
-<!--        <LinearLayout-->
-<!--            android:layout_marginStart="@dimen/_10sdp"-->
-<!--            android:layout_marginEnd="@dimen/_10sdp"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="vertical">-->
+        <!--        <LinearLayout-->
+        <!--            android:layout_marginStart="@dimen/_10sdp"-->
+        <!--            android:layout_marginEnd="@dimen/_10sdp"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:orientation="vertical">-->
 
-<!--            <androidx.appcompat.widget.LinearLayoutCompat-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="horizontal"-->
-<!--                android:layout_marginTop="@dimen/_10sdp">-->
+        <!--            <androidx.appcompat.widget.LinearLayoutCompat-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:orientation="horizontal"-->
+        <!--                android:layout_marginTop="@dimen/_10sdp">-->
 
-<!--                <TextView-->
-<!--                    android:id="@+id/has_mobile_status"-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_weight="1"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:fontFamily="@font/iran_sans"-->
-<!--                    android:gravity="left"-->
-<!--                    android:text="ثبت نشده"-->
-<!--                    android:textColor="@color/red"-->
-<!--                    android:textSize="@dimen/_9sdp" />-->
+        <!--                <TextView-->
+        <!--                    android:id="@+id/has_mobile_status"-->
+        <!--                    android:layout_width="0dp"-->
+        <!--                    android:layout_weight="1"-->
+        <!--                    android:layout_height="wrap_content"-->
+        <!--                    android:fontFamily="@font/iran_sans"-->
+        <!--                    android:gravity="left"-->
+        <!--                    android:text="ثبت نشده"-->
+        <!--                    android:textColor="@color/red"-->
+        <!--                    android:textSize="@dimen/_9sdp" />-->
 
-<!--                <TextView-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_weight="1"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:fontFamily="@font/iran_sans"-->
-<!--                    android:gravity="right"-->
-<!--                    android:text="شماره همراه"-->
-<!--                    android:textColor="@color/black"-->
-<!--                    android:textSize="@dimen/_9sdp" />-->
+        <!--                <TextView-->
+        <!--                    android:layout_width="0dp"-->
+        <!--                    android:layout_weight="1"-->
+        <!--                    android:layout_height="wrap_content"-->
+        <!--                    android:fontFamily="@font/iran_sans"-->
+        <!--                    android:gravity="right"-->
+        <!--                    android:text="شماره همراه"-->
+        <!--                    android:textColor="@color/black"-->
+        <!--                    android:textSize="@dimen/_9sdp" />-->
 
-<!--            </androidx.appcompat.widget.LinearLayoutCompat>-->
+        <!--            </androidx.appcompat.widget.LinearLayoutCompat>-->
 
-<!--            <RelativeLayout-->
-<!--                android:layout_marginTop="@dimen/_3sdp"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:background="@drawable/white_bg_5"-->
-<!--                android:orientation="horizontal"-->
-<!--                android:padding="@dimen/_5sdp">-->
+        <!--            <RelativeLayout-->
+        <!--                android:layout_marginTop="@dimen/_3sdp"-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:background="@drawable/white_bg_5"-->
+        <!--                android:orientation="horizontal"-->
+        <!--                android:padding="@dimen/_5sdp">-->
 
-<!--                <EditText-->
-<!--                    android:id="@+id/mobile"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_centerVertical="true"-->
-<!--                    android:background="@android:color/transparent"-->
-<!--                    android:fontFamily="@font/iran_sans"-->
-<!--                    android:gravity="center"-->
-<!--                    android:hint="09*********"-->
-<!--                    android:inputType="numberDecimal"-->
-<!--                    android:padding="@dimen/_5sdp"-->
-<!--                    android:textColor="@color/black"-->
-<!--                    android:textSize="@dimen/_10sdp" />-->
+        <!--                <EditText-->
+        <!--                    android:id="@+id/mobile"-->
+        <!--                    android:layout_width="match_parent"-->
+        <!--                    android:layout_height="wrap_content"-->
+        <!--                    android:layout_centerVertical="true"-->
+        <!--                    android:background="@android:color/transparent"-->
+        <!--                    android:fontFamily="@font/iran_sans"-->
+        <!--                    android:gravity="center"-->
+        <!--                    android:hint="09*********"-->
+        <!--                    android:inputType="numberDecimal"-->
+        <!--                    android:padding="@dimen/_5sdp"-->
+        <!--                    android:textColor="@color/black"-->
+        <!--                    android:textSize="@dimen/_10sdp" />-->
 
-<!--                <ImageView-->
-<!--                    android:layout_width="@dimen/_15sdp"-->
-<!--                    android:layout_height="@dimen/_15sdp"-->
-<!--                    android:layout_alignParentRight="true"-->
-<!--                    android:layout_centerVertical="true"-->
-<!--                    android:layout_marginRight="@dimen/_10sdp"-->
-<!--                    android:src="@drawable/ic_mobile"-->
-<!--                    app:tint="@color/blue" />-->
+        <!--                <ImageView-->
+        <!--                    android:layout_width="@dimen/_15sdp"-->
+        <!--                    android:layout_height="@dimen/_15sdp"-->
+        <!--                    android:layout_alignParentRight="true"-->
+        <!--                    android:layout_centerVertical="true"-->
+        <!--                    android:layout_marginRight="@dimen/_10sdp"-->
+        <!--                    android:src="@drawable/ic_mobile"-->
+        <!--                    app:tint="@color/blue" />-->
 
-<!--            </RelativeLayout>-->
+        <!--            </RelativeLayout>-->
 
-<!--        </LinearLayout>-->
+        <!--        </LinearLayout>-->
 
-        <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
-            android:id="@+id/submit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginStart="@dimen/_10sdp"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:layout_marginEnd="@dimen/_10sdp"
-            android:background="@drawable/blue_bg_5"
-            android:fontFamily="@font/iran_sans"
-            android:gravity="center"
-            android:paddingLeft="@dimen/_40sdp"
-            android:paddingTop="@dimen/_10sdp"
-            android:paddingRight="@dimen/_40sdp"
-            android:paddingBottom="@dimen/_10sdp"
-            android:text="شارژ"
-            android:textColor="@color/white"
-            app:spinning_bar_color="@color/red"/>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
-</LinearLayout>
+    <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
+        android:id="@+id/submit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:background="@drawable/blue_bg_5"
+        android:fontFamily="@font/iran_sans"
+        android:gravity="center"
+        android:paddingLeft="@dimen/_40sdp"
+        android:paddingTop="@dimen/_10sdp"
+        android:paddingRight="@dimen/_40sdp"
+        android:paddingBottom="@dimen/_10sdp"
+        android:text="شارژ"
+        android:textColor="@color/white"
+        app:spinning_bar_color="@color/red"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>
