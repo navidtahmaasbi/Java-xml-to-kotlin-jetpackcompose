@@ -2,6 +2,7 @@ package com.azarpark.watchman.dialogs;
 
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.azarpark.watchman.R;
+import com.azarpark.watchman.activities.DetectActivity;
 import com.azarpark.watchman.databinding.ParkDialogBinding;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnParkClicked;
@@ -51,6 +53,13 @@ public class ParkDialog extends DialogFragment {
 
         setSelectedTab(selectedTab);
 
+        if (place.tag1 != null){
+            binding.plateSimpleTag1.setText(place.tag1);
+            binding.plateSimpleTag2.setText(place.tag2);
+            binding.plateSimpleTag3.setText(place.tag3);
+            binding.plateSimpleTag4.setText(place.tag4);
+        }
+
         binding.plateSimpleSelector.setOnClickListener(view -> {
 
             setSelectedTab(PlateType.simple);
@@ -66,6 +75,13 @@ public class ParkDialog extends DialogFragment {
         binding.plateNewArasSelector.setOnClickListener(view -> {
 
             setSelectedTab(PlateType.new_aras);
+
+        });
+
+        binding.detect.setOnClickListener(view -> {
+
+            startActivity(new Intent(getActivity(), DetectActivity.class));
+            dismiss();
 
         });
 

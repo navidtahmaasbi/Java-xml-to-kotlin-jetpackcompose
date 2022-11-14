@@ -24,6 +24,13 @@ public class Place {
     public ExitRequest exit_request;
     public Car car;
 
+    public void addTag(String tag1,String tag2,String tag3,String tag4){
+        this.tag1 = tag1;
+        this.tag2 = tag2;
+        this.tag3 = tag3;
+        this.tag4 = tag4;
+    }
+
     public String getPlateString() {
 
         if (tag2 == null || tag2.isEmpty())

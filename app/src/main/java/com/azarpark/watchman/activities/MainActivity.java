@@ -77,6 +77,9 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static String detectTag1 = null, detectTag2 = null, detectTag3 = null, detectTag4 = null;
+    Place lastOpenedPlace;
+
     ActivityMainBinding binding;
     boolean menuIsOpen = false;
     PopupWindow popupWindow;
@@ -212,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
         adapter = new ParkListAdapter(getApplicationContext(), place -> {
 
             if (place.status.contains(PlaceStatus.free.toString())) {
-
+                lastOpenedPlace = place;
                 openParkDialog(place);
 
             } else {
@@ -246,8 +249,23 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        if (detectTag1 != null){
+            onDetectResult();
+        }
+
         getPlaces02();
         setTimer();
+    }
+
+    private void onDetectResult(){
+
+        lastOpenedPlace.addTag(detectTag1, detectTag2, detectTag3, detectTag4);
+        detectTag1 = null;
+        detectTag2 = null;
+        detectTag3 = null;
+        detectTag4 = null;
+        openParkDialog(lastOpenedPlace);
+
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
