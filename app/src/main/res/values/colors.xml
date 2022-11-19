@@ -18,6 +18,7 @@
     <color name="transparent">#00000000</color>
     <color name="popup_background">#FAFFFFFF</color>
     <color name="green">#1ab99b</color>
+    <color name="lite_green">#8EF813</color>
     <color name="dark_green">#12776D</color>
     <color name="loadingbar_background">#16000000</color>
     <color name="dark_blue">#365A91</color>

@@ -9,6 +9,7 @@ public class PlacesResponse {
     public String msg;
     public String description;
     public Watchman watchman;
+    public String can_detect;
     public Update update;
     public String qr_url;
     public int refresh_time;

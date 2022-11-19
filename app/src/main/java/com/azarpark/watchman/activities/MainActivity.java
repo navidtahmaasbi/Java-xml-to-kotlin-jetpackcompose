@@ -944,6 +944,8 @@ public class MainActivity extends AppCompatActivity {
 
                 } else {
 
+                    SharedPreferencesRepository.setValue(Constants.can_detect, response.body().can_detect);
+
                     if (watchManName != null && response.body() != null)
                         watchManName.setText(response.body().watchman.name);
 

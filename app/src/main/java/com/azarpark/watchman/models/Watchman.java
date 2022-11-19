@@ -8,4 +8,5 @@ public class Watchman {
     public String phone;
     public String name;
     public List<Place> places;
+    public String type;//simple, camera
 }

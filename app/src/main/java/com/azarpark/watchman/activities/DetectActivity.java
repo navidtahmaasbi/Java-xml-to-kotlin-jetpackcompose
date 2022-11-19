@@ -75,7 +75,7 @@ public class DetectActivity extends AppCompatActivity implements CameraBridgeVie
         setContentView(R.layout.activity_detect);
 
         mOpenCvCameraView = findViewById(R.id.my_camera_view);
-//        mOpenCvCameraView.setLayoutParams(new LinearLayoutCompat.LayoutParams(getResources().getDisplayMetrics().widthPixels, getResources().getDisplayMetrics().widthPixels));
+        mOpenCvCameraView.setLayoutParams(new LinearLayoutCompat.LayoutParams(getResources().getDisplayMetrics().widthPixels, getResources().getDisplayMetrics().heightPixels));
 
         mOpenCvCameraView.setCameraIndex(CameraBridgeViewBase.CAMERA_ID_BACK);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
@@ -154,7 +154,7 @@ public class DetectActivity extends AppCompatActivity implements CameraBridgeVie
         Mat subMat;
         try {
             subMat = this.img_mask.submat(this.crop_rect.y - 100, this.crop_rect.y + this.crop_rect.height + 100, this.crop_rect.x - 100, this.crop_rect.x + this.crop_rect.width + 100);
-        }catch (Exception e){
+        } catch (Exception e) {
             subMat = this.img_mask.submat(this.crop_rect.y, this.crop_rect.y + this.crop_rect.height, this.crop_rect.x, this.crop_rect.x + this.crop_rect.width);
         }
         Imgproc.resize(subMat, subMat, this.img_mask.size());
@@ -187,36 +187,18 @@ public class DetectActivity extends AppCompatActivity implements CameraBridgeVie
     }
 
     public void onDetect(String str, Mat mat) {
-        try {
 
-            String tag1 = str.substring(0, 2);
-            String tag2 = this.dictionary_char.get_persian_string(str.charAt(2));
-            String tag3 = str.substring(3, 6);
-            String tag4 = str.substring(6, 8);
+        String tag1 = str.substring(0, 2);
+        String tag2 = this.dictionary_char.get_persian_string(str.charAt(2));
+        String tag3 = str.substring(3, 6);
+        String tag4 = str.substring(6, 8);
 
-            MatOfByte matOfByte = new MatOfByte();
-            Imgcodecs.imencode(".jpg", mat, matOfByte);
-            byte[] byteArray = matOfByte.toArray();
-
-//            Plate plate = new Plate(tag1, tag2, tag3, tag4);
-//            if (canSaveDetectedPlate(plate)) {
-//
-//                binding.tag1.setText(plate.tag1);
-//                binding.tag2.setText(plate.tag2);
-//                binding.tag3.setText(plate.tag3);
-//                binding.tag4.setText(plate.tag4);
-//
-//                saveImage(byteArray, plate);
-                playSound();
-                MainActivity.detectTag1 = tag1;
-                MainActivity.detectTag2 = tag2;
-                MainActivity.detectTag3 = tag3;
-                MainActivity.detectTag4 = tag4;
-                finish();
-//            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        playSound();
+        MainActivity.detectTag1 = tag1;
+        MainActivity.detectTag2 = tag2;
+        MainActivity.detectTag3 = tag3;
+        MainActivity.detectTag4 = tag4;
+        finish();
         mat.release();
     }
 

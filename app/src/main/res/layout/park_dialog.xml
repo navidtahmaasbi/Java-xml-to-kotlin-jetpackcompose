@@ -361,6 +361,7 @@
     </LinearLayout>
 
     <TextView
+        android:visibility="gone"
         android:id="@+id/detect"
         android:fontFamily="@font/iran_sans"
         android:layout_width="wrap_content"

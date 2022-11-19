@@ -59,6 +59,7 @@ public class Constants {
     public static String tag3 = "tag3";
     public static String tag4 = "tag4";
     public static String print_description_2 = "print_description_2";
+    public static String can_detect = "can_detect";
     public static String START_WORK = "start_work";
     public static String END_WORK = "end_work";
     public static String rules = "اینجانب با انتخاب گزینه تایید ضمن قبول آشنایی کامل و اخذ آموزش از شرکت آیریک راه پایه کلیه مسئولیت های ناشی از استفاده نام کاربری و گذرواژه خود در اپلیکیشن پارکبانی تحت اختیار را به عهده میگیرم";

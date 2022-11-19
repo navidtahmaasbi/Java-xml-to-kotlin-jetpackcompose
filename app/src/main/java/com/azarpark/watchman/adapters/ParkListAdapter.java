@@ -17,6 +17,7 @@ import com.azarpark.watchman.databinding.FreeParkItemBinding;
 import com.azarpark.watchman.databinding.FullParkItemBinding;
 import com.azarpark.watchman.enums.PlaceStatus;
 import com.azarpark.watchman.enums.PlateType;
+import com.azarpark.watchman.enums.WatchmanType;
 import com.azarpark.watchman.models.LocalNotification;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.utils.Assistant;
@@ -69,9 +70,11 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             viewHolder.binding.placeNumber.setText(Integer.toString(place.number));
 
-            viewHolder.binding.placeStatus.setText(place.status.equals(PlaceStatus.full_by_watchman.toString()) ? "پارکبان" : "شهروند");
+            boolean isCameraman = (place.status.equals(PlaceStatus.full_by_watchman.toString()) && place.watchman.type.equals(WatchmanType.camera.toString()));
 
-            viewHolder.binding.placeStatus.setBackgroundColor(place.status.equals(PlaceStatus.full_by_user.toString()) ? context.getResources().getColor(R.color.orange) : context.getResources().getColor(R.color.dark_blue));
+            viewHolder.binding.placeStatus.setText(place.status.equals(PlaceStatus.full_by_user.toString()) ? "شهروند" : isCameraman? "مکانیزه" : "پارکبان");
+
+            viewHolder.binding.placeStatus.setBackgroundColor(place.status.equals(PlaceStatus.full_by_user.toString()) ? context.getResources().getColor(R.color.orange) : isCameraman ? context.getResources().getColor(R.color.lite_green) : context.getResources().getColor(R.color.dark_blue));
 
             int balance = place.car.balance;
             if (balance >= 0) {

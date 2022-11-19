@@ -25,6 +25,7 @@ import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnParkClicked;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.utils.Constants;
+import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.bodies.ParkBody;
 import com.azarpark.watchman.utils.Assistant;
 
@@ -254,6 +255,8 @@ public class ParkDialog extends DialogFragment {
 
         if (selectedTab == PlateType.simple) {
 
+            binding.detect.setVisibility(SharedPreferencesRepository.canDetect() ? View.VISIBLE : View.GONE);
+
             binding.plateSimpleTag1.requestFocus();
 
             binding.plateSimpleSelector.setBackgroundResource(R.drawable.selected_tab);
@@ -270,6 +273,8 @@ public class ParkDialog extends DialogFragment {
 
         } else if (selectedTab == PlateType.old_aras) {
 
+            binding.detect.setVisibility(View.GONE);
+
             binding.plateOldAras.requestFocus();
 
             binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_tab);
@@ -284,6 +289,8 @@ public class ParkDialog extends DialogFragment {
             binding.plateOldAras.setVisibility(View.VISIBLE);
             binding.plateNewArasArea.setVisibility(View.GONE);
         } else if (selectedTab == PlateType.new_aras) {
+
+            binding.detect.setVisibility(View.GONE);
 
             binding.plateNewArasTag1.requestFocus();
 

@@ -76,6 +76,12 @@ public class SharedPreferencesRepository {
         return sharedPreferences.getString(key, "");
     }
 
+    public static boolean canDetect(){
+
+        return sharedPreferences.getString(Constants.can_detect , "0").equals("1");
+
+    }
+
     public static void setValue(String key, String value) {
 
         sharedPreferences.edit().putString(key, value).apply();

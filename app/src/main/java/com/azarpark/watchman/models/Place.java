@@ -23,6 +23,7 @@ public class Place {
     public EstimatePrice estimate_price;
     public ExitRequest exit_request;
     public Car car;
+    public Watchman watchman;
 
     public void addTag(String tag1,String tag2,String tag3,String tag4){
         this.tag1 = tag1;
