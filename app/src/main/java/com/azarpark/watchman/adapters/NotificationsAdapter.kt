@@ -23,7 +23,7 @@ class NotificationsAdapter(private val onItemClicked:(notification:Notification)
 
         binding.title.text = notification.title
         binding.description.text = notification.description
-        binding.date.text = Assistant.miladitoJalali(notification.created_at)
+        binding.date.text = Assistant.miladiToJalali(notification.created_at)
         binding.root.setOnClickListener { onItemClicked.invoke(notification) }
 
     }

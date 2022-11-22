@@ -305,9 +305,23 @@ public class Assistant {
         return s;
     }
 
-    public static String miladitoJalali(String miladiDate){
-        //todo
-        return miladiDate;
+    public static String miladiToJalali(String s) {
+
+        int year = Integer.parseInt(s.substring(0, 4));
+        int month = Integer.parseInt(s.substring(5, 7));
+        int day = Integer.parseInt(s.substring(8, 10));
+
+        System.out.println("----------> " + year + " - " + month + " - " + day);
+
+        PersianDate persianDate = new PersianDate();
+        persianDate.setGrgYear(year);
+        persianDate.setGrgMonth(month);
+        persianDate.setGrgDay(day);
+
+        String[] timeParts = s.split(" ");
+
+        return persianDate.getShYear() + "/" + persianDate.getShMonth() + "/" + persianDate.getShDay() + " " + timeParts[1];
+
     }
 
     public String formatAmount(int num) {
