@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/white_bg_15"
+    android:layout_margin="@dimen/_5sdp"
+    android:orientation="vertical"
+    android:layoutDirection="ltr"
+    android:padding="@dimen/_10sdp">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/iran_sans_fa_num_bold"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_15sdp"
+        android:layout_gravity="right"
+        android:text="عنوان"/>
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/iran_sans_fa_num"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_13sdp"
+        android:layout_gravity="end"
+        android:text="لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم لورم "/>
+
+    <TextView
+        android:id="@+id/date"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/iran_sans_fa_num"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_11sdp"
+        android:layout_gravity="left"
+        android:text="تاریخ"/>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

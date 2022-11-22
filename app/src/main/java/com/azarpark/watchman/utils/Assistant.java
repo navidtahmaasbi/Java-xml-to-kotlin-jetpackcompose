@@ -305,6 +305,11 @@ public class Assistant {
         return s;
     }
 
+    public static String miladitoJalali(String miladiDate){
+        //todo
+        return miladiDate;
+    }
+
     public String formatAmount(int num) {
         DecimalFormat decimalFormat = new DecimalFormat();
         DecimalFormatSymbols decimalFormateSymbol = new DecimalFormatSymbols();

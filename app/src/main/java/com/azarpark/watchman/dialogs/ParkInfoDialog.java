@@ -90,6 +90,9 @@ public class ParkInfoDialog extends DialogFragment {
 
         getParkData02(place);
 
+        binding.newPark.setOnClickListener(view -> onGetInfoClicked.newPark(place));
+        binding.newPark.setVisibility(View.VISIBLE);
+
         binding.placeNumber.setText(place.number + "");
         try {
 

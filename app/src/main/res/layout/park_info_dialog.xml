@@ -589,6 +589,21 @@
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
+        <TextView
+            android:visibility="gone"
+            android:layout_marginRight="@dimen/_2sdp"
+            android:id="@+id/new_park"
+            android:padding="@dimen/_5sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/blue_bg_5"
+            android:fontFamily="@font/iran_sans_bold"
+            android:gravity="center"
+            android:text="ثبت پارک جدید"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_13sdp" />
+
         <LinearLayout
             android:id="@+id/mobile_area"
             android:layout_width="match_parent"

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.azarpark.watchman.models.LocalNotification;
+import com.azarpark.watchman.models.Notification;
 import com.azarpark.watchman.models.Transaction;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -110,6 +111,42 @@ public class SharedPreferencesRepository {
 
     }
 
+    public static void addNotifications(List<Notification> newNotifications){
+
+        String arrayString = getValue(Constants.NOTIFICATIONS, "[]");
+        Gson gson = new Gson();
+        ArrayList<Notification> notifications = gson.fromJson(arrayString, new TypeToken<List<Notification>>() {
+        }.getType());
+
+        notifications.addAll(newNotifications);
+        setValue(Constants.NOTIFICATIONS, gson.toJson(notifications));
+
+    }
+
+    public static void removeNotification(int notificationId){
+
+        String arrayString = getValue(Constants.NOTIFICATIONS, "[]");
+        Gson gson = new Gson();
+        ArrayList<Notification> notifications = gson.fromJson(arrayString, new TypeToken<List<Notification>>() {
+        }.getType());
+        for (Notification notif: notifications) {
+            if (notif.id == notificationId){
+                notifications.remove(notif);
+                break;
+            }
+        }
+        setValue(Constants.NOTIFICATIONS, gson.toJson(notifications));
+
+    }
+
+    public static void removeAllNotifications(){
+
+        setValue(Constants.NOTIFICATIONS, "[]");
+
+    }
+
+
+
     public static void updateTransactions02(Transaction transaction) {
 
         String arrayString = getValue(Constants.UNSYCNCED_RES_NUMS, "[]");
@@ -166,6 +203,15 @@ public class SharedPreferencesRepository {
         }.getType());
 
         return notifications;
+
+    }
+
+    public static ArrayList<Notification> getNotifications() {
+
+        String arrayString = getValue(Constants.NOTIFICATIONS, "[]");
+        Gson gson = new Gson();
+        return gson.fromJson(arrayString, new TypeToken<List<Notification>>() {
+        }.getType());
 
     }
 

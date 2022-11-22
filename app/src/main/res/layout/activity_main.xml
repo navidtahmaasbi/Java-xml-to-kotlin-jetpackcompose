@@ -214,5 +214,45 @@
 
     </com.google.android.material.floatingactionbutton.FloatingActionButton>
 
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/notifications_area"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/_40sdp"
+        android:layout_marginLeft="@dimen/_25sdp"
+        android:orientation="horizontal"
+        android:background="@drawable/white_5_bg"
+        android:padding="@dimen/_5sdp">
+
+        <ImageView
+            android:layout_gravity="center_vertical"
+            android:layout_width="@dimen/_30sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_marginRight="@dimen/_5sdp"
+            android:src="@drawable/ic_bell"/>
+
+        <TextView
+            android:layout_width="@dimen/_35sdp"
+            android:layout_height="@dimen/_35sdp"
+            android:gravity="center"
+            android:fontFamily="@font/iran_sans_fa_num"
+            android:text="پیغام"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_13sdp"/>
+
+
+        <TextView
+            android:id="@+id/notification_count"
+            android:layout_width="@dimen/_35sdp"
+            android:layout_height="@dimen/_35sdp"
+            android:background="@drawable/red_circle"
+            android:gravity="center"
+            android:fontFamily="@font/iran_sans_fa_num"
+            android:text="0"
+            android:textColor="@color/white"/>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
 </RelativeLayout>

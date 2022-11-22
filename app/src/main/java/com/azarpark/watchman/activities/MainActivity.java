@@ -48,6 +48,7 @@ import com.azarpark.watchman.dialogs.PlateChargeDialog;
 import com.azarpark.watchman.enums.PlaceStatus;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnGetInfoClicked;
+import com.azarpark.watchman.models.Notification;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.payment.behpardakht.BehPardakhtPayment;
@@ -79,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static String detectTag1 = null, detectTag2 = null, detectTag3 = null, detectTag4 = null;
     Place lastOpenedPlace;
+    boolean lastOpenedParkDialogWasForParkOverriding = false;
 
     ActivityMainBinding binding;
     boolean menuIsOpen = false;
@@ -215,8 +217,7 @@ public class MainActivity extends AppCompatActivity {
         adapter = new ParkListAdapter(getApplicationContext(), place -> {
 
             if (place.status.contains(PlaceStatus.free.toString())) {
-                lastOpenedPlace = place;
-                openParkDialog(place);
+                openParkDialog(place, false);
 
             } else {
 
@@ -264,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
         detectTag2 = null;
         detectTag3 = null;
         detectTag4 = null;
-        openParkDialog(lastOpenedPlace);
+        openParkDialog(lastOpenedPlace, lastOpenedParkDialogWasForParkOverriding);
 
     }
 
@@ -551,9 +552,20 @@ public class MainActivity extends AppCompatActivity {
 
     //-------------------------------------------------------- dialogs
 
-    private void openParkDialog(Place place) {
+    private void openParkDialog(Place place, boolean isParkingNewPlateOnPreviousPlate) {
 
-        parkDialog = new ParkDialog(this::parkCar02, place);
+        lastOpenedPlace = place;
+        lastOpenedParkDialogWasForParkOverriding = isParkingNewPlateOnPreviousPlate;
+
+        parkDialog = new ParkDialog((parkBody, printFactor) -> {
+
+            if (!isParkingNewPlateOnPreviousPlate){
+                parkCar(parkBody, printFactor);
+            }else {
+                exitPark(place.id, parkBody, printFactor);
+            }
+
+        }, place, isParkingNewPlateOnPreviousPlate);
         parkDialog.show(getSupportFragmentManager(), ParkDialog.TAG);
 
         assistant.hideSoftKeyboard(MainActivity.this);
@@ -592,7 +604,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void payAsDebt(Place place) {
 
-                exitPark02(place.id);
+                exitPark(place.id);
 
             }
 
@@ -639,6 +651,13 @@ public class MainActivity extends AppCompatActivity {
                     printFactor(placeID, startTime, balance, place, printDescription);
 
             }
+
+            @Override
+            public void newPark(Place place){
+                parkInfoDialog.dismiss();
+                openParkDialog(place, true);
+            }
+
         }, place);
         parkInfoDialog.show(getSupportFragmentManager(), ParkDialog.TAG);
 
@@ -944,6 +963,12 @@ public class MainActivity extends AppCompatActivity {
 
                 } else {
 
+                    SharedPreferencesRepository.addNotifications(response.body().notifications);
+                    if (!response.body().notifications.isEmpty()){
+                        playNotificationSound();
+                    }
+                    buildNotifications();
+
                     SharedPreferencesRepository.setValue(Constants.can_detect, response.body().can_detect);
 
                     if (watchManName != null && response.body() != null)
@@ -963,17 +988,9 @@ public class MainActivity extends AppCompatActivity {
 
                     if (adapter.listHaveNewExitRequest(exitRequestPlaceIDs)) {
 
-                        try {
-                            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                            r.play();
-                        } catch (Exception e) {
-                            System.out.println("----------> song error");
-                            e.printStackTrace();
-                        }
+                        playNotificationSound();
 
                     }
-
 
                     adapter.setItems(myPlaces);
                     localNotificationsListAdapter.updateItems();
@@ -996,12 +1013,33 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void parkCar02(ParkBody parkBody, boolean printFactor) {
+    private void playNotificationSound() {
+        try {
+            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+            r.play();
+        } catch (Exception e) {
+            System.out.println("----------> song error");
+            e.printStackTrace();
+        }
+    }
 
+    private void buildNotifications() {
+        ArrayList<Notification> notifications = SharedPreferencesRepository.getNotifications();
+        if (!notifications.isEmpty()){
+            binding.notificationsArea.setVisibility(View.VISIBLE);
+            binding.notificationCount.setText(String.valueOf(notifications.size()));
+            binding.notificationsArea.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, NotificationsActivity.class)));
+        }else {
+            binding.notificationsArea.setVisibility(View.GONE);
+        }
+    }
+
+    private void parkCar(ParkBody parkBody, boolean printFactor) {
 
         assistant.hideSoftKeyboard(MainActivity.this);
 
-        Runnable functionRunnable = () -> parkCar02(parkBody, printFactor);
+        Runnable functionRunnable = () -> parkCar(parkBody, printFactor);
         LoadingBar loadingBar = new LoadingBar(MainActivity.this);
         loadingBar.show();
 
@@ -1061,9 +1099,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void exitPark02(int placeID) {
+    private void exitPark(int placeID) {
 
-        Runnable functionRunnable = () -> exitPark02(placeID);
+        Runnable functionRunnable = () -> exitPark(placeID);
         LoadingBar loadingBar = new LoadingBar(MainActivity.this);
         loadingBar.show();
 
@@ -1078,6 +1116,35 @@ public class MainActivity extends AppCompatActivity {
                 if (parkInfoDialog != null)
                     parkInfoDialog.dismiss();
                 getPlaces02();
+
+            }
+
+            @Override
+            public void onFailure(Call<ExitParkResponse> call, Throwable t) {
+                loadingBar.dismiss();
+                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
+            }
+        });
+
+    }
+
+    private void exitPark(int placeID ,ParkBody parkBody, boolean printFactor) {
+
+        Runnable functionRunnable = () -> exitPark(placeID);
+        LoadingBar loadingBar = new LoadingBar(MainActivity.this);
+        loadingBar.show();
+
+        webService.getClient(getApplicationContext()).exitPark(SharedPreferencesRepository.getTokenWithPrefix(), placeID).enqueue(new Callback<ExitParkResponse>() {
+            @Override
+            public void onResponse(Call<ExitParkResponse> call, Response<ExitParkResponse> response) {
+
+                loadingBar.dismiss();
+                if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
+                    return;
+
+                if (parkInfoDialog != null)
+                    parkInfoDialog.dismiss();
+                parkCar(parkBody, printFactor);
 
             }
 

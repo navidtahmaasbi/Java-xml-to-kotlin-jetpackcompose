@@ -36,10 +36,12 @@ public class ParkDialog extends DialogFragment {
     private OnParkClicked onParkClicked;
     private Place place;
     private PlateType selectedTab = PlateType.simple;
+    private boolean isParkingNewPlateOnPreviousPlate;
 
-    public ParkDialog(OnParkClicked onParkClicked, Place place) {
+    public ParkDialog(OnParkClicked onParkClicked, Place place, boolean isParkingNewPlateOnPreviousPlate) {
         this.onParkClicked = onParkClicked;
         this.place = place;
+        this.isParkingNewPlateOnPreviousPlate = isParkingNewPlateOnPreviousPlate;
     }
 
     @NonNull
@@ -54,7 +56,7 @@ public class ParkDialog extends DialogFragment {
 
         setSelectedTab(selectedTab);
 
-        if (place.tag1 != null){
+        if (place.tag1 != null && !isParkingNewPlateOnPreviousPlate){
             binding.plateSimpleTag1.setText(place.tag1);
             binding.plateSimpleTag2.setText(place.tag2);
             binding.plateSimpleTag3.setText(place.tag3);
@@ -255,7 +257,7 @@ public class ParkDialog extends DialogFragment {
 
         if (selectedTab == PlateType.simple) {
 
-            binding.detect.setVisibility(SharedPreferencesRepository.canDetect() ? View.VISIBLE : View.GONE);
+            binding.detect.setVisibility(SharedPreferencesRepository.canDetect() && !isParkingNewPlateOnPreviousPlate ? View.VISIBLE : View.GONE);
 
             binding.plateSimpleTag1.requestFocus();
 

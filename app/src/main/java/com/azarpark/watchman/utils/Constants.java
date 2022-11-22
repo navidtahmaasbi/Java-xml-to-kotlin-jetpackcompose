@@ -21,6 +21,7 @@ public class Constants {
     public static final String BASE_URL_SECOND_PART = ".backend1.azarpark.irana.app";
     public static final String ACCESS_TOKEN = "ACCESS_TOKEN";
     public static String UNSYCNCED_RES_NUMS = "unsynced_res_nums";
+    public static String NOTIFICATIONS = "NOTIFICATIONS";
     public static String LOCAL_NOTIFICATIONS = "LOCAL_NOTIFICATIONS";
     public static String place_id = "place_id";
     public static String ESTEHGAGI = "استحقاقی";
