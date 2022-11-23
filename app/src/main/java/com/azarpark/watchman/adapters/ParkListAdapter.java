@@ -131,6 +131,7 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             else
                 viewHolder.binding.header.setBackgroundResource(R.drawable.blue_top_5_bg);
 
+             viewHolder.binding.bottomPadding.setVisibility(isLastRow(position)?View.VISIBLE:View.GONE);
 
         } else {
 
@@ -151,14 +152,21 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 System.out.println("---------> null pointed exception : " + place.number);
             }
 
+            viewHolder.binding.bottomPadding.setVisibility(isLastRow(position)?View.VISIBLE:View.GONE);
         }
 
+    }
 
+    private boolean isLastRow(int position) {
+        if (filteredItems.isEmpty()) return false;
+
+        int lastRowItemsCount = filteredItems.size()%3;
+
+        return position > filteredItems.size() - lastRowItemsCount - 1;
     }
 
     public void setItems(ArrayList<Place> items) {
 
-        System.out.println("---------> sizeee : " + this.items.size());
         if (this.items.size() != 0)
             checkForNotification(items);
 

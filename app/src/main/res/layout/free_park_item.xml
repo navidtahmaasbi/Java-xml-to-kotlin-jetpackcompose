@@ -1,39 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/_120sdp"
-    android:orientation="vertical"
+    android:layout_height="wrap_content"
     android:layout_margin="@dimen/_5sdp"
-    android:layoutDirection="ltr"
     android:gravity="center"
-    android:background="@drawable/white_bg_5">
+    android:layoutDirection="ltr"
+    android:orientation="vertical"
+    android:background="@color/gray">
 
-    <TextView
-        android:id="@+id/place_number"
-        android:paddingRight="@dimen/_5sdp"
-        android:paddingLeft="@dimen/_5sdp"
-        android:background="@drawable/green_number_bg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/iran_sans_fa_num_bold"
-        android:letterSpacing="0.2"
-        android:text="756"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_22sdp"
-        android:layout_marginBottom="@dimen/_5sdp"/>
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_135sdp"
+        android:background="@drawable/white_bg_5"
+        android:orientation="vertical">
 
-    <TextView
-        android:paddingRight="@dimen/_5sdp"
-        android:paddingLeft="@dimen/_5sdp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/_10sdp"
-        android:layout_marginRight="@dimen/_10sdp"
-        android:fontFamily="@font/iran_sans_fa_num_bold"
-        android:letterSpacing="0.2"
-        android:text="آزاد"
-        android:textColor="@color/green"
-        android:textSize="@dimen/_20sdp"
-        android:layout_marginBottom="@dimen/_5sdp"/>
+        <TextView
+            android:id="@+id/place_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:background="@drawable/green_number_bg"
+            android:fontFamily="@font/iran_sans_fa_num_bold"
+            android:letterSpacing="0.2"
+            android:paddingLeft="@dimen/_5sdp"
+            android:paddingRight="@dimen/_5sdp"
+            android:text="756"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_22sdp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:fontFamily="@font/iran_sans_fa_num_bold"
+            android:letterSpacing="0.2"
+            android:paddingLeft="@dimen/_5sdp"
+            android:paddingRight="@dimen/_5sdp"
+            android:text="آزاد"
+            android:textColor="@color/green"
+            android:textSize="@dimen/_20sdp" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <View
+        android:clickable="false"
+        android:id="@+id/bottom_padding"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_100sdp"
+        android:background="@color/gray"/>
 
 </LinearLayout>

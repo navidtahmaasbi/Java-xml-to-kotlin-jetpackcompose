@@ -311,5 +311,11 @@
 
     </LinearLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_100sdp"
+        android:id="@+id/bottom_padding"
+        android:clickable="false"/>
+
 
 </LinearLayout>
