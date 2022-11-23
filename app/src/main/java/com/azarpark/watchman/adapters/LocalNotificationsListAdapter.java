@@ -57,6 +57,14 @@ public class LocalNotificationsListAdapter extends RecyclerView.Adapter<Recycler
     }
 
     @SuppressLint("NotifyDataSetChanged")
+    public void updateItems(ArrayList<LocalNotification> items) {
+
+        this.items = items;
+        notifyDataSetChanged();
+
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
     private void removeItem(LocalNotification notification) {
 
         SharedPreferencesRepository.removeFromLocalNotifications(notification);

@@ -1,5 +1,6 @@
 package com.azarpark.watchman.activities
 
+import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,6 +10,13 @@ import com.azarpark.watchman.enums.NotificationType
 import com.azarpark.watchman.utils.SharedPreferencesRepository
 
 class NotificationsActivity : AppCompatActivity() {
+
+    companion object{
+        fun open(activity:Activity){
+            activity.startActivity(Intent(activity, NotificationsActivity::class.java))
+        }
+    }
+
     lateinit var binding:ActivityNotificationsBinding
     lateinit var adapter: NotificationsAdapter
 

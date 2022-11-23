@@ -1,5 +1,7 @@
 package com.azarpark.watchman.activities;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -25,6 +27,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class IncomeStatisticsActivity02 extends AppCompatActivity {
+
+    public static void open(Activity activity){
+        activity.startActivity(new Intent(activity, IncomeStatisticsActivity02.class));
+    }
 
     ActivityIncomeStatisticsBinding binding;
     LoadingBar loadingBar;

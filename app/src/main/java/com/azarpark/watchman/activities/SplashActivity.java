@@ -23,6 +23,7 @@ import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.dialogs.SingleSelectDialog;
 import com.azarpark.watchman.models.City;
 import com.azarpark.watchman.models.KeyValueModel;
+import com.azarpark.watchman.presentation.page.places.PlacesActivity;
 import com.azarpark.watchman.web_service.responses.GetCitiesResponse;
 import com.azarpark.watchman.web_service.responses.SplashResponse;
 import com.azarpark.watchman.utils.Assistant;
@@ -197,8 +198,8 @@ public class SplashActivity extends AppCompatActivity {
         binding.loadingBar.setVisibility(View.VISIBLE);
         binding.retry.setVisibility(View.INVISIBLE);
 
-//        String serial = "1111";//todo release
-        String serial =  android.os.Build.SERIAL;
+        String serial = "1111";//todo release
+//        String serial =  android.os.Build.SERIAL;
 
         webService.getClient(getApplicationContext()).getSplash(SharedPreferencesRepository.getTokenWithPrefix(), versionCode, serial).enqueue(new Callback<SplashResponse>() {
             @Override
@@ -238,7 +239,8 @@ public class SplashActivity extends AppCompatActivity {
                         openUpdateDialog(response.body().update.update_link);
                     else {
 
-                        startActivity(new Intent(SplashActivity.this, MainActivity.class));
+//                        startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                        startActivity(new Intent(SplashActivity.this, PlacesActivity.class));
                         SplashActivity.this.finish();
                     }
 

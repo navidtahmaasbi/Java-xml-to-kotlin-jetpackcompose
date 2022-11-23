@@ -21,6 +21,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.RemoteViews;
 import androidx.core.app.NotificationCompat;
 import com.azarpark.watchman.R;
+import com.azarpark.watchman.activities.NotificationsActivity;
 import com.azarpark.watchman.activities.SplashActivity;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.MyDate;
@@ -107,6 +108,17 @@ public class Assistant {
     }
 
     public void hideSoftKeyboard(Activity activity) {
+
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        if (imm.isAcceptingText()) {
+            imm.toggleSoftInput(InputMethodManager.RESULT_UNCHANGED_SHOWN, InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+
+
+    }
+
+    public static void hideKeyboard(Activity activity) {
 
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
 

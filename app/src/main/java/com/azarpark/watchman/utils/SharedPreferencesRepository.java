@@ -5,6 +5,8 @@ import static android.content.Context.MODE_PRIVATE;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.lifecycle.MutableLiveData;
+
 import com.azarpark.watchman.models.LocalNotification;
 import com.azarpark.watchman.models.Notification;
 import com.azarpark.watchman.models.Transaction;
@@ -62,9 +64,13 @@ public class SharedPreferencesRepository {
     //----------------------------------------------------------------------------------------------------
 
     private static SharedPreferences sharedPreferences;
+    public static MutableLiveData<ArrayList<Notification>> notificationsLiveData;
+    public static MutableLiveData<ArrayList<LocalNotification>> localNotificationsLiveData;
 
     public static void create(Context context) {
         sharedPreferences = context.getSharedPreferences(Constants.SHAREDPREFERNCE, context.MODE_PRIVATE);
+        notificationsLiveData = new MutableLiveData<>(getNotifications());
+        localNotificationsLiveData = new MutableLiveData<>(getLocalNotifications());
     }
 
     public static String getValue(String key, String defaultValue) {
@@ -111,7 +117,7 @@ public class SharedPreferencesRepository {
 
     }
 
-    public static void addNotifications(List<Notification> newNotifications){
+    public static void addNotifications(ArrayList<Notification> newNotifications){
 
         String arrayString = getValue(Constants.NOTIFICATIONS, "[]");
         Gson gson = new Gson();
@@ -120,7 +126,7 @@ public class SharedPreferencesRepository {
 
         notifications.addAll(newNotifications);
         setValue(Constants.NOTIFICATIONS, gson.toJson(notifications));
-
+        notificationsLiveData.setValue(notifications);
     }
 
     public static void removeNotification(int notificationId){
@@ -136,12 +142,14 @@ public class SharedPreferencesRepository {
             }
         }
         setValue(Constants.NOTIFICATIONS, gson.toJson(notifications));
+        notificationsLiveData.setValue(notifications);
 
     }
 
     public static void removeAllNotifications(){
 
         setValue(Constants.NOTIFICATIONS, "[]");
+        notificationsLiveData.setValue(new ArrayList<>());
 
     }
 
@@ -230,6 +238,21 @@ public class SharedPreferencesRepository {
 
     }
 
+    public static void addToLocalNotifications(LocalNotification notification) {
+
+        String arrayString = getValue(Constants.LOCAL_NOTIFICATIONS, "[]");
+        Gson gson = new Gson();
+        ArrayList<LocalNotification> notifications = gson.fromJson(arrayString, new TypeToken<List<LocalNotification>>() {
+        }.getType());
+
+        notifications.add(notification);
+
+        setValue(Constants.LOCAL_NOTIFICATIONS, gson.toJson(notifications));
+
+        localNotificationsLiveData.setValue(notifications);
+
+    }
+
     public static void removeFromLocalNotifications(LocalNotification notification) {
 
         String arrayString = getValue(Constants.LOCAL_NOTIFICATIONS, "[]");
@@ -239,18 +262,14 @@ public class SharedPreferencesRepository {
 
 
         for (Iterator<LocalNotification> it = notifications.iterator();it.hasNext();){
-
             LocalNotification notif = it.next();
             if (notif.id.equals(notification.id))
                 it.remove();
 
         }
 
-//        for (LocalNotification n : notifications)
-//            if (n.id.equals(notification.id))
-//                notifications.remove(n);
-
         setValue(Constants.LOCAL_NOTIFICATIONS, gson.toJson(notifications));
+        localNotificationsLiveData.setValue(notifications);
 
     }
 

@@ -30,6 +30,7 @@ public class ParkResponseDialog extends DialogFragment {
     int carBalance;
     OnSubmitClicked onSubmitClicked;
     int printCommand;
+    boolean closeOnAction;
 
     @Nullable
     @Override
@@ -48,6 +49,15 @@ public class ParkResponseDialog extends DialogFragment {
         this.parkPrice = parkPrice;
         this.carBalance = carBalance;
         this.onSubmitClicked = onSubmitClicked;
+        this.printCommand = printCommand;
+    }
+
+    public ParkResponseDialog(int placeNumber, int parkPrice, int carBalance, int printCommand, boolean closeOnAction, OnSubmitClicked onSubmitClicked) {
+        this.placeNumber = placeNumber;
+        this.parkPrice = parkPrice;
+        this.carBalance = carBalance;
+        this.onSubmitClicked = onSubmitClicked;
+        this.closeOnAction = closeOnAction;
         this.printCommand = printCommand;
     }
 
@@ -70,7 +80,10 @@ public class ParkResponseDialog extends DialogFragment {
 
         binding.balanceTitle.setText(carBalance < 0 ? "بدهی پلاک" : "اعتبار پلاک");
 
-        binding.submit.setOnClickListener(view -> onSubmitClicked.submit());
+        binding.submit.setOnClickListener(view ->{
+            onSubmitClicked.submit();
+            dismiss();
+        });
 
         binding.printPlaceholder.setVisibility(printCommand == 0 ? View.VISIBLE : View.GONE);
 
