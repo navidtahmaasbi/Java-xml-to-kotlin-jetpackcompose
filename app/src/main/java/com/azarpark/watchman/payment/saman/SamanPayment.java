@@ -288,7 +288,8 @@ public class SamanPayment {
             verifyTransaction(transaction);
 
 
-        } else if (resultCode == Activity.RESULT_OK && requestCode == QR_SCANNER_REQUEST_CODE) {
+        }
+        else if (resultCode == Activity.RESULT_OK && requestCode == QR_SCANNER_REQUEST_CODE) {
 
             try {
 

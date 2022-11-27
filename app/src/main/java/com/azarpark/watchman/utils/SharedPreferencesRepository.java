@@ -13,6 +13,9 @@ import com.azarpark.watchman.models.Transaction;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -173,6 +176,23 @@ public class SharedPreferencesRepository {
 
     }
 
+    public static void setCurrentTransaction(Transaction transaction){
+
+        Gson gson = new Gson();
+        setValue(Constants.CURENT_TRANSACTION, gson.toJson(transaction));
+        addToTransactions02(transaction);
+
+    }
+
+
+    public static @Nullable Transaction getCurrentTransaction() {
+        String str = getValue(Constants.CURENT_TRANSACTION, "");
+        if (str.isEmpty())
+            return null;
+        Gson gson = new Gson();
+        return gson.fromJson(str, new TypeToken<Transaction>() {}.getType());
+    }
+
     public static void addToTransactions02(Transaction transaction) {
 
         String arrayString = getValue(Constants.UNSYCNCED_RES_NUMS, "[]");
@@ -272,5 +292,4 @@ public class SharedPreferencesRepository {
         localNotificationsLiveData.setValue(notifications);
 
     }
-
 }

@@ -30,6 +30,7 @@ public class Constants {
     public static String BEDUNE_HUGUG = "بدون حقوق";
     public static int QR_SCANER_REQUEST_CODE = 350;
     public static String QR_DATA = "qr_data";
+    public static String CURENT_TRANSACTION = "CURENT_TRANSACTION";
 
 
     public static String

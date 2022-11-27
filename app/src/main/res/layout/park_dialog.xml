@@ -1,82 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_gravity="center"
-    android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-
     android:layoutDirection="ltr"
-    >
+    android:orientation="vertical">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="@dimen/_20sdp"
+        android:layout_margin="@dimen/_10sdp"
         android:background="@drawable/dialog_background"
-        android:layout_margin="@dimen/_10sdp">
+        android:orientation="vertical"
+        android:padding="@dimen/_20sdp">
 
-
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="right"
-        android:gravity="center">
-
-        <TextView
-            android:id="@+id/place_number"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/iran_sans_fa_num"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_15sdp"
-            android:text="87"/>
+            android:layout_gravity="right"
+            android:gravity="center"
+            android:orientation="horizontal">
 
-        <TextView
-            android:layout_marginRight="@dimen/_10sdp"
+            <TextView
+                android:id="@+id/place_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/iran_sans_fa_num"
+                android:text="87"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_15sdp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/_10sdp"
+                android:fontFamily="@font/iran_sans"
+                android:text="جایگاه شماره "
+                android:textColor="@color/text_gray"
+                android:textSize="@dimen/_13sdp" />
+
+            <ImageView
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:src="@drawable/ic_parking"
+                app:tint="@color/dark_green" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/iran_sans"
-            android:textColor="@color/text_gray"
-            android:textSize="@dimen/_13sdp"
-            android:text="جایگاه شماره "/>
+            android:layout_gravity="right"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:gravity="center"
+            android:orientation="horizontal">
 
-        <ImageView
-            android:layout_width="@dimen/_20sdp"
-            android:layout_height="@dimen/_20sdp"
-            android:src="@drawable/ic_parking"
-            app:tint="@color/dark_green" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/_10sdp"
+                android:fontFamily="@font/iran_sans"
+                android:text="نوع و پلاک خودرو را مشخص کنید"
+                android:textColor="@color/text_gray"
+                android:textSize="@dimen/_13sdp" />
 
-    </LinearLayout>
+            <ImageView
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:src="@drawable/ic_baseline_directions_car_24"
+                app:tint="@color/dark_green" />
 
-    <LinearLayout
-        android:layout_marginTop="@dimen/_10sdp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="right"
-        android:gravity="center">
-
-        <TextView
-            android:layout_marginRight="@dimen/_10sdp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/iran_sans"
-            android:textColor="@color/text_gray"
-            android:textSize="@dimen/_13sdp"
-            android:text="نوع و پلاک خودرو را مشخص کنید"/>
-
-        <ImageView
-            android:layout_width="@dimen/_20sdp"
-            android:layout_height="@dimen/_20sdp"
-            android:src="@drawable/ic_baseline_directions_car_24"
-            app:tint="@color/dark_green" />
-
-    </LinearLayout>
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -178,8 +173,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/_20sdp"
-            android:orientation="horizontal"
-            >
+            android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -333,65 +327,64 @@
 
         </LinearLayout>
 
-    <LinearLayout
-        android:layout_marginTop="@dimen/_20sdp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="right"
-        android:gravity="center">
-
-        <TextView
-            android:layout_marginRight="@dimen/_10sdp"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/iran_sans"
-            android:textColor="@color/text_gray"
-            android:textSize="@dimen/_13sdp"
-            android:text="پرینت قبض"/>
+            android:layout_gravity="right"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:gravity="center"
+            android:orientation="horizontal">
 
-        <CheckBox
-            android:id="@+id/print_checkbox"
-            android:layout_width="@dimen/_20sdp"
-            android:layout_height="@dimen/_20sdp"
-            android:checked="false"
-            android:buttonTint="@color/dark_green"
-            />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/_10sdp"
+                android:fontFamily="@font/iran_sans"
+                android:text="پرینت قبض"
+                android:textColor="@color/text_gray"
+                android:textSize="@dimen/_13sdp" />
 
-    </LinearLayout>
+            <CheckBox
+                android:id="@+id/print_checkbox"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:buttonTint="@color/dark_green"
+                android:checked="false" />
 
-    <TextView
-        android:visibility="gone"
-        android:id="@+id/detect"
-        android:fontFamily="@font/iran_sans"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="شناسایی خودکار"
-        android:paddingRight="@dimen/_40sdp"
-        android:paddingLeft="@dimen/_40sdp"
-        android:paddingTop="@dimen/_8sdp"
-        android:paddingBottom="@dimen/_8sdp"
-        android:gravity="center"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/_20sdp"
-        android:textColor="@color/white"
-        android:background="@drawable/blue_bg_5"/>
+        </LinearLayout>
 
         <TextView
-        android:id="@+id/submit"
-        android:fontFamily="@font/iran_sans"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ثبت"
-        android:paddingRight="@dimen/_40sdp"
-        android:paddingLeft="@dimen/_40sdp"
-        android:paddingTop="@dimen/_8sdp"
-        android:paddingBottom="@dimen/_8sdp"
-        android:gravity="center"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/_20sdp"
-        android:textColor="@color/white"
-        android:background="@drawable/blue_bg_5"/>
+            android:id="@+id/detect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:background="@drawable/blue_bg_5"
+            android:fontFamily="@font/iran_sans"
+            android:gravity="center"
+            android:paddingLeft="@dimen/_40sdp"
+            android:paddingTop="@dimen/_8sdp"
+            android:paddingRight="@dimen/_40sdp"
+            android:paddingBottom="@dimen/_8sdp"
+            android:text="شناسایی خودکار"
+            android:textColor="@color/white"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/submit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:background="@drawable/blue_bg_5"
+            android:fontFamily="@font/iran_sans"
+            android:gravity="center"
+            android:paddingLeft="@dimen/_40sdp"
+            android:paddingTop="@dimen/_8sdp"
+            android:paddingRight="@dimen/_40sdp"
+            android:paddingBottom="@dimen/_8sdp"
+            android:text="ثبت"
+            android:textColor="@color/white" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

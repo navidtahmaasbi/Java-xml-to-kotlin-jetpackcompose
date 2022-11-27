@@ -14,7 +14,11 @@ import com.azarpark.watchman.adapters.ParkListAdapter
 import com.azarpark.watchman.databinding.ActivityPlacesBinding
 import com.azarpark.watchman.dialogs.ParkDialog
 import com.azarpark.watchman.enums.PlaceStatus
+import com.azarpark.watchman.interfaces.PaymentCallBack
 import com.azarpark.watchman.models.Place
+import com.azarpark.watchman.payment.PaymentService
+import com.azarpark.watchman.payment.saman.NewSamanPayment
+import com.azarpark.watchman.utils.Constants
 import com.azarpark.watchman.utils.SharedPreferencesRepository
 import com.azarpark.watchman.web_service.bodies.ParkBody
 import java.util.*
@@ -26,6 +30,7 @@ class PlacesActivity : AppCompatActivity() {
     private lateinit var adapter: ParkListAdapter
     private var timer: Timer? = null
     private lateinit var localNotificationsListAdapter: LocalNotificationsListAdapter
+    private lateinit var paymentService: PaymentService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +39,18 @@ class PlacesActivity : AppCompatActivity() {
         setupList()
         setObservers()
         setViewListeners()
+        setupPayment()
+    }
+
+    private fun setupPayment() {
+        // todo az inja mundi
+        if (Constants.SELECTED_PAYMENT == Constants.SAMAN){
+            paymentService = NewSamanPayment(this, object : PaymentCallBack{
+                override fun onSynced() {
+                    //todo
+                }
+            })
+        }
     }
 
     private fun setViewListeners() {
@@ -53,6 +70,8 @@ class PlacesActivity : AppCompatActivity() {
         adapter = ParkListAdapter(this) {
             if (it.status.contains(PlaceStatus.free.toString())) {
                 openParkDialog(it, false)
+            }else{
+
             }
         }
         binding.placesList.adapter = adapter

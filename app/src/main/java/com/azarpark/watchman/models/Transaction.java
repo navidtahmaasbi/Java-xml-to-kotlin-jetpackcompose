@@ -4,8 +4,6 @@ import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
 
 public class Transaction {
-
-
     String amount;
     String our_token;
     String bank_token;
@@ -36,6 +34,16 @@ public class Transaction {
         this.trace_number = trace_number;
         this.result_message = result_message;
         this.createTime = createTime;
+    }
+
+    public void updateTransaction(String bankToken, int status, String state, String cardNumber, String bankDateTime, String traceNumber, String resultMessage){
+        this.bank_token = bankToken;
+        this.status = status;
+        this.state = state;
+        this.card_number = cardNumber;
+        this.bank_datetime = bankDateTime;
+        this.trace_number = traceNumber;
+        this.result_message = resultMessage;
     }
 
     public String getCreateTime() {
@@ -96,19 +104,6 @@ public class Transaction {
 
     public void setAmount(String amount) {
         this.amount = amount;
-    }
-
-    public void devideAmountByTen() {
-
-        if (amount != null) {
-
-            if (amount.contains(","))
-                amount.replace(",", "");
-            else if (amount.contains("."))
-                amount.replace(".0", "");
-            amount = Integer.toString((Integer.parseInt(amount) / 10));
-        }
-
     }
 
     public String string() {
