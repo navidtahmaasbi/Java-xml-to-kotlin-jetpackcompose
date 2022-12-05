@@ -9,4 +9,3 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Watchman"
 include ':app'
-include ':sdk'

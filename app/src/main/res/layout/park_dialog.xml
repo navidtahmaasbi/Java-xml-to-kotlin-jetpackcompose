@@ -353,22 +353,6 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/detect"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/_20sdp"
-            android:background="@drawable/blue_bg_5"
-            android:fontFamily="@font/iran_sans"
-            android:gravity="center"
-            android:paddingLeft="@dimen/_40sdp"
-            android:paddingTop="@dimen/_8sdp"
-            android:paddingRight="@dimen/_40sdp"
-            android:paddingBottom="@dimen/_8sdp"
-            android:text="شناسایی خودکار"
-            android:textColor="@color/white"
-            android:visibility="gone" />
 
         <TextView
             android:id="@+id/submit"

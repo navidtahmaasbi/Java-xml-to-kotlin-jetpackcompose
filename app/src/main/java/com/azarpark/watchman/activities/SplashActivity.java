@@ -17,13 +17,13 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.azarpark.watchman.BuildConfig;
 import com.azarpark.watchman.databinding.ActivitySplashBinding;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.dialogs.SingleSelectDialog;
 import com.azarpark.watchman.models.City;
 import com.azarpark.watchman.models.KeyValueModel;
-import com.azarpark.watchman.presentation.page.places.PlacesActivity;
 import com.azarpark.watchman.web_service.responses.GetCitiesResponse;
 import com.azarpark.watchman.web_service.responses.SplashResponse;
 import com.azarpark.watchman.utils.Assistant;
@@ -44,7 +44,7 @@ public class SplashActivity extends AppCompatActivity {
     ActivitySplashBinding binding;
     SingleSelectDialog citySelectDialog;
     ArrayList<City> cities;
-//    SharedPreferencesRepository sh_p;
+    //    SharedPreferencesRepository sh_p;
     ConfirmDialog confirmDialog;
     Activity activity = this;
     DownloadController downloadController;
@@ -100,8 +100,7 @@ public class SplashActivity extends AppCompatActivity {
             messageDialog.setCancelable(false);
             messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
 
-        }
-        else if (SharedPreferencesRepository.getToken().isEmpty())
+        } else if (SharedPreferencesRepository.getToken().isEmpty())
             getCities();
         else
             getSplash();
@@ -171,7 +170,7 @@ public class SplashActivity extends AppCompatActivity {
         Runnable functionRunnable = this::getCities;
         binding.loadingBar.setVisibility(View.VISIBLE);
 
-       webService.getClient(getApplicationContext()).getCities().enqueue(new Callback<GetCitiesResponse>() {
+        webService.getClient(getApplicationContext()).getCities().enqueue(new Callback<GetCitiesResponse>() {
             @Override
             public void onResponse(Call<GetCitiesResponse> call, Response<GetCitiesResponse> response) {
 
@@ -198,8 +197,8 @@ public class SplashActivity extends AppCompatActivity {
         binding.loadingBar.setVisibility(View.VISIBLE);
         binding.retry.setVisibility(View.INVISIBLE);
 
-        String serial = "1111";//todo release
-//        String serial =  android.os.Build.SERIAL;
+//        String serial = "1111";//todo release
+        String serial = BuildConfig.DEBUG ? "1111" : android.os.Build.SERIAL;
 
         webService.getClient(getApplicationContext()).getSplash(SharedPreferencesRepository.getTokenWithPrefix(), versionCode, serial).enqueue(new Callback<SplashResponse>() {
             @Override
@@ -222,11 +221,11 @@ public class SplashActivity extends AppCompatActivity {
                 SharedPreferencesRepository.setValue(Constants.print_description_2, response.body().print_description2);
 
                 for (KeyValueModel keyValue : response.body().watchman_detail) {
-                    if (keyValue.key.equals(Constants.cardNumber)){
+                    if (keyValue.key.equals(Constants.cardNumber)) {
                         SharedPreferencesRepository.setValue(Constants.cardNumber, keyValue.value);
-                    }else if (keyValue.key.equals(Constants.shabaNumber)){
+                    } else if (keyValue.key.equals(Constants.shabaNumber)) {
                         SharedPreferencesRepository.setValue(Constants.shabaNumber, keyValue.value);
-                    }else if (keyValue.key.equals(Constants.accountNumber)){
+                    } else if (keyValue.key.equals(Constants.accountNumber)) {
                         SharedPreferencesRepository.setValue(Constants.accountNumber, keyValue.value);
                     }
                 }
@@ -239,8 +238,7 @@ public class SplashActivity extends AppCompatActivity {
                         openUpdateDialog(response.body().update.update_link);
                     else {
 
-//                        startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                        startActivity(new Intent(SplashActivity.this, PlacesActivity.class));
+                        startActivity(new Intent(SplashActivity.this, MainActivity.class));
                         SplashActivity.this.finish();
                     }
 
@@ -260,7 +258,5 @@ public class SplashActivity extends AppCompatActivity {
         });
 
     }
-
-
 
 }

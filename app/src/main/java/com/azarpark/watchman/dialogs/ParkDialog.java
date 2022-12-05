@@ -19,7 +19,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.azarpark.watchman.R;
-import com.azarpark.watchman.activities.DetectActivity;
 import com.azarpark.watchman.databinding.ParkDialogBinding;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnParkClicked;
@@ -81,16 +80,7 @@ public class ParkDialog extends DialogFragment {
 
         });
 
-        binding.detect.setOnClickListener(view -> {
-
-            startActivity(new Intent(getActivity(), DetectActivity.class));
-            dismiss();
-
-        });
-
         binding.submit.setOnClickListener(view -> {
-
-//            assistant.hideSoftKeyboard(getActivity());
 
             if (selectedTab == PlateType.simple &&
                     (binding.plateSimpleTag1.getText().toString().length() != 2 ||
@@ -257,8 +247,6 @@ public class ParkDialog extends DialogFragment {
 
         if (selectedTab == PlateType.simple) {
 
-            binding.detect.setVisibility(SharedPreferencesRepository.canDetect() && !isParkingNewPlateOnPreviousPlate ? View.VISIBLE : View.GONE);
-
             binding.plateSimpleTag1.requestFocus();
 
             binding.plateSimpleSelector.setBackgroundResource(R.drawable.selected_tab);
@@ -275,8 +263,6 @@ public class ParkDialog extends DialogFragment {
 
         } else if (selectedTab == PlateType.old_aras) {
 
-            binding.detect.setVisibility(View.GONE);
-
             binding.plateOldAras.requestFocus();
 
             binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_tab);
@@ -291,8 +277,6 @@ public class ParkDialog extends DialogFragment {
             binding.plateOldAras.setVisibility(View.VISIBLE);
             binding.plateNewArasArea.setVisibility(View.GONE);
         } else if (selectedTab == PlateType.new_aras) {
-
-            binding.detect.setVisibility(View.GONE);
 
             binding.plateNewArasTag1.requestFocus();
 
