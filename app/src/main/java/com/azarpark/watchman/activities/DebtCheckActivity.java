@@ -43,7 +43,6 @@ public class DebtCheckActivity extends AppCompatActivity {
     private PlateType selectedTab = PlateType.simple;
     DebtListAdapter adapter;
     LoadingBar loadingBar;
-    private int LIMIT = 20;
     int debt = 0;
     Activity activity = this;
     ParsianPayment parsianPayment;
@@ -114,23 +113,11 @@ public class DebtCheckActivity extends AppCompatActivity {
         adapter = new DebtListAdapter();
         binding.recyclerView.setAdapter(adapter);
 
-        binding.plateSimpleSelector.setOnClickListener(view -> {
+        binding.plateSimpleSelector.setOnClickListener(view -> setSelectedTab(PlateType.simple));
 
-            setSelectedTab(PlateType.simple);
+        binding.plateOldArasSelector.setOnClickListener(view -> setSelectedTab(PlateType.old_aras));
 
-        });
-
-        binding.plateOldArasSelector.setOnClickListener(view -> {
-
-            setSelectedTab(PlateType.old_aras);
-
-        });
-
-        binding.plateNewArasSelector.setOnClickListener(view -> {
-
-            setSelectedTab(PlateType.new_aras);
-
-        });
+        binding.plateNewArasSelector.setOnClickListener(view -> setSelectedTab(PlateType.new_aras));
 
         binding.submit.setOnClickListener(view -> loadData(false));
 
@@ -363,6 +350,7 @@ public class DebtCheckActivity extends AppCompatActivity {
             binding.debtArea.setVisibility(View.GONE);
         }
 
+        int LIMIT = 20;
         if (selectedTab == PlateType.simple &&
                 (binding.plateSimpleTag1.getText().toString().length() != 2 ||
                         binding.plateSimpleTag2.getText().toString().length() != 1 ||

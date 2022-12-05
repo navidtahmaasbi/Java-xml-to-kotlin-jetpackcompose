@@ -70,12 +70,12 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
             @Override
             public void getScannerData(int placeID) {
-                //dont need to do any thing in CarNumberActivity
+                //don't need to do any thing in CarNumberActivity
             }
 
             @Override
             public void onVerifyFinished() {
-                //todo print mimii factor
+                //todo print mini factor
             }
         }, getSupportFragmentManager());
         samanPayment = new SamanPayment(getSupportFragmentManager(), getApplicationContext(), CarNumberChargeActivity.this, new SamanPayment.SamanPaymentCallBack() {
@@ -108,12 +108,12 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         behPardakhtPayment = new BehPardakhtPayment(this, this, getSupportFragmentManager(), new BehPardakhtPayment.BehPardakhtPaymentCallBack() {
             @Override
             public void verifyTransaction(Transaction transaction) {
-                //dont need to do any thing in CarNumberActivity
+                //don't need to do any thing in CarNumberActivity
             }
 
             @Override
             public void getScannerData(int placeID) {
-                //dont need to do any thing in CarNumberActivity
+                //don't need to do any thing in CarNumberActivity
             }
 
             @Override
@@ -129,23 +129,11 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
         setSelectedTab(selectedTab);
 
-        binding.plateSimpleSelector.setOnClickListener(view -> {
+        binding.plateSimpleSelector.setOnClickListener(view -> setSelectedTab(PlateType.simple));
 
-            setSelectedTab(PlateType.simple);
+        binding.plateOldArasSelector.setOnClickListener(view -> setSelectedTab(PlateType.old_aras));
 
-        });
-
-        binding.plateOldArasSelector.setOnClickListener(view -> {
-
-            setSelectedTab(PlateType.old_aras);
-
-        });
-
-        binding.plateNewArasSelector.setOnClickListener(view -> {
-
-            setSelectedTab(PlateType.new_aras);
-
-        });
+        binding.plateNewArasSelector.setOnClickListener(view -> setSelectedTab(PlateType.new_aras));
 
         binding.submit.setOnClickListener(this::submit);
 
@@ -218,6 +206,51 @@ public class CarNumberChargeActivity extends AppCompatActivity {
             }
         });
 
+        binding.plateSimpleTag4.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                if (binding.plateSimpleTag4.getText().toString().length() == 2)     //size is your limit
+                {
+                    binding.amount.requestFocus();
+                }
+
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        binding.plateOldAras.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                if (binding.plateOldAras.getText().toString().length() == 5)     //size is your limit
+                {
+                    binding.amount.requestFocus();
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
         binding.plateNewArasTag1.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -241,6 +274,29 @@ public class CarNumberChargeActivity extends AppCompatActivity {
             }
         });
 
+        binding.plateNewArasTag2.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                if (binding.plateNewArasTag2.getText().toString().length() == 2)     //size is your limit
+                {
+                    binding.amount.requestFocus();
+                }
+
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
         binding.amount.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -252,19 +308,20 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
                 adapter.clearSelectedItem();
 
-                if (!charSequence.toString().isEmpty()){
-
+                String stringValue  = charSequence.toString();
+                if (stringValue.length() > 9){
+                    binding.amount.setText(stringValue.substring(0,9));
+                }else if (assistant.isNumber(stringValue)) {
                     binding.amount.removeTextChangedListener(this);
-                    String stringValue  = charSequence.toString();
-                    if (assistant.isNumber(stringValue)) {
-                        stringValue = stringValue.replace(",", "");
-                        int integerValue = Integer.parseInt(stringValue);
-                        binding.amount.setText(assistant.formatAmount(integerValue));
-                        binding.amount.setSelection(binding.amount.getText().length());
-                        binding.amount.addTextChangedListener(this);
-                        selectedAmount = integerValue;
-                    }
+                    stringValue = stringValue.replace(",", "");
+                    int integerValue = Integer.parseInt(stringValue);
+                    binding.amount.setText(assistant.formatAmount(integerValue));
+                    binding.amount.setSelection(binding.amount.getText().length());
+                    selectedAmount = integerValue;
+                    binding.amount.addTextChangedListener(this);
                 }
+
+                binding.amountInWords.setText(Assistant.translateToTomanInWords(binding.amount.getText().toString()));
 
             }
 
@@ -320,9 +377,9 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         else if (!assistant.isNumber(Integer.toString(selectedAmount)))
             Toast.makeText(getApplicationContext(), "مبلغ شارژ را درست وارد کنید", Toast.LENGTH_SHORT).show();
         else if (selectedAmount < Constants.MIN_PRICE_FOR_PAYMENT)
-            Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید کمتر از " + Constants.MIN_PRICE_FOR_PAYMENT + " تومان باشد", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید کمتر از " + assistant.formatAmount(Constants.MIN_PRICE_FOR_PAYMENT) + " تومان باشد", Toast.LENGTH_SHORT).show();
         else if (selectedAmount > Constants.MAX_PRICE_FOR_PAYMENT)
-            Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید بیشتر از " + Constants.MIN_PRICE_FOR_PAYMENT + " تومان باشد", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید بیشتر از " + assistant.formatAmount(Constants.MAX_PRICE_FOR_PAYMENT) + " تومان باشد", Toast.LENGTH_SHORT).show();
         else if (selectedAmount % 100 != 0)
             Toast.makeText(getApplicationContext(), "مبلغ رند انتخاب کنید", Toast.LENGTH_SHORT).show();
         else if (selectedTab == PlateType.simple)
@@ -482,11 +539,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
             printTemplateBinding.text.setText("\n.\n.\n.");
 
-            new Handler().postDelayed(() -> {
-
-                samanPayment.printParkInfo(binding.printArea);
-
-            }, 500);
+            new Handler().postDelayed(() -> samanPayment.printParkInfo(binding.printArea), 500);
 
 
         } else if (Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT) {

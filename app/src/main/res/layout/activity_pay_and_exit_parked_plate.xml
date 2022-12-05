@@ -51,7 +51,7 @@
 
     </RelativeLayout>
 
-    <androidx.core.widget.NestedScrollView
+    <ScrollView
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -61,7 +61,6 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
@@ -521,31 +520,6 @@
 
         </RelativeLayout>
 
-
-
-
-    </androidx.core.widget.NestedScrollView>
-
-
-<!--    <TextView-->
-<!--        android:visibility="gone"-->
-<!--        android:id="@+id/payment"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_alignParentBottom="true"-->
-<!--        android:layout_gravity="center_horizontal"-->
-<!--        android:layout_marginStart="@dimen/_10sdp"-->
-<!--        android:layout_marginTop="@dimen/_10sdp"-->
-<!--        android:layout_marginEnd="@dimen/_10sdp"-->
-<!--        android:layout_marginBottom="@dimen/_10sdp"-->
-<!--        android:background="@drawable/blue_bg_5"-->
-<!--        android:fontFamily="@font/iran_sans"-->
-<!--        android:gravity="center"-->
-<!--        android:paddingLeft="@dimen/_40sdp"-->
-<!--        android:paddingTop="@dimen/_8sdp"-->
-<!--        android:paddingRight="@dimen/_40sdp"-->
-<!--        android:paddingBottom="@dimen/_8sdp"-->
-<!--        android:text="پرداخت بدهی"-->
-<!--        android:textColor="@color/white" />-->
+    </ScrollView>
 
 </RelativeLayout>

@@ -16,6 +16,7 @@ import android.net.NetworkCapabilities;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
+import android.util.StateSet;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.RemoteViews;
@@ -215,6 +216,22 @@ public class Assistant {
 
         return true;
     }
+    public static boolean isNumber02(String amount) {
+
+        amount = amount.replace(",", "");
+
+        try {
+
+            long a = Long.parseLong(amount);
+        } catch (Exception e) {
+
+            System.out.println("---------> eee : " );
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
 
     public String getTime() {
 
@@ -344,6 +361,14 @@ public class Assistant {
         return decimalFormat.format(num);
     }
 
+    public static String formatAmount02(int num) {
+        DecimalFormat decimalFormat = new DecimalFormat();
+        DecimalFormatSymbols decimalFormateSymbol = new DecimalFormatSymbols();
+        decimalFormateSymbol.setGroupingSeparator(',');
+        decimalFormat.setDecimalFormatSymbols(decimalFormateSymbol);
+        return decimalFormat.format(num);
+    }
+
     public boolean VPNEnabled(Context mContext) {
 
         ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -439,6 +464,110 @@ public class Assistant {
         return false;
 
 
+    }
+
+    public static String translateToTomanInWords(String amount){
+        String minValExceptionMessage = "مبلغ نمیتواند کمتر از " + formatAmount02(Constants.MIN_PRICE_FOR_PAYMENT) +" تومان باشد.";
+        String maxValExceptionMessage = "مبلغ نمیتواند بیشتر از " + formatAmount02(Constants.MAX_PRICE_FOR_PAYMENT) +" تومان باشد.";
+        String formatExceptionMessage = "مقدار صحیح وارد کنید";
+
+        String stringVal = amount.replaceAll(",","");
+
+        if (stringVal.isEmpty())
+            return "";
+        if (!isNumber02(stringVal)){
+            return formatExceptionMessage;
+        }
+        int intVal = Integer.parseInt(stringVal);
+        if (intVal < Constants.MIN_PRICE_FOR_PAYMENT){
+            return minValExceptionMessage;
+        }
+        if (intVal > Constants.MAX_PRICE_FOR_PAYMENT){
+            return maxValExceptionMessage;
+        }
+        StringBuilder sb = new StringBuilder();
+        if (intVal == 1000)
+            sb.append("هزار");
+        else if ( intVal == 1000000)
+            sb.append("یک میلیون");
+        else {
+            sb.append(numToWords(intVal/1000));
+            sb.append(" هزار");
+            if (intVal%1000 != 0){
+                sb.append(" و ");
+                sb.append(numToWords(intVal%1000));
+            }
+        }
+
+        sb.append(" تومان");
+
+        return sb.toString();
+
+    }
+
+    public static String numToWords(int num){
+        StringBuilder sb = new StringBuilder("");
+        int sadgan = num/100;
+        int dahgan = (num - (sadgan * 100))/10;
+        int yekan = (num - ((sadgan * 100) + (dahgan * 10)));
+        if (sadgan != 0){
+            sb.append(translateNumber(sadgan*100));
+            if (dahgan != 0 || yekan != 0)
+                sb.append(" و ");
+        }
+        if (dahgan != 0 && dahgan != 1){
+            sb.append(translateNumber(dahgan*10));
+            if (yekan != 0)
+                sb.append(" و ");
+        }else if (dahgan == 1)
+            sb.append(translateNumber((dahgan*10) + yekan));
+        if (yekan != 0 && dahgan != 1)
+            sb.append(translateNumber(yekan));
+
+        return sb.toString();
+
+    }
+
+    private static String translateNumber(int number){
+        Map<Integer,String> dictionary = new HashMap<>();
+        dictionary.put(1,"یک");
+        dictionary.put(2,"دو");
+        dictionary.put(3,"سه");
+        dictionary.put(4,"چهار");
+        dictionary.put(5,"پنج");
+        dictionary.put(6,"شش");
+        dictionary.put(7,"هفت");
+        dictionary.put(8,"هشت");
+        dictionary.put(9,"نه");
+        dictionary.put(10,"ده");
+        dictionary.put(11,"یازده");
+        dictionary.put(12,"دوازده");
+        dictionary.put(13,"سیزده");
+        dictionary.put(14,"چهارده");
+        dictionary.put(15,"پانزده");
+        dictionary.put(16,"شانزده");
+        dictionary.put(17,"هفده");
+        dictionary.put(18,"هجده");
+        dictionary.put(19,"نوزده");
+        dictionary.put(20,"بیست");
+        dictionary.put(30,"سی");
+        dictionary.put(40,"چهل");
+        dictionary.put(50,"پنجاه");
+        dictionary.put(60,"شصت");
+        dictionary.put(70,"هفتاد");
+        dictionary.put(80,"هشتاد");
+        dictionary.put(90,"نود");
+        dictionary.put(100,"صد");
+        dictionary.put(200,"دویست");
+        dictionary.put(300,"سیصد");
+        dictionary.put(400,"چهارصد");
+        dictionary.put(500,"پانصد");
+        dictionary.put(600,"ششصد");
+        dictionary.put(700,"هفتصد");
+        dictionary.put(800,"هشتصد");
+        dictionary.put(900,"نهصد");
+
+        return dictionary.get(number);
     }
 
     public void saveTags(String tag1, String tag2, String tag3, String tag4, Context context) {

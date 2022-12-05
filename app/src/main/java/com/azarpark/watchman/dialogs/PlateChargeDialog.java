@@ -80,16 +80,20 @@ public class PlateChargeDialog extends DialogFragment {
 
                 adapter.clearSelectedItem();
 
-                binding.amount.removeTextChangedListener(this);
                 String stringValue  = charSequence.toString();
-                if (assistant.isNumber(stringValue)) {
+                if (stringValue.length() > 9){
+                    binding.amount.setText(stringValue.substring(0,9));
+                }else if (assistant.isNumber(stringValue)) {
+                    binding.amount.removeTextChangedListener(this);
                     stringValue = stringValue.replace(",", "");
                     int integerValue = Integer.parseInt(stringValue);
                     binding.amount.setText(assistant.formatAmount(integerValue));
                     binding.amount.setSelection(binding.amount.getText().length());
-                    binding.amount.addTextChangedListener(this);
                     selectedAmount = integerValue;
+                    binding.amount.addTextChangedListener(this);
                 }
+
+                binding.amountInWords.setText(Assistant.translateToTomanInWords(binding.amount.getText().toString()));
 
             }
 
@@ -126,9 +130,9 @@ public class PlateChargeDialog extends DialogFragment {
             else if (!isNumber(Integer.toString(selectedAmount)))
                 Toast.makeText(getContext(), "مبلغ شارژ را درست وارد کنید", Toast.LENGTH_SHORT).show();
             else if (selectedAmount < Constants.MIN_PRICE_FOR_PAYMENT)
-                Toast.makeText(getContext(), "مبلغ شارژ نباید کمتر از " + Constants.MIN_PRICE_FOR_PAYMENT + " تومان باشد", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "مبلغ شارژ نباید کمتر از " + assistant.formatAmount(Constants.MIN_PRICE_FOR_PAYMENT) + " تومان باشد", Toast.LENGTH_SHORT).show();
             else if (selectedAmount > Constants.MAX_PRICE_FOR_PAYMENT)
-                Toast.makeText(getContext(), "مبلغ شارژ نباید بیشتر از " + Constants.MIN_PRICE_FOR_PAYMENT + " تومان باشد", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "مبلغ شارژ نباید بیشتر از " + assistant.formatAmount(Constants.MAX_PRICE_FOR_PAYMENT) + " تومان باشد", Toast.LENGTH_SHORT).show();
             else if (selectedAmount % 100 != 0)
                 Toast.makeText(getContext(), "مبلغ رند انتخاب کنید", Toast.LENGTH_SHORT).show();
             else {

@@ -78,10 +78,6 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static String detectTag1 = null, detectTag2 = null, detectTag3 = null, detectTag4 = null;
-    Place lastOpenedPlace;
-    boolean lastOpenedParkDialogWasForParkOverriding = false;
-
     ActivityMainBinding binding;
     boolean menuIsOpen = false;
     PopupWindow popupWindow;
@@ -103,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
     Timer timer;
     ParsianPayment parsianPayment;
     SamanPayment samanPayment;
-    BehPardakhtPayment behPardakhtPayment;
+//    BehPardakhtPayment behPardakhtPayment;
     Assistant assistant;
     int debt = 0;
     ParkResponseDialog parkResponseDialog;
@@ -161,28 +157,29 @@ public class MainActivity extends AppCompatActivity {
 
                     getCarDebtHistory02(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
 
-                } else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
+                }
+                else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
                     Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 
                 getPlaces02();
             }
         });
-        behPardakhtPayment = new BehPardakhtPayment(this, this, getSupportFragmentManager(), new BehPardakhtPayment.BehPardakhtPaymentCallBack() {
-            @Override
-            public void verifyTransaction(Transaction transaction) {
-
-            }
-
-            @Override
-            public void getScannerData(int placeID) {
-                handleScannedPlaceID(placeID);
-            }
-
-            @Override
-            public void onVerifyFinished() {
-
-            }
-        });
+//        behPardakhtPayment = new BehPardakhtPayment(this, this, getSupportFragmentManager(), new BehPardakhtPayment.BehPardakhtPaymentCallBack() {
+//            @Override
+//            public void verifyTransaction(Transaction transaction) {
+//
+//            }
+//
+//            @Override
+//            public void getScannerData(int placeID) {
+//                handleScannedPlaceID(placeID);
+//            }
+//
+//            @Override
+//            public void onVerifyFinished() {
+//
+//            }
+//        });
 
         qr_url = SharedPreferencesRepository.getValue(Constants.qr_url, "");
         refresh_time = Integer.parseInt(SharedPreferencesRepository.getValue(Constants.refresh_time, "10"));
@@ -249,24 +246,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-        if (detectTag1 != null){
-            onDetectResult();
-        }
-
         getPlaces02();
         setTimer();
-    }
-
-    private void onDetectResult(){
-
-        lastOpenedPlace.addTag(detectTag1, detectTag2, detectTag3, detectTag4);
-        detectTag1 = null;
-        detectTag2 = null;
-        detectTag3 = null;
-        detectTag4 = null;
-        openParkDialog(lastOpenedPlace, lastOpenedParkDialogWasForParkOverriding);
-
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -274,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
 
         parsianPayment.handleResult(requestCode, resultCode, data);
         samanPayment.handleResult(requestCode, resultCode, data);
-        behPardakhtPayment.handleOnActivityResult(requestCode, resultCode, data);
+//        behPardakhtPayment.handleOnActivityResult(requestCode, resultCode, data);
 
 
     }
@@ -554,9 +535,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void openParkDialog(Place place, boolean isParkingNewPlateOnPreviousPlate) {
 
-        lastOpenedPlace = place;
-        lastOpenedParkDialogWasForParkOverriding = isParkingNewPlateOnPreviousPlate;
-
         parkDialog = new ParkDialog((parkBody, printFactor) -> {
 
             if (!isParkingNewPlateOnPreviousPlate){
@@ -594,8 +572,8 @@ public class MainActivity extends AppCompatActivity {
                     parsianPayment.createTransaction(selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id, Constants.TRANSACTION_TYPE_PARK_PRICE);
                 else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
                     samanPayment.createTransaction(Constants.NON_CHARGE_SHABA, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id, Constants.TRANSACTION_TYPE_PARK_PRICE);
-                else if (Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT)
-                    behPardakhtPayment.createTransaction(Constants.NON_CHARGE_SHABA, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id, Constants.TRANSACTION_TYPE_PARK_PRICE);
+//                else if (Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT)
+//                    behPardakhtPayment.createTransaction(Constants.NON_CHARGE_SHABA, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, price, place.id, Constants.TRANSACTION_TYPE_PARK_PRICE);
                 else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
                     Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 
@@ -630,10 +608,10 @@ public class MainActivity extends AppCompatActivity {
                         samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG, () -> {
                             plateChargeDialog.dismiss();
                         });
-                    else if (Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT)
-                        behPardakhtPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG, () -> {
-                            plateChargeDialog.dismiss();
-                        });
+//                    else if (Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT)
+//                        behPardakhtPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG, () -> {
+//                            plateChargeDialog.dismiss();
+//                        });
                     else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
                         Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 
@@ -812,7 +790,7 @@ public class MainActivity extends AppCompatActivity {
 
 //                new Handler().postDelayed(() -> {
 
-            behPardakhtPayment.print(binding.printArea);
+//            behPardakhtPayment.print(binding.printArea);
 
 //                }, 500);
 
@@ -923,7 +901,7 @@ public class MainActivity extends AppCompatActivity {
 
             new Handler().postDelayed(() -> {
 
-                behPardakhtPayment.print(binding.printArea);
+//                behPardakhtPayment.print(binding.printArea);
 
             }, 500);
 

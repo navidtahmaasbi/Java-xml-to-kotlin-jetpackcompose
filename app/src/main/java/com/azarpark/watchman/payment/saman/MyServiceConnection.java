@@ -11,13 +11,15 @@ import android.view.View;
 
 import com.azarpark.watchman.interfaces.PrintMessage;
 
+import javax.annotation.Nullable;
+
 import ir.sep.android.Service.IProxy;
 
 public class MyServiceConnection implements ServiceConnection {
 
     IProxy service;
 
-    public MyServiceConnection(IProxy service) {
+    public MyServiceConnection(@Nullable IProxy service) {
         this.service = service;
     }
 

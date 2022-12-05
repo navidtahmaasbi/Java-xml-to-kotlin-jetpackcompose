@@ -5,9 +5,9 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-
     android:layoutDirection="ltr"
+
+    android:orientation="vertical"
     tools:context=".activities.CarNumberChargeActivity">
 
     <ScrollView
@@ -17,10 +17,10 @@
 
 
         <LinearLayout
+            android:id="@+id/print_area"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:id="@+id/print_area">
+            android:orientation="vertical">
 
 
         </LinearLayout>
@@ -372,23 +372,34 @@
 
             </LinearLayout>
 
-                        <EditText
-                            android:id="@+id/amount"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginLeft="@dimen/_15sdp"
-                            android:layout_marginRight="@dimen/_15sdp"
-                            android:layout_marginBottom="@dimen/_10sdp"
-                            android:background="@drawable/selected_background"
-                            android:fontFamily="@font/iran_sans_fa_num"
-                            android:gravity="center"
-                            android:hint="مبلغ شارژ به تومان"
-                            android:inputType="numberDecimal"
-                            android:maxLength="9"
-                            android:paddingTop="@dimen/_8sdp"
-                            android:paddingBottom="@dimen/_8sdp"
-                            android:textColor="@color/blue" />
+            <EditText
+                android:id="@+id/amount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/_15sdp"
+                android:layout_marginRight="@dimen/_15sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                android:background="@drawable/selected_background"
+                android:fontFamily="@font/iran_sans_fa_num"
+                android:gravity="center"
+                android:hint="مبلغ شارژ به تومان"
+                android:inputType="numberDecimal"
+                android:maxLength="9"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_8sdp"
+                android:textColor="@color/blue" />
+
+            <TextView
+                android:id="@+id/amount_in_words"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:fontFamily="@font/iran_sans"
+                android:gravity="center"
+                android:lineSpacingExtra="@dimen/_3sdp"
+                android:textColor="@color/black"
+                android:layout_marginBottom="@dimen/_10sdp"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view"
@@ -406,25 +417,25 @@
 
     </androidx.core.widget.NestedScrollView>
 
-<!--    <TextView-->
-<!--        android:id="@+id/submit"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_alignParentBottom="true"-->
-<!--        android:layout_gravity="center_horizontal"-->
-<!--        android:layout_marginStart="@dimen/_10sdp"-->
-<!--        android:layout_marginTop="@dimen/_10sdp"-->
-<!--        android:layout_marginEnd="@dimen/_10sdp"-->
-<!--        android:layout_marginBottom="@dimen/_10sdp"-->
-<!--        android:background="@drawable/blue_bg_5"-->
-<!--        android:fontFamily="@font/iran_sans"-->
-<!--        android:gravity="center"-->
-<!--        android:paddingLeft="@dimen/_40sdp"-->
-<!--        android:paddingTop="@dimen/_8sdp"-->
-<!--        android:paddingRight="@dimen/_40sdp"-->
-<!--        android:paddingBottom="@dimen/_8sdp"-->
-<!--        android:text="شارژ"-->
-<!--        android:textColor="@color/white" />-->
+    <!--    <TextView-->
+    <!--        android:id="@+id/submit"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_alignParentBottom="true"-->
+    <!--        android:layout_gravity="center_horizontal"-->
+    <!--        android:layout_marginStart="@dimen/_10sdp"-->
+    <!--        android:layout_marginTop="@dimen/_10sdp"-->
+    <!--        android:layout_marginEnd="@dimen/_10sdp"-->
+    <!--        android:layout_marginBottom="@dimen/_10sdp"-->
+    <!--        android:background="@drawable/blue_bg_5"-->
+    <!--        android:fontFamily="@font/iran_sans"-->
+    <!--        android:gravity="center"-->
+    <!--        android:paddingLeft="@dimen/_40sdp"-->
+    <!--        android:paddingTop="@dimen/_8sdp"-->
+    <!--        android:paddingRight="@dimen/_40sdp"-->
+    <!--        android:paddingBottom="@dimen/_8sdp"-->
+    <!--        android:text="شارژ"-->
+    <!--        android:textColor="@color/white" />-->
 
     <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
         android:id="@+id/submit"

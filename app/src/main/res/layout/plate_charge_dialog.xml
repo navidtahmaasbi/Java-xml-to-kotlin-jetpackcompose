@@ -295,6 +295,17 @@
             android:paddingBottom="@dimen/_8sdp"
             android:textColor="@color/blue" />
 
+        <TextView
+            android:id="@+id/amount_in_words"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:fontFamily="@font/iran_sans"
+            android:gravity="center"
+            android:lineSpacingExtra="@dimen/_3sdp"
+            android:textColor="@color/black"
+            android:layout_marginBottom="@dimen/_10sdp"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"

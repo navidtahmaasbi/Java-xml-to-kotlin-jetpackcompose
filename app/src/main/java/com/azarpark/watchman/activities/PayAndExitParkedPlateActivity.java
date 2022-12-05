@@ -137,9 +137,11 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                binding.debtSum.removeTextChangedListener(this);
                 String stringValue  = charSequence.toString();
-                if (assistant.isNumber(stringValue)) {
+                if (stringValue.length() > 9){
+                    binding.debtSum.setText(stringValue.substring(0,9));
+                }else if (assistant.isNumber(stringValue)) {
+                    binding.debtSum.removeTextChangedListener(this);
                     stringValue = stringValue.replace(",", "");
                     int integerValue = Integer.parseInt(stringValue);
                     binding.debtSum.setText(assistant.formatAmount(integerValue));
@@ -482,9 +484,9 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
                         if (!assistant.isNumber(debtSumStringValue))
                             Toast.makeText(getApplicationContext(), "مبلغ را درست وارد کنید", Toast.LENGTH_SHORT).show();
                         else if (debtSumIntegerValue < Constants.MIN_PRICE_FOR_PAYMENT)
-                            Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید کمتر از " + Constants.MIN_PRICE_FOR_PAYMENT + " تومان باشد", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید کمتر از " + assistant.formatAmount(Constants.MIN_PRICE_FOR_PAYMENT) + " تومان باشد", Toast.LENGTH_SHORT).show();
                         else if (debtSumIntegerValue > Constants.MAX_PRICE_FOR_PAYMENT)
-                            Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید بیشتر از " + Constants.MIN_PRICE_FOR_PAYMENT + " تومان باشد", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید بیشتر از " + assistant.formatAmount(Constants.MAX_PRICE_FOR_PAYMENT) + " تومان باشد", Toast.LENGTH_SHORT).show();
                         else if (Constants.SELECTED_PAYMENT == Constants.PASRIAN){
                             loadingBar.show();
                             parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, debtSumIntegerValue, placeId, Constants.TRANSACTION_TYPE_PARK_PRICE);
