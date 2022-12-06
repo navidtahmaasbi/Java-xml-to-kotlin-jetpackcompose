@@ -198,7 +198,7 @@ public class SplashActivity extends AppCompatActivity {
         binding.retry.setVisibility(View.INVISIBLE);
 
 //        String serial = "1111";//todo release
-        String serial = BuildConfig.DEBUG ? "1111" : android.os.Build.SERIAL;
+        String serial = android.os.Build.SERIAL;
 
         webService.getClient(getApplicationContext()).getSplash(SharedPreferencesRepository.getTokenWithPrefix(), versionCode, serial).enqueue(new Callback<SplashResponse>() {
             @Override
