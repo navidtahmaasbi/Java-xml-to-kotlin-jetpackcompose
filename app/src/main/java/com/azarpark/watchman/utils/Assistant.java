@@ -16,13 +16,12 @@ import android.net.NetworkCapabilities;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
-import android.util.StateSet;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.RemoteViews;
+
 import androidx.core.app.NotificationCompat;
 import com.azarpark.watchman.R;
-import com.azarpark.watchman.activities.NotificationsActivity;
 import com.azarpark.watchman.activities.SplashActivity;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.MyDate;
@@ -31,6 +30,7 @@ import com.azarpark.watchman.models.Place;
 import com.yandex.metrica.YandexMetrica;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -81,7 +81,47 @@ public class Assistant {
             if (charCountInString(mobile, mobile.charAt(i)) > 5)
                 return false;
 
-        return mobile.matches("^09\\d{9}$");
+        if (!mobile.matches("^09\\d{9}$"))
+            return false;
+
+        if (!mobile.startsWith("09"))
+            return false;
+
+        ArrayList<String> validSecondParts = new ArrayList<>();
+        validSecondParts.add("01");
+        validSecondParts.add("02");
+        validSecondParts.add("03");
+        validSecondParts.add("04");
+        validSecondParts.add("05");
+        validSecondParts.add("35");
+        validSecondParts.add("36");
+        validSecondParts.add("37");
+        validSecondParts.add("38");
+        validSecondParts.add("39");
+        validSecondParts.add("20");
+        validSecondParts.add("21");
+        validSecondParts.add("22");
+        validSecondParts.add("23");
+        validSecondParts.add("10");
+        validSecondParts.add("11");
+        validSecondParts.add("12");
+        validSecondParts.add("13");
+        validSecondParts.add("14");
+        validSecondParts.add("15");
+        validSecondParts.add("16");
+        validSecondParts.add("17");
+        validSecondParts.add("18");
+        validSecondParts.add("19");
+        validSecondParts.add("90");
+        validSecondParts.add("91");
+        validSecondParts.add("92");
+        validSecondParts.add("93");
+
+        String secondPart = mobile.substring(2,4);
+        if (!validSecondParts.contains(secondPart))
+            return false;
+
+        return true;
 
     }
 
@@ -838,4 +878,5 @@ public class Assistant {
         DecimalFormat formatter = new DecimalFormat("#,###,###");
         return formatter.format(Integer.parseInt(s));
     }
+
 }

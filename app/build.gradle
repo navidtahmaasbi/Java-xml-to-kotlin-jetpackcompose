@@ -80,5 +80,9 @@ dependencies {
     implementation 'com.mohamadamin:persianmaterialdatetimepicker:1.2.1'
     implementation 'com.github.aliab:Persian-Date-Picker-Dialog:1.8.0'
 
+    implementation 'com.firebase:geofire-android:2.1.1'
+    implementation 'com.google.firebase:firebase-firestore:18.1.0'
+    implementation 'com.google.firebase:firebase-auth:16.2.0'
+
 }
 

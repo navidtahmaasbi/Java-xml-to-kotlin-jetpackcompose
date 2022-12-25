@@ -292,4 +292,10 @@ public class SharedPreferencesRepository {
         localNotificationsLiveData.setValue(notifications);
 
     }
+
+    public static boolean needLocation() {
+        String today = Assistant.getDate().toString();
+        String value = getValue(Constants.lastLocationSentDate, "not_set");
+        return !value.equals(today);
+    }
 }

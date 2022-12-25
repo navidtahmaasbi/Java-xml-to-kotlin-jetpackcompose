@@ -2,11 +2,13 @@ package com.azarpark.watchman.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -20,7 +22,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -48,10 +52,10 @@ import com.azarpark.watchman.dialogs.PlateChargeDialog;
 import com.azarpark.watchman.enums.PlaceStatus;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnGetInfoClicked;
+import com.azarpark.watchman.location.SingleShotLocationProvider;
 import com.azarpark.watchman.models.Notification;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.models.Transaction;
-import com.azarpark.watchman.payment.behpardakht.BehPardakhtPayment;
 import com.azarpark.watchman.payment.parsian.ParsianPayment;
 import com.azarpark.watchman.payment.saman.SamanPayment;
 import com.azarpark.watchman.web_service.bodies.ParkBody;
@@ -99,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
     Timer timer;
     ParsianPayment parsianPayment;
     SamanPayment samanPayment;
-//    BehPardakhtPayment behPardakhtPayment;
+    //    BehPardakhtPayment behPardakhtPayment;
     Assistant assistant;
     int debt = 0;
     ParkResponseDialog parkResponseDialog;
@@ -107,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
     int versionCode = 0;
     String versionName = "";
     WebService webService = new WebService();
+    private int locationPermissionCode = 2563;
+    private LoadingBar loadingBar;
 
     //------------------------------------------------------------------------------------------------
 
@@ -116,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        loadingBar = new LoadingBar(this);
 
         assistant = new Assistant();
         parsianPayment = new ParsianPayment(binding.printArea, getApplicationContext(), activity, new ParsianPayment.ParsianPaymentCallBack() {
@@ -157,8 +163,7 @@ public class MainActivity extends AppCompatActivity {
 
                     getCarDebtHistory02(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
 
-                }
-                else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
+                } else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
                     Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 
                 getPlaces02();
@@ -214,7 +219,19 @@ public class MainActivity extends AppCompatActivity {
         adapter = new ParkListAdapter(getApplicationContext(), place -> {
 
             if (place.status.contains(PlaceStatus.free.toString())) {
-                openParkDialog(place, false);
+                if (SharedPreferencesRepository.needLocation()) {
+                    if (!locationPermissionGranted()) {
+                        ActivityCompat.requestPermissions(MainActivity.this,
+                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                locationPermissionCode);
+                    } else if(!isLocationEnabled(this)) {
+                        Toast.makeText(this, "جی پی اس خود را روشن کنید", Toast.LENGTH_SHORT).show();
+                    }else{
+                        loadingBar.show();
+                        requestLocation(place);
+                    }
+                } else
+                    openParkDialog(place, false);
 
             } else {
 
@@ -240,6 +257,29 @@ public class MainActivity extends AppCompatActivity {
         initMenuPopup();
 
         binding.incomeStatistics.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, IncomeStatisticsActivity02.class)));
+
+    }
+
+    public static boolean isLocationEnabled(Context context) {
+        int locationMode = 0;
+        String locationProviders;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+            try {
+                locationMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
+
+            } catch (Settings.SettingNotFoundException e) {
+                e.printStackTrace();
+                return false;
+            }
+
+            return locationMode != Settings.Secure.LOCATION_MODE_OFF;
+
+        }else{
+            locationProviders = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+            return !TextUtils.isEmpty(locationProviders);
+        }
+
 
     }
 
@@ -537,15 +577,22 @@ public class MainActivity extends AppCompatActivity {
 
         parkDialog = new ParkDialog((parkBody, printFactor) -> {
 
-            if (!isParkingNewPlateOnPreviousPlate){
+            if (!isParkingNewPlateOnPreviousPlate) {
                 parkCar(parkBody, printFactor);
-            }else {
+            } else {
                 exitPark(place.id, parkBody, printFactor);
             }
 
         }, place, isParkingNewPlateOnPreviousPlate);
         parkDialog.show(getSupportFragmentManager(), ParkDialog.TAG);
 
+        assistant.hideSoftKeyboard(MainActivity.this);
+
+    }
+
+    private void openParkDialog(Place place, SingleShotLocationProvider.GPSCoordinates location) {
+        parkDialog = new ParkDialog(this::parkCar, place, location);
+        parkDialog.show(getSupportFragmentManager(), ParkDialog.TAG);
         assistant.hideSoftKeyboard(MainActivity.this);
 
     }
@@ -631,7 +678,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void newPark(Place place){
+            public void newPark(Place place) {
                 parkInfoDialog.dismiss();
                 openParkDialog(place, true);
             }
@@ -942,7 +989,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
 
                     SharedPreferencesRepository.addNotifications(response.body().notifications);
-                    if (!response.body().notifications.isEmpty()){
+                    if (!response.body().notifications.isEmpty()) {
                         playNotificationSound();
                     }
                     buildNotifications();
@@ -1004,11 +1051,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void buildNotifications() {
         ArrayList<Notification> notifications = SharedPreferencesRepository.getNotifications();
-        if (!notifications.isEmpty()){
+        if (!notifications.isEmpty()) {
             binding.notificationsArea.setVisibility(View.VISIBLE);
             binding.notificationCount.setText(String.valueOf(notifications.size()));
             binding.notificationsArea.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, NotificationsActivity.class)));
-        }else {
+        } else {
             binding.notificationsArea.setVisibility(View.GONE);
         }
     }
@@ -1028,6 +1075,8 @@ public class MainActivity extends AppCompatActivity {
                 loadingBar.dismiss();
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
                     return;
+
+                SharedPreferencesRepository.setValue(Constants.lastLocationSentDate, Assistant.getDate().toString());
 
                 int printCommand = response.body().getInfo().print_command;
 
@@ -1106,7 +1155,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void exitPark(int placeID ,ParkBody parkBody, boolean printFactor) {
+    private void exitPark(int placeID, ParkBody parkBody, boolean printFactor) {
 
         Runnable functionRunnable = () -> exitPark(placeID);
         LoadingBar loadingBar = new LoadingBar(MainActivity.this);
@@ -1299,6 +1348,38 @@ public class MainActivity extends AppCompatActivity {
 //        v.setDrawingCacheBackgroundColor(color);
 //
 //        return bitmap;
+    }
+
+    private boolean locationPermissionGranted() {
+        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) ==
+                        PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestLocation(Place place) {;
+
+        SingleShotLocationProvider.requestSingleUpdate(this,
+                location -> {
+                    if (loadingBar != null)
+                        loadingBar.dismiss();
+                    openParkDialog(place, location);
+                });
+
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            // TODO: Consider calling
+//            //    ActivityCompat#requestPermissions
+//            // here to request the missing permissions, and then overriding
+//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//            //                                          int[] grantResults)
+//            // to handle the case where the user grants the permission. See the documentation
+//            // for ActivityCompat#requestPermissions for more details.
+//            return;
+//        }
+//        locationManager.requestLocationUpdates(
+//                LocationManager.GPS_PROVIDER, 5000, 10, location -> {
+//
+//                });
     }
 
 }

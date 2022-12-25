@@ -353,6 +353,15 @@
 
         </LinearLayout>
 
+        <TextView
+            android:layout_marginTop="@dimen/_10sdp"
+            android:id="@+id/location"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/iran_sans"
+            android:textColor="@color/text_gray"
+            android:textSize="@dimen/_10sdp" />
 
         <TextView
             android:id="@+id/submit"
