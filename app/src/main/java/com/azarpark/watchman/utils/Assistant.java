@@ -93,6 +93,8 @@ public class Assistant {
         validSecondParts.add("03");
         validSecondParts.add("04");
         validSecondParts.add("05");
+        validSecondParts.add("30");
+        validSecondParts.add("33");
         validSecondParts.add("35");
         validSecondParts.add("36");
         validSecondParts.add("37");
