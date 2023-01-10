@@ -222,12 +222,11 @@ public class MainActivity extends AppCompatActivity {
                 if (SharedPreferencesRepository.needLocation()) {
                     if (!locationPermissionGranted()) {
                         ActivityCompat.requestPermissions(MainActivity.this,
-                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                                 locationPermissionCode);
                     } else if(!isLocationEnabled(this)) {
                         Toast.makeText(this, "جی پی اس خود را روشن کنید", Toast.LENGTH_SHORT).show();
                     }else{
-                        loadingBar.show();
                         requestLocation(place);
                     }
                 } else
@@ -590,11 +589,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void openParkDialog(Place place, SingleShotLocationProvider.GPSCoordinates location) {
-        parkDialog = new ParkDialog(this::parkCar, place, location);
+    private void openParkDialog(Place place) {
+        parkDialog = new ParkDialog(this::parkCar, place, false);
         parkDialog.show(getSupportFragmentManager(), ParkDialog.TAG);
         assistant.hideSoftKeyboard(MainActivity.this);
-
     }
 
     private void openParkInfoDialog(Place place) {
@@ -1357,13 +1355,12 @@ public class MainActivity extends AppCompatActivity {
                         PackageManager.PERMISSION_GRANTED;
     }
 
-    private void requestLocation(Place place) {;
-
+    private void requestLocation(Place place) {
+        openParkDialog(place);
         SingleShotLocationProvider.requestSingleUpdate(this,
                 location -> {
-                    if (loadingBar != null)
-                        loadingBar.dismiss();
-                    openParkDialog(place, location);
+                    if (parkDialog != null)
+                        parkDialog.setLocation(location);
                 });
 
 //        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

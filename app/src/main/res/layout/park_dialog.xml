@@ -354,6 +354,7 @@
         </LinearLayout>
 
         <TextView
+            android:visibility="gone"
             android:layout_marginTop="@dimen/_10sdp"
             android:id="@+id/location"
             android:layout_gravity="center_horizontal"

@@ -1,6 +1,4 @@
 package com.azarpark.watchman.dialogs;
-
-
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.graphics.Color;
@@ -30,23 +28,16 @@ public class ParkDialog extends DialogFragment {
 
     public static final String TAG = "ParkDialogTag";
     ParkDialogBinding binding;
-    private OnParkClicked onParkClicked;
-    private Place place;
+    private final OnParkClicked onParkClicked;
+    private final Place place;
     private PlateType selectedTab = PlateType.simple;
-    private boolean isParkingNewPlateOnPreviousPlate;
+    private final boolean isParkingNewPlateOnPreviousPlate;
     private SingleShotLocationProvider.GPSCoordinates location;
 
     public ParkDialog(OnParkClicked onParkClicked, Place place, boolean isParkingNewPlateOnPreviousPlate) {
         this.onParkClicked = onParkClicked;
         this.place = place;
         this.isParkingNewPlateOnPreviousPlate = isParkingNewPlateOnPreviousPlate;
-    }
-
-    public ParkDialog(OnParkClicked onParkClicked, Place place, SingleShotLocationProvider.GPSCoordinates location) {
-        this.location = location;
-        this.onParkClicked = onParkClicked;
-        this.place = place;
-        this.isParkingNewPlateOnPreviousPlate = false;
     }
 
     @SuppressLint("SetTextI18n")
@@ -60,10 +51,6 @@ public class ParkDialog extends DialogFragment {
 
         binding.placeNumber.setText(place.number + "");
 
-        if (location != null){
-            binding.location.setText("موقعیت شما : " + location.latitude + " - " + location.longitude);
-        }
-
         setSelectedTab(selectedTab);
 
         if (place.tag1 != null && !isParkingNewPlateOnPreviousPlate){
@@ -73,23 +60,11 @@ public class ParkDialog extends DialogFragment {
             binding.plateSimpleTag4.setText(place.tag4);
         }
 
-        binding.plateSimpleSelector.setOnClickListener(view -> {
+        binding.plateSimpleSelector.setOnClickListener(view -> setSelectedTab(PlateType.simple));
 
-            setSelectedTab(PlateType.simple);
+        binding.plateOldArasSelector.setOnClickListener(view -> setSelectedTab(PlateType.old_aras));
 
-        });
-
-        binding.plateOldArasSelector.setOnClickListener(view -> {
-
-            setSelectedTab(PlateType.old_aras);
-
-        });
-
-        binding.plateNewArasSelector.setOnClickListener(view -> {
-
-            setSelectedTab(PlateType.new_aras);
-
-        });
+        binding.plateNewArasSelector.setOnClickListener(view -> setSelectedTab(PlateType.new_aras));
 
         binding.submit.setOnClickListener(view -> {
 
@@ -186,8 +161,9 @@ public class ParkDialog extends DialogFragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                if (binding.plateSimpleTag1.getText().toString().length() == 2)     //size is your limit
-                {
+                if(charSequence.toString().contains(".")){
+                    binding.plateSimpleTag1.setText(charSequence.toString().replace(".",""));
+                } else if (binding.plateSimpleTag1.getText().toString().length() == 2){
                     binding.plateSimpleTag2.requestFocus();
                 }
 
@@ -344,4 +320,11 @@ public class ParkDialog extends DialogFragment {
         binding = null;
     }
 
+    @SuppressLint("SetTextI18n")
+    public void setLocation(SingleShotLocationProvider.GPSCoordinates location) {
+        this.location = location;
+        if (location != null){
+            binding.location.setText("موقعیت شما : " + location.latitude + " - " + location.longitude);
+        }
+    }
 }
