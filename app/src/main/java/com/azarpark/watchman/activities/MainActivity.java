@@ -220,14 +220,21 @@ public class MainActivity extends AppCompatActivity {
 
             if (place.status.contains(PlaceStatus.free.toString())) {
                 if (SharedPreferencesRepository.needLocation()) {
+                    System.out.println("---------> permission : " + locationPermissionGranted());
                     if (!locationPermissionGranted()) {
                         ActivityCompat.requestPermissions(MainActivity.this,
-                                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
                                 locationPermissionCode);
                     } else if(!isLocationEnabled(this)) {
                         Toast.makeText(this, "جی پی اس خود را روشن کنید", Toast.LENGTH_SHORT).show();
                     }else{
-                        requestLocation(place);
+                        System.out.println("--------> AAAA");
+                        openParkDialog(place,false);
+                        SingleShotLocationProvider.requestSingleUpdate(this,
+                                location -> {
+                                    if (parkDialog != null)
+                                        parkDialog.setLocation(location);
+                                });
                     }
                 } else
                     openParkDialog(place, false);
@@ -237,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
                 openParkInfoDialog(place);
             }
 
-            binding.filterEdittext.setText("");
+//            binding.filterEdittext.setText("");
 
 
         });
@@ -573,7 +580,7 @@ public class MainActivity extends AppCompatActivity {
     //-------------------------------------------------------- dialogs
 
     private void openParkDialog(Place place, boolean isParkingNewPlateOnPreviousPlate) {
-
+        System.out.println("--------> BBB");
         parkDialog = new ParkDialog((parkBody, printFactor) -> {
 
             if (!isParkingNewPlateOnPreviousPlate) {
@@ -587,12 +594,6 @@ public class MainActivity extends AppCompatActivity {
 
         assistant.hideSoftKeyboard(MainActivity.this);
 
-    }
-
-    private void openParkDialog(Place place) {
-        parkDialog = new ParkDialog(this::parkCar, place, false);
-        parkDialog.show(getSupportFragmentManager(), ParkDialog.TAG);
-        assistant.hideSoftKeyboard(MainActivity.this);
     }
 
     private void openParkInfoDialog(Place place) {
@@ -959,6 +960,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void getPlaces02() {
 
+        System.out.println("--------> getPlaces02");
 
         webService.getClient(getApplicationContext()).getPlaces(SharedPreferencesRepository.getTokenWithPrefix()).enqueue(new Callback<PlacesResponse>() {
             @SuppressLint("SetTextI18n")
@@ -1349,19 +1351,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean locationPermissionGranted() {
-        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ==
-                PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) ==
-                        PackageManager.PERMISSION_GRANTED;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                    && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        }
+        return true;
     }
 
-    private void requestLocation(Place place) {
-        openParkDialog(place);
-        SingleShotLocationProvider.requestSingleUpdate(this,
-                location -> {
-                    if (parkDialog != null)
-                        parkDialog.setLocation(location);
-                });
+    private void requestLocation() {
+
 
 //        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 //            // TODO: Consider calling

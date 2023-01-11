@@ -162,7 +162,7 @@ public class ParkDialog extends DialogFragment {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
                 if(charSequence.toString().contains(".")){
-                    binding.plateSimpleTag1.setText(charSequence.toString().replace(".",""));
+                    binding.plateSimpleTag1.setText("");
                 } else if (binding.plateSimpleTag1.getText().toString().length() == 2){
                     binding.plateSimpleTag2.requestFocus();
                 }
@@ -208,9 +208,54 @@ public class ParkDialog extends DialogFragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                if (binding.plateSimpleTag3.getText().toString().length() == 3)     //size is your limit
-                {
+                if(charSequence.toString().contains(".")){
+                    binding.plateSimpleTag3.setText("");
+                } else if (binding.plateSimpleTag3.getText().toString().length() == 3){
                     binding.plateSimpleTag4.requestFocus();
+                }
+
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        binding.plateSimpleTag4.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                if(charSequence.toString().contains(".")){
+                    binding.plateSimpleTag4.setText("");
+                }
+
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        binding.plateOldAras.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                if(charSequence.toString().contains(".")){
+                    binding.plateOldAras.setText("");
                 }
 
 
@@ -231,9 +276,32 @@ public class ParkDialog extends DialogFragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                if (binding.plateNewArasTag1.getText().toString().length() == 5)     //size is your limit
-                {
+                if(charSequence.toString().contains(".")){
+                    binding.plateNewArasTag1.setText("");
+                } else if (binding.plateNewArasTag1.getText().toString().length() == 5){
                     binding.plateNewArasTag2.requestFocus();
+                }
+
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        binding.plateNewArasTag2.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                if(charSequence.toString().contains(".")){
+                    binding.plateNewArasTag2.setText("");
                 }
 
 
