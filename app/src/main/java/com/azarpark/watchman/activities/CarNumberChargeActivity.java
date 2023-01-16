@@ -100,7 +100,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
                     getCarDebtHistory(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
 
-                } else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
+                } else if (Constants.SELECTED_PAYMENT == Constants.PAYMENTLESS)
                     Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
             }
         });
@@ -544,7 +544,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
         } else if (Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT) {
             //todo print after payment data
-        } else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
+        } else if (Constants.SELECTED_PAYMENT == Constants.PAYMENTLESS)
             Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 
 
@@ -574,7 +574,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
                 binding.submit.revertAnimation();
                 binding.submit.setOnClickListener(this::submit);
             });
-        else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
+        else if (Constants.SELECTED_PAYMENT == Constants.PAYMENTLESS)
             Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
     }
 

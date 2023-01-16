@@ -459,7 +459,7 @@ public class DebtCheckActivity extends AppCompatActivity {
                 binding.payment.revertAnimation();
                 binding.payment.setOnClickListener(this::payment);
             });
-        else if (Constants.SELECTED_PAYMENT == Constants.NOTHING)
+        else if (Constants.SELECTED_PAYMENT == Constants.PAYMENTLESS)
             Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 
     }

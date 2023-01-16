@@ -18,6 +18,7 @@ import com.azarpark.watchman.models.IncomeStatisticsResponse;
 import com.azarpark.watchman.models.IncomeStatisticsResponse02;
 import com.azarpark.watchman.models.KeyValueModel;
 import com.azarpark.watchman.utils.Assistant;
+import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.NewErrorHandler;
 import com.azarpark.watchman.web_service.WebService;
@@ -96,7 +97,7 @@ public class IncomeStatisticsActivity02 extends AppCompatActivity {
         });
 
         messageDialog.setCancelable(false);
-        if(!messageHasShown){
+        if(!messageHasShown && Constants.SELECTED_PAYMENT != Constants.PAYMENTLESS_PARKLESS){
             messageHasShown = true;
             messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
         }

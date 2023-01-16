@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#23000000"
+    android:layoutDirection="ltr"
+    android:orientation="vertical"
+    tools:context=".activities.EmployeeActivity">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_45sdp"
+        android:gravity="center"
+        android:background="@color/blue">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:fontFamily="@font/iran_sans_bold"
+            android:text="آذرپارک"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_13sdp" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/_16sdp"
+                android:background="@drawable/white_bg_5"
+                android:gravity="right"
+                android:orientation="vertical"
+                android:padding="@dimen/_8sdp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/_16sdp"
+                    android:layout_marginRight="@dimen/_16sdp"
+                    android:fontFamily="@font/iran_sans_fa_num"
+                    android:gravity="center"
+                    android:text="نام و نام خانوادگی"
+                    android:textColor="@color/black" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/mobile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/_16sdp"
+                    android:layout_marginRight="@dimen/_16sdp"
+                    android:fontFamily="@font/iran_sans_fa_num"
+                    android:gravity="center"
+                    android:text="شماره موبایل"
+                    android:textColor="@color/black" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/log_out"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/_16sdp"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:layout_marginRight="@dimen/_16sdp"
+                    android:background="@drawable/red_bg_5"
+                    android:fontFamily="@font/iran_sans_fa_num"
+                    android:gravity="center"
+                    android:padding="@dimen/_8sdp"
+                    android:text="خروج"
+                    android:textColor="@color/white" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/income"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_16sdp"
+                android:layout_marginRight="@dimen/_16sdp"
+                android:background="@drawable/blue_bg_5"
+                android:fontFamily="@font/iran_sans_fa_num"
+                android:gravity="center"
+                android:padding="@dimen/_8sdp"
+                android:text="درآمد"
+                android:textColor="@color/white"
+                android:layout_marginBottom="@dimen/_16sdp"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/vacation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_16sdp"
+                android:layout_marginRight="@dimen/_16sdp"
+                android:background="@drawable/blue_bg_5"
+                android:fontFamily="@font/iran_sans_fa_num"
+                android:gravity="center"
+                android:padding="@dimen/_8sdp"
+                android:text="مرخصی"
+                android:textColor="@color/white"
+                android:layout_marginBottom="@dimen/_16sdp"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/imprest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_16sdp"
+                android:layout_marginRight="@dimen/_16sdp"
+                android:background="@drawable/blue_bg_5"
+                android:fontFamily="@font/iran_sans_fa_num"
+                android:gravity="center"
+                android:padding="@dimen/_8sdp"
+                android:text="مساعده"
+                android:textColor="@color/white"
+                android:layout_marginBottom="@dimen/_16sdp"/>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </ScrollView>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

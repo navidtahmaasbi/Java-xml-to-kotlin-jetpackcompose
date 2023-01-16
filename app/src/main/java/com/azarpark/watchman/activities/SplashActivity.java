@@ -43,11 +43,6 @@ public class SplashActivity extends AppCompatActivity {
 
     ActivitySplashBinding binding;
     SingleSelectDialog citySelectDialog;
-    ArrayList<City> cities;
-    //    SharedPreferencesRepository sh_p;
-    ConfirmDialog confirmDialog;
-    Activity activity = this;
-    DownloadController downloadController;
     MessageDialog messageDialog;
     Assistant assistant;
     int versionCode = 0;
@@ -64,7 +59,6 @@ public class SplashActivity extends AppCompatActivity {
         binding = ActivitySplashBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-//        sh_p = new SharedPreferencesRepository(getApplicationContext());
 
         assistant = new Assistant();
 
@@ -150,7 +144,10 @@ public class SplashActivity extends AppCompatActivity {
             SplashActivity.this.finish();
             if (SharedPreferencesRepository.getToken().isEmpty()) {
                 startActivity(new Intent(SplashActivity.this, LoginActivity.class));
-            } else {
+            } else if(Constants.SELECTED_PAYMENT == Constants.PAYMENTLESS_PARKLESS){
+                startActivity(new Intent(SplashActivity.this, EmployeeActivity.class));
+                SplashActivity.this.finish();
+            }else {
                 startActivity(new Intent(SplashActivity.this, MainActivity.class));
                 overridePendingTransition(0, 0);
             }
@@ -172,7 +169,7 @@ public class SplashActivity extends AppCompatActivity {
 
         webService.getClient(getApplicationContext()).getCities().enqueue(new Callback<GetCitiesResponse>() {
             @Override
-            public void onResponse(Call<GetCitiesResponse> call, Response<GetCitiesResponse> response) {
+            public void onResponse(@NonNull Call<GetCitiesResponse> call, @NonNull Response<GetCitiesResponse> response) {
 
                 binding.loadingBar.setVisibility(View.INVISIBLE);
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
@@ -182,7 +179,7 @@ public class SplashActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<GetCitiesResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<GetCitiesResponse> call, @NonNull Throwable t) {
                 binding.loadingBar.setVisibility(View.INVISIBLE);
                 NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
             }
@@ -197,8 +194,11 @@ public class SplashActivity extends AppCompatActivity {
         binding.loadingBar.setVisibility(View.VISIBLE);
         binding.retry.setVisibility(View.INVISIBLE);
 
-        String serial = "1111";//todo release
-//        String serial = android.os.Build.SERIAL;
+//        String serial = "1111";//todo release
+        String serial = android.os.Build.SERIAL;
+        if (Constants.SELECTED_PAYMENT == Constants.PAYMENTLESS_PARKLESS || Constants.SELECTED_PAYMENT == Constants.PAYMENTLESS){
+            serial = "1111";
+        }
 
         webService.getClient(getApplicationContext()).getSplash(SharedPreferencesRepository.getTokenWithPrefix(), versionCode, serial).enqueue(new Callback<SplashResponse>() {
             @Override
@@ -220,6 +220,9 @@ public class SplashActivity extends AppCompatActivity {
                 SharedPreferencesRepository.setValue(Constants.guide_url, response.body().guide_url);
                 SharedPreferencesRepository.setValue(Constants.print_description_2, response.body().print_description2);
 
+                SharedPreferencesRepository.setValue(Constants.WATCHMAN_NAME, response.body().watchman.name);
+                SharedPreferencesRepository.setValue(Constants.WATCHMAN_MOBILE, response.body().watchman.phone);
+
                 for (KeyValueModel keyValue : response.body().watchman_detail) {
                     if (keyValue.key.equals(Constants.cardNumber)) {
                         SharedPreferencesRepository.setValue(Constants.cardNumber, keyValue.value);
@@ -236,8 +239,10 @@ public class SplashActivity extends AppCompatActivity {
 
                     if (response.body().update.last_version > version)
                         openUpdateDialog(response.body().update.update_link);
-                    else {
-
+                    else if(Constants.SELECTED_PAYMENT == Constants.PAYMENTLESS_PARKLESS){
+                        startActivity(new Intent(SplashActivity.this, EmployeeActivity.class));
+                        SplashActivity.this.finish();
+                    }else {
                         startActivity(new Intent(SplashActivity.this, MainActivity.class));
                         SplashActivity.this.finish();
                     }

@@ -1,27 +1,18 @@
 package com.azarpark.watchman.activities;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
-import com.azarpark.watchman.MyLocationManager;
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.databinding.ActivityPayAndExitParkedPlateBinding;
 import com.azarpark.watchman.dialogs.LoadingBar;
@@ -35,23 +26,9 @@ import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.NewErrorHandler;
 import com.azarpark.watchman.web_service.WebService;
-import com.azarpark.watchman.web_service.responses.DebtHistoryResponse;
 import com.azarpark.watchman.web_service.responses.EstimateParkPriceResponse;
 import com.azarpark.watchman.web_service.responses.ExitParkResponse;
 import com.azarpark.watchman.web_service.responses.ParkedPlatePlaceIDResponse;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResult;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
-
-import java.text.NumberFormat;
-import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -499,7 +476,7 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
                             loadingBar.show();
                             behPardakhtPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, debtSumIntegerValue, -1, Constants.TRANSACTION_TYPE_PARK_PRICE);
                         }
-                        else if (Constants.SELECTED_PAYMENT == Constants.NOTHING) {
+                        else if (Constants.SELECTED_PAYMENT == Constants.PAYMENTLESS) {
                             Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان انجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
                         }
 

@@ -44,6 +44,11 @@ public class StarterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_starter);
 
+        if(Constants.SELECTED_PAYMENT == Constants.PAYMENTLESS_PARKLESS){
+            startActivity(new Intent(this, SplashActivity.class));
+            finish();
+        }
+
         assistant = new Assistant();
         loadingBar = new LoadingBar(StarterActivity.this);
 
