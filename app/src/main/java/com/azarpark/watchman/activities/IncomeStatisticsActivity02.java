@@ -8,6 +8,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.azarpark.watchman.core.AppConfig;
 import com.azarpark.watchman.databinding.ActivityIncomeStatisticsBinding;
 import com.azarpark.watchman.databinding.IncomeItemBinding;
 import com.azarpark.watchman.databinding.KeyValueItemBinding;
@@ -97,7 +98,7 @@ public class IncomeStatisticsActivity02 extends AppCompatActivity {
         });
 
         messageDialog.setCancelable(false);
-        if(!messageHasShown && Constants.SELECTED_PAYMENT != Constants.PAYMENTLESS_PARKLESS){
+        if(!messageHasShown && !AppConfig.Companion.isPaymentLessParkLess()){
             messageHasShown = true;
             messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
         }

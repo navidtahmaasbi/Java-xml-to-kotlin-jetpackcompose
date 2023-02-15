@@ -13,7 +13,6 @@ public class Constants {
     public static final String TICKET_ID = "TICKET_ID";
     public static final String WATCHMAN_NAME = "WATCHMAN_NAME";
     public static final String WATCHMAN_MOBILE = "WATCHMAN_MOBILE";
-    public static int PAYMENTLESS_PARKLESS = -1, PAYMENTLESS = 0, SAMAN = 1, PASRIAN = 2, BEH_PARDAKHT = 3, SELECTED_PAYMENT =1 ;//todo release
     public static int TRANSACTION_TYPE_CHAREG = 1, TRANSACTION_TYPE_DEBT = 2, TRANSACTION_TYPE_PARK_PRICE = 3;
     public static int MIN_PRICE_FOR_PAYMENT = 1000;
     public static int MAX_PRICE_FOR_PAYMENT = 1000000;

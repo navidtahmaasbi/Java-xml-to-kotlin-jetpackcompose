@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.azarpark.watchman.R;
+import com.azarpark.watchman.core.AppConfig;
 import com.azarpark.watchman.databinding.ActivityPayAndExitParkedPlateBinding;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.enums.PlateType;
@@ -464,19 +465,19 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید کمتر از " + assistant.formatAmount(Constants.MIN_PRICE_FOR_PAYMENT) + " تومان باشد", Toast.LENGTH_SHORT).show();
                         else if (debtSumIntegerValue > Constants.MAX_PRICE_FOR_PAYMENT)
                             Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید بیشتر از " + assistant.formatAmount(Constants.MAX_PRICE_FOR_PAYMENT) + " تومان باشد", Toast.LENGTH_SHORT).show();
-                        else if (Constants.SELECTED_PAYMENT == Constants.PASRIAN){
+                        else if (AppConfig.Companion.getPaymentIsParsian()){
                             loadingBar.show();
                             parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, debtSumIntegerValue, placeId, Constants.TRANSACTION_TYPE_PARK_PRICE);
                         }
-                        else if (Constants.SELECTED_PAYMENT == Constants.SAMAN){
+                        else if (AppConfig.Companion.getPaymentIsSaman()){
                             loadingBar.show();
                             samanPayment.createTransaction(Constants.NON_CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, debtSumIntegerValue, placeId, Constants.TRANSACTION_TYPE_PARK_PRICE);
                         }
-                        else if (Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT){
+                        else if (AppConfig.Companion.getPaymentIsBehPardakht()){
                             loadingBar.show();
                             behPardakhtPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, debtSumIntegerValue, -1, Constants.TRANSACTION_TYPE_PARK_PRICE);
                         }
-                        else if (Constants.SELECTED_PAYMENT == Constants.PAYMENTLESS) {
+                        else if (AppConfig.Companion.isPaymentLess()) {
                             Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان انجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
                         }
 

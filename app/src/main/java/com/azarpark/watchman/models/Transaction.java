@@ -1,5 +1,6 @@
 package com.azarpark.watchman.models;
 
+import com.azarpark.watchman.core.AppConfig;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
 
@@ -19,7 +20,7 @@ public class Transaction {
 
     public Transaction(String amount, String our_token, String bank_token, int placeID, int status, String bank_type, String state, String card_number, String bank_datetime, String trace_number, String result_message,String createTime) {
 
-        if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
+        if (AppConfig.Companion.getPaymentIsSaman())
             amount = amount.replace(".0", "");
 
         this.amount = amount;

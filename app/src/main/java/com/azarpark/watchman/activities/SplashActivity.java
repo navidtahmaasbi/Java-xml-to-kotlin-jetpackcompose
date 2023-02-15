@@ -18,6 +18,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.azarpark.watchman.BuildConfig;
+import com.azarpark.watchman.core.AppConfig;
 import com.azarpark.watchman.databinding.ActivitySplashBinding;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.MessageDialog;
@@ -53,8 +54,8 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         binding = ActivitySplashBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -144,7 +145,7 @@ public class SplashActivity extends AppCompatActivity {
             SplashActivity.this.finish();
             if (SharedPreferencesRepository.getToken().isEmpty()) {
                 startActivity(new Intent(SplashActivity.this, LoginActivity.class));
-            } else if(Constants.SELECTED_PAYMENT == Constants.PAYMENTLESS_PARKLESS){
+            } else if(AppConfig.Companion.isPaymentLessParkLess()){
                 startActivity(new Intent(SplashActivity.this, EmployeeActivity.class));
                 SplashActivity.this.finish();
             }else {
@@ -196,7 +197,7 @@ public class SplashActivity extends AppCompatActivity {
 
 //        String serial = "1111";//todo release
         String serial = android.os.Build.SERIAL;
-        if (Constants.SELECTED_PAYMENT == Constants.PAYMENTLESS_PARKLESS || Constants.SELECTED_PAYMENT == Constants.PAYMENTLESS){
+        if (AppConfig.Companion.isPaymentLessParkLess() || AppConfig.Companion.isPaymentLess()){
             serial = "1111";
         }
 
@@ -239,7 +240,7 @@ public class SplashActivity extends AppCompatActivity {
 
                     if (response.body().update.last_version > version)
                         openUpdateDialog(response.body().update.update_link);
-                    else if(Constants.SELECTED_PAYMENT == Constants.PAYMENTLESS_PARKLESS){
+                    else if(AppConfig.Companion.isPaymentLessParkLess()){
                         startActivity(new Intent(SplashActivity.this, EmployeeActivity.class));
                         SplashActivity.this.finish();
                     }else {

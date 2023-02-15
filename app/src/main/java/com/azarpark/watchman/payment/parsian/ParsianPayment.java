@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 
 import com.azarpark.watchman.activities.MainActivity;
+import com.azarpark.watchman.core.AppConfig;
 import com.azarpark.watchman.databinding.ParsianAfterPaymentPrintTemplateBinding;
 import com.azarpark.watchman.databinding.PrintTemplateBinding;
 import com.azarpark.watchman.dialogs.LoadingBar;
@@ -404,7 +405,7 @@ public class ParsianPayment {
     private void printFactor(String tag1, String tag2, String tag3, String tag4, int balance) {
 
 
-        if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
+        if (AppConfig.Companion.getPaymentIsSaman())
 
             printArea.removeAllViews();
 

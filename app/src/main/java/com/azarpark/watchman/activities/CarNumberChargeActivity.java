@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.adapters.ChargeItemListAdapter;
+import com.azarpark.watchman.core.AppConfig;
 import com.azarpark.watchman.databinding.ActivityCarNumberChargeBinding;
 import com.azarpark.watchman.databinding.SamanAfterPaymentPrintTemplateBinding;
 import com.azarpark.watchman.dialogs.LoadingBar;
@@ -91,7 +92,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
             @Override
             public void onVerifyFinished() {
-                if (Constants.SELECTED_PAYMENT == Constants.SAMAN) {
+                if (AppConfig.Companion.getPaymentIsSaman()) {
 
                     String tag1 = SharedPreferencesRepository.getValue(Constants.TAG1, "0");
                     String tag2 = SharedPreferencesRepository.getValue(Constants.TAG2, "0");
@@ -100,7 +101,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
                     getCarDebtHistory(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
 
-                } else if (Constants.SELECTED_PAYMENT == Constants.PAYMENTLESS)
+                } else if (AppConfig.Companion.isPaymentLess())
                     Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
             }
         });
@@ -492,7 +493,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     private void printFactor(String tag1, String tag2, String tag3, String tag4, int balance) {
 
-        if (Constants.SELECTED_PAYMENT == Constants.SAMAN) {
+        if (AppConfig.Companion.getPaymentIsSaman()) {
 
             binding.printArea.removeAllViews();
 
@@ -542,9 +543,9 @@ public class CarNumberChargeActivity extends AppCompatActivity {
             new Handler().postDelayed(() -> samanPayment.printParkInfo(binding.printArea), 500);
 
 
-        } else if (Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT) {
+        } else if (AppConfig.Companion.getPaymentIsBehPardakht()) {
             //todo print after payment data
-        } else if (Constants.SELECTED_PAYMENT == Constants.PAYMENTLESS)
+        } else if (AppConfig.Companion.isPaymentLess())
             Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 
 
@@ -559,22 +560,22 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         amount = amount.replace(",", "");
 
 
-        if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
+        if (AppConfig.Companion.getPaymentIsParsian())
             parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1, Constants.TRANSACTION_TYPE_CHAREG, () -> {
                 binding.submit.revertAnimation();
                 binding.submit.setOnClickListener(this::submit);
             });
-        else if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
+        else if (AppConfig.Companion.getPaymentIsSaman())
             samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1, Constants.TRANSACTION_TYPE_CHAREG, () -> {
                 binding.submit.revertAnimation();
                 binding.submit.setOnClickListener(this::submit);
             });
-        else if (Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT)
+        else if (AppConfig.Companion.getPaymentIsBehPardakht())
             behPardakhtPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1, Constants.TRANSACTION_TYPE_CHAREG, () -> {
                 binding.submit.revertAnimation();
                 binding.submit.setOnClickListener(this::submit);
             });
-        else if (Constants.SELECTED_PAYMENT == Constants.PAYMENTLESS)
+        else if (AppConfig.Companion.isPaymentLess())
             Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
     }
 

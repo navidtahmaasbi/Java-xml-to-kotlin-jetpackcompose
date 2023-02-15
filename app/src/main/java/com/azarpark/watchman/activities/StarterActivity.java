@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.azarpark.watchman.R;
+import com.azarpark.watchman.core.AppConfig;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.web_service.responses.DeleteExitRequestResponse;
 import com.azarpark.watchman.utils.Assistant;
@@ -44,7 +45,7 @@ public class StarterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_starter);
 
-        if(Constants.SELECTED_PAYMENT == Constants.PAYMENTLESS_PARKLESS){
+        if(AppConfig.Companion.isPaymentLessParkLess()){
             startActivity(new Intent(this, SplashActivity.class));
             finish();
         }

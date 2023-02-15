@@ -1,8 +1,10 @@
 package com.azarpark.watchman.web_service;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 
 import com.azarpark.watchman.BuildConfig;
+import com.azarpark.watchman.core.AppConfig;
 import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 
@@ -23,81 +25,35 @@ public class WebService {
     private final API api;
 
     public WebService() {
-        OkHttpClient okHttpClient = getOkHttpClient();
-
-        String baseURL = "https://tabriz.backend1.azarpark.irana.app";
-        if (Constants.SELECTED_PAYMENT == Constants.SAMAN || Constants.SELECTED_PAYMENT == Constants.BEH_PARDAKHT)
-            baseURL = "https://tabriz.backend1.azarpark.irana.app";
-        else if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
-            baseURL = "https://sarab.backend1.azarpark.irana.app";
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseURL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(okHttpClient)
-                .build();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(AppConfig.Companion.getSelectedConfig().getBaseUrl()).addConverterFactory(GsonConverterFactory.create()).client(getOkHttpClient()).build();
 
         api = retrofit.create(API.class);
     }
 
     public API getClient(Context context) {
-//        if (api == null){
-//            okHttpClient = getOkHttpClient();
-//
-//            String baseURL = "https://tabriz.backend1.azarpark.irana.app";
-//            if (Constants.SELECTED_PAYMENT == Constants.SAMAN)
-//                baseURL = "https://tabriz.backend1.azarpark.irana.app";
-//            else if (Constants.SELECTED_PAYMENT == Constants.PASRIAN)
-//                baseURL = "https://sarab.backend1.azarpark.irana.app";
-//
-//            retrofit = new Retrofit.Builder()
-//                    .baseUrl(baseURL)
-//                    .addConverterFactory(GsonConverterFactory.create())
-//                    .client(okHttpClient)
-//                    .build();
-//
-//            api = retrofit.create(API.class);
-//        }
         return api;
     }
-
-//    public static void changeClientURL(String subDomain) {
-//
-//        String baseURL = Constants.BASE_URL_FIRST_PART + subDomain + Constants.BASE_URL_SECOND_PART;
-//
-//        if (okHttpClient == null)
-//            okHttpClient = getOkHttpClient();
-//
-//        retrofit = new Retrofit.Builder()
-//                .baseUrl(baseURL)
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .client(okHttpClient)
-//                .build();
-//
-//        api = retrofit.create(API.class);
-//
-//    }
 
     private static OkHttpClient getOkHttpClient() {
 
         try {
             // Create a trust manager that does not validate certificate chains
-            final TrustManager[] trustAllCerts = new TrustManager[]{
-                    new X509TrustManager() {
-                        @Override
-                        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-                        }
+            @SuppressLint("CustomX509TrustManager") final TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+                @SuppressLint("TrustAllX509TrustManager")
+                @Override
+                public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                }
 
-                        @Override
-                        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-                        }
+                @SuppressLint("TrustAllX509TrustManager")
+                @Override
+                public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                }
 
-                        @Override
-                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                            return new java.security.cert.X509Certificate[]{};
-                        }
-                    }
-            };
+                @Override
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return new java.security.cert.X509Certificate[]{};
+                }
+            }};
 
             // Install the all-trusting trust manager
             final SSLContext sslContext = SSLContext.getInstance("SSL");
@@ -107,12 +63,7 @@ public class WebService {
 
             OkHttpClient.Builder builder = new OkHttpClient.Builder();
             builder.sslSocketFactory(sslSocketFactory);
-            builder.hostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }
-            });
+            builder.hostnameVerifier((hostname, session) -> true);
 
             builder.retryOnConnectionFailure(false);
 
@@ -122,8 +73,7 @@ public class WebService {
                 builder.addInterceptor(interceptor);
             }
 
-            OkHttpClient okHttpClient = builder.build();
-            return okHttpClient;
+            return builder.build();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
