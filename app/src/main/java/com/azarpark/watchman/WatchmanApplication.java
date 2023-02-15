@@ -6,7 +6,10 @@ import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.yandex.metrica.YandexMetrica;
 import com.yandex.metrica.YandexMetricaConfig;
 
-public class MyApp extends Application {
+import dagger.hilt.android.HiltAndroidApp;
+
+@HiltAndroidApp
+public class WatchmanApplication extends Application {
 
     @Override
     public void onCreate() {
