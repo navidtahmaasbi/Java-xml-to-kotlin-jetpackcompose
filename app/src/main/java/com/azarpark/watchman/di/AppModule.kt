@@ -1,7 +1,9 @@
 package com.azarpark.watchman.di
 
-import com.azarpark.watchman.api.WatchmanAPI
+import com.azarpark.watchman.data.remote.WatchmanAPI
 import com.azarpark.watchman.core.AppConfig
+import com.azarpark.watchman.data.repository.PlacesRepositoryImpl
+import com.azarpark.watchman.domain.repository.PlacesRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -10,7 +12,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
 import javax.inject.Singleton
 
 @Module
@@ -31,6 +32,12 @@ object AppModule {
             .client(client)
             .build()
             .create(WatchmanAPI::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun providePlacesRepository(api : WatchmanAPI) : PlacesRepository{
+        return PlacesRepositoryImpl()
     }
 
 }

@@ -1,4 +1,4 @@
-package com.azarpark.watchman.api
+package com.azarpark.watchman.data.remote
 
 import com.azarpark.watchman.web_service.responses.PlacesResponse
 import retrofit2.Response

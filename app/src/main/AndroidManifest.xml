@@ -28,6 +28,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Watchman">
         <activity
+            android:name=".PlacesActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.EmployeeActivity"
             android:exported="false">
             <meta-data
