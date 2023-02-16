@@ -192,6 +192,7 @@
         <entry key="app/src/main/res/drawable/white_bg_5.xml" value="0.29794871794871797" />
         <entry key="app/src/main/res/layout/activity_exit_request.xml" value="0.27239583333333334" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.27239583333333334" />
+        <entry key="app/src/main/res/layout/content_login.xml" value="0.21875" />
         <entry key="app/src/main/res/layout/free_park_item.xml" value="0.27239583333333334" />
         <entry key="app/src/main/res/layout/park_info_dialog.xml" value="0.27239583333333334" />
         <entry key="app/src/main/res/layout/print_template.xml" value="0.2405484348810404" />
