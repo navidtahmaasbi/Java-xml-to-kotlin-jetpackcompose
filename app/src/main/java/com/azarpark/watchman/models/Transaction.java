@@ -1,8 +1,6 @@
 package com.azarpark.watchman.models;
 
 import com.azarpark.watchman.core.AppConfig;
-import com.azarpark.watchman.utils.Assistant;
-import com.azarpark.watchman.utils.Constants;
 
 public class Transaction {
     String amount;
@@ -10,6 +8,8 @@ public class Transaction {
     String bank_token;
     int placeID;
     int status;
+
+    int discountId = -1;
     String bank_type;
     String state;
     String card_number;
@@ -18,7 +18,18 @@ public class Transaction {
     String result_message;
     String createTime;
 
-    public Transaction(String amount, String our_token, String bank_token, int placeID, int status, String bank_type, String state, String card_number, String bank_datetime, String trace_number, String result_message,String createTime) {
+    public Transaction(String amount,
+                       String our_token,
+                       String bank_token,
+                       int placeID,
+                       int status,
+                       String bank_type,
+                       String state,
+                       String card_number,
+                       String bank_datetime,
+                       String trace_number,
+                       String result_message,
+                       String createTime) {
 
         if (AppConfig.Companion.getPaymentIsSaman())
             amount = amount.replace(".0", "");
@@ -37,7 +48,40 @@ public class Transaction {
         this.createTime = createTime;
     }
 
-    public void updateTransaction(String bankToken, int status, String state, String cardNumber, String bankDateTime, String traceNumber, String resultMessage){
+    public Transaction(
+                       int discountId,
+                       String amount,
+                       String our_token,
+                       String bank_token,
+                       int placeID,
+                       int status,
+                       String bank_type,
+                       String state,
+                       String card_number,
+                       String bank_datetime,
+                       String trace_number,
+                       String result_message,
+                       String createTime) {
+
+        if (AppConfig.Companion.getPaymentIsSaman())
+            amount = amount.replace(".0", "");
+
+        this.discountId = discountId;
+        this.amount = amount;
+        this.our_token = our_token;
+        this.bank_token = bank_token;
+        this.placeID = placeID;
+        this.status = status;
+        this.bank_type = bank_type;
+        this.state = state;
+        this.card_number = card_number;
+        this.bank_datetime = bank_datetime;
+        this.trace_number = trace_number;
+        this.result_message = result_message;
+        this.createTime = createTime;
+    }
+
+    public void updateTransaction(String bankToken, int status, String state, String cardNumber, String bankDateTime, String traceNumber, String resultMessage) {
         this.bank_token = bankToken;
         this.status = status;
         this.state = state;

@@ -362,6 +362,11 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, ExitRequestActivity.class));
             popupWindow.dismiss();
         });
+
+        popupView.findViewById(R.id.discount).setOnClickListener(view -> {
+            startActivity(new Intent(MainActivity.this, DiscountActivity.class));
+            popupWindow.dismiss();
+        });
         popupView.findViewById(R.id.debt_inquiry).setOnClickListener(view -> {
             startActivity(new Intent(MainActivity.this, DebtCheckActivity.class));
             popupWindow.dismiss();

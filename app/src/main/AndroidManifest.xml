@@ -50,6 +50,9 @@
             android:name=".activities.VacationsActivity"
             android:exported="false" />
         <activity
+            android:name=".activities.DiscountActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.PaymentTestActivity"
             android:exported="false" />
         <activity

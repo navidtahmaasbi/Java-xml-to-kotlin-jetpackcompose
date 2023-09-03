@@ -37,7 +37,7 @@ object AppModule {
     @Singleton
     @Provides
     fun providePlacesRepository(api : WatchmanAPI) : PlacesRepository{
-        return PlacesRepositoryImpl()
+        return PlacesRepositoryImpl(api = api)
     }
 
 }

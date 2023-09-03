@@ -273,6 +273,65 @@ public class ParsianPayment {
 
     }
 
+    public void createTransactionForDiscount(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID, int discountId, int transactionType, LoadingListener loadingListener) {
+
+        Runnable functionRunnable = () -> createTransactionForDiscount(plateType, tag1, tag2, tag3, tag4, amount, placeID, discountId, transactionType, loadingListener);
+
+        String t1 = tag1 == null ? "" : tag1;
+        String t2 = tag2 == null ? "-1" : tag2;
+        String t3 = tag3 == null ? "-1" : tag3;
+        String t4 = tag4 == null ? "-1" : tag4;
+
+        webService.getClient(context).createTransactionForDiscount(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), t1, t2, t3, t4, amount, transactionType, discountId, "App\\Models\\Discount").enqueue(new Callback<CreateTransactionResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<CreateTransactionResponse> call, @NonNull Response<CreateTransactionResponse> response) {
+
+                if (loadingListener != null)
+                    loadingListener.onCreateTransactionFinished();
+                if (NewErrorHandler.apiResponseHasError(response, context))
+                    return;
+
+                long our_token = response.body().our_token;
+
+                SharedPreferencesRepository.setValue(Constants.PLATE_TYPE, plateType.toString());
+                SharedPreferencesRepository.setValue(Constants.TAG1, tag1);
+                SharedPreferencesRepository.setValue(Constants.TAG2, tag2);
+                SharedPreferencesRepository.setValue(Constants.TAG3, tag3);
+                SharedPreferencesRepository.setValue(Constants.TAG4, tag4);
+                SharedPreferencesRepository.setValue(Constants.AMOUNT, String.valueOf(amount));
+                SharedPreferencesRepository.setValue(Constants.PLACE_ID, Integer.toString(placeID));
+                SharedPreferencesRepository.setValue(Constants.OUR_TOKEN, Long.toString(our_token));
+
+                Transaction transaction = new Transaction(
+                        Integer.toString(amount),
+                        Long.toString(our_token),
+                        "0",
+                        Integer.parseInt(SharedPreferencesRepository.getValue(Constants.PLACE_ID, "0")),
+                        0,
+                        PARSIAN,
+                        "0",
+                        "",
+                        "",
+                        "",
+                        "",
+                        Assistant.getUnixTime());
+
+                SharedPreferencesRepository.addToTransactions02(transaction);
+
+                paymentRequest(amount, our_token, activity, plateType, tag1, tag2, tag3, tag4, placeID);
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CreateTransactionResponse> call, @NonNull Throwable t) {
+                if (loadingListener != null)
+                    loadingListener.onCreateTransactionFinished();
+                NewErrorHandler.apiFailureErrorHandler(call, t, fragmentManager, functionRunnable);
+            }
+        });
+
+    }
+
     public void createTransaction(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID, int transactionType) {
 
         Runnable functionRunnable = () -> createTransaction(plateType, tag1, tag2, tag3, tag4, amount, placeID, transactionType);

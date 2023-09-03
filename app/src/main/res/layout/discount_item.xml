@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_margin="@dimen/_5sdp"
+    android:padding="@dimen/_5sdp"
+    android:layoutDirection="ltr"
+    android:background="@drawable/selected_background"
+    android:gravity="center"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView
+        android:id="@+id/check"
+        android:layout_width="@dimen/_15sdp"
+        android:layout_height="@dimen/_15sdp"
+        android:src="@drawable/ic_checked_circle"
+        app:tint="@color/gray"/>
+
+    <TextView
+        android:id="@+id/amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/iran_sans_fa_num_bold"
+        android:text="10,000"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:textColor="@color/text_gray"
+        android:textSize="@dimen/_15sdp" />
+
+    <TextView
+        android:id="@+id/price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/iran_sans"
+        android:text="تومان"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:textColor="@color/blue"
+        android:textSize="@dimen/_13sdp" />
+
+</LinearLayout>

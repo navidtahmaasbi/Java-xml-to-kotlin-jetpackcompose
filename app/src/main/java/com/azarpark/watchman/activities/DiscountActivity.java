@@ -1,8 +1,5 @@
 package com.azarpark.watchman.activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -16,10 +13,15 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.adapters.ChargeItemListAdapter;
+import com.azarpark.watchman.adapters.DiscountListAdapter;
 import com.azarpark.watchman.core.AppConfig;
 import com.azarpark.watchman.databinding.ActivityCarNumberChargeBinding;
+import com.azarpark.watchman.databinding.ActivityDiscountBinding;
 import com.azarpark.watchman.databinding.SamanAfterPaymentPrintTemplateBinding;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.enums.PlateType;
@@ -27,12 +29,13 @@ import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.payment.behpardakht.BehPardakhtPayment;
 import com.azarpark.watchman.payment.parsian.ParsianPayment;
 import com.azarpark.watchman.payment.saman.SamanPayment;
-import com.azarpark.watchman.web_service.responses.DebtHistoryResponse;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.NewErrorHandler;
 import com.azarpark.watchman.web_service.WebService;
+import com.azarpark.watchman.web_service.responses.DebtHistoryResponse;
+import com.azarpark.watchman.web_service.responses.Discount;
 import com.azarpark.watchman.web_service.responses.DiscountsResponse;
 
 import java.text.NumberFormat;
@@ -43,24 +46,24 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CarNumberChargeActivity extends AppCompatActivity {
+public class DiscountActivity extends AppCompatActivity {
 
-    ActivityCarNumberChargeBinding binding;
+    ActivityDiscountBinding binding;
     private PlateType selectedTab = PlateType.simple;
     LoadingBar loadingBar;
-    ChargeItemListAdapter adapter;
+    DiscountListAdapter adapter;
     Activity activity = this;
     ParsianPayment parsianPayment;
     SamanPayment samanPayment;
     BehPardakhtPayment behPardakhtPayment;
     Assistant assistant;
-    private int selectedAmount = 0;
+    private Discount selectedDiscount = null;
     WebService webService = new WebService();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityCarNumberChargeBinding.inflate(getLayoutInflater());
+        binding = ActivityDiscountBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         getDiscounts();
@@ -82,7 +85,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
                 //todo print mini factor
             }
         }, getSupportFragmentManager());
-        samanPayment = new SamanPayment(getSupportFragmentManager(), getApplicationContext(), CarNumberChargeActivity.this, new SamanPayment.SamanPaymentCallBack() {
+        samanPayment = new SamanPayment(getSupportFragmentManager(), getApplicationContext(), DiscountActivity.this, new SamanPayment.SamanPaymentCallBack() {
             @Override
             public void verifyTransaction(Transaction transaction) {
 //                CarNumberChargeActivity.this.verifyTransaction(transaction);
@@ -127,7 +130,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
         binding.plateSimpleTag1.requestFocus();
 
-        loadingBar = new LoadingBar(CarNumberChargeActivity.this);
+        loadingBar = new LoadingBar(DiscountActivity.this);
 
         binding.plateSimpleTag1.requestFocus();
 
@@ -218,13 +221,6 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                if (binding.plateSimpleTag4.getText().toString().length() == 2)     //size is your limit
-                {
-                    binding.amount.requestFocus();
-                }
-
-
             }
 
             @Override
@@ -241,11 +237,6 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                if (binding.plateOldAras.getText().toString().length() == 5)     //size is your limit
-                {
-                    binding.amount.requestFocus();
-                }
 
             }
 
@@ -286,13 +277,6 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                if (binding.plateNewArasTag2.getText().toString().length() == 2)     //size is your limit
-                {
-                    binding.amount.requestFocus();
-                }
-
-
             }
 
             @Override
@@ -301,62 +285,12 @@ public class CarNumberChargeActivity extends AppCompatActivity {
             }
         });
 
-        binding.amount.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        adapter = new DiscountListAdapter(discount -> {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                adapter.clearSelectedItem();
-
-                String stringValue  = charSequence.toString();
-                if (stringValue.length() > 9){
-                    binding.amount.setText(stringValue.substring(0,9));
-                }else if (assistant.isNumber(stringValue)) {
-                    binding.amount.removeTextChangedListener(this);
-                    stringValue = stringValue.replace(",", "");
-                    int integerValue = Integer.parseInt(stringValue);
-                    binding.amount.setText(assistant.formatAmount(integerValue));
-                    binding.amount.setSelection(binding.amount.getText().length());
-                    selectedAmount = integerValue;
-                    binding.amount.addTextChangedListener(this);
-                }
-
-                binding.amountInWords.setText(Assistant.translateToTomanInWords(binding.amount.getText().toString()));
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
-        adapter = new ChargeItemListAdapter(amount -> {
-
-            selectedAmount = amount;
-
-            binding.amount.setText(NumberFormat.getNumberInstance(Locale.US).format(amount));
+            selectedDiscount = discount;
 
         }, getApplicationContext());
         binding.recyclerView.setAdapter(adapter);
-
-        ArrayList<Integer> items = new ArrayList<>();
-
-        items.add(1000);
-        items.add(10000);
-        items.add(20000);
-        items.add(30000);
-        items.add(50000);
-        items.add(70000);
-        items.add(100000);
-
-        adapter.setItems(items);
-
-
     }
 
     private void submit(View view) {
@@ -375,20 +309,11 @@ public class CarNumberChargeActivity extends AppCompatActivity {
                 (binding.plateNewArasTag1.getText().toString().length() != 5 ||
                         binding.plateNewArasTag2.getText().toString().length() != 2))
             Toast.makeText(getApplicationContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
-        else if (selectedAmount == 0)
-            Toast.makeText(getApplicationContext(), "مبلغ شارژ را انتخاب کنید", Toast.LENGTH_SHORT).show();
-
-        else if (!assistant.isNumber(Integer.toString(selectedAmount)))
-            Toast.makeText(getApplicationContext(), "مبلغ شارژ را درست وارد کنید", Toast.LENGTH_SHORT).show();
-        else if (selectedAmount < Constants.MIN_PRICE_FOR_PAYMENT)
-            Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید کمتر از " + assistant.formatAmount(Constants.MIN_PRICE_FOR_PAYMENT) + " تومان باشد", Toast.LENGTH_SHORT).show();
-        else if (selectedAmount > Constants.MAX_PRICE_FOR_PAYMENT)
-            Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید بیشتر از " + assistant.formatAmount(Constants.MAX_PRICE_FOR_PAYMENT) + " تومان باشد", Toast.LENGTH_SHORT).show();
-        else if (selectedAmount % 100 != 0)
-            Toast.makeText(getApplicationContext(), "مبلغ رند انتخاب کنید", Toast.LENGTH_SHORT).show();
+        else if (selectedDiscount == null)
+            Toast.makeText(getApplicationContext(), "یک مورد را انتخاب کنید", Toast.LENGTH_SHORT).show();
         else if (selectedTab == PlateType.simple)
             charge(
-                    Integer.toString(selectedAmount),
+                    Integer.toString(selectedDiscount.amount),
                     selectedTab,
                     binding.plateSimpleTag1.getText().toString(),
                     binding.plateSimpleTag2.getText().toString(),
@@ -397,16 +322,14 @@ public class CarNumberChargeActivity extends AppCompatActivity {
             );
         else if (selectedTab == PlateType.old_aras)
             charge(
-                    Integer.toString(selectedAmount),
+                    Integer.toString(selectedDiscount.amount),
                     selectedTab,
                     binding.plateOldAras.getText().toString(),
                     "0", "0", "0"
-
-
             );
         else
             charge(
-                    Integer.toString(selectedAmount),
+                    Integer.toString(selectedDiscount.amount),
                     selectedTab,
                     binding.plateNewArasTag1.getText().toString(),
                     binding.plateNewArasTag2.getText().toString(),
@@ -562,19 +485,18 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         binding.submit.startAnimation();
         amount = amount.replace(",", "");
 
-
         if (AppConfig.Companion.getPaymentIsParsian())
-            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1, Constants.TRANSACTION_TYPE_CHAREG, () -> {
+            parsianPayment.createTransactionForDiscount(plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1, selectedDiscount.id , Constants.TRANSACTION_TYPE_DISCOUNT, () -> {
                 binding.submit.revertAnimation();
                 binding.submit.setOnClickListener(this::submit);
             });
         else if (AppConfig.Companion.getPaymentIsSaman())
-            samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1, Constants.TRANSACTION_TYPE_CHAREG, () -> {
+            samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1,selectedDiscount.id , Constants.TRANSACTION_TYPE_DISCOUNT, () -> {
                 binding.submit.revertAnimation();
                 binding.submit.setOnClickListener(this::submit);
             });
         else if (AppConfig.Companion.getPaymentIsBehPardakht())
-            behPardakhtPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1, Constants.TRANSACTION_TYPE_CHAREG, () -> {
+            behPardakhtPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1,selectedDiscount.id , Constants.TRANSACTION_TYPE_DISCOUNT, () -> {
                 binding.submit.revertAnimation();
                 binding.submit.setOnClickListener(this::submit);
             });
@@ -585,14 +507,14 @@ public class CarNumberChargeActivity extends AppCompatActivity {
     private void getCarDebtHistory(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset) {
 
         Runnable functionRunnable = () -> getCarDebtHistory(plateType, tag1, tag2, tag3, tag4, limit, offset);
-        LoadingBar loadingBar = new LoadingBar(CarNumberChargeActivity.this);
+        LoadingBar loadingBar = new LoadingBar(DiscountActivity.this);
         loadingBar.show();
 
         webService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
             @Override
             public void onResponse(@NonNull Call<DebtHistoryResponse> call, @NonNull Response<DebtHistoryResponse> response) {
 
-                Assistant.hideKeyboard(CarNumberChargeActivity.this, binding.getRoot());
+                Assistant.hideKeyboard(DiscountActivity.this, binding.getRoot());
 
                 loadingBar.dismiss();
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
@@ -623,19 +545,23 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
     private void getDiscounts(){
 
-        Runnable functionRunnable = () -> getDiscounts();
-        LoadingBar loadingBar = new LoadingBar(CarNumberChargeActivity.this);
+        Runnable functionRunnable = this::getDiscounts;
+        LoadingBar loadingBar = new LoadingBar(DiscountActivity.this);
         loadingBar.show();
 
         webService.getClient(getApplicationContext()).getDiscounts(SharedPreferencesRepository.getTokenWithPrefix()).enqueue(new Callback<DiscountsResponse>() {
             @Override
             public void onResponse(@NonNull Call<DiscountsResponse> call, @NonNull Response<DiscountsResponse> response) {
 
-                Assistant.hideKeyboard(CarNumberChargeActivity.this, binding.getRoot());
+                Assistant.hideKeyboard(DiscountActivity.this, binding.getRoot());
 
                 loadingBar.dismiss();
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
                     return;
+
+                if (response.body() != null) {
+                    adapter.setItems(response.body().items);
+                }
 
             }
 

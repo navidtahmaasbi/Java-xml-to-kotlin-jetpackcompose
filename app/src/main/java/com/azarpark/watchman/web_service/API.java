@@ -19,6 +19,7 @@ import com.azarpark.watchman.web_service.bodies.ParkBody;
 import com.azarpark.watchman.web_service.responses.CreateTransactionResponse;
 import com.azarpark.watchman.web_service.responses.DebtHistoryResponse;
 import com.azarpark.watchman.web_service.responses.DeleteExitRequestResponse;
+import com.azarpark.watchman.web_service.responses.DiscountsResponse;
 import com.azarpark.watchman.web_service.responses.EstimateParkPriceResponse;
 import com.azarpark.watchman.web_service.responses.ExitParkResponse;
 import com.azarpark.watchman.web_service.responses.ExitRequestResponse;
@@ -52,13 +53,16 @@ public interface API {
             @Header("Authorization") String authToken,
             @Query("version_code") int versionCode,
             @Query("serial_number") String serialNumber
-            );
+    );
 
     @POST("oauth/token")
     Call<LoginResponse> login(@Body LoginBody body);
 
     @GET("/api/watchman/places")
     Call<PlacesResponse> getPlaces(@Header("Authorization") String authToken);
+
+    @GET("/api/watchman/discount")
+    Call<DiscountsResponse> getDiscounts(@Header("Authorization") String authToken);
 
     @POST("/api/watchman/park")
     Call<ParkResponse> parkCar(@Header("Authorization") String authToken, @Body ParkBody body);
@@ -105,6 +109,21 @@ public interface API {
                                                       @Path("tag4") String tag4,
                                                       @Path("amount") int amount,
                                                       @Query("flag") int transactionType
+    );
+
+    //api/watchman/create_transaction/simple/62/%D9%85/791/35/300000?flag=10&object_id=6&object_type=App\Models\Discount
+
+    @GET("/api/watchman/create_transaction/{plate_type}/{tag1}/{tag2}/{tag3}/{tag4}/{amount}")
+    Call<CreateTransactionResponse> createTransactionForDiscount(@Header("Authorization") String authToken,
+                                                                 @Path("plate_type") String plateType,
+                                                                 @Path("tag1") String tag1,
+                                                                 @Path("tag2") String tag2,
+                                                                 @Path("tag3") String tag3,
+                                                                 @Path("tag4") String tag4,
+                                                                 @Path("amount") int amount,
+                                                                 @Query("flag") int transactionType, //10
+                                                                 @Query("object_id") int discountId,
+                                                                 @Query("object_type") String type // App\Models\Discount
     );
 
     @GET("/api/watchman/exit_request/delete/{place_id}")
@@ -187,6 +206,7 @@ public interface API {
                                             @Path("code") int code);
 
 
+          //api/watchman/verify/300000/5391785732/1111/-1/1
     @GET("/api/watchman/verify/{amount}/{our_token}/{bank_token}/{place_id}/{status}")
     Call<VerifyTransactionResponse> verifyTransaction(@Header("Authorization") String authToken,
                                                       @Path("amount") String amount,
