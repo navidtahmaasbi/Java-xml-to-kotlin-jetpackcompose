@@ -1,9 +1,5 @@
 package com.azarpark.watchman.activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -34,6 +30,9 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.adapters.LocalNotificationsListAdapter;
@@ -59,6 +58,11 @@ import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.payment.parsian.ParsianPayment;
 import com.azarpark.watchman.payment.saman.SamanPayment;
+import com.azarpark.watchman.utils.Assistant;
+import com.azarpark.watchman.utils.Constants;
+import com.azarpark.watchman.utils.SharedPreferencesRepository;
+import com.azarpark.watchman.web_service.NewErrorHandler;
+import com.azarpark.watchman.web_service.WebService;
 import com.azarpark.watchman.web_service.bodies.ParkBody;
 import com.azarpark.watchman.web_service.responses.DebtHistoryResponse;
 import com.azarpark.watchman.web_service.responses.DeleteExitRequestResponse;
@@ -67,11 +71,6 @@ import com.azarpark.watchman.web_service.responses.LogoutResponse;
 import com.azarpark.watchman.web_service.responses.ParkResponse;
 import com.azarpark.watchman.web_service.responses.PlacesResponse;
 import com.azarpark.watchman.web_service.responses.VerifyTransactionResponse;
-import com.azarpark.watchman.utils.Assistant;
-import com.azarpark.watchman.utils.Constants;
-import com.azarpark.watchman.utils.SharedPreferencesRepository;
-import com.azarpark.watchman.web_service.NewErrorHandler;
-import com.azarpark.watchman.web_service.WebService;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -224,11 +223,10 @@ public class MainActivity extends AppCompatActivity {
                         ActivityCompat.requestPermissions(MainActivity.this,
                                 new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
                                 locationPermissionCode);
-                    } else if(!isLocationEnabled(this)) {
+                    } else if (!isLocationEnabled(this)) {
                         Toast.makeText(this, "جی پی اس خود را روشن کنید", Toast.LENGTH_SHORT).show();
-                    }else{
-                        System.out.println("--------> AAAA");
-                        openParkDialog(place,false);
+                    } else {
+                        openParkDialog(place, false);
                         SingleShotLocationProvider.requestSingleUpdate(this,
                                 location -> {
                                     if (parkDialog != null)
@@ -269,7 +267,7 @@ public class MainActivity extends AppCompatActivity {
         int locationMode = 0;
         String locationProviders;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             try {
                 locationMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
 
@@ -280,7 +278,7 @@ public class MainActivity extends AppCompatActivity {
 
             return locationMode != Settings.Secure.LOCATION_MODE_OFF;
 
-        }else{
+        } else {
             locationProviders = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
             return !TextUtils.isEmpty(locationProviders);
         }
@@ -646,18 +644,29 @@ public class MainActivity extends AppCompatActivity {
 
                 parkInfoDialog.dismiss();
 
-                plateChargeDialog = new PlateChargeDialog((amount) -> {
+                plateChargeDialog = new PlateChargeDialog((chargeOrDiscount) -> {
 
-                    if (AppConfig.Companion.getPaymentIsParsian())
-                        parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG, () -> {
-                            plateChargeDialog.dismiss();
-                        });
-                    else if (AppConfig.Companion.getPaymentIsSaman())
-                        samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG, () -> {
-                            plateChargeDialog.dismiss();
-                        });
-                    else if (AppConfig.Companion.isPaymentLess())
-                        Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
+                    if (chargeOrDiscount.isCharge) {
+                        if (AppConfig.Companion.getPaymentIsParsian())
+                            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, chargeOrDiscount.chargeAmount, -1, Constants.TRANSACTION_TYPE_CHAREG, () -> {
+                                plateChargeDialog.dismiss();
+                            });
+                        else if (AppConfig.Companion.getPaymentIsSaman())
+                            samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, chargeOrDiscount.chargeAmount, -1, Constants.TRANSACTION_TYPE_CHAREG, () -> {
+                                plateChargeDialog.dismiss();
+                            });
+                        else if (AppConfig.Companion.isPaymentLess())
+                            Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
+                    } else {
+                        if (AppConfig.Companion.getPaymentIsParsian())
+                            parsianPayment.createTransactionForDiscount(plateType, tag1, tag2, tag3, tag4, chargeOrDiscount.discount.price, -1, chargeOrDiscount.discount.id , Constants.TRANSACTION_TYPE_DISCOUNT, () -> {
+                            });
+                        else if (AppConfig.Companion.getPaymentIsSaman())
+                            samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, chargeOrDiscount.discount.price, -1,chargeOrDiscount.discount.id , Constants.TRANSACTION_TYPE_DISCOUNT, () -> {
+                            });
+                        else if (AppConfig.Companion.isPaymentLess())
+                            Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
+                    }
 
 
                 }, place, hasMobile);

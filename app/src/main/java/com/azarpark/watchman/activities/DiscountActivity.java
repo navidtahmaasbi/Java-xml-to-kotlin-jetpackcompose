@@ -313,7 +313,7 @@ public class DiscountActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "یک مورد را انتخاب کنید", Toast.LENGTH_SHORT).show();
         else if (selectedTab == PlateType.simple)
             charge(
-                    Integer.toString(selectedDiscount.amount),
+                    Integer.toString(selectedDiscount.price),
                     selectedTab,
                     binding.plateSimpleTag1.getText().toString(),
                     binding.plateSimpleTag2.getText().toString(),
@@ -322,14 +322,14 @@ public class DiscountActivity extends AppCompatActivity {
             );
         else if (selectedTab == PlateType.old_aras)
             charge(
-                    Integer.toString(selectedDiscount.amount),
+                    Integer.toString(selectedDiscount.price),
                     selectedTab,
                     binding.plateOldAras.getText().toString(),
                     "0", "0", "0"
             );
         else
             charge(
-                    Integer.toString(selectedDiscount.amount),
+                    Integer.toString(selectedDiscount.price),
                     selectedTab,
                     binding.plateNewArasTag1.getText().toString(),
                     binding.plateNewArasTag2.getText().toString(),

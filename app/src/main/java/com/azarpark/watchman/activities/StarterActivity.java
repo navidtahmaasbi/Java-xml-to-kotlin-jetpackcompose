@@ -30,7 +30,7 @@ import retrofit2.Response;
 public class StarterActivity extends AppCompatActivity {
 
 
-    private int code = 5555;
+    private int code = 7869;
     LoadingBar loadingBar;
     private final int masterCode = 6677;//todo release
     Assistant assistant;

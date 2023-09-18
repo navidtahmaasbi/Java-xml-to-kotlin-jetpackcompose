@@ -5,8 +5,6 @@ import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,20 +15,23 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
-import com.azarpark.watchman.R;
 import com.azarpark.watchman.adapters.ChargeItemListAdapter;
-import com.azarpark.watchman.adapters.SingleSelectListAdapter;
 import com.azarpark.watchman.databinding.PlateChargeDialogBinding;
-import com.azarpark.watchman.databinding.SingleSelectDialogBinding;
-import com.azarpark.watchman.enums.PlateType;
+import com.azarpark.watchman.models.ChargeOrDiscount;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
+import com.azarpark.watchman.web_service.NewErrorHandler;
+import com.azarpark.watchman.web_service.WebService;
+import com.azarpark.watchman.web_service.responses.Discount;
+import com.azarpark.watchman.web_service.responses.DiscountsResponse;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class PlateChargeDialog extends DialogFragment {
 
@@ -39,8 +40,10 @@ public class PlateChargeDialog extends DialogFragment {
     ChargeItemListAdapter adapter;
     OnPayClicked onPayClicked;
     Place place;
-    int selectedAmount = 0;
+    ChargeOrDiscount selectedItem = null;
     boolean hasMobile = false;
+
+    WebService webService = new WebService();
 
     public PlateChargeDialog(OnPayClicked onPayClicked, Place place, boolean hasMobile) {
         this.onPayClicked = onPayClicked;
@@ -69,76 +72,90 @@ public class PlateChargeDialog extends DialogFragment {
 
         Assistant assistant = new Assistant();
 
-        binding.amount.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        getDiscounts();
 
-            }
+//        binding.amount.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//                adapter.clearSelectedItem();
+//
+//                String stringValue = charSequence.toString();
+//                if (stringValue.length() > 9) {
+//                    binding.amount.setText(stringValue.substring(0, 9));
+//                } else if (assistant.isNumber(stringValue)) {
+//                    binding.amount.removeTextChangedListener(this);
+//                    stringValue = stringValue.replace(",", "");
+//                    int integerValue = Integer.parseInt(stringValue);
+//                    binding.amount.setText(assistant.formatAmount(integerValue));
+//                    binding.amount.setSelection(binding.amount.getText().length());
+//                    selectedItem = integerValue;
+//                    binding.amount.addTextChangedListener(this);
+//                }
+//
+//                binding.amountInWords.setText(Assistant.translateToTomanInWords(binding.amount.getText().toString()));
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable editable) {
+//
+//            }
+//        });
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        adapter = new ChargeItemListAdapter(chargeOrDiscount -> {
 
-                adapter.clearSelectedItem();
+            selectedItem = chargeOrDiscount;
 
-                String stringValue  = charSequence.toString();
-                if (stringValue.length() > 9){
-                    binding.amount.setText(stringValue.substring(0,9));
-                }else if (assistant.isNumber(stringValue)) {
-                    binding.amount.removeTextChangedListener(this);
-                    stringValue = stringValue.replace(",", "");
-                    int integerValue = Integer.parseInt(stringValue);
-                    binding.amount.setText(assistant.formatAmount(integerValue));
-                    binding.amount.setSelection(binding.amount.getText().length());
-                    selectedAmount = integerValue;
-                    binding.amount.addTextChangedListener(this);
-                }
-
-                binding.amountInWords.setText(Assistant.translateToTomanInWords(binding.amount.getText().toString()));
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
-        adapter = new ChargeItemListAdapter(amount -> {
-
-            selectedAmount = amount;
-
-            binding.amount.setText(NumberFormat.getNumberInstance(Locale.US).format(amount));
+//            binding.amount.setText(NumberFormat.getNumberInstance(Locale.US).format(selectedItem));
 
         }, getContext());
         binding.recyclerView.setAdapter(adapter);
 
-        ArrayList<Integer> items = new ArrayList<>();
+        ArrayList<ChargeOrDiscount> items = new ArrayList<>();
 
-        items.add(1000);
-        items.add(10000);
-        items.add(20000);
-        items.add(30000);
-        items.add(50000);
-        items.add(70000);
-        items.add(100000);
+        items.add(new ChargeOrDiscount(1000));
+        items.add(new ChargeOrDiscount(10000));
+        items.add(new ChargeOrDiscount(20000));
+        items.add(new ChargeOrDiscount(30000));
+        items.add(new ChargeOrDiscount(50000));
+        items.add(new ChargeOrDiscount(70000));
+        items.add(new ChargeOrDiscount(100000));
 
         adapter.setItems(items);
         binding.submit.setOnClickListener(view -> {
 
-            if (selectedAmount == 0)
-                Toast.makeText(getContext(), "مبلغ شارژ را انتخاب کنید", Toast.LENGTH_SHORT).show();
-            else if (!isNumber(Integer.toString(selectedAmount)))
-                Toast.makeText(getContext(), "مبلغ شارژ را درست وارد کنید", Toast.LENGTH_SHORT).show();
-            else if (selectedAmount < Constants.MIN_PRICE_FOR_PAYMENT)
-                Toast.makeText(getContext(), "مبلغ شارژ نباید کمتر از " + assistant.formatAmount(Constants.MIN_PRICE_FOR_PAYMENT) + " تومان باشد", Toast.LENGTH_SHORT).show();
-            else if (selectedAmount > Constants.MAX_PRICE_FOR_PAYMENT)
-                Toast.makeText(getContext(), "مبلغ شارژ نباید بیشتر از " + assistant.formatAmount(Constants.MAX_PRICE_FOR_PAYMENT) + " تومان باشد", Toast.LENGTH_SHORT).show();
-            else if (selectedAmount % 100 != 0)
-                Toast.makeText(getContext(), "مبلغ رند انتخاب کنید", Toast.LENGTH_SHORT).show();
-            else {
-                binding.submit.startAnimation();
-                onPayClicked.pay(selectedAmount);
+
+            if(selectedItem == null){
+
+                Toast.makeText(getContext(), "یک مورد را انتخاب کنید", Toast.LENGTH_SHORT).show();
+
+            } else if(selectedItem.isCharge){
+
+                if (selectedItem.chargeAmount == 0)
+                    Toast.makeText(getContext(), "مبلغ شارژ را انتخاب کنید", Toast.LENGTH_SHORT).show();
+                else if (!isNumber(Integer.toString(selectedItem.chargeAmount)))
+                    Toast.makeText(getContext(), "مبلغ شارژ را درست وارد کنید", Toast.LENGTH_SHORT).show();
+                else if (selectedItem.chargeAmount < Constants.MIN_PRICE_FOR_PAYMENT)
+                    Toast.makeText(getContext(), "مبلغ شارژ نباید کمتر از " + assistant.formatAmount(Constants.MIN_PRICE_FOR_PAYMENT) + " تومان باشد", Toast.LENGTH_SHORT).show();
+                else if (selectedItem.chargeAmount > Constants.MAX_PRICE_FOR_PAYMENT)
+                    Toast.makeText(getContext(), "مبلغ شارژ نباید بیشتر از " + assistant.formatAmount(Constants.MAX_PRICE_FOR_PAYMENT) + " تومان باشد", Toast.LENGTH_SHORT).show();
+                else if (selectedItem.chargeAmount % 100 != 0)
+                    Toast.makeText(getContext(), "مبلغ رند انتخاب کنید", Toast.LENGTH_SHORT).show();
+                else {
+                    binding.submit.startAnimation();
+                    onPayClicked.pay(selectedItem);
+                }
+
+            }else {
+                onPayClicked.pay(selectedItem);
             }
+
 
         });
 
@@ -195,7 +212,40 @@ public class PlateChargeDialog extends DialogFragment {
 
     public interface OnPayClicked {
 
-        void pay(int amount);
+        void pay(ChargeOrDiscount chargeOrDiscount);
+
+    }
+
+    private void getDiscounts() {
+
+        Runnable functionRunnable = this::getDiscounts;
+
+        binding.progressBar.setVisibility(View.VISIBLE);
+
+        webService.getClient(requireContext()).getDiscounts(SharedPreferencesRepository.getTokenWithPrefix()).enqueue(new Callback<DiscountsResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<DiscountsResponse> call, @NonNull Response<DiscountsResponse> response) {
+
+                binding.progressBar.setVisibility(View.GONE);
+
+                if (NewErrorHandler.apiResponseHasError(response, requireContext()))
+                    return;
+
+                if (response.body() != null) {
+                    ArrayList<Discount> items = response.body().items;
+                    for (int i = items.size() - 1 ; i >= 0; i--) {
+                        adapter.insert(new ChargeOrDiscount(items.get(i)));
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<DiscountsResponse> call, @NonNull Throwable t) {
+                binding.progressBar.setVisibility(View.GONE);
+                NewErrorHandler.apiFailureErrorHandler(call, t, getParentFragmentManager(), functionRunnable);
+            }
+        });
 
     }
 

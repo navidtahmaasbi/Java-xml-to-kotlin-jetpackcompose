@@ -278,22 +278,22 @@
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <EditText
-            android:id="@+id/amount"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="@dimen/_15sdp"
-            android:layout_marginRight="@dimen/_15sdp"
-            android:layout_marginBottom="@dimen/_10sdp"
-            android:background="@drawable/selected_background"
-            android:fontFamily="@font/iran_sans_fa_num"
-            android:gravity="center"
-            android:hint="مبلغ شارژ به تومان"
-            android:inputType="numberDecimal"
-            android:paddingTop="@dimen/_8sdp"
-            android:paddingBottom="@dimen/_8sdp"
-            android:textColor="@color/blue" />
+<!--        <EditText-->
+<!--            android:id="@+id/amount"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="center"-->
+<!--            android:layout_marginLeft="@dimen/_15sdp"-->
+<!--            android:layout_marginRight="@dimen/_15sdp"-->
+<!--            android:layout_marginBottom="@dimen/_10sdp"-->
+<!--            android:background="@drawable/selected_background"-->
+<!--            android:fontFamily="@font/iran_sans_fa_num"-->
+<!--            android:gravity="center"-->
+<!--            android:hint="مبلغ شارژ به تومان"-->
+<!--            android:inputType="numberDecimal"-->
+<!--            android:paddingTop="@dimen/_8sdp"-->
+<!--            android:paddingBottom="@dimen/_8sdp"-->
+<!--            android:textColor="@color/blue" />-->
 
         <TextView
             android:id="@+id/amount_in_words"
@@ -306,12 +306,17 @@
             android:textColor="@color/black"
             android:layout_marginBottom="@dimen/_10sdp"/>
 
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="@dimen/_10sdp"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/_15sdp"
-            android:layout_marginRight="@dimen/_15sdp"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="3"
             tools:itemCount="3"

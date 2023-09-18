@@ -1,8 +1,5 @@
 package com.azarpark.watchman.activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -16,6 +13,9 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.adapters.ChargeItemListAdapter;
 import com.azarpark.watchman.core.AppConfig;
@@ -23,16 +23,17 @@ import com.azarpark.watchman.databinding.ActivityCarNumberChargeBinding;
 import com.azarpark.watchman.databinding.SamanAfterPaymentPrintTemplateBinding;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.enums.PlateType;
+import com.azarpark.watchman.models.ChargeOrDiscount;
 import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.payment.behpardakht.BehPardakhtPayment;
 import com.azarpark.watchman.payment.parsian.ParsianPayment;
 import com.azarpark.watchman.payment.saman.SamanPayment;
-import com.azarpark.watchman.web_service.responses.DebtHistoryResponse;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.NewErrorHandler;
 import com.azarpark.watchman.web_service.WebService;
+import com.azarpark.watchman.web_service.responses.DebtHistoryResponse;
 import com.azarpark.watchman.web_service.responses.DiscountsResponse;
 
 import java.text.NumberFormat;
@@ -312,10 +313,10 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
                 adapter.clearSelectedItem();
 
-                String stringValue  = charSequence.toString();
-                if (stringValue.length() > 9){
-                    binding.amount.setText(stringValue.substring(0,9));
-                }else if (assistant.isNumber(stringValue)) {
+                String stringValue = charSequence.toString();
+                if (stringValue.length() > 9) {
+                    binding.amount.setText(stringValue.substring(0, 9));
+                } else if (assistant.isNumber(stringValue)) {
                     binding.amount.removeTextChangedListener(this);
                     stringValue = stringValue.replace(",", "");
                     int integerValue = Integer.parseInt(stringValue);
@@ -337,22 +338,22 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
         adapter = new ChargeItemListAdapter(amount -> {
 
-            selectedAmount = amount;
+            selectedAmount = amount.chargeAmount;
 
             binding.amount.setText(NumberFormat.getNumberInstance(Locale.US).format(amount));
 
         }, getApplicationContext());
         binding.recyclerView.setAdapter(adapter);
 
-        ArrayList<Integer> items = new ArrayList<>();
+        ArrayList<ChargeOrDiscount> items = new ArrayList<>();
 
-        items.add(1000);
-        items.add(10000);
-        items.add(20000);
-        items.add(30000);
-        items.add(50000);
-        items.add(70000);
-        items.add(100000);
+        items.add(new ChargeOrDiscount(1000));
+        items.add(new ChargeOrDiscount(10000));
+        items.add(new ChargeOrDiscount(20000));
+        items.add(new ChargeOrDiscount(30000));
+        items.add(new ChargeOrDiscount(50000));
+        items.add(new ChargeOrDiscount(70000));
+        items.add(new ChargeOrDiscount(100000));
 
         adapter.setItems(items);
 
@@ -621,7 +622,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
     }
 
-    private void getDiscounts(){
+    private void getDiscounts() {
 
         Runnable functionRunnable = () -> getDiscounts();
         LoadingBar loadingBar = new LoadingBar(CarNumberChargeActivity.this);

@@ -11,14 +11,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.databinding.AmountItemBinding;
+import com.azarpark.watchman.models.ChargeOrDiscount;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
 public class ChargeItemListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-
-    ArrayList<Integer> items;
+    ArrayList<ChargeOrDiscount> items;
     OnItemClicked onItemClicked;
     int selectedPosition = -1;
     Context context;
@@ -29,6 +29,7 @@ public class ChargeItemListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         this.context = context;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void clearSelectedItem(){
 
         selectedPosition = -1;
@@ -42,6 +43,7 @@ public class ChargeItemListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         return new ItemViewHolder(AmountItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
     }
 
+    @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
 
@@ -59,14 +61,29 @@ public class ChargeItemListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         else
             viewHolder.binding.check.setColorFilter(ContextCompat.getColor(context, R.color.gray), android.graphics.PorterDuff.Mode.SRC_IN);
 
-        viewHolder.binding.amount.setText(NumberFormat.getNumberInstance(Locale.US).format(items.get(position)) + "");
+        ChargeOrDiscount item = items.get(position);
+
+        int amount = item.isCharge ? item.chargeAmount : item.discount.price;
+        String unit = item.isCharge ? "تومان" : item.discount.name;
+
+        viewHolder.binding.amount.setText(NumberFormat.getNumberInstance(Locale.US).format(amount) + "");
+        viewHolder.binding.unit.setText(unit);
 
 
     }
 
-    public void setItems(ArrayList<Integer> items) {
+    @SuppressLint("NotifyDataSetChanged")
+    public void setItems(ArrayList<ChargeOrDiscount> items) {
 
         this.items = items;
+        notifyDataSetChanged();
+
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void insert(ChargeOrDiscount item) {
+
+        items.add(0, item);
         notifyDataSetChanged();
 
     }
@@ -88,7 +105,7 @@ public class ChargeItemListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
     public static interface OnItemClicked {
 
-        public void itemClicked(Integer amount);
+        public void itemClicked(ChargeOrDiscount amount);
 
     }
 }
