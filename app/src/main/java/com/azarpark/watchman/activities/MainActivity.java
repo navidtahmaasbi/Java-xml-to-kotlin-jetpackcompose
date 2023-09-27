@@ -49,6 +49,7 @@ import com.azarpark.watchman.dialogs.ParkDialog;
 import com.azarpark.watchman.dialogs.ParkInfoDialog;
 import com.azarpark.watchman.dialogs.ParkResponseDialog;
 import com.azarpark.watchman.dialogs.PlateChargeDialog;
+import com.azarpark.watchman.dialogs.PlateDiscountDialog;
 import com.azarpark.watchman.enums.PlaceStatus;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnGetInfoClicked;
@@ -98,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
     boolean updatePopUpIsShowed = false;
     int version = 0;
     PlateChargeDialog plateChargeDialog;
+
+    PlateDiscountDialog plateDiscountDialog;
     Activity activity = this;
     int refresh_time = 10;
     String qr_url, telephone, pricing, sms_number, rules_url, about_us_url, guide_url;
@@ -644,34 +647,42 @@ public class MainActivity extends AppCompatActivity {
 
                 parkInfoDialog.dismiss();
 
-                plateChargeDialog = new PlateChargeDialog((chargeOrDiscount) -> {
+                plateChargeDialog = new PlateChargeDialog((amount) -> {
 
-                    if (chargeOrDiscount.isCharge) {
-                        if (AppConfig.Companion.getPaymentIsParsian())
-                            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, chargeOrDiscount.chargeAmount, -1, Constants.TRANSACTION_TYPE_CHAREG, () -> {
-                                plateChargeDialog.dismiss();
-                            });
-                        else if (AppConfig.Companion.getPaymentIsSaman())
-                            samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, chargeOrDiscount.chargeAmount, -1, Constants.TRANSACTION_TYPE_CHAREG, () -> {
-                                plateChargeDialog.dismiss();
-                            });
-                        else if (AppConfig.Companion.isPaymentLess())
-                            Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
-                    } else {
-                        if (AppConfig.Companion.getPaymentIsParsian())
-                            parsianPayment.createTransactionForDiscount(plateType, tag1, tag2, tag3, tag4, chargeOrDiscount.discount.price, -1, chargeOrDiscount.discount.id , Constants.TRANSACTION_TYPE_DISCOUNT, () -> {
-                            });
-                        else if (AppConfig.Companion.getPaymentIsSaman())
-                            samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, chargeOrDiscount.discount.price, -1,chargeOrDiscount.discount.id , Constants.TRANSACTION_TYPE_DISCOUNT, () -> {
-                            });
-                        else if (AppConfig.Companion.isPaymentLess())
-                            Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
-                    }
+                    if (AppConfig.Companion.getPaymentIsParsian())
+                        parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG, () -> plateChargeDialog.dismiss());
+                    else if (AppConfig.Companion.getPaymentIsSaman())
+                        samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG, () -> plateChargeDialog.dismiss());
+                    else if (AppConfig.Companion.isPaymentLess())
+                        Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان انجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
 
 
                 }, place, hasMobile);
 
                 plateChargeDialog.show(getSupportFragmentManager(), PlateChargeDialog.TAG);
+
+            }
+
+            @Override
+            public void buyDiscount(PlateType plateType, String tag1, String tag2, String tag3, String tag4, boolean hasMobile) {
+
+                parkInfoDialog.dismiss();
+
+                plateDiscountDialog = new PlateDiscountDialog((discount) -> {
+
+                    if (AppConfig.Companion.getPaymentIsParsian())
+                        parsianPayment.createTransactionForDiscount(plateType, tag1, tag2, tag3, tag4, discount.price, -1, discount.id, Constants.TRANSACTION_TYPE_DISCOUNT, () -> {
+                        });
+                    else if (AppConfig.Companion.getPaymentIsSaman())
+                        samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, discount.price, -1, discount.id, Constants.TRANSACTION_TYPE_DISCOUNT, () -> {
+                        });
+                    else if (AppConfig.Companion.isPaymentLess())
+                        Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
+
+
+                }, place, hasMobile);
+
+                plateDiscountDialog.show(getSupportFragmentManager(), PlateChargeDialog.TAG);
 
             }
 

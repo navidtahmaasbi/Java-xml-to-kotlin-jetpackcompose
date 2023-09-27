@@ -394,7 +394,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/iran_sans_bold"
-                                    android:text="آبنمان"
+                                    android:text="خرید اشتراک"
                                     android:textColor="@color/black"
                                     android:textSize="@dimen/_13sdp" />
 

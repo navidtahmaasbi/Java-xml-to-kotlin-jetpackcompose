@@ -338,22 +338,22 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
         adapter = new ChargeItemListAdapter(amount -> {
 
-            selectedAmount = amount.chargeAmount;
+            selectedAmount = amount;
 
             binding.amount.setText(NumberFormat.getNumberInstance(Locale.US).format(amount));
 
         }, getApplicationContext());
         binding.recyclerView.setAdapter(adapter);
 
-        ArrayList<ChargeOrDiscount> items = new ArrayList<>();
+        ArrayList<Integer> items = new ArrayList<>();
 
-        items.add(new ChargeOrDiscount(1000));
-        items.add(new ChargeOrDiscount(10000));
-        items.add(new ChargeOrDiscount(20000));
-        items.add(new ChargeOrDiscount(30000));
-        items.add(new ChargeOrDiscount(50000));
-        items.add(new ChargeOrDiscount(70000));
-        items.add(new ChargeOrDiscount(100000));
+        items.add(1000);
+        items.add(10000);
+        items.add(20000);
+        items.add(30000);
+        items.add(50000);
+        items.add(70000);
+        items.add(100000);
 
         adapter.setItems(items);
 

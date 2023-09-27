@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class ChargeItemListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    ArrayList<ChargeOrDiscount> items;
+    ArrayList<Integer> items;
     OnItemClicked onItemClicked;
     int selectedPosition = -1;
     Context context;
@@ -61,19 +61,13 @@ public class ChargeItemListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         else
             viewHolder.binding.check.setColorFilter(ContextCompat.getColor(context, R.color.gray), android.graphics.PorterDuff.Mode.SRC_IN);
 
-        ChargeOrDiscount item = items.get(position);
-
-        int amount = item.isCharge ? item.chargeAmount : item.discount.price;
-        String unit = item.isCharge ? "تومان" : item.discount.name;
-
-        viewHolder.binding.amount.setText(NumberFormat.getNumberInstance(Locale.US).format(amount) + "");
-        viewHolder.binding.unit.setText(unit);
-
+        viewHolder.binding.amount.setText(NumberFormat.getNumberInstance(Locale.US).format(items.get(position)) + "");
+        viewHolder.binding.unit.setText("تومان");
 
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void setItems(ArrayList<ChargeOrDiscount> items) {
+    public void setItems(ArrayList<Integer> items) {
 
         this.items = items;
         notifyDataSetChanged();
@@ -81,7 +75,7 @@ public class ChargeItemListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void insert(ChargeOrDiscount item) {
+    public void insert(int item) {
 
         items.add(0, item);
         notifyDataSetChanged();
@@ -105,7 +99,7 @@ public class ChargeItemListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
     public static interface OnItemClicked {
 
-        public void itemClicked(ChargeOrDiscount amount);
+        public void itemClicked(int amount);
 
     }
 }

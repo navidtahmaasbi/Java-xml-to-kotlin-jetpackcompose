@@ -71,10 +71,11 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             viewHolder.binding.placeNumber.setText(Integer.toString(place.number));
 
             boolean isCameraman = (place.status.equals(PlaceStatus.full_by_watchman.toString()) && place.watchman.type.equals(WatchmanType.camera.toString()));
+            boolean hasDiscount = true;
 
-            viewHolder.binding.placeStatus.setText(place.status.equals(PlaceStatus.full_by_user.toString()) ? "شهروند" : isCameraman? "مکانیزه" : "پارکبان");
+            viewHolder.binding.placeStatus.setText(hasDiscount ? "اشتراک" :place.status.equals(PlaceStatus.full_by_user.toString()) ? "شهروند" : isCameraman? "مکانیزه" : "پارکبان");
 
-            viewHolder.binding.placeStatus.setBackgroundColor(place.status.equals(PlaceStatus.full_by_user.toString()) ? context.getResources().getColor(R.color.orange) : isCameraman ? context.getResources().getColor(R.color.lite_green) : context.getResources().getColor(R.color.dark_blue));
+            viewHolder.binding.placeStatus.setBackgroundColor(hasDiscount ? context.getResources().getColor(R.color.purple) :place.status.equals(PlaceStatus.full_by_user.toString()) ? context.getResources().getColor(R.color.orange) : isCameraman ? context.getResources().getColor(R.color.lite_green) : context.getResources().getColor(R.color.dark_blue));
 
             int balance = place.car.balance;
             if (balance >= 0) {

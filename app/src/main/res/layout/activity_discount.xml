@@ -53,7 +53,7 @@
             android:layout_marginRight="@dimen/_10sdp"
             android:layout_toLeftOf="@+id/back"
             android:fontFamily="@font/iran_sans_bold"
-            android:text="شارژ پلاک"
+            android:text="خرید اشتراک"
             android:textColor="@color/white"
             android:textSize="@dimen/_13sdp" />
 
@@ -380,8 +380,8 @@
                 android:layout_marginRight="@dimen/_15sdp"
                 android:overScrollMode="never"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                app:spanCount="2"
-                tools:itemCount="2"
+                app:spanCount="1"
+                tools:itemCount="1"
                 tools:listitem="@layout/discount_item" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -426,7 +426,7 @@
         android:paddingTop="@dimen/_8sdp"
         android:paddingRight="@dimen/_40sdp"
         android:paddingBottom="@dimen/_8sdp"
-        android:text="شارژ"
+        android:text="خرید"
         android:textColor="@color/white"
         app:spinning_bar_color="@color/red" />
 

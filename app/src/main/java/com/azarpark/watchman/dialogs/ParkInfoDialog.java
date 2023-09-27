@@ -198,6 +198,19 @@ public class ParkInfoDialog extends DialogFragment {
 
         });
 
+        binding.buyDiscount.setOnClickListener(view -> {
+
+            PlateType selectedPlateType = PlateType.simple;
+
+            if (place.tag2 == null || place.tag2.isEmpty())
+                selectedPlateType = PlateType.old_aras;
+            else if (place.tag3 == null || place.tag3.isEmpty())
+                selectedPlateType = PlateType.new_aras;
+
+            onGetInfoClicked.buyDiscount(selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, hasMobile);
+
+        });
+
         binding.print.setOnClickListener(view -> {
 
             if (printDescription == null || printDescription.isEmpty()) {

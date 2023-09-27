@@ -589,6 +589,36 @@
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_35sdp"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/_10sdp">
+
+            <TextView
+                android:layout_marginRight="@dimen/_2sdp"
+                android:id="@+id/buy_discount"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:background="@drawable/purple_bg_5"
+                android:fontFamily="@font/iran_sans_bold"
+                android:gravity="center"
+                android:text="خرید اشتراک"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_13sdp" />
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent">
+
+
+            </RelativeLayout>
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
         <TextView
             android:visibility="gone"
             android:layout_marginRight="@dimen/_2sdp"

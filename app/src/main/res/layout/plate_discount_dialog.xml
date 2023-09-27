@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:layoutDirection="ltr"
-    android:paddingBottom="@dimen/_10sdp"
     android:background="@drawable/dialog_background"
-    android:orientation="vertical">
+    android:layoutDirection="ltr"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/_10sdp">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/submit"
         android:layout_marginStart="@dimen/_10sdp"
         android:layout_marginTop="@dimen/_10sdp"
@@ -272,120 +272,27 @@
                 android:fontFamily="@font/iran_sans"
                 android:gravity="center"
                 android:lineSpacingExtra="@dimen/_3sdp"
-                android:text="مبلغ شارژ را وارد کنید و یا یکی از مبلغ های زیر را انتخاب نمایید"
+                android:text="یکی از اشتراک های زیر را انتخاب نمایید"
                 android:textColor="@color/black" />
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <EditText
-            android:id="@+id/amount"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="@dimen/_15sdp"
-            android:layout_marginRight="@dimen/_15sdp"
-            android:layout_marginBottom="@dimen/_10sdp"
-            android:background="@drawable/selected_background"
-            android:fontFamily="@font/iran_sans_fa_num"
-            android:gravity="center"
-            android:hint="مبلغ شارژ به تومان"
-            android:inputType="numberDecimal"
-            android:paddingTop="@dimen/_8sdp"
-            android:paddingBottom="@dimen/_8sdp"
-            android:textColor="@color/blue" />
-
-        <TextView
-            android:id="@+id/amount_in_words"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
             android:layout_gravity="center_horizontal"
-            android:fontFamily="@font/iran_sans"
-            android:gravity="center"
-            android:lineSpacingExtra="@dimen/_3sdp"
-            android:textColor="@color/black"
-            android:layout_marginBottom="@dimen/_10sdp"/>
+            android:layout_marginBottom="@dimen/_10sdp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            app:spanCount="3"
-            tools:itemCount="3"
+            app:spanCount="1"
+            tools:itemCount="1"
             tools:listitem="@layout/amount_item" />
-
-        <!--        <LinearLayout-->
-        <!--            android:layout_marginStart="@dimen/_10sdp"-->
-        <!--            android:layout_marginEnd="@dimen/_10sdp"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:orientation="vertical">-->
-
-        <!--            <androidx.appcompat.widget.LinearLayoutCompat-->
-        <!--                android:layout_width="match_parent"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:orientation="horizontal"-->
-        <!--                android:layout_marginTop="@dimen/_10sdp">-->
-
-        <!--                <TextView-->
-        <!--                    android:id="@+id/has_mobile_status"-->
-        <!--                    android:layout_width="0dp"-->
-        <!--                    android:layout_weight="1"-->
-        <!--                    android:layout_height="wrap_content"-->
-        <!--                    android:fontFamily="@font/iran_sans"-->
-        <!--                    android:gravity="left"-->
-        <!--                    android:text="ثبت نشده"-->
-        <!--                    android:textColor="@color/red"-->
-        <!--                    android:textSize="@dimen/_9sdp" />-->
-
-        <!--                <TextView-->
-        <!--                    android:layout_width="0dp"-->
-        <!--                    android:layout_weight="1"-->
-        <!--                    android:layout_height="wrap_content"-->
-        <!--                    android:fontFamily="@font/iran_sans"-->
-        <!--                    android:gravity="right"-->
-        <!--                    android:text="شماره همراه"-->
-        <!--                    android:textColor="@color/black"-->
-        <!--                    android:textSize="@dimen/_9sdp" />-->
-
-        <!--            </androidx.appcompat.widget.LinearLayoutCompat>-->
-
-        <!--            <RelativeLayout-->
-        <!--                android:layout_marginTop="@dimen/_3sdp"-->
-        <!--                android:layout_width="match_parent"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:background="@drawable/white_bg_5"-->
-        <!--                android:orientation="horizontal"-->
-        <!--                android:padding="@dimen/_5sdp">-->
-
-        <!--                <EditText-->
-        <!--                    android:id="@+id/mobile"-->
-        <!--                    android:layout_width="match_parent"-->
-        <!--                    android:layout_height="wrap_content"-->
-        <!--                    android:layout_centerVertical="true"-->
-        <!--                    android:background="@android:color/transparent"-->
-        <!--                    android:fontFamily="@font/iran_sans"-->
-        <!--                    android:gravity="center"-->
-        <!--                    android:hint="09*********"-->
-        <!--                    android:inputType="numberDecimal"-->
-        <!--                    android:padding="@dimen/_5sdp"-->
-        <!--                    android:textColor="@color/black"-->
-        <!--                    android:textSize="@dimen/_10sdp" />-->
-
-        <!--                <ImageView-->
-        <!--                    android:layout_width="@dimen/_15sdp"-->
-        <!--                    android:layout_height="@dimen/_15sdp"-->
-        <!--                    android:layout_alignParentRight="true"-->
-        <!--                    android:layout_centerVertical="true"-->
-        <!--                    android:layout_marginRight="@dimen/_10sdp"-->
-        <!--                    android:src="@drawable/ic_mobile"-->
-        <!--                    app:tint="@color/blue" />-->
-
-        <!--            </RelativeLayout>-->
-
-        <!--        </LinearLayout>-->
-
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -393,7 +300,7 @@
         android:id="@+id/submit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal"
         android:layout_marginStart="@dimen/_10sdp"
         android:layout_marginEnd="@dimen/_10sdp"
@@ -404,9 +311,8 @@
         android:paddingTop="@dimen/_10sdp"
         android:paddingRight="@dimen/_40sdp"
         android:paddingBottom="@dimen/_10sdp"
-        android:text="شارژ"
+        android:text="خرید اشتراک"
         android:textColor="@color/white"
-        app:spinning_bar_color="@color/red"
-        android:layout_centerHorizontal="true" />
+        app:spinning_bar_color="@color/red" />
 
-</RelativeLayout>
+</LinearLayout>
