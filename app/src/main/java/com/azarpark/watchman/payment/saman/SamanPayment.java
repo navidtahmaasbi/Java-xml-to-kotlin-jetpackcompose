@@ -365,7 +365,7 @@ public class SamanPayment {
                 SharedPreferencesRepository.setValue(Constants.PLACE_ID, Integer.toString(placeID));
                 SharedPreferencesRepository.setValue(Constants.OUR_TOKEN, Long.toString(our_token));
 
-                tashimPaymentRequest("0:" + (amount * 10) + ":" + shaba, Long.toString(our_token), (amount * 10), plateType, tag1, tag2, tag3, tag4, placeID);
+                tashimPaymentRequest("000000000000000000000000000000:" + (amount * 10) + ":" + shaba, Long.toString(our_token), (amount * 10), plateType, tag1, tag2, tag3, tag4, placeID);
 
 
             }
@@ -433,7 +433,7 @@ public class SamanPayment {
                 SharedPreferencesRepository.setValue(Constants.PLACE_ID, Integer.toString(placeID));
                 SharedPreferencesRepository.setValue(Constants.OUR_TOKEN, Long.toString(our_token));
 
-                tashimPaymentRequest("0:" + (amount * 10) + ":" + shaba, Long.toString(our_token), (amount * 10), plateType, tag1, tag2, tag3, tag4, placeID);
+                tashimPaymentRequest("000000000000000000000000000000:" + (amount * 10) + ":" + shaba, Long.toString(our_token), (amount * 10), plateType, tag1, tag2, tag3, tag4, placeID);
 
 
             }
@@ -500,7 +500,7 @@ public class SamanPayment {
                 SharedPreferencesRepository.setValue(Constants.PLACE_ID, Integer.toString(placeID));
                 SharedPreferencesRepository.setValue(Constants.OUR_TOKEN, Long.toString(our_token));
 
-                tashimPaymentRequest("0:" + (amount * 10) + ":" + shaba, Long.toString(our_token), (amount * 10), plateType, tag1, tag2, tag3, tag4, placeID);
+                tashimPaymentRequest("000000000000000000000000000000:" + (amount * 10) + ":" + shaba, Long.toString(our_token), (amount * 10), plateType, tag1, tag2, tag3, tag4, placeID);
 
 
             }

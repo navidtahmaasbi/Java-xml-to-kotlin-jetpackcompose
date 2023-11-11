@@ -58,6 +58,7 @@ public class ParkInfoDialog extends DialogFragment {
     String printDescription;
     int printCommand = 1;
     WebService webService = new WebService();
+    Call<EstimateParkPriceResponse> estimatePArkPriceCall;
 
     public ParkInfoDialog() {
     }
@@ -274,6 +275,16 @@ public class ParkInfoDialog extends DialogFragment {
         return builder.create();
     }
 
+    @Override
+    public void onStop() {
+        if(estimatePArkPriceCall != null && !estimatePArkPriceCall.isCanceled())
+        {
+            estimatePArkPriceCall.cancel();
+        }
+
+        super.onStop();
+    }
+
     private void addMobile(String mobile, String tag1, String tag2, String tag3, String tag4) {
 
 
@@ -312,7 +323,10 @@ public class ParkInfoDialog extends DialogFragment {
         LoadingBar loadingBar = new LoadingBar(getActivity());
         loadingBar.show();
 
-       webService.getClient(getContext()).estimatePArkPrice(SharedPreferencesRepository.getTokenWithPrefix(), place.id).enqueue(new Callback<EstimateParkPriceResponse>() {
+        estimatePArkPriceCall = webService.getClient(getContext())
+                .estimatePArkPrice(SharedPreferencesRepository.getTokenWithPrefix(), place.id);
+
+        estimatePArkPriceCall.enqueue(new Callback<EstimateParkPriceResponse>() {
             @Override
             public void onResponse(Call<EstimateParkPriceResponse> call, Response<EstimateParkPriceResponse> response) {
 
