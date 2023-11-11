@@ -6,6 +6,7 @@ public class Place {
     public int street_id;
     public int is_active;
     public String status;
+    public int has_discount = 0;
     public int watchman_id;
     public Object user_id;
     public int car_id;

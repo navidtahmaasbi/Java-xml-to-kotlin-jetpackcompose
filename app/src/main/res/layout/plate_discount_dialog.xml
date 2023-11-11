@@ -292,7 +292,7 @@
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="1"
             tools:itemCount="1"
-            tools:listitem="@layout/amount_item" />
+            tools:listitem="@layout/discount_item" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

@@ -71,7 +71,7 @@ public class ParkListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             viewHolder.binding.placeNumber.setText(Integer.toString(place.number));
 
             boolean isCameraman = (place.status.equals(PlaceStatus.full_by_watchman.toString()) && place.watchman.type.equals(WatchmanType.camera.toString()));
-            boolean hasDiscount = true;
+            boolean hasDiscount = place.has_discount == 1;
 
             viewHolder.binding.placeStatus.setText(hasDiscount ? "اشتراک" :place.status.equals(PlaceStatus.full_by_user.toString()) ? "شهروند" : isCameraman? "مکانیزه" : "پارکبان");
 

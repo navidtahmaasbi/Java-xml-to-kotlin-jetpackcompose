@@ -313,7 +313,14 @@ public class SamanPayment {
         Log.d(TAG, "releaseService(): unbound.");
     }
 
+    private boolean isCreatingTransaction = false;
+
     public void createTransaction(String shaba, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID, int transactionType, LoadingListener loadingListener) {
+
+        if(isCreatingTransaction){
+            return;
+        }
+        isCreatingTransaction = true;
 
         Runnable functionRunnable = () -> createTransaction(shaba, plateType, tag1, tag2, tag3, tag4, amount, placeID, transactionType, loadingListener);
 
@@ -325,7 +332,7 @@ public class SamanPayment {
         webService.getClient(context).createTransaction(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), t1, t2, t3, t4, amount, transactionType).enqueue(new Callback<CreateTransactionResponse>() {
             @Override
             public void onResponse(@NonNull Call<CreateTransactionResponse> call, @NonNull Response<CreateTransactionResponse> response) {
-
+                isCreatingTransaction = false;
                 if (loadingListener!= null)
                     loadingListener.onCreateTransactionFinished();
                 if (NewErrorHandler.apiResponseHasError(response, context))
@@ -365,6 +372,7 @@ public class SamanPayment {
 
             @Override
             public void onFailure(@NonNull Call<CreateTransactionResponse> call, @NonNull Throwable t) {
+                isCreatingTransaction = false;
                 if (loadingListener!= null)
                     loadingListener.onCreateTransactionFinished();
                 NewErrorHandler.apiFailureErrorHandler(call, t, fragmentManager, functionRunnable);
@@ -374,6 +382,11 @@ public class SamanPayment {
     }
 
     public void createTransaction(String shaba, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID, int discountId, int transactionType, LoadingListener loadingListener) {
+
+        if(isCreatingTransaction){
+            return;
+        }
+        isCreatingTransaction = true;
 
         Runnable functionRunnable = () -> createTransaction(shaba, plateType, tag1, tag2, tag3, tag4, amount, placeID, transactionType, loadingListener);
 
@@ -386,6 +399,7 @@ public class SamanPayment {
             @Override
             public void onResponse(@NonNull Call<CreateTransactionResponse> call, @NonNull Response<CreateTransactionResponse> response) {
 
+                isCreatingTransaction = false;
                 if (loadingListener!= null)
                     loadingListener.onCreateTransactionFinished();
                 if (NewErrorHandler.apiResponseHasError(response, context))
@@ -426,6 +440,7 @@ public class SamanPayment {
 
             @Override
             public void onFailure(@NonNull Call<CreateTransactionResponse> call, @NonNull Throwable t) {
+                isCreatingTransaction = false;
                 if (loadingListener!= null)
                     loadingListener.onCreateTransactionFinished();
                 NewErrorHandler.apiFailureErrorHandler(call, t, fragmentManager, functionRunnable);
@@ -435,6 +450,11 @@ public class SamanPayment {
     }
 
     public void createTransaction(String shaba, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID, int transactionType) {
+
+        if(isCreatingTransaction){
+            return;
+        }
+        isCreatingTransaction = true;
 
         Runnable functionRunnable = () -> createTransaction(shaba, plateType, tag1, tag2, tag3, tag4, amount, placeID, transactionType);
 
@@ -447,6 +467,8 @@ public class SamanPayment {
                 amount, transactionType).enqueue(new Callback<CreateTransactionResponse>() {
             @Override
             public void onResponse(@NonNull Call<CreateTransactionResponse> call, @NonNull Response<CreateTransactionResponse> response) {
+
+                isCreatingTransaction = false;
 
                 if (NewErrorHandler.apiResponseHasError(response, context))
                     return;
@@ -485,6 +507,7 @@ public class SamanPayment {
 
             @Override
             public void onFailure(@NonNull Call<CreateTransactionResponse> call, @NonNull Throwable t) {
+                isCreatingTransaction = false;
                 NewErrorHandler.apiFailureErrorHandler(call, t, fragmentManager, functionRunnable);
             }
         });

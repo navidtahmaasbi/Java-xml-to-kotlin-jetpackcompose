@@ -195,8 +195,8 @@ public class SplashActivity extends AppCompatActivity {
         binding.loadingBar.setVisibility(View.VISIBLE);
         binding.retry.setVisibility(View.INVISIBLE);
 
-//        String serial = "1111";//todo release
-        String serial = android.os.Build.SERIAL;
+        String serial = "1111";//todo release
+//        String serial = android.os.Build.SERIAL;
         if (AppConfig.Companion.isPaymentLessParkLess() || AppConfig.Companion.isPaymentLess()){
             serial = "1111";
         }

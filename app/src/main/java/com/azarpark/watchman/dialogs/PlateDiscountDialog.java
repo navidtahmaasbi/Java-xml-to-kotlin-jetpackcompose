@@ -68,8 +68,6 @@ public class PlateDiscountDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(binding.getRoot());
 
-        Assistant assistant = new Assistant();
-
         getDiscounts();
 
         adapter = new DiscountListAdapter(discount -> {

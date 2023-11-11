@@ -63,6 +63,8 @@ public class DiscountListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             viewHolder.binding.check.setColorFilter(ContextCompat.getColor(context, R.color.gray), android.graphics.PorterDuff.Mode.SRC_IN);
 
         viewHolder.binding.amount.setText(items.get(position).name);
+        int fakePrice = items.get(position).price * 6 / 5;
+        viewHolder.binding.fakePrice.setText(NumberFormat.getNumberInstance(Locale.US).format(fakePrice) + " تومان");
         viewHolder.binding.price.setText(NumberFormat.getNumberInstance(Locale.US).format(items.get(position).price) + " تومان");
 
 
