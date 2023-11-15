@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.azarpark.watchman.BuildConfig;
 import com.azarpark.watchman.core.AppConfig;
+
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
@@ -20,7 +21,21 @@ public class WebService {
     private final API api;
 
     public WebService() {
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(AppConfig.Companion.getSelectedConfig().getBaseUrl()).addConverterFactory(GsonConverterFactory.create()).client(getOkHttpClient()).build();
+        String baseUrl;
+        if(BuildConfig.FLAVOR.equals("local"))
+        {
+            baseUrl = "http://192.168.1.101:8002";;
+        }
+        else
+        {
+            baseUrl = AppConfig.Companion.getSelectedConfig().getBaseUrl();
+        }
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(getOkHttpClient())
+                .build();
 
         api = retrofit.create(API.class);
     }

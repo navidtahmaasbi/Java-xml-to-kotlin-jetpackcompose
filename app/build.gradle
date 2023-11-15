@@ -14,7 +14,7 @@ android {
         targetSdk 31
         versionCode 33 //todo release
         versionName "1.33" //todo release
-
+        flavorDimensions "default"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -23,6 +23,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    productFlavors {
+        local {}
+        real {}
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
