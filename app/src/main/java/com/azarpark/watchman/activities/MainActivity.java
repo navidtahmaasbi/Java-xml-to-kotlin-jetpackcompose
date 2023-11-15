@@ -292,7 +292,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        getPlaces02();
         setTimer();
     }
 
@@ -483,6 +482,11 @@ public class MainActivity extends AppCompatActivity {
                     });
                 }
             }, 0, refresh_time * 1000);
+        }
+        else{
+            timer.cancel();
+            timer = null;
+            setTimer();
         }
     }
 
