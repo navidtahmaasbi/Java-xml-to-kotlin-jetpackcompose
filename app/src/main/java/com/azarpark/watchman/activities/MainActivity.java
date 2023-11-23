@@ -42,6 +42,7 @@ import com.azarpark.watchman.databinding.ActivityMainBinding;
 import com.azarpark.watchman.databinding.BehpardakhtPrintTemplateBinding;
 import com.azarpark.watchman.databinding.SamanAfterPaymentPrintTemplateBinding;
 import com.azarpark.watchman.databinding.SamanPrintTemplateBinding;
+import com.azarpark.watchman.databinding.TestPrintTemplateBinding;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.dialogs.MessageDialog;
@@ -526,13 +527,31 @@ public class MainActivity extends AppCompatActivity {
             getPlaces02();
 
         });
-
     }
 
     public void onMenuToggleClicked(View view) {
+        TestPrintTemplateBinding testFactor = TestPrintTemplateBinding.inflate(LayoutInflater.from(this), binding.printArea, false);
 
-        popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
-        menuIsOpen = true;
+        new Handler().postDelayed(() -> {
+            samanPayment.printParkInfo(binding.printArea);
+            }, 500);
+
+//        Place place = new Place();
+//        place.number = 1111;
+//        place.tag1 = "12";
+//        place.tag2 = "ب";
+//        place.tag3 = "323";
+//        place.tag4 = "15";
+//        printFactor(
+//                2222,
+//                "2020/01/01 01:01:01",
+//                100000,
+//                place,
+//                "توضیحات تستی اینجا قرار میگیرند"
+//        );
+
+//        popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+//        menuIsOpen = true;
 
     }
 
@@ -726,70 +745,28 @@ public class MainActivity extends AppCompatActivity {
         } else if (AppConfig.Companion.getPaymentIsSaman()) {
 
             binding.printArea.removeAllViews();
-            SamanPrintTemplateBinding printTemplateBinding = SamanPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
+            SamanPrintTemplateBinding printTemplateBinding = SamanPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, false);
 
-            printTemplateBinding.placeId.setText(place.number + "");
-
+            printTemplateBinding.placeId.setText(place.number);
             printTemplateBinding.startTime.setText(assistant.toJalali(startTime));
             printTemplateBinding.prices.setText(pricing);
             printTemplateBinding.supportPhone.setText(telephone);
-            printTemplateBinding.debt.setText((balance < 0 ? -1 * balance : balance) + "تومان");
+            printTemplateBinding.debtArea.setText(balance + "تومان");
 
-            if (balance > 0) {
-
-                printTemplateBinding.balanceTitle.setText("اعتبار پلاک");
-                printTemplateBinding.description.setText("شهروند گرامی؛از این که جز مشتریان خوش حساب ما هستید سپاسگزاریم. " + printDescription);
-            } else if (balance < 0) {
-
-                printTemplateBinding.balanceTitle.setText("بدهی پلاک");
-                printTemplateBinding.description.setText("اخطار: شهروند گرامی؛بدهی پلاک شما بیش از حد مجاز میباشد در صورت عدم پرداخت بدهی مشمول جریمه پارک ممنوع خواهید شد. " + printDescription);
-            } else {
-
-                printTemplateBinding.balanceTitle.setText("بدهی پلاک");
-                printTemplateBinding.description.setText("شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد. " + printDescription);
-            }
-
-            printTemplateBinding.description2.setText(SharedPreferencesRepository.getValue(Constants.print_description_2) + "\n..");
-            printTemplateBinding.qrcode.setImageBitmap(assistant.qrGenerator(qr_url, placeID, place.tag1, place.tag2, place.tag3, place.tag4));
 
             if (assistant.getPlateType(place) == PlateType.simple) {
-
-                printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
-                printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
-                printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
-
-                printTemplateBinding.plateSimpleTag1.setText(place.tag1);
-                printTemplateBinding.plateSimpleTag2.setText(place.tag2);
-                printTemplateBinding.plateSimpleTag3.setText(place.tag3);
-                printTemplateBinding.plateSimpleTag4.setText(place.tag4);
-
-            } else if (assistant.getPlateType(place) == PlateType.old_aras) {
-
-                printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
-                printTemplateBinding.plateOldArasArea.setVisibility(View.VISIBLE);
-                printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
-
-                printTemplateBinding.plateOldArasTag1En.setText(place.tag1);
-                printTemplateBinding.plateOldArasTag1Fa.setText(place.tag1);
-
+                printTemplateBinding.plateArea.setText(
+                        String.format("%s %s %s / ایران %s", place.tag1, place.tag2, place.tag3, place.tag4)
+                );
             } else {
-
-                printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
-                printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
-                printTemplateBinding.plateNewArasArea.setVisibility(View.VISIBLE);
-
-                printTemplateBinding.plateNewArasTag1En.setText(place.tag1);
-                printTemplateBinding.plateNewArasTag1Fa.setText(place.tag1);
-                printTemplateBinding.plateNewArasTag2En.setText(place.tag2);
-                printTemplateBinding.plateNewArasTag2Fa.setText(place.tag2);
-
+                printTemplateBinding.plateArea.setText(
+                        String.format("%s %s %s %s", place.tag1, place.tag2, place.tag3, place.tag4)
+                );
             }
 
-            new Handler().postDelayed(() -> {
-
-                samanPayment.printParkInfo(binding.printArea);
-
-            }, 500);
+//            new Handler().postDelayed(() -> {
+//                samanPayment.printParkInfo(binding.printArea);
+//            }, 500);
 
 
         } else if (AppConfig.Companion.getPaymentIsBehPardakht()) {

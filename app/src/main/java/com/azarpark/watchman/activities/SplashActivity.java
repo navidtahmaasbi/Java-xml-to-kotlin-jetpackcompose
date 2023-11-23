@@ -224,6 +224,8 @@ public class SplashActivity extends AppCompatActivity {
                 SharedPreferencesRepository.setValue(Constants.WATCHMAN_NAME, response.body().watchman.name);
                 SharedPreferencesRepository.setValue(Constants.WATCHMAN_MOBILE, response.body().watchman.phone);
 
+                AppConfig.Companion.setTicketMessage(response.body().messages);
+
                 for (KeyValueModel keyValue : response.body().watchman_detail) {
                     if (keyValue.key.equals(Constants.cardNumber)) {
                         SharedPreferencesRepository.setValue(Constants.cardNumber, keyValue.value);

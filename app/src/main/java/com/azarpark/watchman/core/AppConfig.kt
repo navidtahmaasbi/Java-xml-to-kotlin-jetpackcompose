@@ -1,5 +1,7 @@
 package com.azarpark.watchman.core
 
+import com.azarpark.watchman.models.TicketMessage
+
 class AppConfig {
 
     companion object {
@@ -22,6 +24,8 @@ class AppConfig {
         val paymentIsBehPardakht = selectedConfig.paymentType == PaymentType.BEH_PARDAKHT
         val isPaymentLess = selectedConfig.paymentType == PaymentType.PAYMENT_LESS
         val isPaymentLessParkLess = selectedConfig.paymentType == PaymentType.PAYMENT_LESS_PARK_LESS
+
+        var ticketMessage: List<TicketMessage>? = null
     }
 
     enum class PaymentType {

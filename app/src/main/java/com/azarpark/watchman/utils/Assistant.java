@@ -33,6 +33,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -881,4 +882,26 @@ public class Assistant {
         return formatter.format(Integer.parseInt(s));
     }
 
+
+    public static String arrToStr(List arr)
+    {
+        if(arr == null)
+            return "";
+
+        StringBuilder sb = new StringBuilder();
+        boolean firstItem = true;
+        for (Object o : arr) {
+            if(firstItem)
+            {
+                firstItem = false;
+            }
+            else
+            {
+                sb.append("\n");
+            }
+            sb.append(o.toString());
+        }
+
+        return sb.toString();
+    }
 }

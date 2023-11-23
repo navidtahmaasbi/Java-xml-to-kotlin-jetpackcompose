@@ -1,11 +1,13 @@
 package com.azarpark.watchman.web_service.responses;
 
 import com.azarpark.watchman.models.KeyValueModel;
+import com.azarpark.watchman.models.TicketMessage;
 import com.azarpark.watchman.models.Update;
 import com.azarpark.watchman.models.Watchman;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
 public class SplashResponse {
 
@@ -23,4 +25,5 @@ public class SplashResponse {
     public String print_description2;
     public ArrayList<KeyValueModel> watchman_detail;
     public Watchman watchman;
+    public List<TicketMessage> messages;
 }
