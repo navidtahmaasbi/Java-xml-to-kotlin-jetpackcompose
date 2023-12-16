@@ -6,210 +6,83 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.Transaction;
-import com.azarpark.watchman.web_service.responses.CreateTransactionResponse;
-import com.azarpark.watchman.web_service.responses.VerifyTransactionResponse;
+import com.azarpark.watchman.payment.PaymentService;
+import com.azarpark.watchman.payment.ShabaType;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
+import com.azarpark.watchman.utils.Logger;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.NewErrorHandler;
 import com.azarpark.watchman.web_service.WebService;
+import com.azarpark.watchman.web_service.responses.VerifyTransactionResponse;
 import com.google.gson.Gson;
 
-import java.util.Date;
-import java.util.Set;
-
-import br.com.simplepass.loadingbutton.customViews.CircularProgressButton;
-import ir.sep.android.Service.IProxy;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SamanPayment {
+public class SamanPayment extends PaymentService {
 
-    Activity activity;
-    Context context;
     public static int PAYMENT_REQUEST_CODE = 104;
     public static int QR_SCANNER_REQUEST_CODE = 1004;
-    public IProxy service;
-    public MyServiceConnection connection;
-    SamanPaymentCallBack samanPaymentCallBack;
-    MessageDialog messageDialog;
-    FragmentManager fragmentManager;
-    WebService webService = new WebService();
+    public SamanServiceConnection connection;
 
-    private String STATE = "State",
-            REF_NUM = "RefNum",
-            SAMAN = "saman",
-            SCANNER_RESULT = "ScannerResult",
-            RES_NUM = "ResNum";
+    MessageDialog messageDialog;
+
+
+    private String STATE = "State", SAMAN = "saman", SCANNER_RESULT = "ScannerResult";
 
     int STATE_SUCCESSFUL = 0;
 
-    public SamanPayment(FragmentManager fragmentManager, Context context, Activity activity, SamanPaymentCallBack samanPaymentCallBack) {
-
-        this.activity = activity;
-        this.context = context;
-        this.fragmentManager = fragmentManager;
-        this.samanPaymentCallBack = samanPaymentCallBack;
-
-        initService();
-
+    public SamanPayment(@NonNull AppCompatActivity activity, @NonNull WebService webService, @NonNull OnPaymentCallback paymentCallback) {
+        super(activity, webService, paymentCallback);
     }
 
-    private void initService() {
+    @Override
+    public void initialize() {
+        super.initialize();
 
         Log.i("TAG", "initService()");
-        connection = new MyServiceConnection(service);
+        connection = new SamanServiceConnection();
         Intent i = new Intent();
         i.setClassName("ir.sep.android.smartpos", "ir.sep.android.Service.Proxy");
-        boolean ret = activity.bindService(i, connection, Context.BIND_AUTO_CREATE);
+        boolean ret = getActivity().bindService(i, connection, Context.BIND_AUTO_CREATE);
         Log.i("TAG", "initService() bound value: " + ret);
     }
 
-    //------------------------------------------------------------------------------------------------------------------------------
+    @Override
+    public void stop() {
+        super.stop();
 
-    public void paymentRequest(String resNum, int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
-
-
-        SharedPreferencesRepository.setValue(Constants.PLATE_TYPE, plateType.toString());
-        SharedPreferencesRepository.setValue(Constants.TAG1, tag1);
-        SharedPreferencesRepository.setValue(Constants.TAG2, tag2);
-        SharedPreferencesRepository.setValue(Constants.TAG3, tag3);
-        SharedPreferencesRepository.setValue(Constants.TAG4, tag4);
-        SharedPreferencesRepository.setValue(Constants.TAG4, tag4);
-        SharedPreferencesRepository.setValue(Constants.AMOUNT, String.valueOf(amount));
-        SharedPreferencesRepository.setValue(Constants.PLACE_ID, Integer.toString(placeID));
-        SharedPreferencesRepository.setValue(Constants.OUR_TOKEN, resNum);
-
-        Intent intent = new Intent();
-        intent.putExtra("TransType", 1);
-        intent.putExtra("Amount", String.valueOf(amount));
-        intent.putExtra("ResNum", resNum);
-        intent.putExtra("AppId", "0");
-
-//        for (String key:intent.getExtras().keySet()) {
-        Log.d("-----> TransType", String.valueOf(intent.getExtras().getInt("TransType")));
-        Log.d("-----> Amount", intent.getExtras().getString("Amount"));
-        Log.d("-----> ResNum", intent.getExtras().getString("ResNum"));
-        Log.d("-----> AppId", intent.getExtras().getString("AppId"));
-
-//        }
-
-        intent.setComponent(new ComponentName("ir.sep.android.smartpos", "ir.sep.android.smartpos.ThirdPartyActivity"));
-
-        activity.startActivityForResult(intent, PAYMENT_REQUEST_CODE);
-
+        getActivity().unbindService(connection);
+        connection = null;
+        Log.d(TAG, "releaseService(): unbound.");
     }
 
-
-    public void tashimPaymentRequest(String shaba, String resNum, int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
-
-        System.out.println("----------> tashimPaymentRequest ");
-
-        String[] param = new String[1];
-        param[0] = shaba;
-
-
-        Intent intent = new Intent();
-        intent.putExtra("TransType", 3);
-        intent.putExtra("Amount", String.valueOf(amount));
-        intent.putExtra("ResNum", resNum);
-        intent.putExtra("AppId", "0");
-        intent.putExtra("Tashim", param);
-
-
-//        for (String key:intent.getExtras().keySet()) {
-        Log.d("-----> TransType", String.valueOf(intent.getExtras().getInt("TransType")));
-        Log.d("-----> Amount", intent.getExtras().getString("Amount"));
-        Log.d("-----> ResNum", intent.getExtras().getString("ResNum"));
-        Log.d("-----> AppId", intent.getExtras().getString("AppId"));
-//        }
-
-        Gson gson = new Gson();
-        System.out.println("---------> intent : " + gson.toJson(intent));
-
-        intent.setComponent(new ComponentName("ir.sep.android.smartpos", "ir.sep.android.smartpos.ThirdPartyActivity"));
-
-        activity.startActivityForResult(intent, PAYMENT_REQUEST_CODE);
-
-    }
-
-    public void testPaymentRequest(String shaba, String resNum, int amount) {
-
-        System.out.println("----------> testPaymentRequest ");
-
-        String[] param = new String[1];
-        param[0] = "0:" + (amount) + ":" + shaba;
-
-
-        Intent intent = new Intent();
-        intent.putExtra("TransType", 3);
-        intent.putExtra("Amount", String.valueOf(amount));
-        intent.putExtra("ResNum", resNum);
-        intent.putExtra("AppId", "0");
-        intent.putExtra("Tashim", param);
-        intent.setComponent(new ComponentName("ir.sep.android.smartpos", "ir.sep.android.smartpos.ThirdPartyActivity"));
-        activity.startActivityForResult(intent, PAYMENT_REQUEST_CODE);
-
-    }
-
-    public void handleResult(int requestCode, int resultCode, Intent data) {
-
+    @Override
+    public void onActivityResultHandler(int requestCode, int resultCode, @NonNull Intent data) {
         System.out.println("----------> handleResult " + resultCode);
-
         if (/*resultCode == Activity.RESULT_OK &&*/ requestCode == PAYMENT_REQUEST_CODE) {
-
-
             int state = data.getIntExtra(STATE, -1);
-
             System.out.println("----------> state : " + state);
 
             if (state != 0)
-                Toast.makeText(context, state + "", Toast.LENGTH_LONG).show();
-
-//            AdditionalData :
-//            ++State : 55
-//            ++RefNum : 819972850538
-//            ++ResNum : 8019291329
-//            ++Amount : 1000.0
-//            ++Pan : 622106-fdaffd-8750
-//            ++DateTime : 211009182155
-//            ++TraceNumber : 598994
-//            ++result : رمز اشتباه واردشده است
-//            --TerminalId : 00002280
-//            --AmountAffective : 1000.0
-
-
-//        ++result : (succeed / unsucceed)
-//        ++rrn : 801663199541
-//        ++res_num : -1 (our_token)
-//        ++amount : 000000001000
-//        ++pan : 589210***2557
-//        ++date : 23732049000
-//        ++trace : 000015
-//        ++message :    (this will have value if there is an error)
+                Toast.makeText(getActivity(), state + "", Toast.LENGTH_LONG).show();
 
             Transaction transaction;
-
             if (state == STATE_SUCCESSFUL) // successful
             {
-//                Log.e("saman payment", "Purchase did successful....");
-
-
                 String tag1 = SharedPreferencesRepository.getValue(Constants.TAG1, "0");
                 String tag2 = SharedPreferencesRepository.getValue(Constants.TAG2, "0");
                 String tag3 = SharedPreferencesRepository.getValue(Constants.TAG3, "0");
@@ -228,7 +101,6 @@ public class SamanPayment {
                 String traceNumber = data.getExtras().getString("TraceNumber", "");
                 String result = data.getExtras().getString("result", "");
 
-
                 transaction = new Transaction(
                         SharedPreferencesRepository.getValue(Constants.AMOUNT),
                         resNum,
@@ -242,13 +114,8 @@ public class SamanPayment {
                         traceNumber,
                         result,
                         Assistant.getUnixTime());
-
-
             } else {
-
-
                 String result = data.getExtras().getString("result", "");
-
                 String amount = SharedPreferencesRepository.getValue(Constants.AMOUNT, "0");
                 String resNum = SharedPreferencesRepository.getValue(Constants.OUR_TOKEN, "0");
                 int placeID = Integer.parseInt(SharedPreferencesRepository.getValue(Constants.PLACE_ID, "0"));
@@ -268,345 +135,86 @@ public class SamanPayment {
                         result,
                         Assistant.getUnixTime());
 
-
-//                if (!result.isEmpty())
-//                    Toast.makeText(context, result, Toast.LENGTH_LONG).show();
-
                 Log.e("saman payment", "Purchase did failed....");
                 messageDialog = new MessageDialog("خطا ی " + state, result, "خروج", () -> {
                     if (messageDialog != null)
                         messageDialog.dismiss();
                 });
-
-                messageDialog.show(fragmentManager, MessageDialog.TAG);
+                messageDialog.show(getActivity().getSupportFragmentManager(), MessageDialog.TAG);
             }
 
             SharedPreferencesRepository.updateTransactions02(transaction);
-
-            Gson gson = new Gson();
-
             verifyTransaction(transaction);
-
-
-        }
-        else if (resultCode == Activity.RESULT_OK && requestCode == QR_SCANNER_REQUEST_CODE) {
-
+        } else if (resultCode == Activity.RESULT_OK && requestCode == QR_SCANNER_REQUEST_CODE) {
             try {
-
                 String url = data.getStringExtra(SCANNER_RESULT);
                 System.out.println("----------> url : " + url);
                 int placeId = Integer.parseInt(url.split("=")[url.split("=").length - 1]);
-                samanPaymentCallBack.getScannerData(placeId);
-
+                getPaymentCallback().onScanDataReceived(placeId);
             } catch (Exception e) {
-                Toast.makeText(context, "معتبر نمیباشد", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "معتبر نمیباشد", Toast.LENGTH_LONG).show();
             }
-
-
-        }
-
-    }
-
-    public void releaseService() {
-        activity.unbindService(connection);
-        connection = null;
-        Log.d(TAG, "releaseService(): unbound.");
-    }
-
-    private boolean isCreatingTransaction = false;
-
-    public void createTransaction(String shaba, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID, int transactionType, LoadingListener loadingListener) {
-
-        if(isCreatingTransaction){
-            return;
-        }
-        isCreatingTransaction = true;
-
-        Runnable functionRunnable = () -> createTransaction(shaba, plateType, tag1, tag2, tag3, tag4, amount, placeID, transactionType, loadingListener);
-
-        String t1 = tag1 == null ? "" : tag1;
-        String t2 = tag2 == null ? "-1" : tag2;
-        String t3 = tag3 == null ? "-1" : tag3;
-        String t4 = tag4 == null ? "-1" : tag4;
-
-        webService.getClient(context).createTransaction(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), t1, t2, t3, t4, amount, transactionType).enqueue(new Callback<CreateTransactionResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<CreateTransactionResponse> call, @NonNull Response<CreateTransactionResponse> response) {
-                isCreatingTransaction = false;
-                if (loadingListener!= null)
-                    loadingListener.onCreateTransactionFinished();
-                if (NewErrorHandler.apiResponseHasError(response, context))
-                    return;
-
-                long our_token = response.body().our_token;
-
-                Transaction transaction = new Transaction(
-                        Integer.toString(amount),
-                        Long.toString(our_token),
-                        "0",
-                        Integer.parseInt(SharedPreferencesRepository.getValue(Constants.PLACE_ID, "0")),
-                        0,
-                        SAMAN,
-                        "0",
-                        "",
-                        "",
-                        "",
-                        "",
-                        Assistant.getUnixTime());
-
-                SharedPreferencesRepository.addToTransactions02(transaction);
-
-                SharedPreferencesRepository.setValue(Constants.PLATE_TYPE, plateType.toString());
-                SharedPreferencesRepository.setValue(Constants.TAG1, tag1);
-                SharedPreferencesRepository.setValue(Constants.TAG2, tag2);
-                SharedPreferencesRepository.setValue(Constants.TAG3, tag3);
-                SharedPreferencesRepository.setValue(Constants.TAG4, tag4);
-                SharedPreferencesRepository.setValue(Constants.AMOUNT, String.valueOf(amount));
-                SharedPreferencesRepository.setValue(Constants.PLACE_ID, Integer.toString(placeID));
-                SharedPreferencesRepository.setValue(Constants.OUR_TOKEN, Long.toString(our_token));
-
-                tashimPaymentRequest("000000000000000000000000000000:" + (amount * 10) + ":" + shaba, Long.toString(our_token), (amount * 10), plateType, tag1, tag2, tag3, tag4, placeID);
-
-
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<CreateTransactionResponse> call, @NonNull Throwable t) {
-                isCreatingTransaction = false;
-                if (loadingListener!= null)
-                    loadingListener.onCreateTransactionFinished();
-                NewErrorHandler.apiFailureErrorHandler(call, t, fragmentManager, functionRunnable);
-            }
-        });
-
-    }
-
-    public void createTransaction(String shaba, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID, int discountId, int transactionType, LoadingListener loadingListener) {
-
-        if(isCreatingTransaction){
-            return;
-        }
-        isCreatingTransaction = true;
-
-        Runnable functionRunnable = () -> createTransaction(shaba, plateType, tag1, tag2, tag3, tag4, amount, placeID, transactionType, loadingListener);
-
-        String t1 = tag1 == null ? "" : tag1;
-        String t2 = tag2 == null ? "-1" : tag2;
-        String t3 = tag3 == null ? "-1" : tag3;
-        String t4 = tag4 == null ? "-1" : tag4;
-
-        webService.getClient(context).createTransactionForDiscount(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), t1, t2, t3, t4, amount, transactionType, discountId, "App\\Models\\Discount" ).enqueue(new Callback<CreateTransactionResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<CreateTransactionResponse> call, @NonNull Response<CreateTransactionResponse> response) {
-
-                isCreatingTransaction = false;
-                if (loadingListener!= null)
-                    loadingListener.onCreateTransactionFinished();
-                if (NewErrorHandler.apiResponseHasError(response, context))
-                    return;
-
-                long our_token = response.body().our_token;
-
-                Transaction transaction = new Transaction(
-                        discountId,
-                        Integer.toString(amount),
-                        Long.toString(our_token),
-                        "0",
-                        Integer.parseInt(SharedPreferencesRepository.getValue(Constants.PLACE_ID, "0")),
-                        0,
-                        SAMAN,
-                        "0",
-                        "",
-                        "",
-                        "",
-                        "",
-                        Assistant.getUnixTime());
-
-                SharedPreferencesRepository.addToTransactions02(transaction);
-
-                SharedPreferencesRepository.setValue(Constants.PLATE_TYPE, plateType.toString());
-                SharedPreferencesRepository.setValue(Constants.TAG1, tag1);
-                SharedPreferencesRepository.setValue(Constants.TAG2, tag2);
-                SharedPreferencesRepository.setValue(Constants.TAG3, tag3);
-                SharedPreferencesRepository.setValue(Constants.TAG4, tag4);
-                SharedPreferencesRepository.setValue(Constants.AMOUNT, String.valueOf(amount));
-                SharedPreferencesRepository.setValue(Constants.PLACE_ID, Integer.toString(placeID));
-                SharedPreferencesRepository.setValue(Constants.OUR_TOKEN, Long.toString(our_token));
-
-                tashimPaymentRequest("000000000000000000000000000000:" + (amount * 10) + ":" + shaba, Long.toString(our_token), (amount * 10), plateType, tag1, tag2, tag3, tag4, placeID);
-
-
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<CreateTransactionResponse> call, @NonNull Throwable t) {
-                isCreatingTransaction = false;
-                if (loadingListener!= null)
-                    loadingListener.onCreateTransactionFinished();
-                NewErrorHandler.apiFailureErrorHandler(call, t, fragmentManager, functionRunnable);
-            }
-        });
-
-    }
-
-    public void createTransaction(String shaba, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int amount, int placeID, int transactionType) {
-
-        if(isCreatingTransaction){
-            return;
-        }
-        isCreatingTransaction = true;
-
-        Runnable functionRunnable = () -> createTransaction(shaba, plateType, tag1, tag2, tag3, tag4, amount, placeID, transactionType);
-
-        String t1 = tag1 == null ? "" : tag1;
-        String t2 = tag2 == null ? "-1" : tag2;
-        String t3 = tag3 == null ? "-1" : tag3;
-        String t4 = tag4 == null ? "-1" : tag4;
-
-        webService.getClient(context).createTransaction(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), t1, t2, t3, t4,
-                amount, transactionType).enqueue(new Callback<CreateTransactionResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<CreateTransactionResponse> call, @NonNull Response<CreateTransactionResponse> response) {
-
-                isCreatingTransaction = false;
-
-                if (NewErrorHandler.apiResponseHasError(response, context))
-                    return;
-
-                long our_token = response.body().our_token;
-
-                Transaction transaction = new Transaction(
-                        Integer.toString(amount),
-                        Long.toString(our_token),
-                        "0",
-                        Integer.parseInt(SharedPreferencesRepository.getValue(Constants.PLACE_ID, "0")),
-                        0,
-                        SAMAN,
-                        "0",
-                        "",
-                        "",
-                        "",
-                        "",
-                        Assistant.getUnixTime());
-
-                SharedPreferencesRepository.addToTransactions02(transaction);
-
-                SharedPreferencesRepository.setValue(Constants.PLATE_TYPE, plateType.toString());
-                SharedPreferencesRepository.setValue(Constants.TAG1, tag1);
-                SharedPreferencesRepository.setValue(Constants.TAG2, tag2);
-                SharedPreferencesRepository.setValue(Constants.TAG3, tag3);
-                SharedPreferencesRepository.setValue(Constants.TAG4, tag4);
-                SharedPreferencesRepository.setValue(Constants.AMOUNT, String.valueOf(amount));
-                SharedPreferencesRepository.setValue(Constants.PLACE_ID, Integer.toString(placeID));
-                SharedPreferencesRepository.setValue(Constants.OUR_TOKEN, Long.toString(our_token));
-
-                tashimPaymentRequest("000000000000000000000000000000:" + (amount * 10) + ":" + shaba, Long.toString(our_token), (amount * 10), plateType, tag1, tag2, tag3, tag4, placeID);
-
-
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<CreateTransactionResponse> call, @NonNull Throwable t) {
-                isCreatingTransaction = false;
-                NewErrorHandler.apiFailureErrorHandler(call, t, fragmentManager, functionRunnable);
-            }
-        });
-
-    }
-
-    public void verifyTransaction(Transaction transaction) {
-
-        if (Assistant.checkIfVerifyIsPermittedNow()) {
-            Assistant.updateLastVerifyRequestTime();
-            Runnable functionRunnable = () -> verifyTransaction(transaction);
-
-            webService.getClient(context).verifyTransaction(SharedPreferencesRepository.getTokenWithPrefix(), transaction.getAmount(), transaction.getOur_token(),
-                    transaction.getBank_token(), transaction.getPlaceID(), transaction.getStatus(), transaction.getBank_type(), transaction.getState(),
-                    transaction.getCard_number(), transaction.getBank_datetime(), transaction.getTrace_number(), transaction.getResult_message()).enqueue(new Callback<VerifyTransactionResponse>() {
-                @Override
-                public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
-
-                    if (NewErrorHandler.apiResponseHasError(response, context))
-                        return;
-
-                    SharedPreferencesRepository.removeFromTransactions02(transaction);
-                    Toast.makeText(context, response.body().getDescription(), Toast.LENGTH_SHORT).show();
-                    if (transaction.getStatus() == 1)
-                        samanPaymentCallBack.onVerifyFinished();
-
-                }
-
-                @Override
-                public void onFailure(Call<VerifyTransactionResponse> call, Throwable t) {
-                    NewErrorHandler.apiFailureErrorHandler(call, t, fragmentManager, functionRunnable);
-                }
-            });
         }
     }
 
-    public void printParkInfo(ViewGroup viewGroupForBindFactor) {
-
-        connection.print(getViewBitmap(viewGroupForBindFactor));
-
+    @Override
+    public void print(View view, int waitTime, OnPrintDone callback) {
+        new Handler(getActivity().getMainLooper())
+                .postDelayed(
+                        () -> {
+                            connection.print(Assistant.viewToBitmap(view));
+                            if (callback != null)
+                                callback.onDone();
+                        },
+                        waitTime
+                );
     }
 
-    //------------------------------------------------------------------------------------------------------------------------------
+    @Override
+    public void launchPayment(ShabaType shabaType, long paymentToken, int amount, @NonNull PlateType plateType, @NonNull String tag1, @NonNull String tag2, @NonNull String tag3, @NonNull String tag4, int placeID) {
+        System.out.println("----------> tashimPaymentRequest ");
 
-    public static Bitmap getViewBitmap(View v) {
-
-        Bitmap b = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
-
-        Canvas c = new Canvas(b);
-        v.layout(0, 0, v.getLayoutParams().width, v.getLayoutParams().height);
-        v.draw(c);
-        return b;
-
-    }
-
-    private String getBundleString(Bundle b) {
-
-//        sample
-//        amount : 000000001000
-//        result : (succeed / unsucceed)
-//        pan : 589210***2557
-//        rrn : 801663199541
-//        date : 23732049000
-//        trace : 000015
-//        message :    (this will have value if there is an error)
-//        res_num : -1 (our_token)
-//        charge_pin : null
-
-        Set<String> keys = b.keySet();
-
-        StringBuffer sb = new StringBuffer();
-
-        for (String key : keys) {
-            sb.append(key);
-            sb.append(" : ");
-            if (key.equals("State"))
-                sb.append(b.getInt(key));
-            else
-                sb.append(b.getString(key));
-            sb.append("\n");
+        String shaba = "000000000000000000000000000000:" + (amount * 10) + ":";
+        if (shabaType == ShabaType.CHARGE) {
+            shaba += Constants.CHARGE_SHABA;
+        } else {
+            shaba += Constants.NON_CHARGE_SHABA;
         }
+        String[] param = new String[]{shaba};
 
-        return sb.toString();
 
+        Intent intent = new Intent();
+        intent.putExtra("TransType", 3);
+        intent.putExtra("Amount", String.valueOf(amount * 10));
+        intent.putExtra("ResNum", Long.toString(paymentToken));
+        intent.putExtra("AppId", "0");
+        intent.putExtra("Tashim", param);
+
+
+        Logger.d(
+                "requesting Tashim payment: (\nTransType: %d\nAmount: %s\nResNum: %s\nAppId: %s\nTashim: %s\n)",
+                intent.getExtras().getInt("TransType"),
+                intent.getExtras().getString("Amount"),
+                intent.getExtras().getString("ResNum"),
+                intent.getExtras().getString("AppId"),
+                intent.getExtras().getStringArray("Tashim")
+        );
+
+        intent.setComponent(new ComponentName("ir.sep.android.smartpos", "ir.sep.android.smartpos.ThirdPartyActivity"));
+        getActivity().startActivityForResult(intent, PAYMENT_REQUEST_CODE);
     }
 
-    //------------------------------------------------------------------------------------------------------------------------------
 
-    public interface SamanPaymentCallBack {
-
-        public void verifyTransaction(Transaction transaction);
-
-        public void getScannerData(int placeID);
-
-        public void onVerifyFinished();
+    @Override
+    public void launchQrCodeScanner() {
+        Intent intent = new Intent();
+        intent.setComponent(new ComponentName("ir.sep.android.smartpos",
+                "ir.sep.android.smartpos.ScannerActivity"));
+        getActivity().startActivityForResult(intent, SamanPayment.QR_SCANNER_REQUEST_CODE);
     }
 
-    public static interface LoadingListener{
-        public void onCreateTransactionFinished();
+    @Override
+    public String getPaymentType() {
+        return SAMAN;
     }
-
 }
