@@ -3,6 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.azarpark.watchman">
 
+    <uses-permission android:name="com.pax.permission.ICC"/>
+    <uses-permission android:name="com.pax.permission.PICC"/>
+    <uses-permission android:name="com.pax.permission.MAGCARD"/>
+    <uses-permission android:name="com.pax.permission.PRINTER"/>
+    <uses-permission android:name="com.pax.permission.PED"/>
+
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -27,6 +33,8 @@
         android:roundIcon="@drawable/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.Watchman">
+
+        <uses-library android:name="com.pos.device" android:required="false"></uses-library>
 <!--        <activity-->
 <!--            android:name=".PlacesActivity"-->
 <!--            android:exported="false" />-->
@@ -51,9 +59,6 @@
             android:exported="false" />
         <activity
             android:name=".activities.DiscountActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.PaymentTestActivity"
             android:exported="false" />
         <activity
             android:name=".activities.ImprestActivity"
@@ -126,7 +131,6 @@
             android:name=".activities.StarterActivity"
             android:exported="true">
 
-            <!-- todo release -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

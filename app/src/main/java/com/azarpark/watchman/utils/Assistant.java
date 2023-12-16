@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
@@ -16,13 +17,16 @@ import android.net.NetworkCapabilities;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.RemoteViews;
 
 import androidx.core.app.NotificationCompat;
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.activities.SplashActivity;
+import com.azarpark.watchman.databinding.PrintContentPartBinding;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.MyDate;
 import com.azarpark.watchman.models.MyTime;
@@ -903,5 +907,33 @@ public class Assistant {
         }
 
         return sb.toString();
+    }
+
+    public static Bitmap viewToBitmap(View v)
+    {
+        Bitmap b = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
+
+        Canvas c = new Canvas(b);
+        v.layout(0, 0, v.getLayoutParams().width, v.getLayoutParams().height);
+        v.draw(c);
+        return b;
+    }
+
+    public static boolean inflateHTML(String head, String body, Context context, ViewGroup parent, boolean attachToParent) {
+        PrintContentPartBinding layout = PrintContentPartBinding.inflate(LayoutInflater.from(context), parent, attachToParent);
+
+        if (head != null && !head.isEmpty())
+        {
+            layout.title.setVisibility(View.VISIBLE);
+            layout.title.setText(head);
+        }
+
+        if (body != null && !body.isEmpty()) {
+            layout.bodyWv.setVisibility(View.VISIBLE);
+            layout.bodyWv.getSettings().setJavaScriptEnabled(false);
+            layout.bodyWv.loadData(body, "text/html; charset=utf-8", "UTF-8");
+            return true;
+        }
+        return false;
     }
 }

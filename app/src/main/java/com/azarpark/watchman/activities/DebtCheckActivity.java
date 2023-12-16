@@ -1,8 +1,5 @@
 package com.azarpark.watchman.activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +10,9 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.adapters.DebtListAdapter;
 import com.azarpark.watchman.core.AppConfig;
@@ -20,15 +20,14 @@ import com.azarpark.watchman.databinding.ActivityDebtCheckBinding;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.Transaction;
-import com.azarpark.watchman.payment.behpardakht.BehPardakhtPayment;
-import com.azarpark.watchman.payment.parsian.ParsianPayment;
-import com.azarpark.watchman.payment.saman.SamanPayment;
-import com.azarpark.watchman.web_service.responses.DebtHistoryResponse;
+import com.azarpark.watchman.payment.PaymentService;
+import com.azarpark.watchman.payment.ShabaType;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.NewErrorHandler;
 import com.azarpark.watchman.web_service.WebService;
+import com.azarpark.watchman.web_service.responses.DebtHistoryResponse;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -46,9 +45,7 @@ public class DebtCheckActivity extends AppCompatActivity {
     LoadingBar loadingBar;
     int debt = 0;
     Activity activity = this;
-    ParsianPayment parsianPayment;
-    SamanPayment samanPayment;
-    BehPardakhtPayment behPardakhtPayment;
+    PaymentService paymentService;
     Assistant assistant;
     WebService webService = new WebService();
 
@@ -59,54 +56,23 @@ public class DebtCheckActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         assistant = new Assistant();
-        parsianPayment = new ParsianPayment(binding.printArea,getApplicationContext(), activity, new ParsianPayment.ParsianPaymentCallBack() {
-            @Override
-            public void verifyTransaction(Transaction transaction) {
-//                DebtCheckActivity.this.verifyTransaction(transaction);
-            }
+        paymentService = new PaymentService.Builder()
+                .activity(this)
+                .webService(webService)
+                .paymentCallback(new PaymentService.OnPaymentCallback() {
+                    @Override
+                    public void onScanDataReceived(int data) {
 
-            @Override
-            public void getScannerData(int placeID) {
+                    }
 
-            }
+                    @Override
+                    public void onTransactionVerified(@NonNull Transaction transaction) {
 
-            @Override
-            public void onVerifyFinished() {
+                    }
+                })
+                .build();
+        paymentService.initialize();
 
-            }
-        }, getSupportFragmentManager());
-        samanPayment = new SamanPayment(getSupportFragmentManager(),getApplicationContext(), DebtCheckActivity.this, new SamanPayment.SamanPaymentCallBack() {
-            @Override
-            public void verifyTransaction(Transaction transaction) {
-//                DebtCheckActivity.this.verifyTransaction(transaction);
-            }
-
-            @Override
-            public void getScannerData(int placeID) {
-                //don't need to do anything in DebtCheck Activity
-            }
-
-            @Override
-            public void onVerifyFinished() {
-
-            }
-        });
-
-        behPardakhtPayment = new BehPardakhtPayment(this, this, getSupportFragmentManager(), new BehPardakhtPayment.BehPardakhtPaymentCallBack() {
-            @Override
-            public void verifyTransaction(Transaction transaction) {
-                //dont need to do any thing in CarNumberActivity
-            }
-
-            @Override
-            public void getScannerData(int placeID) {
-                //dont need to do any thing in CarNumberActivity
-            }
-
-            @Override
-            public void onVerifyFinished() {
-            }
-        });
 
         binding.plateSimpleTag1.requestFocus();
 
@@ -218,7 +184,7 @@ public class DebtCheckActivity extends AppCompatActivity {
 
     }
 
-    private void payment(View view){
+    private void payment(View view) {
 
         if (selectedTab == PlateType.simple)
             paymentRequest(debt,
@@ -252,13 +218,7 @@ public class DebtCheckActivity extends AppCompatActivity {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        parsianPayment.handleResult(requestCode, resultCode, data);
-
-        samanPayment.handleResult(requestCode, resultCode, data);
-
-        behPardakhtPayment.handleOnActivityResult(requestCode, resultCode, data);
-
+        paymentService.onActivityResultHandler(requestCode, resultCode, data);
         loadData(false);
     }
 
@@ -277,8 +237,7 @@ public class DebtCheckActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (samanPayment != null)
-            samanPayment.releaseService();
+        paymentService.stop();
     }
 
     //------------------------------------------------------------ view
@@ -445,24 +404,14 @@ public class DebtCheckActivity extends AppCompatActivity {
         binding.payment.startAnimation();
         binding.payment.setOnClickListener(null);
 
-        if (AppConfig.Companion.getPaymentIsParsian())
-            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_DEBT, ()->{
-                binding.payment.revertAnimation();
-                binding.payment.setOnClickListener(this::payment);
-            });
-        else if (AppConfig.Companion.getPaymentIsSaman())
-            samanPayment.createTransaction(Constants.NON_CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_DEBT, ()->{
-                binding.payment.revertAnimation();
-                binding.payment.setOnClickListener(this::payment);
-            });
-        else if (AppConfig.Companion.getPaymentIsBehPardakht())
-            behPardakhtPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, amount, -1, Constants.TRANSACTION_TYPE_CHAREG, () -> {
-                binding.payment.revertAnimation();
-                binding.payment.setOnClickListener(this::payment);
-            });
-        else if (AppConfig.Companion.isPaymentLess())
-            Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
-
+        paymentService.createTransaction(
+                ShabaType.NON_CHARGE, plateType, tag1, tag2, tag3, tag4,
+                amount, -1, Constants.TRANSACTION_TYPE_DEBT,
+                () -> {
+                    binding.payment.revertAnimation();
+                    binding.payment.setOnClickListener(this::payment);
+                }, -1
+        );
     }
 
 }

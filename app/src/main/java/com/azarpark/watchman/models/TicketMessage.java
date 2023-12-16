@@ -1,5 +1,10 @@
 package com.azarpark.watchman.models;
 
+import android.content.Context;
+import android.view.ViewGroup;
+
+import com.azarpark.watchman.utils.Assistant;
+
 import java.util.List;
 
 public class TicketMessage {
@@ -34,6 +39,10 @@ public class TicketMessage {
 
     public String getNote() {
         return note;
+    }
+
+    public boolean inflateNote(Context context, ViewGroup parent, boolean attachToParent){
+        return Assistant.inflateHTML(null, note, context, parent, attachToParent);
     }
 
     public void setNote(String note) {

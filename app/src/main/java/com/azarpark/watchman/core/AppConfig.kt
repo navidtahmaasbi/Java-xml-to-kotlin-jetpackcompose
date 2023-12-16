@@ -1,5 +1,6 @@
 package com.azarpark.watchman.core
 
+import com.azarpark.watchman.BuildConfig
 import com.azarpark.watchman.models.TicketMessage
 
 class AppConfig {
@@ -11,11 +12,12 @@ class AppConfig {
         private const val sarab = "sarab"
         private val tabrizConfig = Config("$http$tabriz.$domain", PaymentType.SAMAN)
         private val sarabConfig = Config("$http$sarab.$domain", PaymentType.PARSIAN)
+        private val testConfig = Config("$http$tabriz.$domain", PaymentType.BEH_PARDAKHT)
         private val paymentLessTabrizConfig = Config("$http$tabriz.$domain", PaymentType.PAYMENT_LESS)
         private val paymentLessSarabConfig = Config("$http$sarab.$domain", PaymentType.PAYMENT_LESS)
         private val paymentLessParkLessTabrizConfig = Config("$http$tabriz.$domain", PaymentType.PAYMENT_LESS_PARK_LESS)
         private val paymentLessParkLessSarabConfig = Config("$http$sarab.$domain", PaymentType.PAYMENT_LESS_PARK_LESS)
-        val selectedConfig = tabrizConfig // todo release
+        val selectedConfig = testConfig // todo release
 
         data class Config(val baseUrl: String, val paymentType : PaymentType)
 
@@ -25,7 +27,7 @@ class AppConfig {
         val isPaymentLess = selectedConfig.paymentType == PaymentType.PAYMENT_LESS
         val isPaymentLessParkLess = selectedConfig.paymentType == PaymentType.PAYMENT_LESS_PARK_LESS
 
-        var ticketMessage: List<TicketMessage>? = null
+        var ticketMessage: Map<String, TicketMessage>? = null
     }
 
     enum class PaymentType {

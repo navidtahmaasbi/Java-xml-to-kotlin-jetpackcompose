@@ -57,6 +57,7 @@ public class ParkInfoDialog extends DialogFragment {
     ConfirmDialog confirmDialog;
     String printDescription;
     int printCommand = 1;
+    int parkCount = 0;
     WebService webService = new WebService();
     Call<EstimateParkPriceResponse> estimatePArkPriceCall;
 
@@ -235,7 +236,7 @@ public class ParkInfoDialog extends DialogFragment {
 //                System.out.println("---------> split exception");
 //            }
 
-            onGetInfoClicked.print(place.start, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id, debt, balance, printDescription, printCommand);
+            onGetInfoClicked.print(parkCount, place.start, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id, debt, balance, printDescription, printCommand);
 
         });
 
@@ -350,6 +351,7 @@ public class ParkInfoDialog extends DialogFragment {
 
                 EstimateParkPriceResponse parkPriceResponse = response.body();
 
+                parkCount = parkPriceResponse.park_count;
                 int parkPrice = parkPriceResponse.getPrice();
                 int carBalance = parkPriceResponse.getCar_balance();
                 balance = carBalance;

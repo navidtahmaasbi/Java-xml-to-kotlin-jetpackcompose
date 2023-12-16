@@ -7,6 +7,7 @@ public class EstimateParkPriceResponse {
     public String description;
     String print_description;
     public int print_command = 1;
+    public int park_count;
 
 
     public String getPrint_description() {

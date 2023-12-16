@@ -29,7 +29,7 @@ class Logger {
     {
         if(BuildConfig.DEBUG)
         {
-            return String.format(message, args)
+            return String.format(message, *args)
         }
         return null
     }
@@ -42,7 +42,7 @@ class Logger {
         @JvmStatic
         fun d(message: String, vararg args: Any?)
         {
-            logger.prepareLog(message, args)?.let {
+            logger.prepareLog(message, *args)?.let {
                 Log.d(logger.tag, it)
             }
         }
@@ -50,7 +50,7 @@ class Logger {
         @JvmStatic
         fun i(message: String, vararg args: Any?)
         {
-            logger.prepareLog(message, args)?.let {
+            logger.prepareLog(message, *args)?.let {
                 Log.i(logger.tag, it)
             }
         }
@@ -58,7 +58,7 @@ class Logger {
         @JvmStatic
         fun w(message: String, vararg args: Any?)
         {
-            logger.prepareLog(message, args)?.let {
+            logger.prepareLog(message, *args)?.let {
                 Log.w(logger.tag, it)
             }
         }
@@ -66,7 +66,7 @@ class Logger {
         @JvmStatic
         fun e(message: String, vararg args: Any?)
         {
-            logger.prepareLog(message, args)?.let {
+            logger.prepareLog(message, *args)?.let {
                 Log.e(logger.tag, it)
             }
         }

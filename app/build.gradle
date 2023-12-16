@@ -28,10 +28,10 @@ android {
         local {}
         real {}
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
+//    compileOptions {
+//        sourceCompatibility JavaVersion.VERSION_1_8
+//        targetCompatibility JavaVersion.VERSION_1_8
+//    }
     kotlinOptions {
         jvmTarget = "1.8"
     }
@@ -42,6 +42,8 @@ android {
 }
 
 dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation files('extern-libs\\sdk.jar')
 
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
@@ -50,9 +52,9 @@ dependencies {
     kapt "com.google.dagger:hilt-compiler:2.44"
     implementation 'androidx.activity:activity-ktx:1.3.1'
 
-    implementation files('libs/platform_sdk_v4.1.0326.jar')
-    implementation files('libs/NeptuneLiteApi_V2.03.00_20180208.jar')
-    implementation files('libs/GLPage_V1.03.00_20181030.jar')
+//    implementation files('libs/platform_sdk_v4.1.0326.jar')
+//    implementation files('libs/NeptuneLiteApi_V2.03.00_20180208.jar')
+//    implementation files('libs/GLPage_V1.03.00_20181030.jar')
 
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'com.google.android.material:material:1.4.0'

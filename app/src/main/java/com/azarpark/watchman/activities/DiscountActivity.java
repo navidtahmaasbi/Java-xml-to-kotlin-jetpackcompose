@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -17,18 +16,15 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.azarpark.watchman.R;
-import com.azarpark.watchman.adapters.ChargeItemListAdapter;
 import com.azarpark.watchman.adapters.DiscountListAdapter;
 import com.azarpark.watchman.core.AppConfig;
-import com.azarpark.watchman.databinding.ActivityCarNumberChargeBinding;
 import com.azarpark.watchman.databinding.ActivityDiscountBinding;
 import com.azarpark.watchman.databinding.SamanAfterPaymentPrintTemplateBinding;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.Transaction;
-import com.azarpark.watchman.payment.behpardakht.BehPardakhtPayment;
-import com.azarpark.watchman.payment.parsian.ParsianPayment;
-import com.azarpark.watchman.payment.saman.SamanPayment;
+import com.azarpark.watchman.payment.PaymentService;
+import com.azarpark.watchman.payment.ShabaType;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
@@ -37,10 +33,6 @@ import com.azarpark.watchman.web_service.WebService;
 import com.azarpark.watchman.web_service.responses.DebtHistoryResponse;
 import com.azarpark.watchman.web_service.responses.Discount;
 import com.azarpark.watchman.web_service.responses.DiscountsResponse;
-
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -53,9 +45,7 @@ public class DiscountActivity extends AppCompatActivity {
     LoadingBar loadingBar;
     DiscountListAdapter adapter;
     Activity activity = this;
-    ParsianPayment parsianPayment;
-    SamanPayment samanPayment;
-    BehPardakhtPayment behPardakhtPayment;
+    PaymentService paymentService;
     Assistant assistant;
     private Discount selectedDiscount = null;
     WebService webService = new WebService();
@@ -69,64 +59,34 @@ public class DiscountActivity extends AppCompatActivity {
         getDiscounts();
 
         assistant = new Assistant();
-        parsianPayment = new ParsianPayment(binding.printArea, getApplicationContext(), activity, new ParsianPayment.ParsianPaymentCallBack() {
-            @Override
-            public void verifyTransaction(Transaction transaction) {
-//                CarNumberChargeActivity.this.verifyTransaction(transaction);
-            }
 
-            @Override
-            public void getScannerData(int placeID) {
-                //don't need to do any thing in CarNumberActivity
-            }
+        paymentService = new PaymentService.Builder()
+                .activity(this)
+                .webService(webService)
+                .paymentCallback(new PaymentService.OnPaymentCallback() {
+                    @Override
+                    public void onScanDataReceived(int data) {
 
-            @Override
-            public void onVerifyFinished() {
-                //todo print mini factor
-            }
-        }, getSupportFragmentManager());
-        samanPayment = new SamanPayment(getSupportFragmentManager(), getApplicationContext(), DiscountActivity.this, new SamanPayment.SamanPaymentCallBack() {
-            @Override
-            public void verifyTransaction(Transaction transaction) {
-//                CarNumberChargeActivity.this.verifyTransaction(transaction);
-            }
+                    }
 
-            @Override
-            public void getScannerData(int placeID) {
-                //don't need to do anything in CarNumberCharge Activity
-            }
+                    @Override
+                    public void onTransactionVerified(@NonNull Transaction transaction) {
+                        if (AppConfig.Companion.getPaymentIsSaman()) {
 
-            @Override
-            public void onVerifyFinished() {
-                if (AppConfig.Companion.getPaymentIsSaman()) {
+                            String tag1 = SharedPreferencesRepository.getValue(Constants.TAG1, "0");
+                            String tag2 = SharedPreferencesRepository.getValue(Constants.TAG2, "0");
+                            String tag3 = SharedPreferencesRepository.getValue(Constants.TAG3, "0");
+                            String tag4 = SharedPreferencesRepository.getValue(Constants.TAG4, "0");
 
-                    String tag1 = SharedPreferencesRepository.getValue(Constants.TAG1, "0");
-                    String tag2 = SharedPreferencesRepository.getValue(Constants.TAG2, "0");
-                    String tag3 = SharedPreferencesRepository.getValue(Constants.TAG3, "0");
-                    String tag4 = SharedPreferencesRepository.getValue(Constants.TAG4, "0");
+                            getCarDebtHistory(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
 
-                    getCarDebtHistory(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
+                        } else if (AppConfig.Companion.isPaymentLess())
+                            Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
+                    }
+                })
+                .build();
+        paymentService.initialize();
 
-                } else if (AppConfig.Companion.isPaymentLess())
-                    Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
-            }
-        });
-
-        behPardakhtPayment = new BehPardakhtPayment(this, this, getSupportFragmentManager(), new BehPardakhtPayment.BehPardakhtPaymentCallBack() {
-            @Override
-            public void verifyTransaction(Transaction transaction) {
-                //don't need to do any thing in CarNumberActivity
-            }
-
-            @Override
-            public void getScannerData(int placeID) {
-                //don't need to do any thing in CarNumberActivity
-            }
-
-            @Override
-            public void onVerifyFinished() {
-            }
-        });
 
         binding.plateSimpleTag1.requestFocus();
 
@@ -339,20 +299,13 @@ public class DiscountActivity extends AppCompatActivity {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        parsianPayment.handleResult(requestCode, resultCode, data);
-
-        samanPayment.handleResult(requestCode, resultCode, data);
-
-        behPardakhtPayment.handleOnActivityResult(requestCode, resultCode, data);
-
+        paymentService.onActivityResultHandler(requestCode, resultCode, data);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (samanPayment != null)
-            samanPayment.releaseService();
+        paymentService.stop();
     }
 
     //------------------------------------------------------------------ view
@@ -418,63 +371,51 @@ public class DiscountActivity extends AppCompatActivity {
 
     @SuppressLint("SetTextI18n")
     private void printFactor(String tag1, String tag2, String tag3, String tag4, int balance) {
+        binding.printArea.removeAllViews();
 
-        if (AppConfig.Companion.getPaymentIsSaman()) {
+        SamanAfterPaymentPrintTemplateBinding printTemplateBinding = SamanAfterPaymentPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
 
-            binding.printArea.removeAllViews();
+        printTemplateBinding.balanceTitle.setText(balance < 0 ? "بدهی پلاک" : "شارژ پلاک");
 
-            SamanAfterPaymentPrintTemplateBinding printTemplateBinding = SamanAfterPaymentPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
-
-            printTemplateBinding.balanceTitle.setText(balance < 0 ? "بدهی پلاک" : "شارژ پلاک");
-
-            printTemplateBinding.balance.setText(balance + " تومان");
+        printTemplateBinding.balance.setText(balance + " تومان");
 
 //            printTemplateBinding.prices.setText(pricing);
 
-            if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.simple) {
+        if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.simple) {
 
-                printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
-                printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
-                printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
+            printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
+            printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
+            printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
 
-                printTemplateBinding.plateSimpleTag1.setText(tag1);
-                printTemplateBinding.plateSimpleTag2.setText(tag2);
-                printTemplateBinding.plateSimpleTag3.setText(tag3);
-                printTemplateBinding.plateSimpleTag4.setText(tag4);
+            printTemplateBinding.plateSimpleTag1.setText(tag1);
+            printTemplateBinding.plateSimpleTag2.setText(tag2);
+            printTemplateBinding.plateSimpleTag3.setText(tag3);
+            printTemplateBinding.plateSimpleTag4.setText(tag4);
 
-            } else if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.old_aras) {
+        } else if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.old_aras) {
 
-                printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
-                printTemplateBinding.plateOldArasArea.setVisibility(View.VISIBLE);
-                printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
+            printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
+            printTemplateBinding.plateOldArasArea.setVisibility(View.VISIBLE);
+            printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
 
-                printTemplateBinding.plateOldArasTag1En.setText(tag1);
-                printTemplateBinding.plateOldArasTag1Fa.setText(tag1);
+            printTemplateBinding.plateOldArasTag1En.setText(tag1);
+            printTemplateBinding.plateOldArasTag1Fa.setText(tag1);
 
-            } else {
+        } else {
 
-                printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
-                printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
-                printTemplateBinding.plateNewArasArea.setVisibility(View.VISIBLE);
+            printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
+            printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
+            printTemplateBinding.plateNewArasArea.setVisibility(View.VISIBLE);
 
-                printTemplateBinding.plateNewArasTag1En.setText(tag1);
-                printTemplateBinding.plateNewArasTag1Fa.setText(tag1);
-                printTemplateBinding.plateNewArasTag2En.setText(tag2);
-                printTemplateBinding.plateNewArasTag2Fa.setText(tag2);
+            printTemplateBinding.plateNewArasTag1En.setText(tag1);
+            printTemplateBinding.plateNewArasTag1Fa.setText(tag1);
+            printTemplateBinding.plateNewArasTag2En.setText(tag2);
+            printTemplateBinding.plateNewArasTag2Fa.setText(tag2);
 
-            }
+        }
 
-            printTemplateBinding.text.setText("\n.\n.\n.");
-
-            new Handler().postDelayed(() -> samanPayment.printParkInfo(binding.printArea), 500);
-
-
-        } else if (AppConfig.Companion.getPaymentIsBehPardakht()) {
-            //todo print after payment data
-        } else if (AppConfig.Companion.isPaymentLess())
-            Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
-
-
+        printTemplateBinding.text.setText("\n.\n.\n.");
+        paymentService.print(binding.printArea, 500, null);
     }
 
     //------------------------------------------------------------------ api calls
@@ -485,23 +426,15 @@ public class DiscountActivity extends AppCompatActivity {
         binding.submit.startAnimation();
         amount = amount.replace(",", "");
 
-        if (AppConfig.Companion.getPaymentIsParsian())
-            parsianPayment.createTransactionForDiscount(plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1, selectedDiscount.id , Constants.TRANSACTION_TYPE_DISCOUNT, () -> {
-                binding.submit.revertAnimation();
-                binding.submit.setOnClickListener(this::submit);
-            });
-        else if (AppConfig.Companion.getPaymentIsSaman())
-            samanPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1,selectedDiscount.id , Constants.TRANSACTION_TYPE_DISCOUNT, () -> {
-                binding.submit.revertAnimation();
-                binding.submit.setOnClickListener(this::submit);
-            });
-        else if (AppConfig.Companion.getPaymentIsBehPardakht())
-            behPardakhtPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, Integer.parseInt(amount), -1,selectedDiscount.id , Constants.TRANSACTION_TYPE_DISCOUNT, () -> {
-                binding.submit.revertAnimation();
-                binding.submit.setOnClickListener(this::submit);
-            });
-        else if (AppConfig.Companion.isPaymentLess())
-            Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
+        paymentService.createTransaction(
+                ShabaType.CHARGE, plateType, tag1, tag2, tag3, tag4,
+                Integer.parseInt(amount), -1, Constants.TRANSACTION_TYPE_DISCOUNT,
+                () -> {
+                    binding.submit.revertAnimation();
+                    binding.submit.setOnClickListener(this::submit);
+                },
+                selectedDiscount.id
+        );
     }
 
     private void getCarDebtHistory(PlateType plateType, String tag1, String tag2, String tag3, String tag4, int limit, int offset) {
@@ -543,7 +476,7 @@ public class DiscountActivity extends AppCompatActivity {
 
     }
 
-    private void getDiscounts(){
+    private void getDiscounts() {
 
         Runnable functionRunnable = this::getDiscounts;
         LoadingBar loadingBar = new LoadingBar(DiscountActivity.this);

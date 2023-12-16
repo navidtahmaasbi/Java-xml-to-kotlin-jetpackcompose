@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white">
@@ -15,6 +14,7 @@
             style="@style/TicketPrint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="-8dp"
             android:text="با نصب و استفاده از سوپر اپلیکیشن ایراناپ,\n 3 پارک هدیه بگیرید."
             android:textAlignment="center"
             android:textSize="18sp" />
@@ -29,29 +29,27 @@
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView
+                style="@style/TicketPrint.Bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="-6dp"
+                android:layout_marginTop="-8dp"
                 android:gravity="right"
                 android:lineSpacingExtra="@dimen/_1sdp"
                 android:text="@string/irana_website_link"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_13sdp"
-                app:fontFamily="@font/sahel_fa_num_semi_bold" />
+                android:textSize="20sp" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/TicketPrint"
+        <LinearLayout
+            android:id="@+id/prefix_holder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="right"
-            android:text="شهروند گرامی در صورت عدم پرداخت هزینه پارک مشمول جریمه پارک ممنوع خواهید شد"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_13sdp" />
+            android:orientation="vertical" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:background="@drawable/black_border"
             android:orientation="horizontal">
 
@@ -63,9 +61,8 @@
                 android:layout_marginRight="8dp"
                 android:gravity="center"
                 android:lineSpacingExtra="@dimen/_1sdp"
-                android:text="11 ب 111 / ایران 15"
                 android:textColor="@color/white"
-                android:textSize="22sp" />
+                android:textSize="24sp" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
 
@@ -78,7 +75,7 @@
             android:paddingRight="4dp">
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/place_id"
+                android:id="@+id/place_tv"
                 style="@style/TicketPrint"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -96,7 +93,37 @@
             android:paddingRight="4dp">
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/debt_area"
+                android:id="@+id/start_time_tv"
+                style="@style/TicketPrint"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:textColor="@color/black"
+                android:textDirection="ltr"
+                android:textSize="@dimen/_13sdp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/TicketPrint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:text="شروع پارک:"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_13sdp" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/print_template_row_border"
+            android:orientation="horizontal"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/price_tv"
                 style="@style/TicketPrint"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -114,7 +141,7 @@
             android:paddingRight="4dp">
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/start_time"
+                android:id="@+id/debt_tv"
                 style="@style/TicketPrint"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -123,29 +150,35 @@
                 android:textSize="@dimen/_13sdp" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <androidx.appcompat.widget.LinearLayoutCompat
+        <LinearLayout
+            android:id="@+id/postfix_holder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/print_template_row_border"
-            android:orientation="horizontal"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp">
+            android:orientation="vertical" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/prices"
+        <FrameLayout
+            android:id="@+id/note_section"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/border_black_double"
+            android:padding="8dp"
+            android:visibility="gone">
+
+            <WebView
+                android:id="@+id/note_wv"
                 style="@style/TicketPrint"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="right"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_13sdp" />
-        </androidx.appcompat.widget.LinearLayoutCompat>
-
+        </FrameLayout>
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_height="25dp"
-            android:layout_marginTop="16dp"
+            android:layout_height="27dp"
+            android:layout_marginTop="8dp"
             android:background="@drawable/black_border"
             android:layoutDirection="rtl"
             android:orientation="horizontal">
@@ -154,11 +187,11 @@
                 style="@style/TicketPrint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="-6dp"
+                android:layout_marginTop="-8dp"
                 android:layout_marginRight="8dp"
                 android:gravity="right"
                 android:lineSpacingExtra="@dimen/_1sdp"
-                android:text="پشتیبانی شما:"
+                android:text="پشتیبان شما:"
                 android:textColor="@color/white"
                 android:textSize="20sp" />
 
@@ -167,9 +200,10 @@
                 style="@style/TicketPrint"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="-6dp"
+                android:layout_marginTop="-8dp"
                 android:layout_marginRight="8dp"
                 android:gravity="center"
+                android:textDirection="ltr"
                 android:lineSpacingExtra="@dimen/_1sdp"
                 android:textColor="@color/white"
                 android:textSize="20sp" />
@@ -188,11 +222,11 @@
             style="@style/TicketPrint.Bold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="-4dp"
+            android:layout_marginTop="-12dp"
             android:text="@string/iranapp"
             android:textAlignment="center"
-            android:textSize="24sp"
-            android:textFontWeight="900"/>
+            android:textFontWeight="900"
+            android:textSize="24sp" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

@@ -14,5 +14,5 @@ public class Info {
     public Place place;
     public String print_description;
     public int print_command = 1;
-
+    public int park_count;
 }

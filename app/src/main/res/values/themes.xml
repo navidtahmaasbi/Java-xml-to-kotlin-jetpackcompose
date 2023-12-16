@@ -30,10 +30,11 @@
 
     <style name="TicketPrint">
         <item name="android:textColor">@color/black</item>
-        <item name="fontFamily">@font/iran_sans_fa_num</item>
+        <item name="fontFamily">@font/sahel_fa_num_semi_bold</item>
     </style>
 
     <style name="TicketPrint.Bold" parent="TicketPrint">
-        <item name="fontFamily">@font/iran_sans_fa_num_bold</item>
+<!--        <item name="android:fontWeight"-->
+<!--        <item name="fontFamily">@font/iran_sans_fa_num_bold</item>-->
     </style>
 </resources>

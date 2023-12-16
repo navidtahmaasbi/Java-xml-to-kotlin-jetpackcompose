@@ -8,6 +8,7 @@ import com.azarpark.watchman.models.Watchman;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class SplashResponse {
 
@@ -25,5 +26,5 @@ public class SplashResponse {
     public String print_description2;
     public ArrayList<KeyValueModel> watchman_detail;
     public Watchman watchman;
-    public List<TicketMessage> messages;
+    public Map<String, TicketMessage> messages;
 }

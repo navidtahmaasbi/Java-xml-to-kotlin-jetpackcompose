@@ -19,9 +19,8 @@ import com.azarpark.watchman.databinding.ActivityPayAndExitParkedPlateBinding;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.Transaction;
-import com.azarpark.watchman.payment.behpardakht.BehPardakhtPayment;
-import com.azarpark.watchman.payment.parsian.ParsianPayment;
-import com.azarpark.watchman.payment.saman.SamanPayment;
+import com.azarpark.watchman.payment.PaymentService;
+import com.azarpark.watchman.payment.ShabaType;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
@@ -43,9 +42,8 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
     private int LIMIT = 20;
     int debt = 0;
     Activity activity = this;
-    ParsianPayment parsianPayment;
-    SamanPayment samanPayment;
-    BehPardakhtPayment behPardakhtPayment;
+    PaymentService paymentService;
+
     Assistant assistant;
     WebService webService = new WebService();
 
@@ -57,54 +55,24 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
 
         loadingBar = new LoadingBar(PayAndExitParkedPlateActivity.this);
         assistant = new Assistant();
-        parsianPayment = new ParsianPayment(binding.printArea, getApplicationContext(), activity, new ParsianPayment.ParsianPaymentCallBack() {
-            @Override
-            public void verifyTransaction(Transaction transaction) {
-//                DebtCheckActivity.this.verifyTransaction(transaction);
-            }
 
-            @Override
-            public void getScannerData(int placeID) {
 
-            }
+        paymentService = new PaymentService.Builder()
+                .activity(this)
+                .webService(webService)
+                .paymentCallback(new PaymentService.OnPaymentCallback() {
+                    @Override
+                    public void onScanDataReceived(int data) {
 
-            @Override
-            public void onVerifyFinished() {
+                    }
 
-            }
-        }, getSupportFragmentManager());
-        samanPayment = new SamanPayment(getSupportFragmentManager(), getApplicationContext(), PayAndExitParkedPlateActivity.this, new SamanPayment.SamanPaymentCallBack() {
-            @Override
-            public void verifyTransaction(Transaction transaction) {
-//                DebtCheckActivity.this.verifyTransaction(transaction);
-            }
+                    @Override
+                    public void onTransactionVerified(@NonNull Transaction transaction) {
 
-            @Override
-            public void getScannerData(int placeID) {
-                //don't need to do anything in DebtCheck Activity
-            }
-
-            @Override
-            public void onVerifyFinished() {
-
-            }
-        });
-
-        behPardakhtPayment = new BehPardakhtPayment(this, this, getSupportFragmentManager(), new BehPardakhtPayment.BehPardakhtPaymentCallBack() {
-            @Override
-            public void verifyTransaction(Transaction transaction) {
-                //dont need to do any thing in CarNumberActivity
-            }
-
-            @Override
-            public void getScannerData(int placeID) {
-                //dont need to do any thing in CarNumberActivity
-            }
-
-            @Override
-            public void onVerifyFinished() {
-            }
-        });
+                    }
+                })
+                .build();
+        paymentService.initialize();
 
         binding.debtSum.addTextChangedListener(new TextWatcher() {
             @Override
@@ -115,10 +83,10 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                String stringValue  = charSequence.toString();
-                if (stringValue.length() > 9){
-                    binding.debtSum.setText(stringValue.substring(0,9));
-                }else if (assistant.isNumber(stringValue)) {
+                String stringValue = charSequence.toString();
+                if (stringValue.length() > 9) {
+                    binding.debtSum.setText(stringValue.substring(0, 9));
+                } else if (assistant.isNumber(stringValue)) {
                     binding.debtSum.removeTextChangedListener(this);
                     stringValue = stringValue.replace(",", "");
                     int integerValue = Integer.parseInt(stringValue);
@@ -254,15 +222,8 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         binding.debtArea.setVisibility(View.GONE);
-
-        parsianPayment.handleResult(requestCode, resultCode, data);
-
-        samanPayment.handleResult(requestCode, resultCode, data);
-
-        behPardakhtPayment.handleOnActivityResult(requestCode, resultCode, data);
-
+        paymentService.onActivityResultHandler(requestCode, resultCode, data);
     }
 
     public void myOnBackPressed(View view) {
@@ -280,8 +241,7 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (samanPayment != null)
-            samanPayment.releaseService();
+        paymentService.stop();
     }
 
     //------------------------------------------------------------ view
@@ -456,30 +416,31 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
                     binding.payment.setOnClickListener(view -> Toast.makeText(getApplicationContext(), "برای انجام عملیات دکمه را نگه دارید", Toast.LENGTH_SHORT).show());
                     binding.payment.setOnLongClickListener(view -> {
 
-                        String debtSumStringValue = binding.debtSum.getText().toString().replaceAll(",","");
+                        String debtSumStringValue = binding.debtSum.getText().toString().replaceAll(",", "");
                         int debtSumIntegerValue = 0;
-                        try { debtSumIntegerValue = Integer.parseInt(debtSumStringValue); }catch (Exception ignored){}
-                        if (!assistant.isNumber(debtSumStringValue))
+                        try {
+                            debtSumIntegerValue = Integer.parseInt(debtSumStringValue);
+                        } catch (Exception ignored) {
+                        }
+                        if (!assistant.isNumber(debtSumStringValue)) {
                             Toast.makeText(getApplicationContext(), "مبلغ را درست وارد کنید", Toast.LENGTH_SHORT).show();
-                        else if (debtSumIntegerValue < Constants.MIN_PRICE_FOR_PAYMENT)
+                            return true;
+                        } else if (debtSumIntegerValue < Constants.MIN_PRICE_FOR_PAYMENT) {
                             Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید کمتر از " + assistant.formatAmount(Constants.MIN_PRICE_FOR_PAYMENT) + " تومان باشد", Toast.LENGTH_SHORT).show();
-                        else if (debtSumIntegerValue > Constants.MAX_PRICE_FOR_PAYMENT)
+                            return true;
+                        } else if (debtSumIntegerValue > Constants.MAX_PRICE_FOR_PAYMENT) {
                             Toast.makeText(getApplicationContext(), "مبلغ شارژ نباید بیشتر از " + assistant.formatAmount(Constants.MAX_PRICE_FOR_PAYMENT) + " تومان باشد", Toast.LENGTH_SHORT).show();
-                        else if (AppConfig.Companion.getPaymentIsParsian()){
-                            loadingBar.show();
-                            parsianPayment.createTransaction(plateType, tag1, tag2, tag3, tag4, debtSumIntegerValue, placeId, Constants.TRANSACTION_TYPE_PARK_PRICE);
+                            return true;
                         }
-                        else if (AppConfig.Companion.getPaymentIsSaman()){
-                            loadingBar.show();
-                            samanPayment.createTransaction(Constants.NON_CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, debtSumIntegerValue, placeId, Constants.TRANSACTION_TYPE_PARK_PRICE);
-                        }
-                        else if (AppConfig.Companion.getPaymentIsBehPardakht()){
-                            loadingBar.show();
-                            behPardakhtPayment.createTransaction(Constants.CHARGE_SHABA, plateType, tag1, tag2, tag3, tag4, debtSumIntegerValue, -1, Constants.TRANSACTION_TYPE_PARK_PRICE);
-                        }
-                        else if (AppConfig.Companion.isPaymentLess()) {
-                            Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان انجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
-                        }
+
+
+                        loadingBar.show();
+                        paymentService.createTransaction(
+                                ShabaType.NON_CHARGE, plateType,
+                                tag1, tag2, tag3, tag4,
+                                debtSumIntegerValue, placeId, Constants.TRANSACTION_TYPE_PARK_PRICE,
+                                null, -1
+                        );
 
                         return true;
                     });
