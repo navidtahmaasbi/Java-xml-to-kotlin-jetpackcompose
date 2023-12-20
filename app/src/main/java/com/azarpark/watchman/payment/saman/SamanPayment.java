@@ -102,7 +102,7 @@ public class SamanPayment extends PaymentService {
                 String result = data.getExtras().getString("result", "");
 
                 transaction = new Transaction(
-                        SharedPreferencesRepository.getValue(Constants.AMOUNT),
+                        SharedPreferencesRepository.getValue(Constants.AMOUNT, "0"),
                         resNum,
                         refNum,
                         Integer.parseInt(SharedPreferencesRepository.getValue(Constants.PLACE_ID)),

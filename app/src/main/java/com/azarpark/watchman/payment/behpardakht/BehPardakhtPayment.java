@@ -78,7 +78,9 @@ public class BehPardakhtPayment extends PaymentService {
             System.out.println("---------> resss : " + data.getStringExtra("PaymentResult"));
 
             Transaction transaction = new Transaction(
-                    paymentResult.transactionAmount == null ? paymentResult.transactionAmount : Integer.toString(Integer.parseInt(paymentResult.transactionAmount) / 10),
+                    paymentResult.transactionAmount == null || paymentResult.transactionAmount.isEmpty()
+                            ? SharedPreferencesRepository.getValue(Constants.AMOUNT, "0")
+                            : Integer.toString(Integer.parseInt(paymentResult.transactionAmount) / 10),
                     paymentResult.sessionId,
                     paymentResult.referenceID,
                     Integer.parseInt(SharedPreferencesRepository.getValue(Constants.PLACE_ID, "-1")),

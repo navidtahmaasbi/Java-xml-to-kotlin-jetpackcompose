@@ -132,6 +132,7 @@ abstract class PaymentService(val activity: AppCompatActivity, val webService: W
                     if (NewErrorHandler.apiResponseHasError(response, activity)) return
                     SharedPreferencesRepository.removeFromTransactions02(transaction)
                     Toast.makeText(activity, response.body()!!.description, Toast.LENGTH_SHORT).show()
+                    transaction.transactionType = response.body()!!.flag
                     if (transaction.status == 1) paymentCallback.onTransactionVerified(transaction)
                 }
 

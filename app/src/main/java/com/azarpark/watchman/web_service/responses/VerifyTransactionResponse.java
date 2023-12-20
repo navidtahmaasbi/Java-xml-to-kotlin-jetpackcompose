@@ -5,6 +5,7 @@ public class VerifyTransactionResponse {
     int success;
     String description;
     String msg;
+    int flag;
 
     public String getMsg() {
         return msg;
@@ -28,5 +29,13 @@ public class VerifyTransactionResponse {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public int getFlag() {
+        return flag;
+    }
+
+    public void setFlag(int flag) {
+        this.flag = flag;
     }
 }

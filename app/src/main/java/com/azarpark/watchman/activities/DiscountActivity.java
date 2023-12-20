@@ -80,6 +80,14 @@ public class DiscountActivity extends AppCompatActivity {
 
                             getCarDebtHistory(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
 
+                            if(transaction.getTransactionType() == Constants.TRANSACTION_TYPE_DISCOUNT)
+                            {
+                                printFactor(tag1, tag2, tag3, tag4, Integer.parseInt(transaction.getAmount()), true);
+                            }
+                            else {
+                                getCarDebtHistory(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
+                            }
+
                         } else if (AppConfig.Companion.isPaymentLess())
                             Toast.makeText(getApplicationContext(), "این نسخه برای دستگاه پوز نیست لذا امکان اینجام این فرایند وجود ندارد", Toast.LENGTH_LONG).show();
                     }
@@ -370,12 +378,18 @@ public class DiscountActivity extends AppCompatActivity {
     }
 
     @SuppressLint("SetTextI18n")
-    private void printFactor(String tag1, String tag2, String tag3, String tag4, int balance) {
+    private void printFactor(String tag1, String tag2, String tag3, String tag4, int balance, boolean isDiscount) {
         binding.printArea.removeAllViews();
 
         SamanAfterPaymentPrintTemplateBinding printTemplateBinding = SamanAfterPaymentPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
 
-        printTemplateBinding.balanceTitle.setText(balance < 0 ? "بدهی پلاک" : "شارژ پلاک");
+        if(isDiscount)
+        {
+            printTemplateBinding.balanceTitle.setText("اشتراک پلاک");
+        }
+        else {
+            printTemplateBinding.balanceTitle.setText(balance < 0 ? "بدهی پلاک" : "شارژ پلاک");
+        }
 
         printTemplateBinding.balance.setText(balance + " تومان");
 
@@ -458,11 +472,11 @@ public class DiscountActivity extends AppCompatActivity {
                         printFactor(tag1,
                                 tag2,
                                 tag3,
-                                tag4, response.body().balance);
+                                tag4, response.body().balance, false);
                     else if (selectedTab == PlateType.old_aras)
-                        printFactor(tag1, "0", "0", "0", response.body().balance);
+                        printFactor(tag1, "0", "0", "0", response.body().balance, false);
                     else
-                        printFactor(tag1, tag2, "0", "0", response.body().balance);
+                        printFactor(tag1, tag2, "0", "0", response.body().balance, false);
 
 
             }

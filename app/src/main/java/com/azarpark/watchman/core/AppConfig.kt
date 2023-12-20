@@ -12,7 +12,7 @@ class AppConfig {
         private const val sarab = "sarab"
         private val tabrizConfig = Config("$http$tabriz.$domain", PaymentType.SAMAN)
         private val sarabConfig = Config("$http$sarab.$domain", PaymentType.PARSIAN)
-        private val testConfig = Config("$http$tabriz.$domain", PaymentType.BEH_PARDAKHT)
+        private val testConfig = Config("$http$tabriz.$domain", PaymentType.SAMAN)
         private val paymentLessTabrizConfig = Config("$http$tabriz.$domain", PaymentType.PAYMENT_LESS)
         private val paymentLessSarabConfig = Config("$http$sarab.$domain", PaymentType.PAYMENT_LESS)
         private val paymentLessParkLessTabrizConfig = Config("$http$tabriz.$domain", PaymentType.PAYMENT_LESS_PARK_LESS)

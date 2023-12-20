@@ -8,7 +8,7 @@ public class Transaction {
     String bank_token;
     int placeID;
     int status;
-
+    int transactionType;
     int discountId = -1;
     String bank_type;
     String state;
@@ -117,6 +117,14 @@ public class Transaction {
 
     public int getStatus() {
         return status;
+    }
+
+    public int getTransactionType() {
+        return transactionType;
+    }
+
+    public void setTransactionType(int transactionType) {
+        this.transactionType = transactionType;
     }
 
     public String getBank_type() {

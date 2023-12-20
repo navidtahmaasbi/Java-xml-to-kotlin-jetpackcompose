@@ -143,7 +143,14 @@ public class MainActivity extends AppCompatActivity {
                         String tag2 = SharedPreferencesRepository.getValue(Constants.TAG2, "0");
                         String tag3 = SharedPreferencesRepository.getValue(Constants.TAG3, "0");
                         String tag4 = SharedPreferencesRepository.getValue(Constants.TAG4, "0");
-                        getCarDebtHistory02(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
+
+                        if(transaction.getTransactionType() == Constants.TRANSACTION_TYPE_DISCOUNT)
+                        {
+                            printMiniFactor(tag1, tag2, tag3, tag4, Integer.valueOf(transaction.getAmount()), true);
+                        }
+                        else {
+                            getCarDebtHistory02(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
+                        }
 
                         getPlaces02();
                     }
@@ -707,12 +714,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SuppressLint("SetTextI18n")
-    private void printMiniFactor(String tag1, String tag2, String tag3, String tag4, int balance) {
+    private void printMiniFactor(String tag1, String tag2, String tag3, String tag4, int balance, boolean discount) {
         binding.printArea.removeAllViews();
 
         SamanAfterPaymentPrintTemplateBinding printTemplateBinding = SamanAfterPaymentPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
 
-        printTemplateBinding.balanceTitle.setText(balance < 0 ? "بدهی پلاک" : "شارژ پلاک");
+        if(discount)
+        {
+            printTemplateBinding.balanceTitle.setText("اشتراک پلاک");
+        }
+        else {
+            printTemplateBinding.balanceTitle.setText(balance < 0 ? "بدهی پلاک" : "شارژ پلاک");
+        }
 
         printTemplateBinding.balance.setText(balance + " تومان");
         if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.simple) {
@@ -1083,11 +1096,11 @@ public class MainActivity extends AppCompatActivity {
                     printMiniFactor(tag1,
                             tag2,
                             tag3,
-                            tag4, response.body().balance);
+                            tag4, response.body().balance, false);
                 else if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.old_aras)
-                    printMiniFactor(tag1, "0", "0", "0", response.body().balance);
+                    printMiniFactor(tag1, "0", "0", "0", response.body().balance, false);
                 else
-                    printMiniFactor(tag1, tag2, "0", "0", response.body().balance);
+                    printMiniFactor(tag1, tag2, "0", "0", response.body().balance, false);
 
             }
 
