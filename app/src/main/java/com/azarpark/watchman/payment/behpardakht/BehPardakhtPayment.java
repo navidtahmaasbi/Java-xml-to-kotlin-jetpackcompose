@@ -1,16 +1,13 @@
 package com.azarpark.watchman.payment.behpardakht;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
 
 import com.azarpark.watchman.activities.QRScanerActivity;
 import com.azarpark.watchman.enums.PlateType;
@@ -18,22 +15,15 @@ import com.azarpark.watchman.models.PaymentData;
 import com.azarpark.watchman.models.PaymentResult;
 import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.payment.PaymentService;
-import com.azarpark.watchman.payment.Printer;
 import com.azarpark.watchman.payment.ShabaType;
 import com.azarpark.watchman.payment.behpardakht.device.Device;
 import com.azarpark.watchman.payment.behpardakht.device.IPosPrinterEvent;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
+import com.azarpark.watchman.utils.Logger;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
-import com.azarpark.watchman.web_service.NewErrorHandler;
 import com.azarpark.watchman.web_service.WebService;
-import com.azarpark.watchman.web_service.responses.CreateTransactionResponse;
-import com.azarpark.watchman.web_service.responses.VerifyTransactionResponse;
 import com.google.gson.Gson;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
 public class BehPardakhtPayment extends PaymentService {
@@ -131,54 +121,38 @@ public class BehPardakhtPayment extends PaymentService {
 
     @Override
     public void print(View view, int waitTime, OnPrintDone callback) {
-        new Printer(Assistant.viewToBitmap(view), waitTime, callback).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
+        Logger.d("BehPardakht launching print...");
+        new Handler(getActivity().getMainLooper())
+                .postDelayed(
+                        () -> {
+                            Logger.d("BehPardakht launching print... STARTED");
+                            try {
+                                device.print(Assistant.viewToBitmap(view), new IPosPrinterEvent() {
+                                    @Override
+                                    public void onPrintStarted() {
 
-    private class Printer extends AsyncTask{
-        private Bitmap bitmap;
-        private int initialWaitTime;
-        private OnPrintDone onPrintDone;
+                                    }
 
-        Printer(Bitmap bitmap, int initialWaitTime, OnPrintDone onPrintDone)
-        {
-            this.bitmap = bitmap;
-            this.initialWaitTime = initialWaitTime;
-            this.onPrintDone = onPrintDone;
-        }
+                                    @Override
+                                    public void onPrinterError(int error) {
 
-        @Override
-        protected Object doInBackground(Object[] objects) {
+                                    }
 
-            try {
-                Thread.sleep(initialWaitTime);
-                device.print(bitmap, new IPosPrinterEvent() {
-                    @Override
-                    public void onPrintStarted() {
+                                    @Override
+                                    public void onPrintEnd() {
 
-                    }
+                                    }
+                                });
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
 
-                    @Override
-                    public void onPrinterError(int error) {
 
-                    }
-
-                    @Override
-                    public void onPrintEnd() {
-
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Object o) {
-            super.onPostExecute(o);
-
-            onPrintDone.onDone();
-        }
+                            if (callback != null)
+                                callback.onDone();
+                        },
+                        waitTime
+                );
     }
 }
 
