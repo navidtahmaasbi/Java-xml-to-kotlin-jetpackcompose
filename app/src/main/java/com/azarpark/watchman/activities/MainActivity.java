@@ -496,7 +496,6 @@ public class MainActivity extends AppCompatActivity {
     public void onMenuToggleClicked(View view) {
         popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
         menuIsOpen = true;
-
     }
 
     public void onExitRequestIconClicked(View view) {
@@ -686,7 +685,8 @@ public class MainActivity extends AppCompatActivity {
             if (tMsg != null) {
                 if (tMsg.getNote() != null && !tMsg.getNote().isEmpty()) {
                     printTemplateBinding.noteSection.setVisibility(View.VISIBLE);
-                    tMsg.inflateNote(this, printTemplateBinding.noteWv, true);
+                    tMsg.inflateNote(this, printTemplateBinding.noteSection, true);
+                    hasWebView = true;
                 }
 
                 for (TicketMessagePart tMsgPrefix : tMsg.getPrefix()) {
@@ -904,24 +904,12 @@ public class MainActivity extends AppCompatActivity {
                     debt = -response.body().getInfo().car_balance;
 
                 if (printFactor && printCommand == 1) {
-
                     Place place = response.body().getInfo().place;
-
-//                    String startTime = place.start;
-//                    try {
-//
-//                        startTime = startTime.split(" ")[1];
-//
-//                    } catch (Exception e) {
-//                        System.out.println("---------> split exception");
-//                    }
-
                     printFactor(response.body().getInfo().park_count, place.start, response.body().getInfo().car_balance, place);
                 }
 
 
                 getPlaces02();
-
             }
 
             @Override

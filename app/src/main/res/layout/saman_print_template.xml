@@ -162,17 +162,8 @@
             android:layout_height="match_parent"
             android:layout_marginTop="8dp"
             android:background="@drawable/border_black_double"
-            android:padding="8dp"
+            android:padding="4dp"
             android:visibility="gone">
-
-            <WebView
-                android:id="@+id/note_wv"
-                style="@style/TicketPrint"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_13sdp" />
         </FrameLayout>
 
         <androidx.appcompat.widget.LinearLayoutCompat
