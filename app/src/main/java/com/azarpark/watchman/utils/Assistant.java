@@ -92,42 +92,6 @@ public class Assistant {
         if (!mobile.startsWith("09"))
             return false;
 
-        ArrayList<String> validSecondParts = new ArrayList<>();
-        validSecondParts.add("01");
-        validSecondParts.add("02");
-        validSecondParts.add("03");
-        validSecondParts.add("04");
-        validSecondParts.add("05");
-        validSecondParts.add("30");
-        validSecondParts.add("33");
-        validSecondParts.add("35");
-        validSecondParts.add("36");
-        validSecondParts.add("37");
-        validSecondParts.add("38");
-        validSecondParts.add("39");
-        validSecondParts.add("20");
-        validSecondParts.add("21");
-        validSecondParts.add("22");
-        validSecondParts.add("23");
-        validSecondParts.add("10");
-        validSecondParts.add("11");
-        validSecondParts.add("12");
-        validSecondParts.add("13");
-        validSecondParts.add("14");
-        validSecondParts.add("15");
-        validSecondParts.add("16");
-        validSecondParts.add("17");
-        validSecondParts.add("18");
-        validSecondParts.add("19");
-        validSecondParts.add("90");
-        validSecondParts.add("91");
-        validSecondParts.add("92");
-        validSecondParts.add("93");
-
-        String secondPart = mobile.substring(2,4);
-        if (!validSecondParts.contains(secondPart))
-            return false;
-
         return true;
 
     }
