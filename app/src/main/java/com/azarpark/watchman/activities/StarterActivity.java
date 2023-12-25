@@ -146,6 +146,19 @@ public class StarterActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        //  ****  IMPORTANT ****
+        // loads selected config
+        AppConfig.Companion.setSelectedConfig(
+                AppConfig.Companion.buildConfig(
+                        SharedPreferencesRepository.getValue(Constants.SUB_DOMAIN)
+                )
+        );
+    }
+
+    @Override
     public void onBackPressed() {
 //        super.onBackPressed();
     }

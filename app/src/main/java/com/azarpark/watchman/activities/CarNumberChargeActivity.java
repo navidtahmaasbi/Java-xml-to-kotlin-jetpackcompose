@@ -74,7 +74,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
                     @Override
                     public void onTransactionVerified(@NonNull Transaction transaction) {
-                        if (AppConfig.Companion.getPaymentIsSaman()) {
+                        if (AppConfig.Companion.paymentIsSaman()) {
 
                             String tag1 = SharedPreferencesRepository.getValue(Constants.TAG1, "0");
                             String tag2 = SharedPreferencesRepository.getValue(Constants.TAG2, "0");

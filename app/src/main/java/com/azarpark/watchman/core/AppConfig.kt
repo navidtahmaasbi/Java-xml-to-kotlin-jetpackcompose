@@ -6,28 +6,40 @@ import com.azarpark.watchman.models.TicketMessage
 class AppConfig {
 
     companion object {
-        private const val domain = "backend1.azarpark.irana.app"
-        private const val http = "https://"
-        private const val tabriz = "tabriz"
-        private const val sarab = "sarab"
-        private val tabrizConfig = Config("$http$tabriz.$domain", PaymentType.SAMAN)
-        private val sarabConfig = Config("$http$sarab.$domain", PaymentType.PARSIAN)
-        private val testConfig = Config("$http$tabriz.$domain", PaymentType.SAMAN)
-        private val paymentLessTabrizConfig = Config("$http$tabriz.$domain", PaymentType.PAYMENT_LESS)
-        private val paymentLessSarabConfig = Config("$http$sarab.$domain", PaymentType.PAYMENT_LESS)
-        private val paymentLessParkLessTabrizConfig = Config("$http$tabriz.$domain", PaymentType.PAYMENT_LESS_PARK_LESS)
-        private val paymentLessParkLessSarabConfig = Config("$http$sarab.$domain", PaymentType.PAYMENT_LESS_PARK_LESS)
-        val selectedConfig = testConfig // todo release
+        const val domain = "backend1.azarpark.irana.app"
+        const val http = "https://"
+        const val tabriz = "tabriz"
+        const val sarab = "sarab"
+        const val ardabil = "ardabil"
+        val cityPayment = mapOf(
+            tabriz to PaymentType.SAMAN,
+            sarab to PaymentType.PARSIAN,
+            ardabil to PaymentType.BEH_PARDAKHT,
+        )
+        var selectedConfig = Config(baseUrl = "$http$tabriz.$domain", paymentType = PaymentType.SAMAN) // default to tabriz
 
         data class Config(val baseUrl: String, val paymentType : PaymentType)
 
-        val paymentIsSaman = selectedConfig.paymentType == PaymentType.SAMAN
-        val paymentIsParsian = selectedConfig.paymentType == PaymentType.PARSIAN
-        val paymentIsBehPardakht = selectedConfig.paymentType == PaymentType.BEH_PARDAKHT
-        val isPaymentLess = selectedConfig.paymentType == PaymentType.PAYMENT_LESS
-        val isPaymentLessParkLess = selectedConfig.paymentType == PaymentType.PAYMENT_LESS_PARK_LESS
+        fun paymentIsSaman() = selectedConfig.paymentType == PaymentType.SAMAN
+        fun paymentIsParsian() = selectedConfig.paymentType == PaymentType.PARSIAN
+        fun paymentIsBehPardakht() = selectedConfig.paymentType == PaymentType.BEH_PARDAKHT
+        fun isPaymentLess() = selectedConfig.paymentType == PaymentType.PAYMENT_LESS
+        fun isPaymentLessParkLess() = selectedConfig.paymentType == PaymentType.PAYMENT_LESS_PARK_LESS
 
         var ticketMessage: Map<String, TicketMessage>? = null
+
+        fun buildConfig(subdomain: String): Config
+        {
+            if(subdomain == null || subdomain.isEmpty())
+            {
+                return Config(baseUrl = "$http$tabriz.$domain", paymentType = PaymentType.SAMAN);
+            }
+
+            return Config(
+                "$http$subdomain.$domain",
+                cityPayment[subdomain] ?: PaymentType.PAYMENT_LESS
+            )
+        }
     }
 
     enum class PaymentType {

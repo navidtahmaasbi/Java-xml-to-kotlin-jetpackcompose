@@ -134,13 +134,15 @@ public class SplashActivity extends AppCompatActivity {
             items.add(city.name);
 
         citySelectDialog = new SingleSelectDialog("انتخاب شهر", "شهر فعالیت خود را انتخاب کنید", items, position -> {
-
             citySelectDialog.dismiss();
 
-            SharedPreferencesRepository.setValue(Constants.SUB_DOMAIN, cities.get(position).subdomain);
-            SharedPreferencesRepository.setValue(Constants.CITY_ID, cities.get(position).id + "");
+            String subdomain = cities.get(position).subdomain;
+            String cityId = String.valueOf(cities.get(position).id);
 
-//            WebService.changeClientURL(cities.get(position).subdomain);
+            SharedPreferencesRepository.setValue(Constants.SUB_DOMAIN, subdomain);
+            SharedPreferencesRepository.setValue(Constants.CITY_ID, cityId);
+
+            AppConfig.Companion.setSelectedConfig(AppConfig.Companion.buildConfig(subdomain));
 
             SplashActivity.this.finish();
             if (SharedPreferencesRepository.getToken().isEmpty()) {

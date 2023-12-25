@@ -31,7 +31,7 @@ public class Transaction {
                        String result_message,
                        String createTime) {
 
-        if (AppConfig.Companion.getPaymentIsSaman())
+        if (AppConfig.Companion.paymentIsSaman())
             amount = amount.replace(".0", "");
 
         this.amount = amount;
@@ -63,7 +63,7 @@ public class Transaction {
                        String result_message,
                        String createTime) {
 
-        if (AppConfig.Companion.getPaymentIsSaman())
+        if (AppConfig.Companion.paymentIsSaman())
             amount = amount.replace(".0", "");
 
         this.discountId = discountId;

@@ -11,6 +11,7 @@ import com.azarpark.watchman.payment.parsian.ParsianPayment
 import com.azarpark.watchman.payment.saman.SamanPayment
 import com.azarpark.watchman.utils.Assistant
 import com.azarpark.watchman.utils.Constants
+import com.azarpark.watchman.utils.Logger
 import com.azarpark.watchman.utils.SharedPreferencesRepository
 import com.azarpark.watchman.web_service.NewErrorHandler
 import com.azarpark.watchman.web_service.WebService
@@ -20,7 +21,11 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-abstract class PaymentService(val activity: AppCompatActivity, val webService: WebService, val paymentCallback: OnPaymentCallback) : Printer {
+abstract class PaymentService(
+    val activity: AppCompatActivity,
+    val webService: WebService,
+    val paymentCallback: OnPaymentCallback
+) : Printer {
     var isCreatingTransaction = false
 
     open fun initialize() {}
@@ -28,8 +33,8 @@ abstract class PaymentService(val activity: AppCompatActivity, val webService: W
 
     abstract fun onActivityResultHandler(requestCode: Int, resultCode: Int, data: Intent)
     abstract fun launchPayment(
-            shabaType: ShabaType, paymentToken: Long, amount: Int, plateType: PlateType,
-            tag1: String, tag2: String, tag3: String, tag4: String, placeID: Int
+        shabaType: ShabaType, paymentToken: Long, amount: Int, plateType: PlateType,
+        tag1: String, tag2: String, tag3: String, tag4: String, placeID: Int
     )
 
     abstract fun launchQrCodeScanner()
@@ -39,18 +44,18 @@ abstract class PaymentService(val activity: AppCompatActivity, val webService: W
      *  if no discount is set, it should be -1
      */
     open fun createTransaction(
-            shabaType: ShabaType, plateType: PlateType,
-            tag1: String, tag2: String, tag3: String, tag4: String,
-            amount: Int, placeID: Int, transactionType: Int, transactionListener: OnTransactionCreated?,
-            discountId: Int
+        shabaType: ShabaType, plateType: PlateType,
+        tag1: String, tag2: String, tag3: String, tag4: String,
+        amount: Int, placeID: Int, transactionType: Int, transactionListener: OnTransactionCreated?,
+        discountId: Int
     ) {
         if (isCreatingTransaction) return
         isCreatingTransaction = true
 
         val functionRunnable = Runnable {
             createTransaction(
-                    shabaType, plateType, tag1, tag2, tag3, tag4, amount, placeID, transactionType,
-                    transactionListener, discountId
+                shabaType, plateType, tag1, tag2, tag3, tag4, amount, placeID, transactionType,
+                transactionListener, discountId
             )
         }
 
@@ -60,21 +65,35 @@ abstract class PaymentService(val activity: AppCompatActivity, val webService: W
         val t4 = tag4 ?: "-1"
 
         val call: Call<CreateTransactionResponse> =
-                if (discountId == -1)
-                    webService.getClient(activity).createTransaction(
-                            SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), t1, t2, t3, t4,
-                            amount, transactionType
-                    )
-                else
-                    webService.getClient(activity).createTransactionForDiscount(
-                            SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), t1, t2, t3, t4,
-                            amount, transactionType, discountId, "App\\Models\\Discount"
-                    )
+            if (discountId == -1)
+                webService.getClient(activity).createTransaction(
+                    SharedPreferencesRepository.getTokenWithPrefix(),
+                    plateType.toString(),
+                    t1,
+                    t2,
+                    t3,
+                    t4,
+                    amount,
+                    transactionType
+                )
+            else
+                webService.getClient(activity).createTransactionForDiscount(
+                    SharedPreferencesRepository.getTokenWithPrefix(),
+                    plateType.toString(),
+                    t1,
+                    t2,
+                    t3,
+                    t4,
+                    amount,
+                    transactionType,
+                    discountId,
+                    "App\\Models\\Discount"
+                )
 
         call.enqueue(object : Callback<CreateTransactionResponse> {
             override fun onResponse(
-                    call: Call<CreateTransactionResponse>,
-                    response: Response<CreateTransactionResponse>
+                call: Call<CreateTransactionResponse>,
+                response: Response<CreateTransactionResponse>
             ) {
                 isCreatingTransaction = false
                 transactionListener?.onCreateTransactionFinished()
@@ -83,18 +102,18 @@ abstract class PaymentService(val activity: AppCompatActivity, val webService: W
 
                 val our_token = response.body()!!.our_token
                 val transaction = Transaction(
-                        discountId,
-                        Integer.toString(amount),
-                        java.lang.Long.toString(our_token),
-                        "0", SharedPreferencesRepository.getValue(Constants.PLACE_ID, "0").toInt(),
-                        0,
-                        getPaymentType(),
-                        "0",
-                        "",
-                        "",
-                        "",
-                        "",
-                        Assistant.getUnixTime()
+                    discountId,
+                    Integer.toString(amount),
+                    java.lang.Long.toString(our_token),
+                    "0", SharedPreferencesRepository.getValue(Constants.PLACE_ID, "0").toInt(),
+                    0,
+                    getPaymentType(),
+                    "0",
+                    "",
+                    "",
+                    "",
+                    "",
+                    Assistant.getUnixTime()
                 )
                 SharedPreferencesRepository.addToTransactions02(transaction)
                 SharedPreferencesRepository.setValue(Constants.PLATE_TYPE, plateType.toString())
@@ -105,17 +124,32 @@ abstract class PaymentService(val activity: AppCompatActivity, val webService: W
                 SharedPreferencesRepository.setValue(Constants.AMOUNT, amount.toString())
                 SharedPreferencesRepository.setValue(Constants.PLACE_ID, Integer.toString(placeID))
                 SharedPreferencesRepository.setValue(
-                        Constants.OUR_TOKEN,
-                        java.lang.Long.toString(our_token)
+                    Constants.OUR_TOKEN,
+                    java.lang.Long.toString(our_token)
                 )
 
-                launchPayment(shabaType, our_token, amount, plateType, tag1, tag2, tag3, tag4, placeID)
+                launchPayment(
+                    shabaType,
+                    our_token,
+                    amount,
+                    plateType,
+                    tag1,
+                    tag2,
+                    tag3,
+                    tag4,
+                    placeID
+                )
             }
 
             override fun onFailure(call: Call<CreateTransactionResponse>, t: Throwable) {
                 isCreatingTransaction = false
                 transactionListener?.onCreateTransactionFinished()
-                NewErrorHandler.apiFailureErrorHandler(call, t, activity.supportFragmentManager, functionRunnable)
+                NewErrorHandler.apiFailureErrorHandler(
+                    call,
+                    t,
+                    activity.supportFragmentManager,
+                    functionRunnable
+                )
             }
         })
     }
@@ -125,19 +159,39 @@ abstract class PaymentService(val activity: AppCompatActivity, val webService: W
             Assistant.updateLastVerifyRequestTime()
 
             val functionRunnable = Runnable { verifyTransaction(transaction) }
-            webService.getClient(activity).verifyTransaction(SharedPreferencesRepository.getTokenWithPrefix(), transaction.amount, transaction.our_token,
-                    transaction.bank_token, transaction.placeID, transaction.status, transaction.bank_type, transaction.state,
-                    transaction.card_number, transaction.bank_datetime, transaction.trace_number, transaction.result_message).enqueue(object : Callback<VerifyTransactionResponse> {
-                override fun onResponse(call: Call<VerifyTransactionResponse>, response: Response<VerifyTransactionResponse>) {
+            webService.getClient(activity).verifyTransaction(
+                SharedPreferencesRepository.getTokenWithPrefix(),
+                transaction.amount,
+                transaction.our_token,
+                transaction.bank_token,
+                transaction.placeID,
+                transaction.status,
+                transaction.bank_type,
+                transaction.state,
+                transaction.card_number,
+                transaction.bank_datetime,
+                transaction.trace_number,
+                transaction.result_message
+            ).enqueue(object : Callback<VerifyTransactionResponse> {
+                override fun onResponse(
+                    call: Call<VerifyTransactionResponse>,
+                    response: Response<VerifyTransactionResponse>
+                ) {
                     if (NewErrorHandler.apiResponseHasError(response, activity)) return
                     SharedPreferencesRepository.removeFromTransactions02(transaction)
-                    Toast.makeText(activity, response.body()!!.description, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity, response.body()!!.description, Toast.LENGTH_SHORT)
+                        .show()
                     transaction.transactionType = response.body()!!.flag
                     if (transaction.status == 1) paymentCallback.onTransactionVerified(transaction)
                 }
 
                 override fun onFailure(call: Call<VerifyTransactionResponse>, t: Throwable) {
-                    NewErrorHandler.apiFailureErrorHandler(call, t, activity.supportFragmentManager, functionRunnable)
+                    NewErrorHandler.apiFailureErrorHandler(
+                        call,
+                        t,
+                        activity.supportFragmentManager,
+                        functionRunnable
+                    )
                 }
             })
         }
@@ -154,20 +208,22 @@ abstract class PaymentService(val activity: AppCompatActivity, val webService: W
 
         fun activity(activity: AppCompatActivity) = apply { this.activity = activity }
         fun webService(webService: WebService) = apply { this.webService = webService }
-        fun paymentCallback(paymentCallback: OnPaymentCallback) = apply { this.paymentCallback = paymentCallback }
+        fun paymentCallback(paymentCallback: OnPaymentCallback) =
+            apply { this.paymentCallback = paymentCallback }
 
         fun build(): PaymentService {
             if (activity == null || webService == null || paymentCallback == null) {
                 throw Exception("PaymentService: requirements not met")
             }
 
-            if (AppConfig.paymentIsSaman) {
+            if (AppConfig.paymentIsSaman()) {
+                Logger.d("Using SAMAN payment")
                 return SamanPayment(activity!!, webService!!, paymentCallback!!)
-            } else if (AppConfig.paymentIsParsian) {
+            } else if (AppConfig.paymentIsParsian()) {
+                Logger.d("Using PARSIAN payment")
                 return ParsianPayment(activity!!, webService!!, paymentCallback!!)
-            }
-            else if (AppConfig.paymentIsBehPardakht)
-            {
+            } else if (AppConfig.paymentIsBehPardakht()) {
+                Logger.d("Using BEH_PARDAKHT payment")
                 return BehPardakhtPayment(activity!!, webService!!, paymentCallback!!)
             }
 
