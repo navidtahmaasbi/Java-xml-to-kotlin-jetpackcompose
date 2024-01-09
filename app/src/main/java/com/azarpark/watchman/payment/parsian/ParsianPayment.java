@@ -3,6 +3,7 @@ package com.azarpark.watchman.payment.parsian;
 import android.app.Activity;
 import android.content.Intent;
 import android.device.PrinterManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -143,7 +144,11 @@ public class ParsianPayment extends PaymentService {
                         () -> {
                             PrinterManager printer = new PrinterManager();
                             int setupResult = printer.setupPage(-1, -1);
-                            printer.drawBitmap(Assistant.viewToBitmap(view), 0, 0);
+                            Bitmap img = Assistant.viewToBitmap(view);
+                            int ow = img.getWidth();
+                            int oh = img.getHeight();
+                            Bitmap b = Bitmap.createScaledBitmap(img, (int) (ow/1.9),(int) (oh/1.9), false);
+                            printer.drawBitmap(b, 0, 0);
                             int printResult = printer.printPage(0);
 
                             if (callback != null)
