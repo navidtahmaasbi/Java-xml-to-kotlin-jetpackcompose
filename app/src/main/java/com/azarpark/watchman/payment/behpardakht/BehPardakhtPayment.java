@@ -29,7 +29,7 @@ import com.google.gson.Gson;
 public class BehPardakhtPayment extends PaymentService {
 
     public static final int PAYMENT_REQUEST_CODE = 105;
-    private final String versionName = "1.0.0";
+    private final String versionName = "1.2.0";
     private final String BEH_PARDAKHT = "beh_pardakht";
     private final int applicationId = 0; //todo: given from beh pardakht
 
@@ -64,42 +64,47 @@ public class BehPardakhtPayment extends PaymentService {
             System.out.println("----------> Behpardakht resultCode is " + resultCode);
         } else {
             PaymentResult paymentResult = gson.fromJson(data.getStringExtra("PaymentResult"), PaymentResult.class);
+            int payResultCode = paymentResult.resultCode.equals("000") ? 1 : 0;
 
             System.out.println("---------> resss : " + data.getStringExtra("PaymentResult"));
 
-            Transaction transaction = new Transaction(
-                    paymentResult.transactionAmount == null || paymentResult.transactionAmount.isEmpty()
-                            ? SharedPreferencesRepository.getValue(Constants.AMOUNT, "0")
-                            : Integer.toString(Integer.parseInt(paymentResult.transactionAmount) / 10),
-                    paymentResult.sessionId,
-                    paymentResult.referenceID,
-                    Integer.parseInt(SharedPreferencesRepository.getValue(Constants.PLACE_ID, "-1")),
-                    paymentResult.resultCode.equals("000") ? 1 : 0,
-                    getPaymentType(),
-                    paymentResult.resultDescription == null ? "" : paymentResult.resultDescription,
-                    paymentResult.maskedCardNumber,
-                    paymentResult.dateOfTransaction,
-                    paymentResult.referenceID,
-                    paymentResult.resultDescription,
-                    paymentResult.dateOfTransaction
-            );
-            verifyTransaction(transaction);
+            if(payResultCode == 0) // means SUCCESSFUL
+            {
+                Transaction transaction = new Transaction(
+                        paymentResult.transactionAmount == null || paymentResult.transactionAmount.isEmpty()
+                                ? SharedPreferencesRepository.getValue(Constants.AMOUNT, "0")
+                                : Integer.toString(Integer.parseInt(paymentResult.transactionAmount) / 10),
+                        paymentResult.sessionId,
+                        paymentResult.referenceID,
+                        Integer.parseInt(SharedPreferencesRepository.getValue(Constants.PLACE_ID, "-1")),
+                        payResultCode,
+                        getPaymentType(),
+                        paymentResult.resultDescription == null ? "" : paymentResult.resultDescription,
+                        paymentResult.maskedCardNumber,
+                        paymentResult.dateOfTransaction,
+                        paymentResult.referenceID,
+                        paymentResult.resultDescription,
+                        paymentResult.dateOfTransaction
+                );
+                verifyTransaction(transaction);
+            }
         }
     }
 
     @Override
     public void launchPayment(@NonNull ShabaType shabaType, long paymentToken, int amount, @NonNull PlateType plateType, @NonNull String tag1, @NonNull String tag2, @NonNull String tag3, @NonNull String tag4, int placeID) {
-        String shaba = shabaType == ShabaType.CHARGE ? Constants.CHARGE_SHABA : Constants.NON_CHARGE_SHABA;
+        String accountId = shabaType == ShabaType.CHARGE ? "1" : "2";
 
         String[] extras = new String[1];
         extras[0] = Integer.toString(placeID);
 
-        PaymentData paymentData = new PaymentData(
+        PaymentData paymentData = PaymentData.create(
                 versionName,
                 Long.toString(paymentToken),
                 applicationId,
-                Integer.toString(amount * 10),
-                shaba,
+                ""+1000, //Integer.toString(amount * 10),
+                PaymentData.TransactionType.PURCHASE,
+                accountId,
                 extras
         );
 
