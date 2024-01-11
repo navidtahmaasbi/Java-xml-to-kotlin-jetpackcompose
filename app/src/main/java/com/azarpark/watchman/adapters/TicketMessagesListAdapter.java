@@ -1,6 +1,7 @@
 package com.azarpark.watchman.adapters;
 
 import android.annotation.SuppressLint;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.azarpark.watchman.R;
 import com.azarpark.watchman.databinding.LeftMessageItemBinding;
 import com.azarpark.watchman.databinding.RightMessageItemBinding;
 import com.azarpark.watchman.models.Message;
@@ -39,17 +41,20 @@ public class TicketMessagesListAdapter extends RecyclerView.Adapter<RecyclerView
 
             RightMessageItemViewHolder viewHolder = (RightMessageItemViewHolder) holder;
             viewHolder.binding.date.setText(message.created_at_j);
+            viewHolder.binding.message.setLinkTextColor(viewHolder.binding.getRoot().getContext().getResources().getColor(R.color.blue));
             viewHolder.binding.message.setText(message.description);
             viewHolder.binding.bottomPadding.setVisibility(position == items.size()-1? View.VISIBLE:View.GONE);
 
+            Linkify.addLinks(viewHolder.binding.message, Linkify.ALL);
         }else {
 
             LeftMessageItemViewHolder viewHolder = (LeftMessageItemViewHolder) holder;
             viewHolder.binding.date.setText(message.created_at_j);
+            viewHolder.binding.message.setLinkTextColor(viewHolder.binding.getRoot().getContext().getResources().getColor(R.color.blue));
             viewHolder.binding.message.setText(message.description);
-
             viewHolder.binding.bottomPadding.setVisibility(position == items.size()-1? View.VISIBLE:View.GONE);
 
+            Linkify.addLinks(viewHolder.binding.message, Linkify.ALL);
         }
 
     }
