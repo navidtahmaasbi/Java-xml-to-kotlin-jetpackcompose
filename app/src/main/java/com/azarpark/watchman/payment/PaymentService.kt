@@ -34,7 +34,7 @@ abstract class PaymentService(
     abstract fun onActivityResultHandler(requestCode: Int, resultCode: Int, data: Intent)
     abstract fun launchPayment(
         shabaType: ShabaType, paymentToken: Long, amount: Int, plateType: PlateType,
-        tag1: String, tag2: String, tag3: String, tag4: String, placeID: Int
+        tag1: String?, tag2: String?, tag3: String?, tag4: String?, placeID: Int
     )
 
     abstract fun launchQrCodeScanner()
@@ -45,7 +45,7 @@ abstract class PaymentService(
      */
     open fun createTransaction(
         shabaType: ShabaType, plateType: PlateType,
-        tag1: String, tag2: String, tag3: String, tag4: String,
+        tag1: String?, tag2: String?, tag3: String?, tag4: String?,
         amount: Int, placeID: Int, transactionType: Int, transactionListener: OnTransactionCreated?,
         discountId: Int
     ) {

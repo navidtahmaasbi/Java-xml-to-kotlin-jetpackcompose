@@ -92,7 +92,7 @@ public class BehPardakhtPayment extends PaymentService {
     }
 
     @Override
-    public void launchPayment(@NonNull ShabaType shabaType, long paymentToken, int amount, @NonNull PlateType plateType, @NonNull String tag1, @NonNull String tag2, @NonNull String tag3, @NonNull String tag4, int placeID) {
+    public void launchPayment(@NonNull ShabaType shabaType, long paymentToken, int amount, @NonNull PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
         String accountId = shabaType == ShabaType.CHARGE ? "1" : "2";
 
         String[] extras = new String[1];
