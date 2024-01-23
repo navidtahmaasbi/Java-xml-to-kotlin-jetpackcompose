@@ -102,7 +102,7 @@ public class BehPardakhtPayment extends PaymentService {
                 versionName,
                 Long.toString(paymentToken),
                 applicationId,
-                ""+1000, //Integer.toString(amount * 10),
+                Integer.toString(amount * 10),
                 PaymentData.TransactionType.PURCHASE,
                 accountId,
                 extras
