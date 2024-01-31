@@ -15,7 +15,7 @@ public interface OnGetInfoClicked {
 
     public void buyDiscount(PlateType plateType, String tag1, String tag2, String tag3, String tag4, boolean hasMobile);
 
-    public void print(int parkCount, String startTime, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID, int debt, int balance, String printDescription, int printCommand);
+    public void print(int parkCount, String startTime, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID, int debt, int balance, String printDescription, int printCommand, String carToken);
 
     public void newPark(Place place);
 }

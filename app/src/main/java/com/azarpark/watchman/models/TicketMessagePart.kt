@@ -12,8 +12,14 @@ import com.azarpark.watchman.utils.Assistant
 import java.util.zip.Inflater
 
 class TicketMessagePart(val title: String? = null, val body: String? = null) {
-    fun render(context: Context, parent: ViewGroup, attachToParent: Boolean): Boolean {
-        return Assistant.inflateHTML(title, body, context, parent, attachToParent);
+    fun render(context: Context, parent: ViewGroup, attachToParent: Boolean, replacements: Map<String, String>): Boolean {
+        var b = body
+        if (replacements.isNotEmpty()) {
+            replacements.forEach {
+                b = b?.replace(it.key, it.value) ?: b
+            }
+        }
+        return Assistant.inflateHTML(title, b, context, parent, attachToParent);
     }
 
     override fun toString(): String {

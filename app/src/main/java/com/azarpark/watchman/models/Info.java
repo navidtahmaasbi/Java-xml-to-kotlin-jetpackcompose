@@ -13,6 +13,7 @@ public class Info {
     public int number;
     public Place place;
     public String print_description;
+    public String car_token;
     public int print_command = 1;
     public int park_count;
 }

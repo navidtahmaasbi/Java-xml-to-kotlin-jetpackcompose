@@ -56,6 +56,11 @@ public class ParkInfoDialog extends DialogFragment {
     boolean hasMobile = false;
     ConfirmDialog confirmDialog;
     String printDescription;
+    /**
+     * carToken is used for exiting car by SMS.
+     * it's printed on park ticket papers.
+     */
+    String carToken;
     int printCommand = 1;
     int parkCount = 0;
     WebService webService = new WebService();
@@ -236,7 +241,7 @@ public class ParkInfoDialog extends DialogFragment {
 //                System.out.println("---------> split exception");
 //            }
 
-            onGetInfoClicked.print(parkCount, place.start, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id, debt, balance, printDescription, printCommand);
+            onGetInfoClicked.print(parkCount, place.start, selectedPlateType, place.tag1, place.tag2, place.tag3, place.tag4, place.id, debt, balance, printDescription, printCommand, carToken);
 
         });
 
@@ -364,6 +369,7 @@ public class ParkInfoDialog extends DialogFragment {
                 binding.paymentArea.setVisibility(View.VISIBLE);
 
                 printDescription = response.body().getPrint_description();
+                carToken = response.body().getCar_token();
                 printCommand = response.body().print_command;
 
                 if (printCommand == 0) {

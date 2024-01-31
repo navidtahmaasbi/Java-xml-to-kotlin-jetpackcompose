@@ -74,6 +74,7 @@ import com.azarpark.watchman.web_service.responses.PlacesResponse;
 import com.azarpark.watchman.web_service.responses.VerifyTransactionResponse;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -628,10 +629,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void print(int parkCount, String startTime, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID, int debt, int balance, String printDescription, int printCommand) {
+            public void print(int parkCount, String startTime, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID, int debt, int balance, String printDescription, int printCommand, String carToken) {
 
                 if (printCommand == 1)
-                    printFactor(parkCount, startTime, balance, place);
+                    printFactor(parkCount, startTime, balance, place, carToken);
 
             }
 
@@ -647,7 +648,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SuppressLint("SetTextI18n")
-    private void printFactor(int userPrintNumber, String startTime, int balance, Place place) {
+    private void printFactor(int userPrintNumber, String startTime, int balance, Place place, String carToken) {
         if (printing) return;
 
         binding.printArea.removeAllViews();
@@ -689,13 +690,16 @@ public class MainActivity extends AppCompatActivity {
                     hasWebView = true;
                 }
 
+                Map<String, String> replacements = new HashMap<>();
+                replacements.put("%car_token%", carToken);
+
                 for (TicketMessagePart tMsgPrefix : tMsg.getPrefix()) {
-                    if (tMsgPrefix.render(this, printTemplateBinding.prefixHolder, true))
+                    if (tMsgPrefix.render(this, printTemplateBinding.prefixHolder, true, replacements))
                         hasWebView = true;
                 }
 
                 for (TicketMessagePart tMsgPostfix : tMsg.getPostfix()) {
-                    if (tMsgPostfix.render(this, printTemplateBinding.postfixHolder, true))
+                    if (tMsgPostfix.render(this, printTemplateBinding.postfixHolder, true, replacements))
                         hasWebView = true;
                 }
             }
@@ -905,7 +909,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (printFactor && printCommand == 1) {
                     Place place = response.body().getInfo().place;
-                    printFactor(response.body().getInfo().park_count, place.start, response.body().getInfo().car_balance, place);
+                    printFactor(response.body().getInfo().park_count, place.start, response.body().getInfo().car_balance, place, response.body().getInfo().car_token);
                 }
 
 

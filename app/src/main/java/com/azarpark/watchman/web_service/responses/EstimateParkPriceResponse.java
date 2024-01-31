@@ -6,6 +6,7 @@ public class EstimateParkPriceResponse {
     String msg;
     public String description;
     String print_description;
+    String car_token;
     public int print_command = 1;
     public int park_count;
 
@@ -16,6 +17,14 @@ public class EstimateParkPriceResponse {
 
     public void setPrint_description(String print_description) {
         this.print_description = print_description;
+    }
+
+    public String getCar_token() {
+        return car_token;
+    }
+
+    public void setCar_token(String car_token) {
+        this.car_token = car_token;
     }
 
     public int getSuccess() {
