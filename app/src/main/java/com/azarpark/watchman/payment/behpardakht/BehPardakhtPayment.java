@@ -31,7 +31,7 @@ public class BehPardakhtPayment extends PaymentService {
     public static final int PAYMENT_REQUEST_CODE = 105;
     private final String versionName = "1.2.0";
     private final String BEH_PARDAKHT = "beh_pardakht";
-    private final int applicationId = 0; //todo: given from beh pardakht
+    private final int applicationId = 10073;
 
     private Gson gson;
     private Device device;
@@ -64,9 +64,15 @@ public class BehPardakhtPayment extends PaymentService {
             System.out.println("----------> Behpardakht resultCode is " + resultCode);
         } else {
             PaymentResult paymentResult = gson.fromJson(data.getStringExtra("PaymentResult"), PaymentResult.class);
-            int payResultCode = paymentResult.resultCode.equals("000") ? 1 : 0;
+            int payResultCode = -1;
+            try{
+                payResultCode = Integer.parseInt(paymentResult.resultCode);
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
 
-            System.out.println("---------> resss : " + data.getStringExtra("PaymentResult"));
+            Logger.i("---------> resss : " + data.getStringExtra("PaymentResult"));
 
             if(payResultCode == 0) // means SUCCESSFUL
             {
@@ -77,7 +83,7 @@ public class BehPardakhtPayment extends PaymentService {
                         paymentResult.sessionId,
                         paymentResult.referenceID,
                         Integer.parseInt(SharedPreferencesRepository.getValue(Constants.PLACE_ID, "-1")),
-                        payResultCode,
+                        1,
                         getPaymentType(),
                         paymentResult.resultDescription == null ? "" : paymentResult.resultDescription,
                         paymentResult.maskedCardNumber,
@@ -86,6 +92,7 @@ public class BehPardakhtPayment extends PaymentService {
                         paymentResult.resultDescription,
                         paymentResult.dateOfTransaction
                 );
+                Logger.i("------------> behpardakh transaction: %s", transaction);
                 verifyTransaction(transaction);
             }
         }
@@ -108,8 +115,11 @@ public class BehPardakhtPayment extends PaymentService {
                 extras
         );
 
+        String pd = gson.toJson(paymentData);
+        Logger.i("PaymentData: %s", pd);
+
         Intent intent = new Intent("com.bpmellat.merchant");
-        intent.putExtra("PaymentData", gson.toJson(paymentData));
+        intent.putExtra("PaymentData", pd);
         getActivity().startActivityForResult(intent, PAYMENT_REQUEST_CODE);
     }
 

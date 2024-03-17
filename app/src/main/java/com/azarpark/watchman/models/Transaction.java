@@ -188,4 +188,25 @@ public class Transaction {
         return sb.toString();
 
     }
+
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "amount='" + amount + '\'' +
+                ", our_token='" + our_token + '\'' +
+                ", bank_token='" + bank_token + '\'' +
+                ", placeID=" + placeID +
+                ", status=" + status +
+                ", transactionType=" + transactionType +
+                ", discountId=" + discountId +
+                ", bank_type='" + bank_type + '\'' +
+                ", state='" + state + '\'' +
+                ", card_number='" + card_number + '\'' +
+                ", bank_datetime='" + bank_datetime + '\'' +
+                ", trace_number='" + trace_number + '\'' +
+                ", result_message='" + result_message + '\'' +
+                ", createTime='" + createTime + '\'' +
+                '}';
+    }
 }
