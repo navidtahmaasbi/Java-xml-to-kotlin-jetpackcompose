@@ -42,7 +42,7 @@
     <string name="ok">OK</string>
     <string name="request_location_updates">Request location updates</string>
     <string name="remove_location_updates">Remove location updates</string>
-    <string name="print_header_1">محدوده پارک حاشیهای هوشمند</string>
+    <string name="print_header_1">محدوده پارک حاشیه\u200cای هوشمند</string>
     <string name="iranapp">ایراناپ</string>
     <string name="irana_website_link">www.irana.app</string>
 </resources>
