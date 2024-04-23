@@ -731,7 +731,7 @@ public class MainActivity extends AppCompatActivity {
             printTemplateBinding.balanceTitle.setText(balance < 0 ? "بدهی پلاک" : "شارژ پلاک");
         }
 
-        printTemplateBinding.balance.setText(balance + " تومان");
+        printTemplateBinding.balance.setText(balance + " تومان" + (balance > 0 ? " (اعتبار 3 ماهه)" : ""));
         if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.simple) {
 
             printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
