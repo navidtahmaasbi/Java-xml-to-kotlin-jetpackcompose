@@ -14,7 +14,8 @@ class AppConfig {
         val cityPayment = mapOf(
             tabriz to PaymentType.SAMAN,
             sarab to PaymentType.PARSIAN,
-            ardabil to PaymentType.BEH_PARDAKHT,
+//            ardabil to PaymentType.BEH_PARDAKHT,
+            ardabil to PaymentType.SAMAN,
         )
         var selectedConfig = Config(baseUrl = "$http$tabriz.$domain", paymentType = PaymentType.SAMAN) // default to tabriz
 
