@@ -369,7 +369,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_30sdp"
+            android:layout_height="@dimen/_25sdp"
             android:layout_marginTop="@dimen/_5sdp"
             android:gravity="right|center_vertical"
             android:orientation="horizontal">
@@ -380,7 +380,6 @@
                 android:layout_height="match_parent"
                 android:fontFamily="@font/iran_sans_fa_num_bold"
                 android:gravity="center"
-                android:padding="@dimen/_5sdp"
                 android:text="درحال محاسبه ..."
                 android:textColor="@color/text_gray"
                 android:textSize="@dimen/_11sdp" />
@@ -390,10 +389,8 @@
                 android:layout_height="match_parent"
                 android:fontFamily="@font/iran_sans"
                 android:gravity="center"
-                android:padding="@dimen/_5sdp"
                 android:text="هزینه پارک "
                 android:textColor="@color/text_gray"
-
                 android:textSize="@dimen/_11sdp" />
 
             <ImageView
@@ -406,8 +403,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_30sdp"
-            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_height="@dimen/_25sdp"
             android:gravity="right|center_vertical"
             android:orientation="horizontal">
 
@@ -418,7 +414,6 @@
                 android:layout_gravity="left"
                 android:fontFamily="@font/iran_sans_fa_num_bold"
                 android:gravity="center"
-                android:padding="@dimen/_5sdp"
                 android:text="مشاهده بدهی ها"
                 android:textColor="@color/red"
                 android:textSize="@dimen/_9sdp"
@@ -446,7 +441,7 @@
                     android:layout_height="match_parent"
                     android:fontFamily="@font/iran_sans_fa_num_bold"
                     android:gravity="center"
-                    android:padding="@dimen/_5sdp"
+
                     android:text="درحال محاسبه ..."
                     android:textColor="@color/text_gray"
                     android:textSize="@dimen/_11sdp" />
@@ -615,26 +610,23 @@
                 android:layout_weight="1"
                 android:layout_height="match_parent">
 
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/new_park"
+                    android:padding="@dimen/_5sdp"
 
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/blue_bg_5"
+                    android:fontFamily="@font/iran_sans_bold"
+                    android:gravity="center"
+                    android:text="ثبت پارک جدید"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_13sdp" />
             </RelativeLayout>
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>
-
-        <TextView
-            android:visibility="gone"
-            android:layout_marginRight="@dimen/_2sdp"
-            android:id="@+id/new_park"
-            android:padding="@dimen/_5sdp"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/blue_bg_5"
-            android:fontFamily="@font/iran_sans_bold"
-            android:gravity="center"
-            android:text="ثبت پارک جدید"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_13sdp" />
 
         <LinearLayout
             android:id="@+id/mobile_area"
