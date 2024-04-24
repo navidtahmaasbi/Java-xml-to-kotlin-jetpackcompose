@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.azarpark.watchman.core.AppConfig;
 import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.Transaction;
@@ -175,11 +176,17 @@ public class SamanPayment extends PaymentService {
         System.out.println("----------> tashimPaymentRequest ");
 
         String shaba = "000000000000000000000000000000:" + (amount * 10) + ":";
-        if (shabaType == ShabaType.CHARGE) {
-            shaba += Constants.CHARGE_SHABA;
-        } else {
-            shaba += Constants.NON_CHARGE_SHABA;
+        if(AppConfig.Companion.isArdabil()){
+            shaba += Constants.ARDABIL_SHABA;
         }
+        else{
+            if (shabaType == ShabaType.CHARGE) {
+                shaba += Constants.CHARGE_SHABA;
+            } else {
+                shaba += Constants.NON_CHARGE_SHABA;
+            }
+        }
+        Logger.d("--------------> Saman shaba: %s", shaba);
         String[] param = new String[]{shaba};
 
 
