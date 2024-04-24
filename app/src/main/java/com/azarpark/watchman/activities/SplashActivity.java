@@ -1,38 +1,33 @@
 package com.azarpark.watchman.activities;
 
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.azarpark.watchman.BuildConfig;
 import com.azarpark.watchman.core.AppConfig;
 import com.azarpark.watchman.databinding.ActivitySplashBinding;
-import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.dialogs.SingleSelectDialog;
 import com.azarpark.watchman.models.City;
 import com.azarpark.watchman.models.KeyValueModel;
-import com.azarpark.watchman.web_service.responses.GetCitiesResponse;
-import com.azarpark.watchman.web_service.responses.SplashResponse;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
-import com.azarpark.watchman.utils.DownloadController;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.NewErrorHandler;
 import com.azarpark.watchman.web_service.WebService;
+import com.azarpark.watchman.web_service.responses.GetCitiesResponse;
+import com.azarpark.watchman.web_service.responses.SplashResponse;
 
 import java.util.ArrayList;
 
@@ -147,10 +142,10 @@ public class SplashActivity extends AppCompatActivity {
             SplashActivity.this.finish();
             if (SharedPreferencesRepository.getToken().isEmpty()) {
                 startActivity(new Intent(SplashActivity.this, LoginActivity.class));
-            } else if(AppConfig.Companion.isPaymentLessParkLess()){
+            } else if (AppConfig.Companion.isPaymentLessParkLess()) {
                 startActivity(new Intent(SplashActivity.this, EmployeeActivity.class));
                 SplashActivity.this.finish();
-            }else {
+            } else {
                 startActivity(new Intent(SplashActivity.this, MainActivity.class));
                 overridePendingTransition(0, 0);
             }
@@ -197,10 +192,11 @@ public class SplashActivity extends AppCompatActivity {
         binding.loadingBar.setVisibility(View.VISIBLE);
         binding.retry.setVisibility(View.INVISIBLE);
 
-        String serial = "1111";//todo release
-//        String serial = android.os.Build.SERIAL;
-        if (AppConfig.Companion.isPaymentLessParkLess() || AppConfig.Companion.isPaymentLess()){
+        String serial;
+        if (BuildConfig.DEBUG || AppConfig.Companion.isPaymentLessParkLess() || AppConfig.Companion.isPaymentLess()) {
             serial = "1111";
+        } else {
+            serial = android.os.Build.SERIAL;
         }
 
         webService.getClient(getApplicationContext()).getSplash(SharedPreferencesRepository.getTokenWithPrefix(), versionCode, serial).enqueue(new Callback<SplashResponse>() {
@@ -244,10 +240,10 @@ public class SplashActivity extends AppCompatActivity {
 
                     if (response.body().update.last_version > version)
                         openUpdateDialog(response.body().update.update_link);
-                    else if(AppConfig.Companion.isPaymentLessParkLess()){
+                    else if (AppConfig.Companion.isPaymentLessParkLess()) {
                         startActivity(new Intent(SplashActivity.this, EmployeeActivity.class));
                         SplashActivity.this.finish();
-                    }else {
+                    } else {
                         startActivity(new Intent(SplashActivity.this, MainActivity.class));
                         SplashActivity.this.finish();
                     }
