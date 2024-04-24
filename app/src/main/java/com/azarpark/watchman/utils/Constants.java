@@ -16,7 +16,7 @@ public class Constants {
     public static int TRANSACTION_TYPE_DISCOUNT = 10 ,TRANSACTION_TYPE_CHAREG = 1, TRANSACTION_TYPE_DEBT = 2, TRANSACTION_TYPE_PARK_PRICE = 3;
     public static int MIN_PRICE_FOR_PAYMENT = 1000;
     public static int MAX_PRICE_FOR_PAYMENT = 1000000;
-    public static String NON_CHARGE_SHABA = "IR540550100470106230710001", CHARGE_SHABA = "IR270550100470106230710002";
+    public static String NON_CHARGE_SHABA = "IR280610000004001003633212", CHARGE_SHABA = "IR840610000004001003633271";
     public static String ARDABIL_SHABA = "IR850150000003101084389490";
     public static String INITIAL_BASE_URL = "https://backend1.azarpark.irana.app";
     public static String BASE_URL = "https://backend1.azarpark.irana.app";
