@@ -35,6 +35,7 @@ public class Constants {
     public static String QR_DATA = "qr_data";
     public static String CURENT_TRANSACTION = "CURENT_TRANSACTION";
 
+    public static final String IMAGES_DIRECTORY = "/images";
 
     public static String
             REFRESH_TOKEN = "refreshToken",

@@ -16,7 +16,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -52,6 +51,7 @@ import com.azarpark.watchman.enums.PlaceStatus;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnGetInfoClicked;
 import com.azarpark.watchman.location.SingleShotLocationProvider;
+import com.azarpark.watchman.models.DetectionResult;
 import com.azarpark.watchman.models.Notification;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.models.TicketMessage;
@@ -62,7 +62,9 @@ import com.azarpark.watchman.payment.ShabaType;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
+import com.azarpark.watchman.web_service.ImageUploadCallback;
 import com.azarpark.watchman.web_service.NewErrorHandler;
+import com.azarpark.watchman.web_service.ProgressRequestBody;
 import com.azarpark.watchman.web_service.WebService;
 import com.azarpark.watchman.web_service.bodies.ParkBody;
 import com.azarpark.watchman.web_service.responses.DebtHistoryResponse;
@@ -73,13 +75,17 @@ import com.azarpark.watchman.web_service.responses.ParkResponse;
 import com.azarpark.watchman.web_service.responses.PlacesResponse;
 import com.azarpark.watchman.web_service.responses.VerifyTransactionResponse;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import id.zelory.compressor.Compressor;
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -87,6 +93,7 @@ import retrofit2.Response;
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
 
+    Compressor compressor;
     ActivityMainBinding binding;
     boolean menuIsOpen = false;
     PopupWindow popupWindow;
@@ -145,11 +152,9 @@ public class MainActivity extends AppCompatActivity {
                         String tag3 = SharedPreferencesRepository.getValue(Constants.TAG3, "0");
                         String tag4 = SharedPreferencesRepository.getValue(Constants.TAG4, "0");
 
-                        if(transaction.getTransactionType() == Constants.TRANSACTION_TYPE_DISCOUNT)
-                        {
+                        if (transaction.getTransactionType() == Constants.TRANSACTION_TYPE_DISCOUNT) {
                             printMiniFactor(tag1, tag2, tag3, tag4, Integer.valueOf(transaction.getAmount()), true);
-                        }
-                        else {
+                        } else {
                             getCarDebtHistory02(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
                         }
 
@@ -159,6 +164,11 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         paymentService.initialize();
 
+        compressor = new Compressor.Builder(this)
+                .setQuality(70)
+                .setCompressFormat(Bitmap.CompressFormat.JPEG)
+                .setDestinationDirectoryPath(getFilesDir().toString() + Constants.IMAGES_DIRECTORY)
+                .build();
 
         qr_url = SharedPreferencesRepository.getValue(Constants.qr_url, "");
         refresh_time = Integer.parseInt(SharedPreferencesRepository.getValue(Constants.refresh_time, "10"));
@@ -270,7 +280,19 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        paymentService.onActivityResultHandler(requestCode, resultCode, data);
+        if (data.getAction().equals("plate-detection-result") && resultCode == Activity.RESULT_OK) {
+            if (parkDialog != null) {
+                Bundle bundle = data.getExtras();
+                Uri sourceImageUri = (Uri) bundle.get("source_image_uri");
+                Uri plateImageUri = (Uri) bundle.get("plate_image_uri");
+                String plateTag = bundle.getString("plate_tag");
+
+                DetectionResult result = new DetectionResult(sourceImageUri, plateImageUri, plateTag);
+                parkDialog.setDetectionResult(result);
+            }
+        } else {
+            paymentService.onActivityResultHandler(requestCode, resultCode, data);
+        }
     }
 
     @Override
@@ -537,15 +559,19 @@ public class MainActivity extends AppCompatActivity {
 
     private void openParkDialog(Place place, boolean isParkingNewPlateOnPreviousPlate) {
         System.out.println("--------> BBB");
-        parkDialog = new ParkDialog((parkBody, printFactor) -> {
+        parkDialog = new ParkDialog(
+                (parkBody, printFactor, sourceImageUri, plateImageUri) -> {
 
-            if (!isParkingNewPlateOnPreviousPlate) {
-                parkCar(parkBody, printFactor);
-            } else {
-                exitPark(place.id, parkBody, printFactor);
-            }
+                    if (!isParkingNewPlateOnPreviousPlate) {
+                        parkCar(parkBody, printFactor, sourceImageUri, plateImageUri);
+                    } else {
+                        exitPark(place.id, parkBody, printFactor, sourceImageUri, plateImageUri);
+                    }
 
-        }, place, isParkingNewPlateOnPreviousPlate);
+                },
+                place,
+                isParkingNewPlateOnPreviousPlate
+        );
         parkDialog.show(getSupportFragmentManager(), ParkDialog.TAG);
 
         assistant.hideSoftKeyboard(MainActivity.this);
@@ -723,11 +749,9 @@ public class MainActivity extends AppCompatActivity {
 
         SamanAfterPaymentPrintTemplateBinding printTemplateBinding = SamanAfterPaymentPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
 
-        if(discount)
-        {
+        if (discount) {
             printTemplateBinding.balanceTitle.setText("اشتراک پلاک");
-        }
-        else {
+        } else {
             printTemplateBinding.balanceTitle.setText(balance < 0 ? "بدهی پلاک" : "شارژ پلاک");
         }
 
@@ -872,15 +896,47 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void parkCar(ParkBody parkBody, boolean printFactor) {
+    private void parkCar(ParkBody parkBody, boolean printFactor, Uri sourceImageUri, Uri plateImageUri) {
 
         assistant.hideSoftKeyboard(MainActivity.this);
 
-        Runnable functionRunnable = () -> parkCar(parkBody, printFactor);
+        Runnable functionRunnable = () -> parkCar(parkBody, printFactor, sourceImageUri, plateImageUri);
         LoadingBar loadingBar = new LoadingBar(MainActivity.this);
         loadingBar.show();
 
-        webService.getClient(getApplicationContext()).parkCar(SharedPreferencesRepository.getTokenWithPrefix(), parkBody).enqueue(new Callback<ParkResponse>() {
+        Call<ParkResponse> call = null;
+//        if (sourceImageUri != null) {
+//            List<MultipartBody.Part> parts = new ArrayList<>();
+//
+//            File sourceImageFile = new File(sourceImageUri.getPath());
+//            ProgressRequestBody sourceImageReqyestBody =
+//                    new ProgressRequestBody(compressor.compressToFile(sourceImageFile), "image", mockListener);
+//            parts.add(
+//                    MultipartBody.Part.createFormData(
+//                            "source_image",
+//                            sourceImageFile.getName(),
+//                            sourceImageReqyestBody
+//                    )
+//            );
+//
+//
+//            File plateImageFile = new File(plateImageUri.getPath());
+//            ProgressRequestBody plateImageRequestBody =
+//                    new ProgressRequestBody(compressor.compressToFile(sourceImageFile), "image", mockListener);
+//            parts.add(
+//                    MultipartBody.Part.createFormData(
+//                            "plate_image",
+//                            plateImageFile.getName(),
+//                            plateImageRequestBody
+//                    )
+//            );
+//
+//            webService.getClient(getApplicationContext()).parkCar(SharedPreferencesRepository.getTokenWithPrefix(), parkBody, parts.toArray(new MultipartBody.Part[]{}));
+//        } else {
+        call = webService.getClient(getApplicationContext()).parkCar(SharedPreferencesRepository.getTokenWithPrefix(), parkBody);
+//        }
+
+        call.enqueue(new Callback<ParkResponse>() {
             @Override
             public void onResponse(@NonNull Call<ParkResponse> call, @NonNull Response<ParkResponse> response) {
 
@@ -954,7 +1010,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void exitPark(int placeID, ParkBody parkBody, boolean printFactor) {
+    private void exitPark(int placeID, ParkBody parkBody, boolean printFactor, Uri sourceImageUri, Uri plateImageUri) {
 
         Runnable functionRunnable = () -> exitPark(placeID);
         LoadingBar loadingBar = new LoadingBar(MainActivity.this);
@@ -970,7 +1026,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (parkInfoDialog != null)
                     parkInfoDialog.dismiss();
-                parkCar(parkBody, printFactor);
+                parkCar(parkBody, printFactor, sourceImageUri, plateImageUri);
 
             }
 
@@ -1176,4 +1232,20 @@ public class MainActivity extends AppCompatActivity {
 //                });
     }
 
+    ImageUploadCallback mockListener = new ImageUploadCallback() {
+        @Override
+        public void onProgressUpdate(int percentage) {
+
+        }
+
+        @Override
+        public void onError(String message) {
+
+        }
+
+        @Override
+        public void onSuccess(String message) {
+
+        }
+    };
 }

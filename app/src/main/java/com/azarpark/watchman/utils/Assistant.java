@@ -31,6 +31,7 @@ import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.MyDate;
 import com.azarpark.watchman.models.MyTime;
 import com.azarpark.watchman.models.Place;
+import com.azarpark.watchman.models.Plate;
 import com.yandex.metrica.YandexMetrica;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -900,4 +901,87 @@ public class Assistant {
         }
         return false;
     }
+
+    /**
+     * example 12-b-345-67
+     *
+     * @param plateString
+     * @return
+     */
+    public static boolean isIranPlate(String plateString){
+        String pattern = "\\d{2}[a-zA-Z]\\d{5}";
+        return plateString.matches(pattern);
+    }
+
+    /**
+     * example: 12345
+     *
+     * @param plateString
+     * @return
+     */
+    public static boolean isOldAras(String plateString){
+        if(plateString.length() == 5)
+        {
+            try{
+                Integer.parseInt(plateString);
+                return true;
+            }
+            catch (Exception ignored){}
+        }
+        return false;
+    }
+
+    /**
+     * example: 12345-67
+     *
+     * @param plateString
+     * @return
+     */
+    public static boolean isNewAras(String plateString){
+        if(plateString.length() == 7)
+        {
+            try{
+                Integer.parseInt(plateString);
+                return true;
+            }
+            catch (Exception ignored){}
+        }
+        return false;
+    }
+
+    public static Plate parse(String plateString){
+        PlateType plateType = PlateType.simple;
+        String tag1 = "", tag2 = "", tag3 = "", tag4 = "";
+        boolean isPlateValid = false;
+
+        if (Assistant.isIranPlate(plateString)) {
+            Dictionary_char dictionary_char = new Dictionary_char();
+            tag1 = plateString.substring(0, 2);
+            tag2 = dictionary_char.get_persian_string(plateString.charAt(2));
+            tag3 = plateString.substring(3, 6);
+            tag4 = plateString.substring(6, 8);
+            isPlateValid = true;
+            plateType = PlateType.simple;
+        }
+        else if(Assistant.isNewAras(plateString))
+        {
+            tag1 = plateString.substring(0, 5);
+            tag2 = plateString.substring(5);
+            isPlateValid = true;
+            plateType = PlateType.new_aras;
+        }
+        else if(Assistant.isOldAras(plateString))
+        {
+            tag1 = plateString;
+            isPlateValid = true;
+            plateType = PlateType.old_aras;
+        }
+
+
+        if(isPlateValid)
+            return new Plate(plateType, tag1, tag2, tag3, tag4);
+
+        return null;
+    }
+
 }

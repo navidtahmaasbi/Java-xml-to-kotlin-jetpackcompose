@@ -45,4 +45,5 @@
     <string name="print_header_1">محدوده پارک حاشیه\u200cای هوشمند</string>
     <string name="iranapp">ایراناپ</string>
     <string name="irana_website_link">www.irana.app</string>
+    <string name="scan_plate">اسکن پلاک</string>
 </resources>

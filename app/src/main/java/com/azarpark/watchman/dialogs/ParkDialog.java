@@ -1,6 +1,8 @@
 package com.azarpark.watchman.dialogs;
+
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -10,19 +12,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.databinding.ParkDialogBinding;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnParkClicked;
 import com.azarpark.watchman.location.SingleShotLocationProvider;
+import com.azarpark.watchman.models.DetectionResult;
 import com.azarpark.watchman.models.Place;
+import com.azarpark.watchman.models.Plate;
+import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.web_service.bodies.ParkBody;
-import com.azarpark.watchman.utils.Assistant;
 
 public class ParkDialog extends DialogFragment {
 
@@ -33,6 +39,7 @@ public class ParkDialog extends DialogFragment {
     private PlateType selectedTab = PlateType.simple;
     private final boolean isParkingNewPlateOnPreviousPlate;
     private SingleShotLocationProvider.GPSCoordinates location;
+    private DetectionResult scanResult = new DetectionResult();
 
     public ParkDialog(OnParkClicked onParkClicked, Place place, boolean isParkingNewPlateOnPreviousPlate) {
         this.onParkClicked = onParkClicked;
@@ -53,7 +60,7 @@ public class ParkDialog extends DialogFragment {
 
         setSelectedTab(selectedTab);
 
-        if (place.tag1 != null && !isParkingNewPlateOnPreviousPlate){
+        if (place.tag1 != null && !isParkingNewPlateOnPreviousPlate) {
             binding.plateSimpleTag1.setText(place.tag1);
             binding.plateSimpleTag2.setText(place.tag2);
             binding.plateSimpleTag3.setText(place.tag3);
@@ -67,6 +74,8 @@ public class ParkDialog extends DialogFragment {
         binding.plateNewArasSelector.setOnClickListener(view -> setSelectedTab(PlateType.new_aras));
 
         binding.submit.setOnClickListener(view -> {
+
+            ParkBody body = null;
 
             if (selectedTab == PlateType.simple &&
                     (binding.plateSimpleTag1.getText().toString().length() != 2 ||
@@ -88,8 +97,8 @@ public class ParkDialog extends DialogFragment {
                             binding.plateNewArasTag2.getText().toString().length() != 2))
                 Toast.makeText(getContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
             else if (selectedTab == PlateType.simple) {
-                if (location != null){
-                    onParkClicked.clicked(new ParkBody(
+                if (location != null) {
+                    body = new ParkBody(
                             binding.plateSimpleTag1.getText().toString(),
                             binding.plateSimpleTag2.getText().toString(),
                             binding.plateSimpleTag3.getText().toString(),
@@ -99,9 +108,9 @@ public class ParkDialog extends DialogFragment {
                             place.street_id,
                             String.valueOf(location.latitude),
                             String.valueOf(location.longitude)
-                    ), binding.printCheckbox.isChecked());
-                }else {
-                    onParkClicked.clicked(new ParkBody(
+                    );
+                } else {
+                    body = new ParkBody(
                             binding.plateSimpleTag1.getText().toString(),
                             binding.plateSimpleTag2.getText().toString(),
                             binding.plateSimpleTag3.getText().toString(),
@@ -109,29 +118,29 @@ public class ParkDialog extends DialogFragment {
                             "simple",
                             place.id,
                             place.street_id
-                    ), binding.printCheckbox.isChecked());
+                    );
                 }
             } else if (selectedTab == PlateType.old_aras) {
-                if (location != null){
-                    onParkClicked.clicked(new ParkBody(
+                if (location != null) {
+                    body = new ParkBody(
                             binding.plateOldAras.getText().toString(),
                             "old_aras",
                             place.id,
                             place.street_id,
                             String.valueOf(location.latitude),
                             String.valueOf(location.longitude)
-                    ), binding.printCheckbox.isChecked());
-                }else {
-                    onParkClicked.clicked(new ParkBody(
+                    );
+                } else {
+                    body = new ParkBody(
                             binding.plateOldAras.getText().toString(),
                             "old_aras",
                             place.id,
                             place.street_id
-                    ), binding.printCheckbox.isChecked());
+                    );
                 }
             } else {
-                if (location != null){
-                    onParkClicked.clicked(new ParkBody(
+                if (location != null) {
+                    body = new ParkBody(
                             binding.plateNewArasTag1.getText().toString(),
                             binding.plateNewArasTag2.getText().toString(),
                             "new_aras",
@@ -139,16 +148,25 @@ public class ParkDialog extends DialogFragment {
                             place.street_id,
                             String.valueOf(location.latitude),
                             String.valueOf(location.longitude)
-                    ), binding.printCheckbox.isChecked());
-                }else {
-                    onParkClicked.clicked(new ParkBody(
+                    );
+                } else {
+                    body = new ParkBody(
                             binding.plateNewArasTag1.getText().toString(),
                             binding.plateNewArasTag2.getText().toString(),
                             "new_aras",
                             place.id,
                             place.street_id
-                    ), binding.printCheckbox.isChecked());
+                    );
                 }
+            }
+
+            if(body != null){
+                onParkClicked.clicked(
+                        body,
+                        binding.printCheckbox.isChecked(),
+                        scanResult.getSourceImageUri(),
+                        scanResult.getPlateImageUri()
+                );
             }
         });
 
@@ -161,9 +179,9 @@ public class ParkDialog extends DialogFragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                if(charSequence.toString().contains(".")){
+                if (charSequence.toString().contains(".")) {
                     binding.plateSimpleTag1.setText("");
-                } else if (binding.plateSimpleTag1.getText().toString().length() == 2){
+                } else if (binding.plateSimpleTag1.getText().toString().length() == 2) {
                     binding.plateSimpleTag2.requestFocus();
                 }
 
@@ -208,9 +226,9 @@ public class ParkDialog extends DialogFragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                if(charSequence.toString().contains(".")){
+                if (charSequence.toString().contains(".")) {
                     binding.plateSimpleTag3.setText("");
-                } else if (binding.plateSimpleTag3.getText().toString().length() == 3){
+                } else if (binding.plateSimpleTag3.getText().toString().length() == 3) {
                     binding.plateSimpleTag4.requestFocus();
                 }
 
@@ -232,7 +250,7 @@ public class ParkDialog extends DialogFragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                if(charSequence.toString().contains(".")){
+                if (charSequence.toString().contains(".")) {
                     binding.plateSimpleTag4.setText("");
                 }
 
@@ -254,7 +272,7 @@ public class ParkDialog extends DialogFragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                if(charSequence.toString().contains(".")){
+                if (charSequence.toString().contains(".")) {
                     binding.plateOldAras.setText("");
                 }
 
@@ -276,9 +294,9 @@ public class ParkDialog extends DialogFragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                if(charSequence.toString().contains(".")){
+                if (charSequence.toString().contains(".")) {
                     binding.plateNewArasTag1.setText("");
-                } else if (binding.plateNewArasTag1.getText().toString().length() == 5){
+                } else if (binding.plateNewArasTag1.getText().toString().length() == 5) {
                     binding.plateNewArasTag2.requestFocus();
                 }
 
@@ -300,7 +318,7 @@ public class ParkDialog extends DialogFragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                if(charSequence.toString().contains(".")){
+                if (charSequence.toString().contains(".")) {
                     binding.plateNewArasTag2.setText("");
                 }
 
@@ -311,6 +329,11 @@ public class ParkDialog extends DialogFragment {
             public void afterTextChanged(Editable editable) {
 
             }
+        });
+
+        binding.scanPlateBtn.setOnClickListener(v -> {
+            Intent intent = new Intent("app.irana.cameraman.ACTION_SCAN_PLATE");
+            startActivityForResult(intent, 1000);
         });
 
         return builder.create();
@@ -391,8 +414,29 @@ public class ParkDialog extends DialogFragment {
     @SuppressLint("SetTextI18n")
     public void setLocation(SingleShotLocationProvider.GPSCoordinates location) {
         this.location = location;
-        if (location != null){
+        if (location != null) {
             binding.location.setText("موقعیت شما : " + location.latitude + " - " + location.longitude);
+        }
+    }
+
+    public void setDetectionResult(DetectionResult result) {
+//        Toast.makeText(getContext(), "result: " + result.getPlateTag(), Toast.LENGTH_SHORT).show();
+        scanResult = result;
+        Plate plate = Assistant.parse(result.getPlateTag());
+
+        if (Assistant.isIranPlate(result.getPlateTag())) {
+            setSelectedTab(PlateType.simple);
+            binding.plateSimpleTag1.setText(plate.getTag1());
+            binding.plateSimpleTag2.setText(plate.getTag2());
+            binding.plateSimpleTag3.setText(plate.getTag3());
+            binding.plateSimpleTag4.setText(plate.getTag4());
+        } else if (Assistant.isOldAras(result.getPlateTag())) {
+            setSelectedTab(PlateType.old_aras);
+            binding.plateOldAras.setText(plate.getTag1());
+        } else if (Assistant.isNewAras(result.getPlateTag())) {
+            setSelectedTab(PlateType.new_aras);
+            binding.plateNewArasTag1.setText(plate.getTag1());
+            binding.plateNewArasTag2.setText(plate.getTag2());
         }
     }
 }
