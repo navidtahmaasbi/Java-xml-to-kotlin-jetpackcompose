@@ -15,7 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.databinding.ActivityChangePlateBinding;
-import com.azarpark.watchman.databinding.SamanAfterPaymentPrintTemplateBinding;
+import com.azarpark.watchman.databinding.DebtClearedPrintTemplateBinding;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.enums.PlateType;
@@ -71,7 +71,7 @@ public class ChangePlateActivity extends AppCompatActivity {
 
                     @Override
                     public void onTransactionVerified(@NonNull Transaction transaction) {
-                        printMiniFactor(ptag1, ptag2, ptag3, ptag4, balance);
+                        printMiniFactor(ptag1, ptag2, ptag3, ptag4);
                     }
                 })
                 .build();
@@ -441,13 +441,11 @@ public class ChangePlateActivity extends AppCompatActivity {
         });
     }
 
-    private void printMiniFactor(String tag1, String tag2, String tag3, String tag4, int balance) {
+    private void printMiniFactor(String tag1, String tag2, String tag3, String tag4) {
         binding.printArea.removeAllViews();
 
-        SamanAfterPaymentPrintTemplateBinding printTemplateBinding = SamanAfterPaymentPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
-        printTemplateBinding.balanceTitle.setText(balance < 0 ? "بدهی پلاک" : "شارژ پلاک");
+        DebtClearedPrintTemplateBinding printTemplateBinding = DebtClearedPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
 
-        printTemplateBinding.balance.setText((balance < 0 ? balance * -1 : balance) + " تومان" + (balance > 0 ? " (اعتبار 3 ماهه)" : ""));
         if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.simple) {
 
             printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
