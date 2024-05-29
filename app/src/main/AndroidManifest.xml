@@ -115,6 +115,10 @@
             android:exported="true"
             android:windowSoftInputMode="stateVisible" />
         <activity
+            android:name=".activities.ChangePlateActivity"
+            android:exported="true"
+            android:windowSoftInputMode="stateVisible" />
+        <activity
             android:name=".activities.ExitRequestActivity"
             android:exported="true"
             android:windowSoftInputMode="stateVisible" />

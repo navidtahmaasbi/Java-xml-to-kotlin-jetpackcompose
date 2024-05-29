@@ -4,6 +4,7 @@ import com.azarpark.watchman.models.KeyValueModel;
 import com.azarpark.watchman.models.TicketMessage;
 import com.azarpark.watchman.models.Update;
 import com.azarpark.watchman.models.Watchman;
+import com.google.gson.annotations.SerializedName;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -27,4 +28,6 @@ public class SplashResponse {
     public ArrayList<KeyValueModel> watchman_detail;
     public Watchman watchman;
     public Map<String, TicketMessage> messages;
+    public boolean is_wage;
+    public String change_plate_wage_price;
 }

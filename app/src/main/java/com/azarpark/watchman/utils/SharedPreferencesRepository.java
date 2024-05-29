@@ -290,12 +290,26 @@ public class SharedPreferencesRepository {
 
         setValue(Constants.LOCAL_NOTIFICATIONS, gson.toJson(notifications));
         localNotificationsLiveData.setValue(notifications);
-
     }
 
     public static boolean needLocation() {
         String today = Assistant.getDate().toString();
         String value = getValue(Constants.lastLocationSentDate, "not_set");
         return !value.equals(today);
+    }
+
+    public static void setWage(boolean isWage, String wagePrice){
+        sharedPreferences.edit()
+                .putBoolean(Constants.IS_WAGE, isWage)
+                .putString(Constants.CHANGE_PLATE_WAGE_PRICE, wagePrice)
+                .apply();
+    }
+
+    public static boolean getIsWage(){
+        return sharedPreferences.getBoolean(Constants.IS_WAGE, false);
+    }
+
+    public static String getWagePrice(){
+        return sharedPreferences.getString(Constants.CHANGE_PLATE_WAGE_PRICE, "");
     }
 }

@@ -71,4 +71,6 @@ public class Constants {
     public static String cardNumber = "card_number";
     public static String shabaNumber = "shaba_number";
     public static String accountNumber = "account_number";
+    public static String IS_WAGE = "is_wage";
+    public static String CHANGE_PLATE_WAGE_PRICE = "change_plate_wage_price";
 }

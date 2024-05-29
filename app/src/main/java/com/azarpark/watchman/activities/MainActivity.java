@@ -16,7 +16,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -31,6 +30,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 
 import com.azarpark.watchman.R;
@@ -145,11 +145,9 @@ public class MainActivity extends AppCompatActivity {
                         String tag3 = SharedPreferencesRepository.getValue(Constants.TAG3, "0");
                         String tag4 = SharedPreferencesRepository.getValue(Constants.TAG4, "0");
 
-                        if(transaction.getTransactionType() == Constants.TRANSACTION_TYPE_DISCOUNT)
-                        {
+                        if (transaction.getTransactionType() == Constants.TRANSACTION_TYPE_DISCOUNT) {
                             printMiniFactor(tag1, tag2, tag3, tag4, Integer.valueOf(transaction.getAmount()), true);
-                        }
-                        else {
+                        } else {
                             getCarDebtHistory02(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
                         }
 
@@ -385,6 +383,14 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             popupWindow.dismiss();
         });
+
+        CardView changePlateBtn = popupView.findViewById(R.id.change_plate_btn);
+        changePlateBtn.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, ChangePlateActivity.class);
+            startActivity(intent);
+            popupWindow.dismiss();
+        });
+        changePlateBtn.setVisibility(SharedPreferencesRepository.getIsWage() ? View.VISIBLE : View.GONE);
 
 //        popupView.findViewById(R.id.about_us).setOnLongClickListener(new View.OnLongClickListener() {
 //            @Override
@@ -723,11 +729,9 @@ public class MainActivity extends AppCompatActivity {
 
         SamanAfterPaymentPrintTemplateBinding printTemplateBinding = SamanAfterPaymentPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
 
-        if(discount)
-        {
+        if (discount) {
             printTemplateBinding.balanceTitle.setText("اشتراک پلاک");
-        }
-        else {
+        } else {
             printTemplateBinding.balanceTitle.setText(balance < 0 ? "بدهی پلاک" : "شارژ پلاک");
         }
 
