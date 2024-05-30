@@ -425,7 +425,7 @@ public class ChangePlateActivity extends AppCompatActivity {
 
         String mobile = binding.mobile.getText().toString();
 
-        webService.getClient(this).addMobileToPlate(SharedPreferencesRepository.getTokenWithPrefix(), assistant.getPlateType(tag1, tag2, tag3, tag4).toString(), tag1 != null ? tag1 : "0", tag2 != null ? tag2 : "0", tag3 != null ? tag3 : "0", tag4 != null ? tag4 : "0", mobile).enqueue(new Callback<AddMobieToPlateResponse>() {
+        webService.getClient(this).addMobileToPlate(SharedPreferencesRepository.getTokenWithPrefix(), assistant.getPlateType(tag1, tag2, tag3, tag4).toString(), tag1 != null ? tag1 : "0", tag2 != null ? tag2 : "0", tag3 != null ? tag3 : "0", tag4 != null ? tag4 : "0", mobile, 1).enqueue(new Callback<AddMobieToPlateResponse>() {
             @Override
             public void onResponse(Call<AddMobieToPlateResponse> call, Response<AddMobieToPlateResponse> response) {
 

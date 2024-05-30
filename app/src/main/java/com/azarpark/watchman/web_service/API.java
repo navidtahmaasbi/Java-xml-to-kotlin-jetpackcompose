@@ -232,5 +232,13 @@ public interface API {
                                                    @Path("tag4") String tag4,
                                                    @Path("phone") String phone);
 
-
+    @GET("/api/watchman/phone/add/{car_type}/{tag1}/{tag2}/{tag3}/{tag4}/{phone}")
+    Call<AddMobieToPlateResponse> addMobileToPlate(@Header("Authorization") String authToken,
+                                                   @Path("car_type") String plateType,
+                                                   @Path("tag1") String tag1,
+                                                   @Path("tag2") String tag2,
+                                                   @Path("tag3") String tag3,
+                                                   @Path("tag4") String tag4,
+                                                   @Path("phone") String phone,
+                                                   @Query("is_wage") int isWage);
 }
