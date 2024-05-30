@@ -105,7 +105,7 @@
                     android:fontFamily="@font/iran_sans"
                     android:textColor="@color/blue"
                     android:textSize="@dimen/_13sdp"
-                    android:text="شارژ پلاک"/>
+                    android:text="اعتبار پلاک"/>
 
             </LinearLayout>
 

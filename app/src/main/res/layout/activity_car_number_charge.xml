@@ -53,7 +53,7 @@
             android:layout_marginRight="@dimen/_10sdp"
             android:layout_toLeftOf="@+id/back"
             android:fontFamily="@font/iran_sans_bold"
-            android:text="شارژ پلاک"
+            android:text="اعتبار پلاک"
             android:textColor="@color/white"
             android:textSize="@dimen/_13sdp" />
 

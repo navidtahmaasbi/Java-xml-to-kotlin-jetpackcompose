@@ -388,7 +388,7 @@ public class DiscountActivity extends AppCompatActivity {
             printTemplateBinding.balanceTitle.setText("اشتراک پلاک");
         }
         else {
-            printTemplateBinding.balanceTitle.setText(balance < 0 ? "بدهی پلاک" : "شارژ پلاک");
+            printTemplateBinding.balanceTitle.setText(balance < 0 ? "بدهی پلاک" : "اعتبار پلاک");
         }
 
 //        printTemplateBinding.balance.setText(balance + " تومان");

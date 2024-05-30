@@ -458,7 +458,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
 
         SamanAfterPaymentPrintTemplateBinding printTemplateBinding = SamanAfterPaymentPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
 
-        printTemplateBinding.balanceTitle.setText(balance < 0 ? "بدهی پلاک" : "شارژ پلاک");
+        printTemplateBinding.balanceTitle.setText(balance < 0 ? "بدهی پلاک" : "اعتبار پلاک");
 
         printTemplateBinding.balance.setText(balance + " تومان");
 

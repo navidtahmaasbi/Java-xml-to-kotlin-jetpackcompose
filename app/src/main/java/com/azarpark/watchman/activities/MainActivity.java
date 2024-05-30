@@ -665,7 +665,7 @@ public class MainActivity extends AppCompatActivity {
         printTemplateBinding.priceTv.setText("تعرفه: " + pricing);
         printTemplateBinding.debtTv.setText(
                 balance > 0
-                        ? "شارژ پلاک: " + balance + " تومان"
+                        ? "اعتبار پلاک: " + balance + " تومان"
                         : "بدهی پلاک: " + (-1 * balance) + " تومان"
         );
         printTemplateBinding.supportPhone.setText(telephone);
@@ -732,7 +732,7 @@ public class MainActivity extends AppCompatActivity {
         if (discount) {
             printTemplateBinding.balanceTitle.setText("اشتراک پلاک");
         } else {
-            printTemplateBinding.balanceTitle.setText(balance < 0 ? "بدهی پلاک" : "شارژ پلاک");
+            printTemplateBinding.balanceTitle.setText(balance < 0 ? "بدهی پلاک" : "اعتبار پلاک");
         }
 
         printTemplateBinding.balance.setText(balance + " تومان" + (balance > 0 ? " (اعتبار 3 ماهه)" : ""));

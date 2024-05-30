@@ -188,7 +188,7 @@
                         android:layout_marginTop="@dimen/_10sdp"
                         android:fontFamily="@font/iran_sans"
                         android:gravity="center"
-                        android:text="شارژ پلاک"
+                        android:text="اعتبار پلاک"
                         android:textColor="@color/blue"
                         android:textSize="@dimen/_13sdp" />
 
