@@ -235,7 +235,7 @@ public class ChangePlateActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         paymentService.onActivityResultHandler(requestCode, resultCode, data);
-        loadData(false);
+//        loadData(false);
     }
 
     public void myOnBackPressed(View view) {
