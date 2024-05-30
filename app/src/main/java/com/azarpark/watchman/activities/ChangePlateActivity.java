@@ -187,7 +187,6 @@ public class ChangePlateActivity extends AppCompatActivity {
 
 
         wagePrice = getWagePrice();
-        binding.wagePriceTv.setText(wagePrice + " تومان");
     }
 
     private void payment(View view) {
@@ -400,9 +399,6 @@ public class ChangePlateActivity extends AppCompatActivity {
                 ptag4 = tag4;
                 balance = response.body().balance;
 
-                binding.balanceTitle.setText(response.body().balance >= 0 ? "اعتبار پلاک" : "بدهی پلاک");
-                binding.debtAmount.setTextColor(getResources().getColor(response.body().balance >= 0 ? R.color.green : R.color.red));
-                binding.debtAmount.setText(NumberFormat.getNumberInstance(Locale.US).format(response.body().balance < 0 ? (response.body().balance * -1) : response.body().balance) + " تومان");
                 binding.totalPriceTv.setText(totalPrice + " تومان");
 
                 binding.debtArea.setVisibility(View.VISIBLE);
