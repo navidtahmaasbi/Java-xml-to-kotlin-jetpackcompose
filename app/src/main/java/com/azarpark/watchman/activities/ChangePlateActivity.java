@@ -72,6 +72,7 @@ public class ChangePlateActivity extends AppCompatActivity {
                     @Override
                     public void onTransactionVerified(@NonNull Transaction transaction) {
                         printMiniFactor(ptag1, ptag2, ptag3, ptag4);
+                        resetData();
                     }
                 })
                 .build();
@@ -261,7 +262,7 @@ public class ChangePlateActivity extends AppCompatActivity {
     private void setSelectedTab(PlateType selectedTab) {
 
         this.selectedTab = selectedTab;
-        resetDate();
+        resetData();
 
         if (selectedTab == PlateType.simple) {
 
@@ -306,8 +307,23 @@ public class ChangePlateActivity extends AppCompatActivity {
 
     }
 
-    private void resetDate() {
+    private void resetData() {
         binding.debtArea.setVisibility(View.GONE);
+        binding.plateSimpleTag1.setText("");
+        binding.plateSimpleTag2.setText("");
+        binding.plateSimpleTag3.setText("");
+        binding.plateSimpleTag4.setText("");
+        binding.plateOldAras.setText("");
+        binding.plateNewArasTag1.setText("");
+        binding.plateNewArasTag2.setText("");
+        binding.mobile.setText("");
+
+        totalPrice = 0;
+        ptag1 = "";
+        ptag2 = "";
+        ptag3 = "";
+        ptag4 = "";
+        balance = 0;
     }
 
     //------------------------------------------------------------ api calls
@@ -419,9 +435,6 @@ public class ChangePlateActivity extends AppCompatActivity {
                     binding.payment.setOnClickListener(ChangePlateActivity.this::payment);
                     return;
                 }
-
-                if (response.body() != null)
-                    Toast.makeText(ChangePlateActivity.this, response.body().description, Toast.LENGTH_SHORT).show();
 
                 paymentService.createTransaction(
                         ShabaType.NON_CHARGE, plateType, tag1, tag2, tag3, tag4,
