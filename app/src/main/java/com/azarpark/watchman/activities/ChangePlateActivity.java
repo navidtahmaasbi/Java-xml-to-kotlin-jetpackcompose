@@ -31,9 +31,6 @@ import com.azarpark.watchman.web_service.NewErrorHandler;
 import com.azarpark.watchman.web_service.WebService;
 import com.azarpark.watchman.web_service.responses.DebtHistoryResponse;
 
-import java.text.NumberFormat;
-import java.util.Locale;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -307,6 +304,7 @@ public class ChangePlateActivity extends AppCompatActivity {
     }
 
     private void resetData() {
+        binding.printArea.setVisibility(View.GONE);
         binding.debtArea.setVisibility(View.GONE);
         binding.plateSimpleTag1.setText("");
         binding.plateSimpleTag2.setText("");
@@ -432,14 +430,22 @@ public class ChangePlateActivity extends AppCompatActivity {
                     return;
                 }
 
-                paymentService.createTransaction(
-                        ShabaType.NON_CHARGE, plateType, tag1, tag2, tag3, tag4,
-                        amount, -1, Constants.TRANSACTION_TYPE_DEBT,
-                        () -> {
-                            binding.payment.revertAnimation();
-                            binding.payment.setOnClickListener(ChangePlateActivity.this::payment);
-                        }, -1
-                );
+                PaymentService.OnTransactionCreated finalAction = () -> {
+                    binding.payment.revertAnimation();
+                    binding.payment.setOnClickListener(ChangePlateActivity.this::payment);
+                };
+
+                if(amount == 0){
+                    finalAction.onCreateTransactionFinished();
+                    printMiniFactor(ptag1, ptag2, ptag3, ptag4);
+                }
+                else {
+                    paymentService.createTransaction(
+                            ShabaType.NON_CHARGE, plateType, tag1, tag2, tag3, tag4,
+                            amount, -1, Constants.TRANSACTION_TYPE_DEBT,
+                            finalAction, -1
+                    );
+                }
             }
 
             @Override
@@ -490,12 +496,11 @@ public class ChangePlateActivity extends AppCompatActivity {
 
         printTemplateBinding.text.setText("\n.\n.\n.");
 
-        paymentService.print(binding.printArea, 500, null);
+        paymentService.print(binding.printArea, 1500, this::resetData);
     }
 
-
     private int calculateTotalPrice(int balance) {
-        return wagePrice + (balance < 0 ? balance * -1 : 0);
+        return balance < 0 ? ((balance * -1) + wagePrice) : 0;
     }
 
     private int getWagePrice() {
