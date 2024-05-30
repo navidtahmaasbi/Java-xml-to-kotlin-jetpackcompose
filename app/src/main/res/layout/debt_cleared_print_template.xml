@@ -29,7 +29,7 @@
 
                     android:id="@+id/plate_simple_area"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_35sdp"
+                    android:layout_height="100dp"
                     android:layout_marginTop="@dimen/_2sdp"
                     android:visibility="visible">
 
@@ -57,7 +57,7 @@
                             android:gravity="center"
                             android:text="46"
                             android:textColor="@color/black"
-                            android:textSize="@dimen/_13sdp"
+                            android:textSize="40sp"
                             android:textStyle="bold"
                             app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
@@ -70,7 +70,7 @@
                             android:gravity="center"
                             android:text="س"
                             android:textColor="@color/black"
-                            android:textSize="@dimen/_12sdp"
+                            android:textSize="40sp"
                             android:textStyle="bold" />
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -82,7 +82,7 @@
                             android:gravity="center"
                             android:text="298"
                             android:textColor="@color/black"
-                            android:textSize="@dimen/_13sdp"
+                            android:textSize="40sp"
                             android:textStyle="bold" />
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -95,7 +95,7 @@
                             android:gravity="center"
                             android:text="25"
                             android:textColor="@color/black"
-                            android:textSize="@dimen/_13sdp"
+                            android:textSize="40sp"
                             android:textStyle="bold" />
 
                     </LinearLayout>
@@ -105,7 +105,7 @@
                 <RelativeLayout
                     android:id="@+id/plate_old_aras_area"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_40sdp"
+                    android:layout_height="100dp"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginBottom="@dimen/_5sdp"
                     android:visibility="gone">
@@ -136,24 +136,23 @@
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/plate_old_aras_tag1_en"
                                 android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_weight="1"
+                                android:layout_height="50dp"
                                 android:gravity="center"
                                 android:text="12345"
                                 android:textColor="@color/black"
-                                android:textSize="@dimen/_12sdp"
+                                android:textSize="40sp"
                                 android:textStyle="bold" />
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/plate_old_aras_tag1_fa"
                                 android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_weight="1"
+                                android:layout_height="50dp"
+                                android:layout_marginTop="-10dp"
                                 android:fontFamily="@font/iran_sans_fa_num_bold"
                                 android:gravity="center"
                                 android:text="12345"
                                 android:textColor="@color/black"
-                                android:textSize="@dimen/_12sdp" />
+                                android:textSize="40sp" />
 
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -166,7 +165,7 @@
                 <RelativeLayout
                     android:id="@+id/plate_new_aras_area"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_40sdp"
+                    android:layout_height="100dp"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginBottom="@dimen/_5sdp"
                     android:visibility="gone">
@@ -197,24 +196,23 @@
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/plate_new_aras_tag1_en"
                                 android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_weight="1"
+                                android:layout_height="50dp"
                                 android:gravity="center"
                                 android:text="12345"
                                 android:textColor="@color/black"
-                                android:textSize="@dimen/_12sdp"
+                                android:textSize="40sp"
                                 android:textStyle="bold" />
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/plate_new_aras_tag1_fa"
                                 android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_weight="1"
+                                android:layout_height="50dp"
+                                android:layout_marginTop="-10dp"
                                 android:fontFamily="@font/iran_sans_fa_num_bold"
                                 android:gravity="center"
                                 android:text="12345"
                                 android:textColor="@color/black"
-                                android:textSize="@dimen/_12sdp" />
+                                android:textSize="40sp"/>
 
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -228,46 +226,28 @@
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/plate_new_aras_tag2_en"
                                 android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_weight="1"
+                                android:layout_height="50dp"
                                 android:gravity="center"
                                 android:text="22"
                                 android:textColor="@color/black"
-                                android:textSize="@dimen/_12sdp"
+                                android:textSize="40sp"
                                 android:textStyle="bold" />
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/plate_new_aras_tag2_fa"
                                 android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_weight="1"
+                                android:layout_height="50dp"
+                                android:layout_marginTop="-10dp"
                                 android:fontFamily="@font/iran_sans_fa_num_bold"
                                 android:gravity="center"
                                 android:paddingBottom="@dimen/_3sdp"
                                 android:text="22"
                                 android:textColor="@color/black"
-                                android:textSize="@dimen/_12sdp" />
-
-
+                                android:textSize="40sp" />
                         </androidx.appcompat.widget.LinearLayoutCompat>
-
-
                     </LinearLayout>
-
                 </RelativeLayout>
-
             </androidx.appcompat.widget.LinearLayoutCompat>
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="right"
-                android:lineSpacingExtra="@dimen/_1sdp"
-                android:text="پلاک"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_13sdp"
-                app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -288,16 +268,14 @@
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_1sdp"
-                android:layout_marginTop="@dimen/_2sdp"
-                android:layout_marginBottom="@dimen/_1sdp"
-                android:background="@color/text_gray"
-                android:orientation="horizontal" />
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
+
+<!--                <ImageView-->
+<!--                    android:layout_width="100dp"-->
+<!--                    android:layout_height="100dp"-->
+<!--                    app:srcCompat="@drawable/ic_pin"/>-->
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="0dp"
@@ -305,16 +283,13 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:lineSpacingExtra="@dimen/_1sdp"
-                    android:text="تسویه شد"
+                    android:text="عوارض پارک حاشیه‌ای تسویه شد"
                     android:textAlignment="center"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/_13sdp"
+                    android:textSize="25sp"
                     app:fontFamily="@font/sahel_fa_num_semi_bold" />
             </androidx.appcompat.widget.LinearLayoutCompat>
-
         </androidx.appcompat.widget.LinearLayoutCompat>
-
-
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <TextView
