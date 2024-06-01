@@ -458,6 +458,7 @@ public class ChangePlateActivity extends AppCompatActivity {
 
     private void printMiniFactor(String tag1, String tag2, String tag3, String tag4) {
         binding.printArea.removeAllViews();
+        binding.printArea.setVisibility(View.VISIBLE);
 
         DebtClearedPrintTemplateBinding printTemplateBinding = DebtClearedPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
 
