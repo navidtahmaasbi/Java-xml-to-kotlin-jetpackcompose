@@ -277,7 +277,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (data.getAction().equals("plate-detection-result") && resultCode == Activity.RESULT_OK) {
+        if (data != null && data.getAction() != null && data.getAction().equals("plate-detection-result") && resultCode == Activity.RESULT_OK) {
             if (parkDialog != null) {
                 Bundle bundle = data.getExtras();
                 Uri sourceImageUri = (Uri) bundle.get("source_image_uri");
