@@ -33,13 +33,16 @@ import com.azarpark.watchman.web_service.responses.SendExitCodeResponse;
 import com.azarpark.watchman.web_service.responses.SplashResponse;
 import com.azarpark.watchman.web_service.responses.VerifyTransactionResponse;
 
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -66,6 +69,10 @@ public interface API {
 
     @POST("/api/watchman/park")
     Call<ParkResponse> parkCar(@Header("Authorization") String authToken, @Body ParkBody body);
+
+    @POST("/api/watchman/park")
+    @Multipart
+    Call<ParkResponse> parkCar(@Header("Authorization") String authToken, @Body ParkBody body, @Part MultipartBody.Part[] files);
 
     @GET("/api/watchman/car/history/{plate_type}/{tag1}/{tag2}/{tag3}/{tag4}/{limit}/{offset}")
     Call<DebtHistoryResponse> getCarDebtHistory(@Header("Authorization") String authToken,

@@ -86,6 +86,8 @@ dependencies {
 
     implementation 'com.firebase:geofire-android:2.1.1'
 
+    implementation 'id.zelory:compressor:1.0.4'
+
 }
 
 kapt {
