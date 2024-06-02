@@ -1,7 +1,9 @@
 package com.azarpark.watchman.activities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -20,6 +22,8 @@ import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.AddMobieToPlateResponse;
+import com.azarpark.watchman.models.DetectionResult;
+import com.azarpark.watchman.models.Plate;
 import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.payment.PaymentService;
 import com.azarpark.watchman.payment.ShabaType;
@@ -182,6 +186,11 @@ public class ChangePlateActivity extends AppCompatActivity {
 
         binding.payment.setOnClickListener(this::payment);
 
+        binding.scanPlateBtn.setOnClickListener(v -> {
+            Intent intent = new Intent("app.irana.cameraman.ACTION_SCAN_PLATE");
+            startActivityForResult(intent, 1000);
+        });
+
 
         wagePrice = getWagePrice();
     }
@@ -231,8 +240,32 @@ public class ChangePlateActivity extends AppCompatActivity {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        paymentService.onActivityResultHandler(requestCode, resultCode, data);
-//        loadData(false);
+        if (data != null && data.getAction() != null && data.getAction().equals("plate-detection-result") && resultCode == Activity.RESULT_OK) {
+            Bundle bundle = data.getExtras();
+            Uri sourceImageUri = (Uri) bundle.get("source_image_uri");
+            Uri plateImageUri = (Uri) bundle.get("plate_image_uri");
+            String plateTag = bundle.getString("plate_tag");
+
+            DetectionResult result = new DetectionResult(sourceImageUri, plateImageUri, plateTag);
+            Plate plate = Assistant.parse(result.getPlateTag());
+
+            if (Assistant.isIranPlate(result.getPlateTag())) {
+                setSelectedTab(PlateType.simple);
+                binding.plateSimpleTag1.setText(plate.getTag1());
+                binding.plateSimpleTag2.setText(plate.getTag2());
+                binding.plateSimpleTag3.setText(plate.getTag3());
+                binding.plateSimpleTag4.setText(plate.getTag4());
+            } else if (Assistant.isOldAras(result.getPlateTag())) {
+                setSelectedTab(PlateType.old_aras);
+                binding.plateOldAras.setText(plate.getTag1());
+            } else if (Assistant.isNewAras(result.getPlateTag())) {
+                setSelectedTab(PlateType.new_aras);
+                binding.plateNewArasTag1.setText(plate.getTag1());
+                binding.plateNewArasTag2.setText(plate.getTag2());
+            }
+        } else {
+            paymentService.onActivityResultHandler(requestCode, resultCode, data);
+        }
     }
 
     public void myOnBackPressed(View view) {
