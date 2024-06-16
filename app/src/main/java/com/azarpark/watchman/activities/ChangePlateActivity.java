@@ -51,7 +51,6 @@ public class ChangePlateActivity extends AppCompatActivity {
     int wagePrice = 0;
     int totalPrice = 0;
 
-    int balance = 0;
     String ptag1, ptag2, ptag3, ptag4;
 
     @Override
@@ -73,7 +72,6 @@ public class ChangePlateActivity extends AppCompatActivity {
                     @Override
                     public void onTransactionVerified(@NonNull Transaction transaction) {
                         printMiniFactor(ptag1, ptag2, ptag3, ptag4);
-                        resetData();
                     }
                 })
                 .build();
@@ -353,7 +351,6 @@ public class ChangePlateActivity extends AppCompatActivity {
         ptag2 = "";
         ptag3 = "";
         ptag4 = "";
-        balance = 0;
     }
 
     //------------------------------------------------------------ api calls
@@ -415,7 +412,7 @@ public class ChangePlateActivity extends AppCompatActivity {
 
         Assistant.hideKeyboard(ChangePlateActivity.this, binding.getRoot());
 
-        webService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, 0, 0).enqueue(new Callback<DebtHistoryResponse>() {
+        webService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, 0, 0, 1).enqueue(new Callback<DebtHistoryResponse>() {
             @Override
             public void onResponse(@NonNull Call<DebtHistoryResponse> call, @NonNull Response<DebtHistoryResponse> response) {
 
@@ -423,15 +420,13 @@ public class ChangePlateActivity extends AppCompatActivity {
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
                     return;
 
-                totalPrice = calculateTotalPrice(response.body().balance);
+                totalPrice = response.body().balance;
                 ptag1 = tag1;
                 ptag2 = tag2;
                 ptag3 = tag3;
                 ptag4 = tag4;
-                balance = response.body().balance;
 
                 binding.totalPriceTv.setText(totalPrice + " تومان");
-
                 binding.debtArea.setVisibility(View.VISIBLE);
             }
 
@@ -452,10 +447,41 @@ public class ChangePlateActivity extends AppCompatActivity {
 
         String mobile = binding.mobile.getText().toString();
 
+        submitMobile(
+                mobile,
+                tag1, tag2, tag3, tag4,
+                () -> {
+                    PaymentService.OnTransactionCreated finalAction = () -> {
+                        binding.payment.revertAnimation();
+                        binding.payment.setOnClickListener(ChangePlateActivity.this::payment);
+                    };
+
+                    if(amount == 0){
+                        finalAction.onCreateTransactionFinished();
+                        printMiniFactor(ptag1, ptag2, ptag3, ptag4);
+                    }
+                    else {
+                        paymentService.createTransaction(
+                                ShabaType.NON_CHARGE, plateType, tag1, tag2, tag3, tag4,
+                                amount, -1, Constants.TRANSACTION_TYPE_DEBT,
+                                finalAction, -1, true
+                        );
+                    }
+                },
+                retryFunction
+        );
+    }
+
+    public void submitMobile(String mobile, String tag1, String tag2, String tag3, String tag4, Runnable onDone, Runnable retryFunction){
+        // todo: comment for release
+//        if(true){
+//            onDone.run();
+//            return;
+//        }
+
         webService.getClient(this).addMobileToPlate(SharedPreferencesRepository.getTokenWithPrefix(), assistant.getPlateType(tag1, tag2, tag3, tag4).toString(), tag1 != null ? tag1 : "0", tag2 != null ? tag2 : "0", tag3 != null ? tag3 : "0", tag4 != null ? tag4 : "0", mobile, 1).enqueue(new Callback<AddMobieToPlateResponse>() {
             @Override
             public void onResponse(Call<AddMobieToPlateResponse> call, Response<AddMobieToPlateResponse> response) {
-
                 loadingBar.dismiss();
                 if (NewErrorHandler.apiResponseHasError(response, ChangePlateActivity.this)) {
                     binding.payment.revertAnimation();
@@ -463,22 +489,7 @@ public class ChangePlateActivity extends AppCompatActivity {
                     return;
                 }
 
-                PaymentService.OnTransactionCreated finalAction = () -> {
-                    binding.payment.revertAnimation();
-                    binding.payment.setOnClickListener(ChangePlateActivity.this::payment);
-                };
-
-                if(amount == 0){
-                    finalAction.onCreateTransactionFinished();
-                    printMiniFactor(ptag1, ptag2, ptag3, ptag4);
-                }
-                else {
-                    paymentService.createTransaction(
-                            ShabaType.NON_CHARGE, plateType, tag1, tag2, tag3, tag4,
-                            amount, -1, Constants.TRANSACTION_TYPE_DEBT,
-                            finalAction, -1
-                    );
-                }
+                onDone.run();
             }
 
             @Override
@@ -531,10 +542,6 @@ public class ChangePlateActivity extends AppCompatActivity {
         printTemplateBinding.text.setText("\n.\n.\n.");
 
         paymentService.print(binding.printArea, 1500, this::resetData);
-    }
-
-    private int calculateTotalPrice(int balance) {
-        return balance < 0 ? ((balance * -1) + wagePrice) : 0;
     }
 
     private int getWagePrice() {

@@ -47,7 +47,7 @@ abstract class PaymentService(
         shabaType: ShabaType, plateType: PlateType,
         tag1: String?, tag2: String?, tag3: String?, tag4: String?,
         amount: Int, placeID: Int, transactionType: Int, transactionListener: OnTransactionCreated?,
-        discountId: Int
+        discountId: Int, isWage: Boolean
     ) {
         if (isCreatingTransaction) return
         isCreatingTransaction = true
@@ -55,7 +55,7 @@ abstract class PaymentService(
         val functionRunnable = Runnable {
             createTransaction(
                 shabaType, plateType, tag1, tag2, tag3, tag4, amount, placeID, transactionType,
-                transactionListener, discountId
+                transactionListener, discountId, isWage
             )
         }
 
@@ -123,10 +123,12 @@ abstract class PaymentService(
                 SharedPreferencesRepository.setValue(Constants.TAG4, tag4)
                 SharedPreferencesRepository.setValue(Constants.AMOUNT, amount.toString())
                 SharedPreferencesRepository.setValue(Constants.PLACE_ID, Integer.toString(placeID))
+                SharedPreferencesRepository.setValue(Constants.IS_WAGE_TRANSACTION, isWage.toString())
                 SharedPreferencesRepository.setValue(
                     Constants.OUR_TOKEN,
                     java.lang.Long.toString(our_token)
                 )
+
 
                 launchPayment(
                     shabaType,
@@ -159,6 +161,7 @@ abstract class PaymentService(
             Assistant.updateLastVerifyRequestTime()
 
             val functionRunnable = Runnable { verifyTransaction(transaction) }
+
             webService.getClient(activity).verifyTransaction(
                 SharedPreferencesRepository.getTokenWithPrefix(),
                 transaction.amount,
@@ -171,7 +174,8 @@ abstract class PaymentService(
                 transaction.card_number,
                 transaction.bank_datetime,
                 transaction.trace_number,
-                transaction.result_message
+                transaction.result_message,
+                if(transaction.isWage) 1 else 0
             ).enqueue(object : Callback<VerifyTransactionResponse> {
                 override fun onResponse(
                     call: Call<VerifyTransactionResponse>,

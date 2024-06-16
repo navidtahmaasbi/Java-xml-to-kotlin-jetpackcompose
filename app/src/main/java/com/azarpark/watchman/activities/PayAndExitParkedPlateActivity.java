@@ -439,7 +439,7 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
                                 ShabaType.NON_CHARGE, plateType,
                                 tag1, tag2, tag3, tag4,
                                 debtSumIntegerValue, placeId, Constants.TRANSACTION_TYPE_PARK_PRICE,
-                                null, -1
+                                null, -1, false
                         );
 
                         return true;

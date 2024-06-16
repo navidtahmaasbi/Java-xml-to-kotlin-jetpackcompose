@@ -515,7 +515,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
                 () -> {
                     binding.submit.revertAnimation();
                     binding.submit.setOnClickListener(this::submit);
-                }, -1
+                }, -1, false
         );
     }
 
@@ -525,7 +525,7 @@ public class CarNumberChargeActivity extends AppCompatActivity {
         LoadingBar loadingBar = new LoadingBar(CarNumberChargeActivity.this);
         loadingBar.show();
 
-        webService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
+        webService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset, 0).enqueue(new Callback<DebtHistoryResponse>() {
             @Override
             public void onResponse(@NonNull Call<DebtHistoryResponse> call, @NonNull Response<DebtHistoryResponse> response) {
 

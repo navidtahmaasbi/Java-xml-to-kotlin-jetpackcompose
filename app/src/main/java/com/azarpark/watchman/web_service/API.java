@@ -82,7 +82,8 @@ public interface API {
                                                 @Path("tag3") String tag3,
                                                 @Path("tag4") String tag4,
                                                 @Path("limit") int limit,
-                                                @Path("offset") int offset
+                                                @Path("offset") int offset,
+                                                @Query("is_wage") int isWage
     );
 
     @GET("/api/watchman/times/submit/{type}/{latitude}/{longitude}")
@@ -226,7 +227,8 @@ public interface API {
                                                       @Query("card_number") String card_number,
                                                       @Query("bank_datetime") String bank_datetime,
                                                       @Query("trace_number") String trace_number,
-                                                      @Query("result_message") String result_message
+                                                      @Query("result_message") String result_message,
+                                                      @Query("is_wage") int isWage
     );
 
 

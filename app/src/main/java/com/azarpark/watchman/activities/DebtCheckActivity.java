@@ -367,7 +367,7 @@ public class DebtCheckActivity extends AppCompatActivity {
 
         Assistant.hideKeyboard(DebtCheckActivity.this, binding.getRoot());
 
-        webService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
+        webService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset, 0).enqueue(new Callback<DebtHistoryResponse>() {
             @Override
             public void onResponse(@NonNull Call<DebtHistoryResponse> call, @NonNull Response<DebtHistoryResponse> response) {
 
@@ -410,7 +410,7 @@ public class DebtCheckActivity extends AppCompatActivity {
                 () -> {
                     binding.payment.revertAnimation();
                     binding.payment.setOnClickListener(this::payment);
-                }, -1
+                }, -1, false
         );
     }
 

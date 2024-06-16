@@ -143,7 +143,8 @@ public class SamanPayment extends PaymentService {
                 });
                 messageDialog.show(getActivity().getSupportFragmentManager(), MessageDialog.TAG);
             }
-
+            boolean isWageTransaction = Boolean.parseBoolean(SharedPreferencesRepository.getValue(Constants.IS_WAGE_TRANSACTION, "false"));
+            transaction.setWage(isWageTransaction);
             SharedPreferencesRepository.updateTransactions02(transaction);
             verifyTransaction(transaction);
         } else if (resultCode == Activity.RESULT_OK && requestCode == QR_SCANNER_REQUEST_CODE) {

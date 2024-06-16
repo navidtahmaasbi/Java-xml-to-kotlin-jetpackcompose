@@ -66,7 +66,7 @@ public class DebtListActivity extends AppCompatActivity {
         LoadingBar loadingBar = new LoadingBar(DebtListActivity.this);
         loadingBar.show();
 
-        webService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
+        webService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset, 0).enqueue(new Callback<DebtHistoryResponse>() {
             @Override
             public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
 

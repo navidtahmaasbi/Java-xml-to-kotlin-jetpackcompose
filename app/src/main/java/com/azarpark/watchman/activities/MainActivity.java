@@ -604,7 +604,7 @@ public class MainActivity extends AppCompatActivity {
                 paymentService.createTransaction(ShabaType.NON_CHARGE, selectedPlateType,
                         place.tag1, place.tag2, place.tag3, place.tag4,
                         price, place.id, Constants.TRANSACTION_TYPE_PARK_PRICE,
-                        null, -1
+                        null, -1, false
                 );
             }
 
@@ -632,7 +632,7 @@ public class MainActivity extends AppCompatActivity {
                             ShabaType.CHARGE, plateType,
                             tag1, tag2, tag3, tag4,
                             amount, -1, Constants.TRANSACTION_TYPE_CHAREG,
-                            () -> plateChargeDialog.dismiss(), -1
+                            () -> plateChargeDialog.dismiss(), -1, false
                     );
                 }, place, hasMobile);
 
@@ -651,7 +651,7 @@ public class MainActivity extends AppCompatActivity {
                             tag1, tag2, tag3, tag4,
                             discount.price, -1,
                             Constants.TRANSACTION_TYPE_DISCOUNT, () -> {
-                            }, discount.id
+                            }, discount.id, false
                     );
                 }, place, hasMobile);
 
@@ -1081,7 +1081,7 @@ public class MainActivity extends AppCompatActivity {
         webService.getClient(getApplicationContext()).verifyTransaction(SharedPreferencesRepository.getTokenWithPrefix(), transaction.getAmount(),
                 transaction.getOur_token(), transaction.getBank_token(), transaction.getPlaceID(), transaction.getStatus(), transaction.getBank_type(),
                 transaction.getState(), transaction.getCard_number(), transaction.getBank_datetime(), transaction.getTrace_number(),
-                transaction.getResult_message()).enqueue(new Callback<VerifyTransactionResponse>() {
+                transaction.getResult_message(), 0).enqueue(new Callback<VerifyTransactionResponse>() {
             @Override
             public void onResponse(Call<VerifyTransactionResponse> call, Response<VerifyTransactionResponse> response) {
 
@@ -1138,7 +1138,7 @@ public class MainActivity extends AppCompatActivity {
 
         Runnable functionRunnable = () -> getCarDebtHistory02(plateType, tag1, tag2, tag3, tag4, limit, offset);
 
-        webService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset).enqueue(new Callback<DebtHistoryResponse>() {
+        webService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset, 0).enqueue(new Callback<DebtHistoryResponse>() {
             @Override
             public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
 

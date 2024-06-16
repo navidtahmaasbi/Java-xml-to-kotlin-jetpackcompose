@@ -17,6 +17,7 @@ public class Transaction {
     String trace_number;
     String result_message;
     String createTime;
+    boolean isWage;
 
     public Transaction(String amount,
                        String our_token,
@@ -157,6 +158,14 @@ public class Transaction {
 
     public void setAmount(String amount) {
         this.amount = amount;
+    }
+
+    public boolean isWage() {
+        return isWage;
+    }
+
+    public void setWage(boolean wage) {
+        isWage = wage;
     }
 
     public String string() {
