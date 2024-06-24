@@ -219,6 +219,7 @@ public class SplashActivity extends AppCompatActivity {
                 SharedPreferencesRepository.setValue(Constants.guide_url, response.body().guide_url);
                 SharedPreferencesRepository.setValue(Constants.print_description_2, response.body().print_description2);
 
+                SharedPreferencesRepository.setValue(Constants.WAGE_SHABA, response.body().wage_shaba);
                 SharedPreferencesRepository.setWage(response.body().is_wage, response.body().change_plate_wage_price);
 
                 SharedPreferencesRepository.setValue(Constants.WATCHMAN_NAME, response.body().watchman.name);
