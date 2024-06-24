@@ -180,8 +180,18 @@ public class SamanPayment extends PaymentService {
         if(AppConfig.Companion.isArdabil()){
             shaba += Constants.ARDABIL_SHABA;
         }
-        else{
-            if (shabaType == ShabaType.CHARGE) {
+        else{ // TABRIZ
+            boolean isWage = false;
+            try{
+                isWage = Boolean.parseBoolean(SharedPreferencesRepository.getValue(Constants.IS_WAGE_TRANSACTION, "false"));
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+            if(isWage){
+                shaba += SharedPreferencesRepository.getValue(Constants.WAGE_SHABA);
+            }
+            else if (shabaType == ShabaType.CHARGE) {
                 shaba += Constants.CHARGE_SHABA;
             } else {
                 shaba += Constants.NON_CHARGE_SHABA;

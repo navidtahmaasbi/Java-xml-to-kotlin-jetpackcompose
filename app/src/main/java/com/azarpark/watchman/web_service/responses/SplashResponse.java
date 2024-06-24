@@ -30,4 +30,5 @@ public class SplashResponse {
     public Map<String, TicketMessage> messages;
     public boolean is_wage;
     public String change_plate_wage_price;
+    public String wage_shaba;
 }
