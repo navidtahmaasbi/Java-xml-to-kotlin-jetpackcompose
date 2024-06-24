@@ -206,6 +206,7 @@
                     android:paddingTop="@dimen/_5sdp">
 
                     <androidx.cardview.widget.CardView
+                        android:id="@+id/check_debt_card"
                         android:layout_width="0dp"
                         android:layout_height="@dimen/_50sdp"
                         android:layout_marginRight="@dimen/_5sdp"
@@ -257,6 +258,7 @@
                     </androidx.cardview.widget.CardView>
 
                     <androidx.cardview.widget.CardView
+                        android:id="@+id/car_balance_card"
                         android:layout_width="0dp"
                         android:layout_height="@dimen/_50sdp"
                         android:layout_marginLeft="@dimen/_5sdp"
@@ -316,6 +318,7 @@
                     android:paddingTop="@dimen/_5sdp">
 
                     <androidx.cardview.widget.CardView
+                        android:id="@+id/check_current_park_card"
                         android:layout_width="0dp"
                         android:layout_height="@dimen/_50sdp"
                         android:layout_marginTop="@dimen/_10sdp"
@@ -368,6 +371,7 @@
                     </androidx.cardview.widget.CardView>
 
                     <androidx.cardview.widget.CardView
+                        android:id="@+id/buy_discount_card"
                         android:layout_width="0dp"
                         android:layout_height="@dimen/_50sdp"
                         android:layout_marginLeft="@dimen/_5sdp"

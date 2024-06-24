@@ -16,7 +16,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -66,7 +65,6 @@ import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.ImageUploadCallback;
 import com.azarpark.watchman.web_service.NewErrorHandler;
-import com.azarpark.watchman.web_service.ProgressRequestBody;
 import com.azarpark.watchman.web_service.WebService;
 import com.azarpark.watchman.web_service.bodies.ParkBody;
 import com.azarpark.watchman.web_service.responses.DebtHistoryResponse;
@@ -77,17 +75,14 @@ import com.azarpark.watchman.web_service.responses.ParkResponse;
 import com.azarpark.watchman.web_service.responses.PlacesResponse;
 import com.azarpark.watchman.web_service.responses.VerifyTransactionResponse;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import id.zelory.compressor.Compressor;
-import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -405,13 +400,30 @@ public class MainActivity extends AppCompatActivity {
             popupWindow.dismiss();
         });
 
+        CardView check_current_park_card = popupView.findViewById(R.id.check_current_park_card);
+        CardView buy_discount_card = popupView.findViewById(R.id.buy_discount_card);
+        CardView check_debt_card = popupView.findViewById(R.id.check_debt_card);
+        CardView car_balance_card = popupView.findViewById(R.id.car_balance_card);
         CardView changePlateBtn = popupView.findViewById(R.id.change_plate_btn);
         changePlateBtn.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, ChangePlateActivity.class);
             startActivity(intent);
             popupWindow.dismiss();
         });
-        changePlateBtn.setVisibility(SharedPreferencesRepository.getIsWage() ? View.VISIBLE : View.GONE);
+
+        if (SharedPreferencesRepository.getIsWage()) {
+            check_current_park_card.setVisibility(View.GONE);
+            buy_discount_card.setVisibility(View.GONE);
+            check_debt_card.setVisibility(View.GONE);
+            car_balance_card.setVisibility(View.GONE);
+            changePlateBtn.setVisibility(View.VISIBLE);
+        } else {
+            check_current_park_card.setVisibility(View.VISIBLE);
+            buy_discount_card.setVisibility(View.VISIBLE);
+            check_debt_card.setVisibility(View.VISIBLE);
+            car_balance_card.setVisibility(View.VISIBLE);
+            changePlateBtn.setVisibility(View.GONE);
+        }
 
 //        popupView.findViewById(R.id.about_us).setOnLongClickListener(new View.OnLongClickListener() {
 //            @Override
