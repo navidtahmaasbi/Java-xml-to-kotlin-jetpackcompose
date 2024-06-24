@@ -185,8 +185,13 @@ public class ChangePlateActivity extends AppCompatActivity {
         binding.payment.setOnClickListener(this::payment);
 
         binding.scanPlateBtn.setOnClickListener(v -> {
-            Intent intent = new Intent("app.irana.cameraman.ACTION_SCAN_PLATE");
-            startActivityForResult(intent, 1000);
+            try {
+                Intent intent = new Intent("app.irana.cameraman.ACTION_SCAN_PLATE");
+                startActivityForResult(intent, 1000);
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
         });
 
 
