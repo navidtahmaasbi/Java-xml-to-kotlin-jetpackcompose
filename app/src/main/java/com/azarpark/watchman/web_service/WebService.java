@@ -6,6 +6,8 @@ import android.content.Context;
 import com.azarpark.watchman.BuildConfig;
 import com.azarpark.watchman.core.AppConfig;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
@@ -74,6 +76,10 @@ public class WebService {
             OkHttpClient.Builder builder = new OkHttpClient.Builder();
             builder.sslSocketFactory(sslSocketFactory);
             builder.hostnameVerifier((hostname, session) -> true);
+            builder.readTimeout(60, TimeUnit.SECONDS);
+            builder.writeTimeout(60, TimeUnit.SECONDS);
+            builder.callTimeout(60, TimeUnit.SECONDS);
+            builder.connectTimeout(60, TimeUnit.SECONDS);
 
             builder.retryOnConnectionFailure(false);
 
