@@ -3,6 +3,7 @@ package com.azarpark.watchman.activities;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
@@ -245,11 +246,11 @@ public class ChangePlateActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (data != null && data.getAction() != null && data.getAction().equals("plate-detection-result") && resultCode == Activity.RESULT_OK) {
             Bundle bundle = data.getExtras();
-            Uri sourceImageUri = (Uri) bundle.get("source_image_uri");
-            Uri plateImageUri = (Uri) bundle.get("plate_image_uri");
+            Bitmap sourceBmp = (Bitmap) bundle.getParcelable("source_bitmap");
+            Bitmap detectionBmp = (Bitmap) bundle.getParcelable("detection_bitmap");
             String plateTag = bundle.getString("plate_tag");
 
-            DetectionResult result = new DetectionResult(sourceImageUri, plateImageUri, plateTag);
+            DetectionResult result = new DetectionResult(sourceBmp, detectionBmp, plateTag);
             Plate plate = Assistant.parse(result.getPlateTag());
 
             if (Assistant.isIranPlate(result.getPlateTag())) {

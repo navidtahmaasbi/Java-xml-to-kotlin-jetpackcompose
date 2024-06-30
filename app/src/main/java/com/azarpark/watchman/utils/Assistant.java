@@ -33,8 +33,15 @@ import com.azarpark.watchman.models.MyTime;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.models.Plate;
 import com.yandex.metrica.YandexMetrica;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,6 +51,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
+import kotlin.random.Random;
 import saman.zamani.persiandate.PersianDate;
 
 public class Assistant {
@@ -984,4 +992,30 @@ public class Assistant {
         return null;
     }
 
+    public static String generateFilename(String format){
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(new Date());
+        return timeStamp + "_" + (Random.Default.nextInt(10000)) + "." + format;
+    }
+
+    public static File createCacheFile(Context context, String format){
+        return new File(context.getCacheDir(), generateFilename(format));
+    }
+
+    public static File writeBitmapToFile(Bitmap bitmap, File file) throws IOException {
+        //create a file to write bitmap data
+        file.createNewFile();
+
+        //Convert bitmap to byte array
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100 /*ignored for PNG*/, bos);
+        byte[] bitmapdata = bos.toByteArray();
+
+        //write the bytes in file
+        FileOutputStream fos = new FileOutputStream(file);
+        fos.write(bitmapdata);
+        fos.flush();
+        fos.close();
+
+        return file;
+    }
 }

@@ -1,34 +1,35 @@
 package com.azarpark.watchman.models;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 
 public class DetectionResult {
-    private Uri sourceImageUri;
-    private Uri plateImageUri;
+    private Bitmap sourceImageUri;
+    private Bitmap plateImageUri;
     private String plateTag;
 
     public DetectionResult() {
     }
 
-    public DetectionResult(Uri sourceImageUri, Uri plateImageUri, String plateTag) {
+    public DetectionResult(Bitmap sourceImageUri, Bitmap plateImageUri, String plateTag) {
         this.sourceImageUri = sourceImageUri;
         this.plateImageUri = plateImageUri;
         this.plateTag = plateTag;
     }
 
-    public Uri getSourceImageUri() {
+    public Bitmap getSourceImageUri() {
         return sourceImageUri;
     }
 
-    public void setSourceImageUri(Uri sourceImageUri) {
+    public void setSourceImageUri(Bitmap sourceImageUri) {
         this.sourceImageUri = sourceImageUri;
     }
 
-    public Uri getPlateImageUri() {
+    public Bitmap getPlateImageUri() {
         return plateImageUri;
     }
 
-    public void setPlateImageUri(Uri plateImageUri) {
+    public void setPlateImageUri(Bitmap plateImageUri) {
         this.plateImageUri = plateImageUri;
     }
 

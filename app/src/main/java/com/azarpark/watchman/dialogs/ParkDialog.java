@@ -1,10 +1,13 @@
 package com.azarpark.watchman.dialogs;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,8 +19,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.DialogFragment;
 
+import com.azarpark.watchman.BuildConfig;
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.databinding.ParkDialogBinding;
 import com.azarpark.watchman.enums.PlateType;
@@ -28,7 +33,14 @@ import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.models.Plate;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
+import com.azarpark.watchman.utils.Logger;
 import com.azarpark.watchman.web_service.bodies.ParkBody;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class ParkDialog extends DialogFragment {
 
@@ -424,8 +436,42 @@ public class ParkDialog extends DialogFragment {
         }
     }
 
-    public void setDetectionResult(DetectionResult result) {
-//        Toast.makeText(getContext(), "result: " + result.getPlateTag(), Toast.LENGTH_SHORT).show();
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (data != null && data.getAction() != null && data.getAction().equals("plate-detection-result") && resultCode == Activity.RESULT_OK) {
+            Bundle bundle = data.getExtras();
+
+            Bitmap sourceBmp = (Bitmap) bundle.getParcelable("source_bitmap");
+            Bitmap detectionBmp = (Bitmap) bundle.getParcelable("detection_bitmap");
+            String plateTag = bundle.getString("plate_tag");
+
+            File sourceImage = new File(getActivity().getFilesDir(), Assistant.generateFilename("jpg"));
+            try (OutputStream outputStream = new FileOutputStream(sourceImage)) {
+                sourceBmp.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            File detectionImage = new File(getActivity().getFilesDir(), Assistant.generateFilename("jpg"));
+            try (OutputStream outputStream = new FileOutputStream(detectionImage)) {
+                detectionBmp.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            Logger.d(sourceImage.getAbsolutePath());
+            Logger.d(detectionImage.getAbsolutePath());
+            DetectionResult result = new DetectionResult(sourceBmp, detectionBmp, plateTag);
+            setDetectionResult(result);
+        }
+    }
+
+    private void setDetectionResult(DetectionResult result){
+        //        Toast.makeText(getContext(), "result: " + result.getPlateTag(), Toast.LENGTH_SHORT).show();
         scanResult = result;
         Plate plate = Assistant.parse(result.getPlateTag());
 
