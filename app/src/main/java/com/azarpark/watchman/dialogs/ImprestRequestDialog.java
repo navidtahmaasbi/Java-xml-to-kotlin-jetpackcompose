@@ -35,7 +35,6 @@ public class ImprestRequestDialog extends DialogFragment {
     Assistant assistant;
     WebService webService = new WebService();
     DialogActions dialogActions;
-    int imprestLimit;
 
     @Nullable
     @Override
@@ -61,14 +60,9 @@ public class ImprestRequestDialog extends DialogFragment {
         String cardNumber = SharedPreferencesRepository.getValue(Constants.cardNumber, "");
         String accountNumber = SharedPreferencesRepository.getValue(Constants.accountNumber, "");
         String shabaNumber = SharedPreferencesRepository.getValue(Constants.shabaNumber, "");
+        String imprestTitle = SharedPreferencesRepository.getValue(Constants.IMPREST_TITLE, "");
 
-        int day = Assistant.getDate().day;
-        if (day > 25 || day <= 5)
-            imprestLimit = 1000000;
-        else if (day <= 15)
-            imprestLimit = 2000000;
-        else
-            imprestLimit = 3000000;
+        binding.imprestTitleTv.setText(imprestTitle);
 
         if (!cardNumber.isEmpty())
             binding.input.setText(cardNumber);
@@ -97,8 +91,6 @@ public class ImprestRequestDialog extends DialogFragment {
             final String bankAccountName = binding.bankAccountName.getText().toString();
             if (amount.isEmpty()) {
                 Toast.makeText(requireContext(), "مبلغ را وارد کنید", Toast.LENGTH_SHORT).show();
-            } else if (Integer.parseInt(amount) > imprestLimit) {
-                Toast.makeText(requireContext(), "محدودیت مساعده در این تاریخ برابر " + imprestLimit + " تومان میباشد.", Toast.LENGTH_SHORT).show();
             } else if (binding.type.getCheckedRadioButtonId() == binding.cardNumber.getId() && !isCardNumber(input)) {
                 Toast.makeText(requireContext(), "شماره کارت را درست وارد کنید", Toast.LENGTH_SHORT).show();
             } else if (binding.type.getCheckedRadioButtonId() == binding.bankAccountNumber.getId() && !isBankAccountNumber(input)) {

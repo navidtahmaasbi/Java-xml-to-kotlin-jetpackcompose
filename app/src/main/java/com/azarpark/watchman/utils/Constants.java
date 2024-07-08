@@ -76,4 +76,6 @@ public class Constants {
     public static String IS_WAGE = "is_wage";
     public static String CHANGE_PLATE_WAGE_PRICE = "change_plate_wage_price";
     public static String WAGE_SHABA = "wage_shaba";
+    public static String IMPREST_TITLE = "imprest_title";
+    public static String VACATION_TITLE = "vacation_title";
 }

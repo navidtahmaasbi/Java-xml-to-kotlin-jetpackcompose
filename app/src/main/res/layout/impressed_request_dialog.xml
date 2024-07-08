@@ -10,6 +10,7 @@
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/imprest_title_tv"
         android:layout_marginTop="@dimen/_10sdp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,7 +18,6 @@
         android:layout_marginRight="@dimen/_10sdp"
         android:layout_marginLeft="@dimen/_10sdp"
         android:lineSpacingExtra="@dimen/_5sdp"
-        android:text="مقدار مساعده از تاریخ 26 هر ماه تا 5 ماه بعد یک میلیون تومان, از 6 هر ماه تا 15 همان ماه دو میلیون تومان و از 16 تا 25 همان ماه سه میلیون تومان می باشد"
         android:textColor="@color/black"
         android:layout_marginBottom="@dimen/_5sdp"
         android:textSize="@dimen/_8sdp"

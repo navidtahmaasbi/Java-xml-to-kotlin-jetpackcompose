@@ -14,6 +14,7 @@ import com.azarpark.watchman.dialogs.VacationRequestDialog;
 import com.azarpark.watchman.dialogs.VacationRequestDialog02;
 import com.azarpark.watchman.models.GetVacationsResponse;
 import com.azarpark.watchman.models.RemoveVacationResponse;
+import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.NewErrorHandler;
 import com.azarpark.watchman.web_service.WebService;
@@ -79,15 +80,7 @@ public class VacationsActivity extends AppCompatActivity {
 
     private void showMessage() {
 
-        String message = "* درخواست مرخصی ساعتی نباید بیشتر از 3 ساعت باشد." +
-                "\n" +
-                "* جمع مرخصی ها در ماه 2.5 روز می باشد." +
-                "\n" +
-                "* درخواست مرخصی روزانه باید یک روز قبل تا ساعت 16 اعلام شود." +
-                "\n" +
-                "* حق مرخصی 2 روز در ماه می باشد." +
-                "\n" +
-                "* در صورت ترک کار بعد از عدم تایید مرخصی، غیبت ثبت خواهد شد.";
+        String message = SharedPreferencesRepository.getValue(Constants.VACATION_TITLE);
         messageDialog = new MessageDialog("توجه", message, "متوجه شدم", () -> messageDialog.dismiss());
         messageDialog.setCancelable(false);
         if (!messageHasShown) {

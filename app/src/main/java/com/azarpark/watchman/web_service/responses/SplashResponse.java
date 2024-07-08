@@ -31,4 +31,6 @@ public class SplashResponse {
     public boolean is_wage;
     public String change_plate_wage_price;
     public String wage_shaba;
+    public String imprest_title;
+    public String vacation_title;
 }
