@@ -2,6 +2,7 @@ package com.azarpark.watchman;
 
 import android.app.Application;
 
+import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.yandex.metrica.YandexMetrica;
 import com.yandex.metrica.YandexMetricaConfig;
@@ -23,6 +24,11 @@ public class WatchmanApplication extends Application {
 
         SharedPreferencesRepository.create(getApplicationContext());
 
+        Thread.setDefaultUncaughtExceptionHandler(new LocalCrashReport(getLogFilePath()));
     }
 
+    private String getLogFilePath() {
+        String date = Assistant.getDate().toString();
+        return String.format("%s/watchman_log_%s.log", getExternalFilesDir(null).getAbsolutePath(), date);
+    }
 }
