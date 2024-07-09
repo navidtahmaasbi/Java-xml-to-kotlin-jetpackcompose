@@ -179,6 +179,7 @@ public class VacationRequestDialog02 extends DialogFragment {
             }
         });
 
+
         binding.cancel.setOnClickListener(view -> dismiss());
 
         binding.type.setOnCheckedChangeListener((radioGroup, i) -> {
