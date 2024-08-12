@@ -78,4 +78,5 @@ public class Constants {
     public static String WAGE_SHABA = "wage_shaba";
     public static String IMPREST_TITLE = "imprest_title";
     public static String VACATION_TITLE = "vacation_title";
+    public static String CHARGE_ITEMS = "charge_items";
 }

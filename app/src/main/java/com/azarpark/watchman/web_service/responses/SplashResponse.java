@@ -4,9 +4,7 @@ import com.azarpark.watchman.models.KeyValueModel;
 import com.azarpark.watchman.models.TicketMessage;
 import com.azarpark.watchman.models.Update;
 import com.azarpark.watchman.models.Watchman;
-import com.google.gson.annotations.SerializedName;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -33,4 +31,5 @@ public class SplashResponse {
     public String wage_shaba;
     public String imprest_title;
     public String vacation_title;
+    public List<ChargeItem> watchmen_charge_items;
 }

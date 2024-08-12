@@ -22,7 +22,9 @@ import com.azarpark.watchman.databinding.PlateChargeDialogBinding;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
+import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.WebService;
+import com.azarpark.watchman.web_service.responses.ChargeItem;
 
 import java.util.ArrayList;
 
@@ -109,13 +111,10 @@ public class PlateChargeDialog extends DialogFragment {
 
         ArrayList<Integer> items = new ArrayList<>();
 
-        items.add(1000);
-        items.add(10000);
-        items.add(20000);
-        items.add(30000);
-        items.add(50000);
-        items.add(70000);
-        items.add(100000);
+        String[] cis = ChargeItem.decode(SharedPreferencesRepository.getValue(Constants.CHARGE_ITEMS, ""));
+        for (String ci : cis) {
+            items.add(Integer.parseInt(ci));
+        }
 
         adapter.setItems(items);
         binding.submit.setOnClickListener(view -> {

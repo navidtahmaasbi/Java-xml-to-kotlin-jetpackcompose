@@ -26,6 +26,7 @@ import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.NewErrorHandler;
 import com.azarpark.watchman.web_service.WebService;
+import com.azarpark.watchman.web_service.responses.ChargeItem;
 import com.azarpark.watchman.web_service.responses.GetCitiesResponse;
 import com.azarpark.watchman.web_service.responses.SplashResponse;
 
@@ -224,6 +225,8 @@ public class SplashActivity extends AppCompatActivity {
 
                 SharedPreferencesRepository.setValue(Constants.IMPREST_TITLE, response.body().imprest_title);
                 SharedPreferencesRepository.setValue(Constants.VACATION_TITLE, response.body().vacation_title);
+
+                SharedPreferencesRepository.setValue(Constants.CHARGE_ITEMS, ChargeItem.encode(response.body().watchmen_charge_items));
 
                 SharedPreferencesRepository.setValue(Constants.WATCHMAN_NAME, response.body().watchman.name);
                 SharedPreferencesRepository.setValue(Constants.WATCHMAN_MOBILE, response.body().watchman.phone);
