@@ -3,8 +3,11 @@ package com.azarpark.watchman.dialogs;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -24,6 +27,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.azarpark.watchman.BuildConfig;
 import com.azarpark.watchman.R;
+import com.azarpark.watchman.ai.tools.Rect;
 import com.azarpark.watchman.databinding.ParkDialogBinding;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnParkClicked;
@@ -40,6 +44,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 public class ParkDialog extends DialogFragment {
@@ -439,35 +444,38 @@ public class ParkDialog extends DialogFragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (data != null && data.getAction() != null && data.getAction().equals("plate-detection-result") && resultCode == Activity.RESULT_OK) {
+            // Get the file Uri from the result
+            Uri sourceUri = data.getData();
+            Bitmap sourceBmp = loadBitmapFromUri(sourceUri, getContext());
+
             Bundle bundle = data.getExtras();
-
-            Bitmap sourceBmp = (Bitmap) bundle.getParcelable("source_bitmap");
-            Bitmap detectionBmp = (Bitmap) bundle.getParcelable("detection_bitmap");
             String plateTag = bundle.getString("plate_tag");
-
-            File sourceImage = new File(getActivity().getFilesDir(), Assistant.generateFilename("jpg"));
-            try (OutputStream outputStream = new FileOutputStream(sourceImage)) {
-                sourceBmp.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
+            String cropData = bundle.getString("crop_data");
+            Rect cropRect = null;
+            try {
+                cropRect = Rect.decode(cropData);
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-
-            File detectionImage = new File(getActivity().getFilesDir(), Assistant.generateFilename("jpg"));
-            try (OutputStream outputStream = new FileOutputStream(detectionImage)) {
-                detectionBmp.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            Logger.d(sourceImage.getAbsolutePath());
-            Logger.d(detectionImage.getAbsolutePath());
+            Bitmap detectionBmp = Bitmap.createBitmap(sourceBmp, cropRect.x, cropRect.y, cropRect.width, cropRect.height);
             DetectionResult result = new DetectionResult(sourceBmp, detectionBmp, plateTag);
             setDetectionResult(result);
         }
+    }
+
+    public Bitmap loadBitmapFromUri(Uri uri, Context context) {
+        Bitmap bitmap = null;
+        try {
+            ContentResolver contentResolver = context.getContentResolver();
+            InputStream inputStream = contentResolver.openInputStream(uri);
+            if (inputStream != null) {
+                bitmap = BitmapFactory.decodeStream(inputStream);
+                inputStream.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bitmap;
     }
 
     private void setDetectionResult(DetectionResult result){
