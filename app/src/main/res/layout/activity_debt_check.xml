@@ -421,21 +421,25 @@
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
-                    <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
+
+
+                    <com.github.leandroborgesferreira.loadingbutton.customViews.CircularProgressButton
                         android:id="@+id/payment"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="@dimen/_20sdp"
                         android:background="@drawable/blue_bg_5"
                         android:fontFamily="@font/iran_sans"
-                        android:gravity="center"
                         android:paddingLeft="@dimen/_40sdp"
                         android:paddingTop="@dimen/_8sdp"
                         android:paddingRight="@dimen/_40sdp"
                         android:paddingBottom="@dimen/_8sdp"
                         android:text="پرداخت بدهی"
-                        android:textColor="@color/white" />
+                        android:textColor="@color/white"
+                        app:spinning_bar_width="4dp"
+                        app:spinning_bar_color="#FFF"
+                        app:spinning_bar_padding="6dp"/>
 
                 </LinearLayout>
 

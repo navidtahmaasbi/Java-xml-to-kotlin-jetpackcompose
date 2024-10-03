@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
-
 import ir.sep.android.Service.IProxy;
 
 public class SamanServiceConnection implements ServiceConnection {

@@ -8,6 +8,11 @@ import com.azarpark.watchman.adapters.NotificationsAdapter
 import com.azarpark.watchman.databinding.ActivityNotificationsBinding
 import com.azarpark.watchman.enums.NotificationType
 import com.azarpark.watchman.utils.SharedPreferencesRepository
+import com.github.leandroborgesferreira.loadingbutton.customViews.CircularProgressButton
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.OnBackPressedDispatcher
+import androidx.activity.OnBackPressedDispatcherOwner
+
 
 class NotificationsActivity : AppCompatActivity() {
 
@@ -27,9 +32,9 @@ class NotificationsActivity : AppCompatActivity() {
 
         binding.clearAll.setOnClickListener {
             SharedPreferencesRepository.removeAllNotifications()
-            onBackPressed()
+            OnBackPressedDispatcher()
         }
-        binding.back.setOnClickListener { onBackPressed() }
+        binding.back.setOnClickListener { OnBackPressedDispatcher() }
 
         adapter = NotificationsAdapter {
 

@@ -1,7 +1,5 @@
 package com.azarpark.watchman.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -11,16 +9,18 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.databinding.ActivityExitRequestBinding;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.enums.PlateType;
-import com.azarpark.watchman.web_service.responses.ExitRequestResponse;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.NewErrorHandler;
 import com.azarpark.watchman.web_service.WebService;
+import com.azarpark.watchman.web_service.responses.ExitRequestResponse;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -282,10 +282,20 @@ public class ExitRequestActivity extends AppCompatActivity {
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
                     return;
 
-                messageDialog = new MessageDialog("درخواست خروج", response.body().getDescription(), "تایید", () -> {
-                    messageDialog.dismiss();
-                    onBackPressed();
-                });
+//                messageDialog = new MessageDialog("درخواست خروج", response.body().getDescription(), "تایید", () -> {
+//                    messageDialog.dismiss();
+//                    onBackPressed();
+//                });
+                messageDialog = MessageDialog.newInstance(
+                        "درخواست خروج",
+                        response.body().getDescription(),
+                        "تایید",
+                        () -> {
+                            // Handle confirm button click
+                            messageDialog.dismiss(); // Dismiss the dialog
+                            onBackPressed(); // Call back pressed action
+                        }
+                );
 
                 messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
 

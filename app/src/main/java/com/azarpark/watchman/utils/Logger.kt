@@ -11,7 +11,7 @@ class Logger {
             .let(::createStackElementTag)
 
 
-    protected open fun createStackElementTag(element: StackTraceElement): String? {
+    protected  fun createStackElementTag(element: StackTraceElement): String? {
         var tag = element.className.substringAfterLast('.')
         val m = ANONYMOUS_CLASS.matcher(tag)
         if (m.find()) {

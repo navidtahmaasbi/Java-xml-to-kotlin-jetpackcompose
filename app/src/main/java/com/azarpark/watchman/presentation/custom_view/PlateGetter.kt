@@ -7,12 +7,14 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import com.azarpark.watchman.R
 import com.azarpark.watchman.databinding.PlateGetterViewBinding
 import com.azarpark.watchman.enums.PlateType
+import androidx.core.content.ContextCompat
+import android.view.View
 
 class PlateGetter(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
     LinearLayoutCompat(context, attrs, defStyleAttr) {
 
     var binding : PlateGetterViewBinding =
-        PlateGetterViewBinding.inflate(LayoutInflater.from(context), this,false)
+        PlateGetterViewBinding.inflate(LayoutInflater.from(context), this,true)
     private var selectedTab  = PlateType.simple
         get() = field
 
@@ -31,9 +33,9 @@ class PlateGetter(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             binding.plateSimpleSelector.setBackgroundResource(R.drawable.selected_tab)
             binding.plateOldArasSelector.setBackgroundResource(R.drawable.unselected_tab)
             binding.plateNewArasSelector.setBackgroundResource(R.drawable.unselected_tab)
-            binding.plateSimpleTitle.setTextColor(resources.getColor(R.color.white))
-            binding.plateOldArasTitle.setTextColor(resources.getColor(R.color.black))
-            binding.plateNewArasTitle.setTextColor(resources.getColor(R.color.black))
+            binding.plateSimpleTitle.setTextColor(ContextCompat.getColor(context,R.color.white))
+            binding.plateOldArasTitle.setTextColor(ContextCompat.getColor(context,R.color.black))
+            binding.plateNewArasTitle.setTextColor(ContextCompat.getColor(context,R.color.black))
             binding.plateSimpleArea.setVisibility(VISIBLE)
             binding.plateOldAras.setVisibility(GONE)
             binding.plateNewArasArea.setVisibility(GONE)
@@ -42,9 +44,9 @@ class PlateGetter(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_tab)
             binding.plateOldArasSelector.setBackgroundResource(R.drawable.selected_tab)
             binding.plateNewArasSelector.setBackgroundResource(R.drawable.unselected_tab)
-            binding.plateSimpleTitle.setTextColor(resources.getColor(R.color.black))
-            binding.plateOldArasTitle.setTextColor(resources.getColor(R.color.white))
-            binding.plateNewArasTitle.setTextColor(resources.getColor(R.color.black))
+            binding.plateSimpleTitle.setTextColor(ContextCompat.getColor(context,R.color.black))
+            binding.plateOldArasTitle.setTextColor(ContextCompat.getColor(context,R.color.white))
+            binding.plateNewArasTitle.setTextColor(ContextCompat.getColor(context,R.color.black))
             binding.plateSimpleArea.setVisibility(GONE)
             binding.plateOldAras.setVisibility(VISIBLE)
             binding.plateNewArasArea.setVisibility(GONE)
@@ -53,9 +55,9 @@ class PlateGetter(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_tab)
             binding.plateOldArasSelector.setBackgroundResource(R.drawable.unselected_tab)
             binding.plateNewArasSelector.setBackgroundResource(R.drawable.selected_tab)
-            binding.plateSimpleTitle.setTextColor(resources.getColor(R.color.black))
-            binding.plateOldArasTitle.setTextColor(resources.getColor(R.color.black))
-            binding.plateNewArasTitle.setTextColor(resources.getColor(R.color.white))
+            binding.plateSimpleTitle.setTextColor(ContextCompat.getColor(context,R.color.black))
+            binding.plateOldArasTitle.setTextColor(ContextCompat.getColor(context,R.color.black))
+            binding.plateNewArasTitle.setTextColor(ContextCompat.getColor(context,R.color.white))
             binding.plateSimpleArea.setVisibility(GONE)
             binding.plateOldAras.setVisibility(GONE)
             binding.plateNewArasArea.setVisibility(VISIBLE)

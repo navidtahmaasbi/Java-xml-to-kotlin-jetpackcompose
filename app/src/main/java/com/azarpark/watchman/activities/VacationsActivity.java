@@ -1,10 +1,12 @@
 package com.azarpark.watchman.activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.azarpark.watchman.adapters.VacationListAdapter;
 import com.azarpark.watchman.databinding.ActivityVacationsBinding;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
@@ -18,6 +20,7 @@ import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.NewErrorHandler;
 import com.azarpark.watchman.web_service.WebService;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -78,16 +81,31 @@ public class VacationsActivity extends AppCompatActivity {
 
     }
 
-    private void showMessage() {
-
-        String message = SharedPreferencesRepository.getValue(Constants.VACATION_TITLE);
-        messageDialog = new MessageDialog("توجه", message, "متوجه شدم", () -> messageDialog.dismiss());
-        messageDialog.setCancelable(false);
-        if (!messageHasShown) {
-            messageHasShown = true;
-            messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
-        }
+//    private void showMessage() {
+//
+//        String message = SharedPreferencesRepository.getValue(Constants.VACATION_TITLE);
+//        messageDialog = new MessageDialog("توجه", message, "متوجه شدم", () -> messageDialog.dismiss());
+//        messageDialog.setCancelable(false);
+//        if (!messageHasShown) {
+//            messageHasShown = true;
+//            messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
+//        }
+//    }
+private void showMessage() {
+    String message = SharedPreferencesRepository.getValue(Constants.VACATION_TITLE);
+    messageDialog = MessageDialog.newInstance(
+            "توجه",
+            message,
+            "متوجه شدم",
+            () -> messageDialog.dismiss()
+    );
+    messageDialog.setCancelable(false);
+    if (!messageHasShown) {
+        messageHasShown = true;
+        messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
     }
+}
+
 
     private void removeVacation(int id) {
 

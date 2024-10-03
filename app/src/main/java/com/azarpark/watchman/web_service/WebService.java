@@ -24,14 +24,14 @@ public class WebService {
 
     public WebService() {
         String baseUrl;
-        if(BuildConfig.FLAVOR.equals("local"))
-        {
-            baseUrl = "http://192.168.1.101:8002";;
-        }
-        else
-        {
+//        if(BuildConfig.FLAVOR.equals("local"))
+//        {
+//            baseUrl = "http://192.168.1.101:8002";;
+//        }
+//        else
+//        {
             baseUrl = AppConfig.Companion.getSelectedConfig().getBaseUrl();
-        }
+//        }
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)

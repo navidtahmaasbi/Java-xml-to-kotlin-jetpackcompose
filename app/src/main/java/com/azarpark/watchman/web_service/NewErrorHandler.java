@@ -1,17 +1,14 @@
 package com.azarpark.watchman.web_service;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
 import androidx.fragment.app.FragmentManager;
 
-import com.azarpark.watchman.activities.LoginActivity;
 import com.azarpark.watchman.activities.SplashActivity;
 import com.azarpark.watchman.dialogs.ConfirmDialog;
 import com.azarpark.watchman.dialogs.MessageDialog;
-import com.azarpark.watchman.web_service.responses.GetCitiesResponse;
 import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.google.gson.Gson;
@@ -92,14 +89,26 @@ public class NewErrorHandler {
             String description = "اتصال اینترنت خود را بررسی کنید";
             String confirmTitle = " تلاش دوباره";
 
-            messageDialog = new MessageDialog(title, description, confirmTitle, () -> {
+//            messageDialog = new MessageDialog(title, description, confirmTitle, () -> {
+//
+//                if (messageDialog != null)
+//                    messageDialog.dismiss();
+//                onfailureDialogIsShowing = false;
+//                runnable.run();
+//
+//            });
+            messageDialog = MessageDialog.newInstance(
+                    title,
+                    description,
+                    confirmTitle,
+                    () -> {
+                        if (messageDialog != null)
+                            messageDialog.dismiss();
+                        onfailureDialogIsShowing = false;
+                        runnable.run();
+                    }
+            );
 
-                if (messageDialog != null)
-                    messageDialog.dismiss();
-                onfailureDialogIsShowing = false;
-                runnable.run();
-
-            });
 
             messageDialog.setCancelable(true);
             messageDialog.show(fragmentManager, ConfirmDialog.TAG);

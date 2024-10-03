@@ -52,7 +52,6 @@ import com.azarpark.watchman.enums.PlaceStatus;
 import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.interfaces.OnGetInfoClicked;
 import com.azarpark.watchman.location.SingleShotLocationProvider;
-import com.azarpark.watchman.models.DetectionResult;
 import com.azarpark.watchman.models.Notification;
 import com.azarpark.watchman.models.Place;
 import com.azarpark.watchman.models.TicketMessage;
@@ -88,7 +87,6 @@ import java.util.TimerTask;
 import dagger.hilt.android.AndroidEntryPoint;
 import id.zelory.compressor.Compressor;
 import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -138,11 +136,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         assistant = new Assistant();
-        compressor = new Compressor.Builder(this)
+        compressor = new Compressor(this)
                 .setQuality(70)
                 .setCompressFormat(Bitmap.CompressFormat.JPEG)
                 .setDestinationDirectoryPath(getFilesDir().toString() + Constants.IMAGES_DIRECTORY)
-                .build();
+                ;
 
         paymentService = new PaymentService.Builder()
                 .activity(this)
@@ -830,12 +828,23 @@ public class MainActivity extends AppCompatActivity {
 
                     if (response.body().update.is_forced == 1) {
 
-                        messageDialog = new MessageDialog("به روز رسانی", "به روز رسانی اجباری برای آذرپارک موجود است.", "به روز رسانی", () -> {
-
-                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(response.body().update.update_link));
-                            startActivity(browserIntent);
-
-                        });
+//                        messageDialog = new MessageDialog("به روز رسانی", "به روز رسانی اجباری برای آذرپارک موجود است.", "به روز رسانی", () -> {
+//
+//                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(response.body().update.update_link));
+//                            startActivity(browserIntent);
+//
+//                        });
+                        messageDialog = MessageDialog.newInstance(
+                                "به روز رسانی",
+                                "به روز رسانی اجباری برای آذرپارک موجود است.",
+                                "به روز رسانی",
+                                () -> {
+                                    // Open the update link
+                                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(response.body().update.update_link));
+                                    startActivity(browserIntent);
+                                    messageDialog.dismiss(); // Dismiss the dialog after the action
+                                }
+                        );
 
                     }
 

@@ -24,14 +24,7 @@ import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.Logger;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
-import com.azarpark.watchman.web_service.NewErrorHandler;
 import com.azarpark.watchman.web_service.WebService;
-import com.azarpark.watchman.web_service.responses.VerifyTransactionResponse;
-import com.google.gson.Gson;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class SamanPayment extends PaymentService {
 
@@ -137,10 +130,20 @@ public class SamanPayment extends PaymentService {
                         Assistant.getUnixTime());
 
                 Log.e("saman payment", "Purchase did failed....");
-                messageDialog = new MessageDialog("خطا ی " + state, result, "خروج", () -> {
-                    if (messageDialog != null)
-                        messageDialog.dismiss();
-                });
+//                messageDialog = new MessageDialog("خطا ی " + state, result, "خروج", () -> {
+//                    if (messageDialog != null)
+//                        messageDialog.dismiss();
+//                });
+                messageDialog = MessageDialog.newInstance(
+                        "خطا ی " + state,
+                        result,
+                        "خروج",
+                        () -> {
+                            if (messageDialog != null)
+                                messageDialog.dismiss();
+                        }
+                );
+
                 messageDialog.show(getActivity().getSupportFragmentManager(), MessageDialog.TAG);
             }
             boolean isWageTransaction = Boolean.parseBoolean(SharedPreferencesRepository.getValue(Constants.IS_WAGE_TRANSACTION, "false"));

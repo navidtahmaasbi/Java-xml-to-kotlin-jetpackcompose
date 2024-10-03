@@ -1,11 +1,11 @@
 package com.azarpark.watchman.activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.azarpark.watchman.adapters.ImprestListAdapter;
 import com.azarpark.watchman.databinding.ActivityImprestBinding;
@@ -83,9 +83,19 @@ public class ImprestActivity extends AppCompatActivity {
         StringBuilder message = new StringBuilder();
         message.append("درخواست مساعده در هر ماه یک بار مجاز میباشد");
 
-        messageDialog = new MessageDialog("توجه", message.toString(), "متوجه شدم", () -> {
-            messageDialog.dismiss();
-        });
+//        messageDialog = new MessageDialog("توجه", message.toString(), "متوجه شدم", () -> {
+//            messageDialog.dismiss();
+//        });
+        messageDialog = MessageDialog.newInstance(
+                "توجه",
+                message.toString(),
+                "متوجه شدم",
+                () -> {
+                    // Handle the confirm button click
+                    messageDialog.dismiss(); // Dismiss the dialog
+                }
+        );
+
 
         messageDialog.setCancelable(false);
         if (!messageHasShown){

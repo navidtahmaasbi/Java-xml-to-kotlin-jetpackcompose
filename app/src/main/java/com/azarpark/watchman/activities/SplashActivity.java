@@ -1,6 +1,5 @@
 package com.azarpark.watchman.activities;
 
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -77,26 +76,65 @@ public class SplashActivity extends AppCompatActivity {
 
     //------------------------------------------------------------------------------------------------------------------------
 
+//    private void decide() {
+//
+//        if (assistant.VPNEnabled(getApplicationContext())) {
+//
+//            messageDialog = new MessageDialog("عدم دسترسی",
+//                    "برنامه اذرپارک در خارج از کشور قابل دسترسی نیست درصورت روشن بودن وی پی ان ان را خاموش کرده و دوباره وارد برنامه شوید",
+//                    "خروج",
+//                    () -> {
+//                        SplashActivity.this.finish();
+//                    });
+//
+//            messageDialog.setCancelable(false);
+//            messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
+//
+//        } else if (SharedPreferencesRepository.getToken().isEmpty())
+//            getCities();
+//        else
+//            getSplash();
+//
+//    }
     private void decide() {
-
         if (assistant.VPNEnabled(getApplicationContext())) {
-
-            messageDialog = new MessageDialog("عدم دسترسی",
-                    "برنامه اذرپارک در خارج از کشور قابل دسترسی نیست درصورت روشن بودن وی پی ان ان را خاموش کرده و دوباره وارد برنامه شوید",
-                    "خروج",
-                    () -> {
-                        SplashActivity.this.finish();
-                    });
-
-            messageDialog.setCancelable(false);
-            messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
-
-        } else if (SharedPreferencesRepository.getToken().isEmpty())
-            getCities();
-        else
-            getSplash();
-
+           showMessageDialog("عدم دسترسی",
+                "برنامه اذرپارک در خارج از کشور قابل دسترسی نیست درصورت روشن بودن وی پی ان ان را خاموش کرده و دوباره وارد برنامه شوید",
+                "خروج",
+                () -> SplashActivity.this.finish());
+        } else if (SharedPreferencesRepository.getToken().isEmpty()) {
+           getCities();
+        } else {
+           getSplash();
+        }
     }
+//    private void showMessageDialog(String title, String message, String confirmButtonText, MessageDialog.ConfirmButtonClicks confirmButtonClicks) {
+//        messageDialog = new MessageDialog(title, message, confirmButtonText, confirmButtonClicks);
+//        messageDialog.setCancelable(false);
+//        if (!isFinishing() && !isDestroyed()) {
+//            messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
+//        }
+//    }
+//private void showMessageDialog(String title, String message, String confirmButtonText) {
+//    messageDialog = MessageDialog.newInstance(title, message, confirmButtonText, () -> {
+//        // Handle the confirm button click
+//        messageDialog.dismiss(); // Dismiss the dialog when the button is clicked
+//    });
+//
+//    messageDialog.setCancelable(false);
+//    if (!isFinishing() && !isDestroyed()) {
+//        messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
+//    }
+//}
+private void showMessageDialog(String title, String message, String confirmButtonText, MessageDialog.ConfirmButtonClicks confirmButtonClicks) {
+    messageDialog = MessageDialog.newInstance(title, message, confirmButtonText, confirmButtonClicks);
+    messageDialog.setCancelable(false);
+    if (!isFinishing() && !isDestroyed()) {
+        messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
+    }
+}
+
+
 
     public void updateApp(Context context, String url) {
 
@@ -109,14 +147,25 @@ public class SplashActivity extends AppCompatActivity {
 
     private void openUpdateDialog(String url) {
 
-        messageDialog = new MessageDialog("به روز رسانی",
+//        messageDialog = new MessageDialog("به روز رسانی",
+//                "برای برنامه به روزرسانی وجود دارد. بدون به روز رسانی قادر به ادامه نخواهید بود",
+//                "به روز رسانی",
+//                () -> {
+//                    updateApp(getApplicationContext(), url);
+//                    messageDialog.dismiss();
+//                    Toast.makeText(getApplicationContext(), "بعد از دانلود شدن برنامه آن را نصب کنید", Toast.LENGTH_LONG).show();
+//                });
+        messageDialog = MessageDialog.newInstance(
+                "به روز رسانی",
                 "برای برنامه به روزرسانی وجود دارد. بدون به روز رسانی قادر به ادامه نخواهید بود",
                 "به روز رسانی",
                 () -> {
                     updateApp(getApplicationContext(), url);
                     messageDialog.dismiss();
                     Toast.makeText(getApplicationContext(), "بعد از دانلود شدن برنامه آن را نصب کنید", Toast.LENGTH_LONG).show();
-                });
+                }
+        );
+
 
         messageDialog.setCancelable(false);
         messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
@@ -161,54 +210,98 @@ public class SplashActivity extends AppCompatActivity {
 
     //------------------------------------------------------------------------------------------------------------------------
 
+//    private void getCities() {
+//
+//        Runnable functionRunnable = this::getCities;
+//        binding.loadingBar.setVisibility(View.VISIBLE);
+//
+//        webService.getClient(getApplicationContext()).getCities().enqueue(new Callback<GetCitiesResponse>() {
+//            @Override
+//            public void onResponse(@NonNull Call<GetCitiesResponse> call, @NonNull Response<GetCitiesResponse> response) {
+//
+//                binding.loadingBar.setVisibility(View.INVISIBLE);
+//                if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
+//                    return;
+//
+//                openCitiesDialog(response.body().items);
+//            }
+//
+//            @Override
+//            public void onFailure(@NonNull Call<GetCitiesResponse> call, @NonNull Throwable t) {
+//                binding.loadingBar.setVisibility(View.INVISIBLE);
+//                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
+//            }
+//        });
+//
+//    }
     private void getCities() {
-
         Runnable functionRunnable = this::getCities;
         binding.loadingBar.setVisibility(View.VISIBLE);
 
-        webService.getClient(getApplicationContext()).getCities().enqueue(new Callback<GetCitiesResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<GetCitiesResponse> call, @NonNull Response<GetCitiesResponse> response) {
+    webService.getClient(getApplicationContext()).getCities().enqueue(new Callback<GetCitiesResponse>() {
+        @Override
+        public void onResponse(@NonNull Call<GetCitiesResponse> call, @NonNull Response<GetCitiesResponse> response) {
+            binding.loadingBar.setVisibility(View.INVISIBLE);
+            if (NewErrorHandler.apiResponseHasError(response, getApplicationContext())) return;
 
-                binding.loadingBar.setVisibility(View.INVISIBLE);
-                if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
-                    return;
+            openCitiesDialog(response.body().items);
+        }
 
-                openCitiesDialog(response.body().items);
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<GetCitiesResponse> call, @NonNull Throwable t) {
-                binding.loadingBar.setVisibility(View.INVISIBLE);
-                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
-            }
-        });
-
+        @Override
+        public void onFailure(@NonNull Call<GetCitiesResponse> call, @NonNull Throwable t) {
+            binding.loadingBar.setVisibility(View.INVISIBLE);
+            showErrorDialog(call, t, functionRunnable);
+        }
+    });
+}
+    private void showErrorDialog(Call<?> call, Throwable t, Runnable retryFunction) {
+        // Show a generic error dialog for network failures
+        showMessageDialog("خطا در اتصال",
+                "خطایی در اتصال به اینترنت رخ داده است. لطفاً اتصال خود را بررسی کنید.",
+                "تلاش مجدد",
+                () -> {
+                    retryFunction.run(); // Retry the failed request
+                    messageDialog.dismiss(); // Dismiss the dialog after retrying
+                });
     }
 
     @SuppressLint("HardwareIds")
     private void getSplash() {
-
         Runnable functionRunnable = this::getSplash;
         binding.loadingBar.setVisibility(View.VISIBLE);
         binding.retry.setVisibility(View.INVISIBLE);
 
-        String serial;
-        if (BuildConfig.DEBUG || AppConfig.Companion.isPaymentLessParkLess() || AppConfig.Companion.isPaymentLess()) {
-            serial = "1111";
-        } else {
-            serial = android.os.Build.SERIAL;
-        }
+        String serial = BuildConfig.DEBUG || AppConfig.Companion.isPaymentLessParkLess() || AppConfig.Companion.isPaymentLess() ? "1111" : android.os.Build.SERIAL;
+
+//    private void getSplash() {
+//
+//        Runnable functionRunnable = this::getSplash;
+//        binding.loadingBar.setVisibility(View.VISIBLE);
+//        binding.retry.setVisibility(View.INVISIBLE);
+//
+//        String serial;
+//        if (BuildConfig.DEBUG || AppConfig.Companion.isPaymentLessParkLess() || AppConfig.Companion.isPaymentLess()) {
+//            serial = "1111";
+//        } else {
+//            serial = android.os.Build.SERIAL;
+//        }
 
         webService.getClient(getApplicationContext()).getSplash(SharedPreferencesRepository.getTokenWithPrefix(), versionCode, serial).enqueue(new Callback<SplashResponse>() {
             @Override
             public void onResponse(@NonNull Call<SplashResponse> call, @NonNull Response<SplashResponse> response) {
-
                 binding.loadingBar.setVisibility(View.INVISIBLE);
                 if (NewErrorHandler.apiResponseHasError(response, SplashActivity.this)) {
                     binding.retry.setVisibility(View.VISIBLE);
                     return;
                 }
+
+//            public void onResponse(@NonNull Call<SplashResponse> call, @NonNull Response<SplashResponse> response) {
+//
+//                binding.loadingBar.setVisibility(View.INVISIBLE);
+//                if (NewErrorHandler.apiResponseHasError(response, SplashActivity.this)) {
+//                    binding.retry.setVisibility(View.VISIBLE);
+//                    return;
+//                }
 
                 SharedPreferencesRepository.setValue(Constants.qr_url, response.body().qr_url);
                 SharedPreferencesRepository.setValue(Constants.refresh_time, Integer.toString(response.body().refresh_time));
@@ -268,8 +361,13 @@ public class SplashActivity extends AppCompatActivity {
             public void onFailure(Call<SplashResponse> call, Throwable t) {
                 binding.loadingBar.setVisibility(View.INVISIBLE);
                 binding.retry.setVisibility(View.VISIBLE);
-                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
+                showErrorDialog(call, t, functionRunnable);
             }
+//            public void onFailure(Call<SplashResponse> call, Throwable t) {
+//                binding.loadingBar.setVisibility(View.INVISIBLE);
+//                binding.retry.setVisibility(View.VISIBLE);
+//                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
+//            }
         });
 
     }

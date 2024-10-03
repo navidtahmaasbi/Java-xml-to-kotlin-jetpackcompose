@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -199,17 +198,33 @@ public class ChangePlateActivity extends AppCompatActivity {
         wagePrice = getWagePrice();
     }
 
-    private void payment(View view) {
-        String mobile = binding.mobile.getText().toString();
-        if (mobile.isEmpty() || !assistant.isMobile(mobile)) {
-            messageDialog = new MessageDialog("خطا",
-                    "ثبت شماره موبایل الزامی می باشد",
-                    "ثبت شماره",
-                    () -> messageDialog.dismiss());
+//    private void payment(View view) {
+//        String mobile = binding.mobile.getText().toString();
+//        if (mobile.isEmpty() || !assistant.isMobile(mobile)) {
+//            messageDialog = new MessageDialog("خطا",
+//                    "ثبت شماره موبایل الزامی می باشد",
+//                    "ثبت شماره",
+//                    () -> messageDialog.dismiss());
+//
+//            messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
+//            return;
+//        }
+private void payment(View view) {
+    String mobile = binding.mobile.getText().toString();
+    if (mobile.isEmpty() || !assistant.isMobile(mobile)) {
+        // Use the static factory method to create a new instance of MessageDialog
+        messageDialog = MessageDialog.newInstance(
+                "خطا",
+                "ثبت شماره موبایل الزامی می باشد",
+                "ثبت شماره",
+                () -> messageDialog.dismiss() // Handle the confirm button click
+        );
 
-            messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
-            return;
-        }
+        // Show the dialog
+        messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
+        return;
+    }
+
 
 
         if (selectedTab == PlateType.simple)

@@ -1,25 +1,21 @@
 package com.azarpark.watchman.activities;
 
+import android.os.Bundle;
+import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.os.Bundle;
-import android.os.Message;
-import android.view.View;
-import android.widget.Toast;
 
 import com.azarpark.watchman.databinding.ActivityIncomeStatisticsBinding;
 import com.azarpark.watchman.databinding.KeyValueItemBinding;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.dialogs.MessageDialog;
-import com.azarpark.watchman.enums.PlateType;
 import com.azarpark.watchman.models.IncomeStatisticsResponse;
 import com.azarpark.watchman.models.KeyValueModel;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.NewErrorHandler;
 import com.azarpark.watchman.web_service.WebService;
-import com.azarpark.watchman.web_service.responses.ParkedPlatePlaceIDResponse;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -86,9 +82,19 @@ public class IncomeStatisticsActivity extends AppCompatActivity {
         message.append("- ثبت پارک شهروند");
         message.append("\n");
 
-        messageDialog = new MessageDialog("توجه", message.toString(), "متوجه شدم", () -> {
-            messageDialog.dismiss();
-        });
+//        messageDialog = new MessageDialog("توجه", message.toString(), "متوجه شدم", () -> {
+//            messageDialog.dismiss();
+//        });
+        messageDialog = MessageDialog.newInstance(
+                "توجه",
+                message.toString(),
+                "متوجه شدم",
+                () -> {
+                    // Handle the confirm button click
+                    messageDialog.dismiss(); // Dismiss the dialog
+                }
+        );
+
 
         messageDialog.setCancelable(false);
         if(!messageHasShown){
