@@ -47,7 +47,7 @@ abstract class PaymentService(
         shabaType: ShabaType, plateType: PlateType,
         tag1: String?, tag2: String?, tag3: String?, tag4: String?,
         amount: Int, placeID: Int, transactionType: Int, transactionListener: OnTransactionCreated?,
-        discountId: Int, isWage: Boolean
+        discountId: Int, isWage: Boolean, payload: String? = null
     ) {
         if (isCreatingTransaction) return
         isCreatingTransaction = true
@@ -74,7 +74,9 @@ abstract class PaymentService(
                     t3,
                     t4,
                     amount,
-                    transactionType
+                    transactionType,
+                    payload ?: "",
+                    if(isWage) 1 else 0
                 )
             else
                 webService.getClient(activity).createTransactionForDiscount(
@@ -87,7 +89,9 @@ abstract class PaymentService(
                     amount,
                     transactionType,
                     discountId,
-                    "App\\Models\\Discount"
+                    "App\\Models\\Discount",
+                    payload ?: "",
+                    if(isWage) 1 else 0
                 )
 
         call.enqueue(object : Callback<CreateTransactionResponse> {

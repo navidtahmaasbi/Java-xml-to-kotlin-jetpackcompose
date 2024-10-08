@@ -136,11 +136,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         assistant = new Assistant();
+
         compressor = new Compressor(this)
                 .setQuality(70)
                 .setCompressFormat(Bitmap.CompressFormat.JPEG)
-                .setDestinationDirectoryPath(getFilesDir().toString() + Constants.IMAGES_DIRECTORY)
-                ;
+                .setDestinationDirectoryPath(getFilesDir().toString() + Constants.IMAGES_DIRECTORY);
+
+
+
+
 
         paymentService = new PaymentService.Builder()
                 .activity(this)
@@ -614,7 +618,7 @@ public class MainActivity extends AppCompatActivity {
                 paymentService.createTransaction(ShabaType.NON_CHARGE, selectedPlateType,
                         place.tag1, place.tag2, place.tag3, place.tag4,
                         price, place.id, Constants.TRANSACTION_TYPE_PARK_PRICE,
-                        null, -1, false
+                        null, -1, false, null
                 );
             }
 
@@ -642,7 +646,7 @@ public class MainActivity extends AppCompatActivity {
                             ShabaType.CHARGE, plateType,
                             tag1, tag2, tag3, tag4,
                             amount, -1, Constants.TRANSACTION_TYPE_CHAREG,
-                            () -> plateChargeDialog.dismiss(), -1, false
+                            () -> plateChargeDialog.dismiss(), -1, false, null
                     );
                 }, place, hasMobile);
 
@@ -661,7 +665,7 @@ public class MainActivity extends AppCompatActivity {
                             tag1, tag2, tag3, tag4,
                             discount.price, -1,
                             Constants.TRANSACTION_TYPE_DISCOUNT, () -> {
-                            }, discount.id, false
+                            }, discount.id, false, null
                     );
                 }, place, hasMobile);
 
@@ -828,23 +832,16 @@ public class MainActivity extends AppCompatActivity {
 
                     if (response.body().update.is_forced == 1) {
 
-//                        messageDialog = new MessageDialog("به روز رسانی", "به روز رسانی اجباری برای آذرپارک موجود است.", "به روز رسانی", () -> {
-//
-//                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(response.body().update.update_link));
-//                            startActivity(browserIntent);
-//
-//                        });
                         messageDialog = MessageDialog.newInstance(
                                 "به روز رسانی",
                                 "به روز رسانی اجباری برای آذرپارک موجود است.",
                                 "به روز رسانی",
                                 () -> {
-                                    // Open the update link
                                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(response.body().update.update_link));
                                     startActivity(browserIntent);
-                                    messageDialog.dismiss(); // Dismiss the dialog after the action
                                 }
                         );
+
 
                     }
 
@@ -1157,7 +1154,7 @@ public class MainActivity extends AppCompatActivity {
 
         Runnable functionRunnable = () -> getCarDebtHistory02(plateType, tag1, tag2, tag3, tag4, limit, offset);
 
-        webService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset, 0).enqueue(new Callback<DebtHistoryResponse>() {
+        webService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, limit, offset, null,null,0).enqueue(new Callback<DebtHistoryResponse>() {
             @Override
             public void onResponse(Call<DebtHistoryResponse> call, Response<DebtHistoryResponse> response) {
 

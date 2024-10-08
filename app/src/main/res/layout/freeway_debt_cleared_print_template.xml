@@ -4,7 +4,37 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingBottom="16dp">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal"
+        app:srcCompat="@drawable/itoll" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"
+        android:lineSpacingExtra="@dimen/_1sdp"
+        android:text="پرداخت آنی آیتول"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="22sp"
+        app:fontFamily="@font/sahel_fa_num_semi_bold" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:lineSpacingExtra="@dimen/_1sdp"
+        android:text="عوارض آزادراهی"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="22sp"
+        app:fontFamily="@font/sahel_fa_num_semi_bold" />
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/plate_container"
@@ -13,6 +43,7 @@
         android:orientation="horizontal">
 
     </androidx.appcompat.widget.LinearLayoutCompat>
+
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
@@ -103,11 +134,11 @@
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:lineSpacingExtra="@dimen/_1sdp"
-        android:text="عوارض پارک حاشیه‌ای تسویه شد"
+        android:text="عوارض آزادراهی تسویه شد"
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="25sp"

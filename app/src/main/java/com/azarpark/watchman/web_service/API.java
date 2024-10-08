@@ -35,6 +35,8 @@ import com.azarpark.watchman.web_service.responses.VerifyTransactionResponse;
 
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -91,7 +93,10 @@ public interface API {
                                                 @Path("tag4") String tag4,
                                                 @Path("limit") int limit,
                                                 @Path("offset") int offset,
+                                                @Query("nationalCode") @Nullable String nationalCode ,
+                                                @Query("mobile") @Nullable String mobile,
                                                 @Query("is_wage") int isWage
+
     );
 
     @GET("/api/watchman/times/submit/{type}/{latitude}/{longitude}")
@@ -124,7 +129,9 @@ public interface API {
                                                       @Path("tag3") String tag3,
                                                       @Path("tag4") String tag4,
                                                       @Path("amount") int amount,
-                                                      @Query("flag") int transactionType
+                                                      @Query("flag") int transactionType,
+                                                      @Query("payload") String payload,
+                                                      @Query("is_wage") int isWage
     );
 
     //api/watchman/create_transaction/simple/62/%D9%85/791/35/300000?flag=10&object_id=6&object_type=App\Models\Discount
@@ -139,7 +146,9 @@ public interface API {
                                                                  @Path("amount") int amount,
                                                                  @Query("flag") int transactionType, //10
                                                                  @Query("object_id") int discountId,
-                                                                 @Query("object_type") String type // App\Models\Discount
+                                                                 @Query("object_type") String type, // App\Models\Discount
+                                                                 @Query("payload") String payload,
+                                                                 @Query("is_wage") int isWage
     );
 
     @GET("/api/watchman/exit_request/delete/{place_id}")

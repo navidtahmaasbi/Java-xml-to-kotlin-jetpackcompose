@@ -14,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.azarpark.watchman.R;
-import com.azarpark.watchman.core.AppConfig;
 import com.azarpark.watchman.databinding.ActivityPayAndExitParkedPlateBinding;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.enums.PlateType;
@@ -439,7 +438,7 @@ public class PayAndExitParkedPlateActivity extends AppCompatActivity {
                                 ShabaType.NON_CHARGE, plateType,
                                 tag1, tag2, tag3, tag4,
                                 debtSumIntegerValue, placeId, Constants.TRANSACTION_TYPE_PARK_PRICE,
-                                null, -1, false
+                                null, -1, false, null
                         );
 
                         return true;

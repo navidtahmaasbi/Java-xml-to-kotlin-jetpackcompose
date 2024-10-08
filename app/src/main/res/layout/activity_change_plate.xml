@@ -1,12 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gray"
     android:layoutDirection="ltr"
     android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/print_area"
+            android:background="@color/white">
+        </LinearLayout>
+    </ScrollView>
 
     <RelativeLayout
         android:id="@+id/action_bar"
@@ -54,13 +68,6 @@
         android:layout_below="@+id/action_bar">
 
 
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/printArea"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-        </androidx.appcompat.widget.LinearLayoutCompat>
 
         <ScrollView
             android:layout_width="match_parent"
@@ -362,64 +369,25 @@
                         android:text="@string/scan_plate"
                         android:fontFamily="@font/iran_sans" />
 
-                    <TextView
-                        android:id="@+id/submit"
-                        android:layout_width="wrap_content"
+                    <EditText
+                        android:id="@+id/nationalCode"
+                        android:layout_width="264dp"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="@dimen/_20sdp"
-                        android:background="@drawable/blue_bg_5"
-                        android:fontFamily="@font/iran_sans"
+                        android:layout_marginLeft="@dimen/_15sdp"
+                        android:layout_marginTop="@dimen/_16sdp"
+                        android:background="@drawable/unselected_background"
+                        android:fontFamily="@font/sahel_fa_num_semi_bold"
                         android:gravity="center"
-                        android:paddingLeft="@dimen/_40sdp"
-                        android:paddingTop="@dimen/_8sdp"
-                        android:paddingRight="@dimen/_40sdp"
-                        android:paddingBottom="@dimen/_8sdp"
-                        android:text="استعلام بدهی"
-                        android:textColor="@color/white" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/debt_area"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="@dimen/_20sdp"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:layout_marginRight="@dimen/_20sdp"
-                    android:layout_marginBottom="@dimen/_20sdp"
-                    android:background="@drawable/selected_background"
-                    android:orientation="vertical"
-                    android:padding="@dimen/_10sdp"
-                    android:visibility="gone">
-
-                    <androidx.appcompat.widget.LinearLayoutCompat
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/total_price_tv"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:fontFamily="@font/iran_sans_fa_num_bold"
-                            android:gravity="right"
-                            android:text="0 تومان"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/_13sdp" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:fontFamily="@font/iran_sans"
-                            android:text="مبلغ قابل پرداخت"
-                            android:textColor="@color/text_gray"
-                            android:textSize="@dimen/_13sdp" />
-
-                    </androidx.appcompat.widget.LinearLayoutCompat>
-
+                        android:hint="کد ملی وارد شود "
+                        android:inputType="numberDecimal"
+                        android:letterSpacing="0.3"
+                        android:maxLength="10"
+                        android:paddingLeft="@dimen/_10sdp"
+                        android:paddingTop="@dimen/_5sdp"
+                        android:paddingRight="@dimen/_10sdp"
+                        android:paddingBottom="@dimen/_5sdp"
+                        android:textColor="@color/text_gray"
+                        android:textSize="@dimen/_13sdp" />
 
                     <RelativeLayout
                         android:layout_marginTop="32dp"
@@ -456,6 +424,114 @@
 
                     </RelativeLayout>
 
+                    <TextView
+                        android:id="@+id/submit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/_20sdp"
+                        android:background="@drawable/blue_bg_5"
+                        android:fontFamily="@font/iran_sans"
+                        android:gravity="center"
+                        android:paddingLeft="@dimen/_40sdp"
+                        android:paddingTop="@dimen/_8sdp"
+                        android:paddingRight="@dimen/_40sdp"
+                        android:paddingBottom="@dimen/_8sdp"
+                        android:text="استعلام بدهی"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/debt_area"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="@dimen/_20sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_marginRight="@dimen/_20sdp"
+                    android:layout_marginBottom="@dimen/_20sdp"
+                    android:background="@drawable/selected_background"
+                    android:orientation="vertical"
+                    android:padding="@dimen/_10sdp"
+                    android:visibility="gone">
+
+
+                    <ListView
+                        android:id="@+id/object_lv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:listitem="@layout/row_change_plate_object"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:background="@color/gray"/>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/total_price_tv"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/iran_sans_fa_num_bold"
+                            android:gravity="right"
+                            android:text="0 تومان"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_13sdp" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/iran_sans"
+                            android:text="مبلغ قابل پرداخت"
+                            android:textColor="@color/text_gray"
+                            android:textSize="@dimen/_13sdp" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+<!--                    <RelativeLayout-->
+<!--                        android:layout_marginTop="32dp"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:background="@drawable/gray_bg_5"-->
+<!--                        android:orientation="horizontal"-->
+<!--                        android:padding="@dimen/_5sdp">-->
+
+<!--                        <EditText-->
+<!--                            android:id="@+id/mobile"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_centerVertical="true"-->
+<!--                            android:background="@android:color/transparent"-->
+<!--                            android:fontFamily="@font/iran_sans"-->
+<!--                            android:gravity="center"-->
+<!--                            android:hint="09*********"-->
+<!--                            android:inputType="numberDecimal"-->
+<!--                            android:padding="@dimen/_5sdp"-->
+<!--                            android:textColor="@color/black"-->
+<!--                            android:textSize="@dimen/_10sdp"-->
+<!--                            android:layout_toLeftOf="@+id/icon"/>-->
+
+<!--                        <ImageView-->
+<!--                            android:id="@+id/icon"-->
+<!--                            android:layout_width="@dimen/_15sdp"-->
+<!--                            android:layout_height="@dimen/_15sdp"-->
+<!--                            android:layout_alignParentRight="true"-->
+<!--                            android:layout_centerVertical="true"-->
+<!--                            android:layout_marginRight="@dimen/_10sdp"-->
+<!--                            android:src="@drawable/ic_mobile"-->
+<!--                            app:tint="@color/blue" />-->
+
+<!--                    </RelativeLayout>-->
+
 
 <!--                    <br.com.simplepass.loadingbutton.customViews.CircularProgressButton-->
 <!--                        android:id="@+id/payment"-->
@@ -475,10 +551,14 @@
 
                     <com.github.leandroborgesferreira.loadingbutton.customViews.CircularProgressButton
                         android:id="@+id/payment"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="@dimen/_20sdp"
+                        android:layout_marginStart="@dimen/_10sdp"
+                        android:layout_marginEnd="@dimen/_10sdp"
                         android:background="@drawable/blue_bg_5"
                         android:fontFamily="@font/iran_sans"
                         android:paddingLeft="@dimen/_40sdp"
@@ -486,10 +566,11 @@
                         android:paddingRight="@dimen/_40sdp"
                         android:paddingBottom="@dimen/_8sdp"
                         android:text="پرداخت بدهی"
-                        android:textColor="@color/white"/>
-
+                        android:textColor="@color/white" />
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>
     </RelativeLayout>
+
+
 </RelativeLayout>

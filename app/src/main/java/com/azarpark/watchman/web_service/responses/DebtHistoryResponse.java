@@ -3,6 +3,7 @@ package com.azarpark.watchman.web_service.responses;
 import com.azarpark.watchman.models.Park;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DebtHistoryResponse {
 
@@ -10,6 +11,7 @@ public class DebtHistoryResponse {
     public String msg;
     public String description;
     public int balance;
+    public List<DebtObject> objects;
     public ArrayList<Park> items;
 
     public int getSuccess() {
@@ -36,11 +38,27 @@ public class DebtHistoryResponse {
         this.balance = balance;
     }
 
+    public List<DebtObject> getObjects() {
+        return objects;
+    }
+
+    public void setObjects(List<DebtObject> objects) {
+        this.objects = objects;
+    }
+
     public ArrayList<Park> getItems() {
         return items;
     }
 
     public void setItems(ArrayList<Park> items) {
         this.items = items;
+    }
+
+    public int calculateTotalPrice(){
+        int total = 0;
+        for (DebtObject object : objects) {
+            total += object.value;
+        }
+        return total;
     }
 }

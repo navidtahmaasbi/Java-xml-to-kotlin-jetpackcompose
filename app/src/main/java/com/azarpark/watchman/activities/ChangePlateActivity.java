@@ -9,6 +9,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
@@ -16,8 +17,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.azarpark.watchman.R;
+import com.azarpark.watchman.adapters.DebtObjectAdapter;
 import com.azarpark.watchman.databinding.ActivityChangePlateBinding;
 import com.azarpark.watchman.databinding.DebtClearedPrintTemplateBinding;
+import com.azarpark.watchman.databinding.DebtClearedPrintTemplateContainerBinding;
+import com.azarpark.watchman.databinding.FreewayDebtClearedPrintTemplateBinding;
+import com.azarpark.watchman.databinding.PlatePrintTemplateBinding;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.enums.PlateType;
@@ -34,6 +39,10 @@ import com.azarpark.watchman.utils.SharedPreferencesRepository;
 import com.azarpark.watchman.web_service.NewErrorHandler;
 import com.azarpark.watchman.web_service.WebService;
 import com.azarpark.watchman.web_service.responses.DebtHistoryResponse;
+import com.azarpark.watchman.web_service.responses.DebtObject;
+
+import java.text.NumberFormat;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -52,6 +61,7 @@ public class ChangePlateActivity extends AppCompatActivity {
     int totalPrice = 0;
 
     String ptag1, ptag2, ptag3, ptag4;
+    DebtObjectAdapter objectAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +81,7 @@ public class ChangePlateActivity extends AppCompatActivity {
 
                     @Override
                     public void onTransactionVerified(@NonNull Transaction transaction) {
-                        printMiniFactor(ptag1, ptag2, ptag3, ptag4);
+                        printMiniFactor(transaction, ptag1, ptag2, ptag3, ptag4);
                     }
                 })
                 .build();
@@ -188,8 +198,7 @@ public class ChangePlateActivity extends AppCompatActivity {
             try {
                 Intent intent = new Intent("app.irana.cameraman.ACTION_SCAN_PLATE");
                 startActivityForResult(intent, 1000);
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
@@ -198,7 +207,7 @@ public class ChangePlateActivity extends AppCompatActivity {
         wagePrice = getWagePrice();
     }
 
-//    private void payment(View view) {
+    private void payment(View view) {
 //        String mobile = binding.mobile.getText().toString();
 //        if (mobile.isEmpty() || !assistant.isMobile(mobile)) {
 //            messageDialog = new MessageDialog("خطا",
@@ -209,22 +218,6 @@ public class ChangePlateActivity extends AppCompatActivity {
 //            messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
 //            return;
 //        }
-private void payment(View view) {
-    String mobile = binding.mobile.getText().toString();
-    if (mobile.isEmpty() || !assistant.isMobile(mobile)) {
-        // Use the static factory method to create a new instance of MessageDialog
-        messageDialog = MessageDialog.newInstance(
-                "خطا",
-                "ثبت شماره موبایل الزامی می باشد",
-                "ثبت شماره",
-                () -> messageDialog.dismiss() // Handle the confirm button click
-        );
-
-        // Show the dialog
-        messageDialog.show(getSupportFragmentManager(), MessageDialog.TAG);
-        return;
-    }
-
 
 
         if (selectedTab == PlateType.simple)
@@ -407,33 +400,40 @@ private void payment(View view) {
                     binding.plateSimpleTag1.getText().toString(),
                     binding.plateSimpleTag2.getText().toString(),
                     binding.plateSimpleTag3.getText().toString(),
-                    binding.plateSimpleTag4.getText().toString()
+                    binding.plateSimpleTag4.getText().toString(),
+                    binding.nationalCode.getText().toString(),
+                    binding.mobile.getText().toString()
+
             );
         else if (selectedTab == PlateType.old_aras)
             getCarDebtHistory02(
                     selectedTab,
                     binding.plateOldAras.getText().toString(),
-                    "0", "0", "0"
+                    "0", "0", "0",
+                    binding.nationalCode.getText().toString(),
+                    binding.mobile.getText().toString()
             );
         else
             getCarDebtHistory02(
                     selectedTab,
                     binding.plateNewArasTag1.getText().toString(),
                     binding.plateNewArasTag2.getText().toString(),
-                    "0", "0"
+                    "0", "0",
+                    binding.nationalCode.getText().toString(),
+                    binding.mobile.getText().toString()
             );
 
     }
 
-    private void getCarDebtHistory02(PlateType plateType, String tag1, String tag2, String tag3, String tag4) {
+    private void getCarDebtHistory02(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String nationalCode, String mobile) {
 
-        Runnable functionRunnable = () -> getCarDebtHistory02(plateType, tag1, tag2, tag3, tag4);
+        Runnable functionRunnable = () -> getCarDebtHistory02(plateType, tag1, tag2, tag3, tag4, nationalCode, mobile);
         LoadingBar loadingBar = new LoadingBar(ChangePlateActivity.this);
         loadingBar.show();
 
         Assistant.hideKeyboard(ChangePlateActivity.this, binding.getRoot());
 
-        webService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, 0, 0, 1).enqueue(new Callback<DebtHistoryResponse>() {
+        webService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, 0, 0, nationalCode,mobile,1).enqueue(new Callback<DebtHistoryResponse>() {
             @Override
             public void onResponse(@NonNull Call<DebtHistoryResponse> call, @NonNull Response<DebtHistoryResponse> response) {
 
@@ -441,14 +441,33 @@ private void payment(View view) {
                 if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
                     return;
 
-                totalPrice = response.body().balance;
                 ptag1 = tag1;
                 ptag2 = tag2;
                 ptag3 = tag3;
                 ptag4 = tag4;
 
-                binding.totalPriceTv.setText(totalPrice + " تومان");
                 binding.debtArea.setVisibility(View.VISIBLE);
+
+                objectAdapter = new DebtObjectAdapter(
+                        ChangePlateActivity.this,
+                        response.body().getObjects()
+                );
+
+                objectAdapter.setOnSelectionsChangedListener(() -> {
+                    int total = 0;
+                    for (DebtObject selectedItem : objectAdapter.getSelectedItems()) {
+                        total += selectedItem.value;
+                    }
+                    setTotalPrice(total);
+                });
+                binding.objectLv.setAdapter(objectAdapter);
+
+                ViewGroup.LayoutParams params = binding.objectLv.getLayoutParams();
+                params.height = Assistant.dpToPx(ChangePlateActivity.this, 50) * binding.objectLv.getCount();
+                binding.objectLv.setLayoutParams(params);
+                binding.objectLv.requestLayout();
+                objectAdapter.checkAll();
+                setTotalPrice(response.body().calculateTotalPrice());
             }
 
             @Override
@@ -460,6 +479,11 @@ private void payment(View view) {
 
     }
 
+    private void setTotalPrice(int total) {
+        totalPrice = total;
+
+        binding.totalPriceTv.setText(totalPrice + " تومان");
+    }
 
     public void paymentRequest(int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
         binding.payment.startAnimation();
@@ -468,65 +492,99 @@ private void payment(View view) {
 
         String mobile = binding.mobile.getText().toString();
 
-        submitMobile(
-                mobile,
-                tag1, tag2, tag3, tag4,
-                () -> {
+
                     PaymentService.OnTransactionCreated finalAction = () -> {
                         binding.payment.revertAnimation();
                         binding.payment.setOnClickListener(ChangePlateActivity.this::payment);
                     };
 
-                    if(amount == 0){
-                        finalAction.onCreateTransactionFinished();
-                        printMiniFactor(ptag1, ptag2, ptag3, ptag4);
+                    // prepare transaction payload
+                    StringBuilder payload = new StringBuilder();
+                    boolean first = true;
+                    for (DebtObject selectedItem : objectAdapter.getSelectedItems()) {
+                        if (first) first = false;
+                        else payload.append(",");
+                        payload.append(selectedItem.key).append(":").append(selectedItem.getId());
                     }
-                    else {
+
+                    if (amount == 0) {
+                        finalAction.onCreateTransactionFinished();
+                        printMiniFactor(null, ptag1, ptag2, ptag3, ptag4);
+                    } else {
                         paymentService.createTransaction(
                                 ShabaType.NON_CHARGE, plateType, tag1, tag2, tag3, tag4,
                                 amount, -1, Constants.TRANSACTION_TYPE_DEBT,
-                                finalAction, -1, true
+                                finalAction, -1, true, payload.toString()
                         );
                     }
-                },
-                retryFunction
-        );
+
+
+
     }
 
-    public void submitMobile(String mobile, String tag1, String tag2, String tag3, String tag4, Runnable onDone, Runnable retryFunction){
-        // todo: comment for release
-//        if(true){
-//            onDone.run();
-//            return;
-//        }
+//    public void submitMobile(String mobile, String tag1, String tag2, String tag3, String tag4, Runnable onDone, Runnable retryFunction) {
+//        // todo: comment for release
+////        if(true){
+////            onDone.run();
+////            return;
+////        }
+//
+//        webService.getClient(this).addMobileToPlate(SharedPreferencesRepository.getTokenWithPrefix(), assistant.getPlateType(tag1, tag2, tag3, tag4).toString(), tag1 != null ? tag1 : "0", tag2 != null ? tag2 : "0", tag3 != null ? tag3 : "0", tag4 != null ? tag4 : "0", mobile, 1).enqueue(new Callback<AddMobieToPlateResponse>() {
+//            @Override
+//            public void onResponse(Call<AddMobieToPlateResponse> call, Response<AddMobieToPlateResponse> response) {
+//                loadingBar.dismiss();
+//                if (NewErrorHandler.apiResponseHasError(response, ChangePlateActivity.this)) {
+//                    binding.payment.revertAnimation();
+//                    binding.payment.setOnClickListener(ChangePlateActivity.this::payment);
+//                    return;
+//                }
+//
+//                onDone.run();
+//            }
+//
+//            @Override
+//            public void onFailure(Call<AddMobieToPlateResponse> call, Throwable t) {
+//                loadingBar.dismiss();
+//                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), retryFunction);
+//            }
+//        });
+//    }
 
-        webService.getClient(this).addMobileToPlate(SharedPreferencesRepository.getTokenWithPrefix(), assistant.getPlateType(tag1, tag2, tag3, tag4).toString(), tag1 != null ? tag1 : "0", tag2 != null ? tag2 : "0", tag3 != null ? tag3 : "0", tag4 != null ? tag4 : "0", mobile, 1).enqueue(new Callback<AddMobieToPlateResponse>() {
-            @Override
-            public void onResponse(Call<AddMobieToPlateResponse> call, Response<AddMobieToPlateResponse> response) {
-                loadingBar.dismiss();
-                if (NewErrorHandler.apiResponseHasError(response, ChangePlateActivity.this)) {
-                    binding.payment.revertAnimation();
-                    binding.payment.setOnClickListener(ChangePlateActivity.this::payment);
-                    return;
-                }
-
-                onDone.run();
-            }
-
-            @Override
-            public void onFailure(Call<AddMobieToPlateResponse> call, Throwable t) {
-                loadingBar.dismiss();
-                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), retryFunction);
-            }
-        });
-    }
-
-    private void printMiniFactor(String tag1, String tag2, String tag3, String tag4) {
+    private void printMiniFactor(Transaction transaction, String tag1, String tag2, String tag3, String tag4) {
         binding.printArea.removeAllViews();
         binding.printArea.setVisibility(View.VISIBLE);
+        DebtClearedPrintTemplateContainerBinding containerBinding = DebtClearedPrintTemplateContainerBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
 
-        DebtClearedPrintTemplateBinding printTemplateBinding = DebtClearedPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
+        for (DebtObject selectedItem : objectAdapter.getSelectedItems()) {
+            if (selectedItem.getKey().equals("freeway_debt")) {
+                FreewayDebtClearedPrintTemplateBinding printTemplateBinding = FreewayDebtClearedPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), containerBinding.body, true);
 
+                printTemplateBinding.priceTv.setText(String.format("%s تومان", NumberFormat.getNumberInstance(Locale.US).format(selectedItem.value)));
+                printTemplateBinding.timeTv.setText(assistant.getTime());
+                printTemplateBinding.traceNumberTv.setText(
+                        transaction != null ? transaction.getTrace_number() : ""
+                );
+
+                PlatePrintTemplateBinding platePrintTemplateBinding = PlatePrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), printTemplateBinding.plateContainer, true);
+                setPrintData(platePrintTemplateBinding, tag1, tag2, tag3, tag4);
+            } else if (selectedItem.getKey().equals("balance")) {
+                DebtClearedPrintTemplateBinding printTemplateBinding = DebtClearedPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), containerBinding.body, true);
+
+                printTemplateBinding.priceTv.setText(String.format("%s تومان", NumberFormat.getNumberInstance(Locale.US).format(selectedItem.value)));
+                printTemplateBinding.timeTv.setText(assistant.getTime());
+                printTemplateBinding.traceNumberTv.setText(
+                        transaction != null ? transaction.getTrace_number() : ""
+                );
+
+                PlatePrintTemplateBinding platePrintTemplateBinding = PlatePrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), printTemplateBinding.plateContainer, true);
+                setPrintData(platePrintTemplateBinding, tag1, tag2, tag3, tag4);
+            }
+        }
+
+        paymentService.print(binding.printArea, 1500, this::resetData);
+    }
+
+    private void setPrintData(PlatePrintTemplateBinding printTemplateBinding, String tag1, String tag2, String tag3, String tag4) {
         if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.simple) {
 
             printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
@@ -559,10 +617,6 @@ private void payment(View view) {
             printTemplateBinding.plateNewArasTag2Fa.setText(tag2);
 
         }
-
-        printTemplateBinding.text.setText("\n.\n.\n.");
-
-        paymentService.print(binding.printArea, 1500, this::resetData);
     }
 
     private int getWagePrice() {

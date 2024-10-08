@@ -16,7 +16,9 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -727,8 +729,8 @@ public class Assistant {
     @SuppressLint("HardwareIds")
     public static String getSerialNumber() {
 
-        if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.O)
-            return android.os.Build.SERIAL;
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O)
+            return Build.SERIAL;
 
         return "serial";
 
@@ -1017,5 +1019,18 @@ public class Assistant {
         fos.close();
 
         return file;
+    }
+
+    public static int dpToPx(Context context, float dp) {
+        return (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                dp,
+                context.getResources().getDisplayMetrics()
+        );
+    }
+
+    // delays the execution of the function by the specified time
+    public static void delay(long millis, Runnable task){
+        new Handler().postDelayed(task, millis);
     }
 }
