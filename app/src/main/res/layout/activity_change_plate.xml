@@ -371,12 +371,13 @@
 
                     <EditText
                         android:id="@+id/nationalCode"
-                        android:layout_width="264dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_15sdp"
+                        android:layout_marginRight="@dimen/_15sdp"
                         android:layout_marginTop="@dimen/_16sdp"
                         android:background="@drawable/unselected_background"
-                        android:fontFamily="@font/sahel_fa_num_semi_bold"
+                        android:fontFamily="@font/iran_sans"
                         android:gravity="center"
                         android:hint="کد ملی وارد شود "
                         android:inputType="numberDecimal"
