@@ -31,6 +31,7 @@ public class DebtObjectAdapter extends BaseAdapter {
     public void setOnSelectionsChangedListener(OnSelectionsChanged onSelectionsChangedListener) {
         this.onSelectionsChangedListener = onSelectionsChangedListener;
     }
+    
 
     @Override
     public int getCount() {

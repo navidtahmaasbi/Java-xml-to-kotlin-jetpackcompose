@@ -314,6 +314,9 @@ private void showMessageDialog(String title, String message, String confirmButto
                 SharedPreferencesRepository.setValue(Constants.print_description_2, response.body().print_description2);
 
                 SharedPreferencesRepository.setValue(Constants.WAGE_SHABA, response.body().wage_shaba);
+                SharedPreferencesRepository.setValue(Constants.WAGE_AZARPARK_SHABA, response.body().wage_azarpark_shaba);
+                SharedPreferencesRepository.setValue(Constants.WAGE_FREEWAY_SHABA, response.body().wage_freeway_shaba);
+                SharedPreferencesRepository.setValue(Constants.WAGE_CARVIOLATION_SHABA, response.body().wage_carviolation_shaba);
                 SharedPreferencesRepository.setWage(response.body().is_wage, response.body().change_plate_wage_price);
 
                 SharedPreferencesRepository.setValue(Constants.IMPREST_TITLE, response.body().imprest_title);

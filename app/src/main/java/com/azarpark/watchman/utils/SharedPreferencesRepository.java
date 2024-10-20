@@ -1,7 +1,5 @@
 package com.azarpark.watchman.utils;
 
-import static android.content.Context.MODE_PRIVATE;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -13,13 +11,11 @@ import com.azarpark.watchman.models.Transaction;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class SharedPreferencesRepository {
 
@@ -97,6 +93,7 @@ public class SharedPreferencesRepository {
         sharedPreferences.edit().putString(key, value).apply();
 
     }
+
 
     public static String getToken() {
 
@@ -304,7 +301,6 @@ public class SharedPreferencesRepository {
                 .putString(Constants.CHANGE_PLATE_WAGE_PRICE, wagePrice)
                 .apply();
     }
-
     public static boolean getIsWage(){
         return sharedPreferences.getBoolean(Constants.IS_WAGE, false);
     }

@@ -16,19 +16,28 @@ import com.azarpark.watchman.utils.SharedPreferencesRepository
 import com.azarpark.watchman.web_service.NewErrorHandler
 import com.azarpark.watchman.web_service.WebService
 import com.azarpark.watchman.web_service.responses.CreateTransactionResponse
+import com.azarpark.watchman.web_service.responses.DebtHistoryResponse
+import com.azarpark.watchman.adapters.DebtObjectAdapter
+import com.azarpark.watchman.web_service.responses.DebtObject
 import com.azarpark.watchman.web_service.responses.VerifyTransactionResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+
+
 
 abstract class PaymentService(
     val activity: AppCompatActivity,
     val webService: WebService,
     val paymentCallback: OnPaymentCallback
 ) : Printer {
+    private var debtObjects: List<DebtObject> = emptyList()
+    private lateinit var debtObjectAdapter: DebtObjectAdapter
     var isCreatingTransaction = false
 
+
     open fun initialize() {}
+
     open fun stop() {}
 
     abstract fun onActivityResultHandler(requestCode: Int, resultCode: Int, data: Intent)
@@ -36,17 +45,35 @@ abstract class PaymentService(
         shabaType: ShabaType, paymentToken: Long, amount: Int, plateType: PlateType,
         tag1: String?, tag2: String?, tag3: String?, tag4: String?, placeID: Int
     )
+    open fun launchPayment(
+        shabaType: ShabaType, paymentToken: Long, amountPartList: List<TransactionAmount>, amount: Int, plateType: PlateType,
+        tag1: String?, tag2: String?, tag3: String?, tag4: String?, placeID: Int
+    ){
+        throw Exception("Function not implemented")
+    }
 
     abstract fun launchQrCodeScanner()
     abstract fun getPaymentType(): String
 
-    /**
-     *  if no discount is set, it should be -1
-     */
-    open fun createTransaction(
+    fun createTransaction(
         shabaType: ShabaType, plateType: PlateType,
         tag1: String?, tag2: String?, tag3: String?, tag4: String?,
         amount: Int, placeID: Int, transactionType: Int, transactionListener: OnTransactionCreated?,
+        discountId: Int, isWage: Boolean, payload: String? = null
+    ) {
+        createTransaction(
+            shabaType, plateType, tag1, tag2, tag3, tag4, emptyList(), amount, placeID, transactionType,
+            transactionListener, discountId, isWage, payload
+        )
+    }
+
+    /**
+     *  if no discount is set, it should be -1
+     */
+    fun createTransaction(
+        shabaType: ShabaType, plateType: PlateType,
+        tag1: String?, tag2: String?, tag3: String?, tag4: String?,
+        amountPartList: List<TransactionAmount>, amount: Int, placeID: Int, transactionType: Int, transactionListener: OnTransactionCreated?,
         discountId: Int, isWage: Boolean, payload: String? = null
     ) {
         if (isCreatingTransaction) return
@@ -54,8 +81,8 @@ abstract class PaymentService(
 
         val functionRunnable = Runnable {
             createTransaction(
-                shabaType, plateType, tag1, tag2, tag3, tag4, amount, placeID, transactionType,
-                transactionListener, discountId, isWage
+                shabaType, plateType, tag1, tag2, tag3, tag4, amountPartList, amount, placeID, transactionType,
+                transactionListener, discountId, isWage, payload
             )
         }
 
@@ -134,17 +161,33 @@ abstract class PaymentService(
                 )
 
 
-                launchPayment(
-                    shabaType,
-                    our_token,
-                    amount,
-                    plateType,
-                    tag1,
-                    tag2,
-                    tag3,
-                    tag4,
-                    placeID
-                )
+                if(amountPartList.isNotEmpty()){
+                    launchPayment(
+                        shabaType,
+                        our_token,
+                        amountPartList,
+                        amount,
+                        plateType,
+                        tag1,
+                        tag2,
+                        tag3,
+                        tag4,
+                        placeID
+                    )
+                }
+                else {
+                    launchPayment(
+                        shabaType,
+                        our_token,
+                        amount,
+                        plateType,
+                        tag1,
+                        tag2,
+                        tag3,
+                        tag4,
+                        placeID
+                    )
+                }
             }
 
             override fun onFailure(call: Call<CreateTransactionResponse>, t: Throwable) {

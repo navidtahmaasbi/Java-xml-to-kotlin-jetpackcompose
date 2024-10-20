@@ -26,12 +26,12 @@ import com.azarpark.watchman.databinding.PlatePrintTemplateBinding;
 import com.azarpark.watchman.dialogs.LoadingBar;
 import com.azarpark.watchman.dialogs.MessageDialog;
 import com.azarpark.watchman.enums.PlateType;
-import com.azarpark.watchman.models.AddMobieToPlateResponse;
 import com.azarpark.watchman.models.DetectionResult;
 import com.azarpark.watchman.models.Plate;
 import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.payment.PaymentService;
 import com.azarpark.watchman.payment.ShabaType;
+import com.azarpark.watchman.payment.TransactionAmount;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
 import com.azarpark.watchman.utils.Logger;
@@ -42,6 +42,8 @@ import com.azarpark.watchman.web_service.responses.DebtHistoryResponse;
 import com.azarpark.watchman.web_service.responses.DebtObject;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import retrofit2.Call;
@@ -59,6 +61,7 @@ public class ChangePlateActivity extends AppCompatActivity {
     MessageDialog messageDialog;
     int wagePrice = 0;
     int totalPrice = 0;
+
 
     String ptag1, ptag2, ptag3, ptag4;
     DebtObjectAdapter objectAdapter;
@@ -228,6 +231,7 @@ public class ChangePlateActivity extends AppCompatActivity {
                     binding.plateSimpleTag3.getText().toString(),
                     binding.plateSimpleTag4.getText().toString(),
                     -1
+
             );
         else if (selectedTab == PlateType.old_aras)
             paymentRequest(totalPrice,
@@ -237,7 +241,7 @@ public class ChangePlateActivity extends AppCompatActivity {
                     "0",
                     "0",
                     -1
-            );
+                    );
         else if (selectedTab == PlateType.new_aras)
             paymentRequest(totalPrice,
                     selectedTab,
@@ -448,6 +452,20 @@ public class ChangePlateActivity extends AppCompatActivity {
 
                 binding.debtArea.setVisibility(View.VISIBLE);
 
+//                List<DebtObject> receivedDebts = response.body().getObjects();
+//
+//                // Set SHABA numbers based on keys
+//                for (DebtObject debt : debts) {
+//                    if (debt.getKey().equals("freeway_debt")) {
+//                        debt.setShabaNumber("wage_freeway_shaba");
+//                    } else if (debt.getKey().equals("carviolation")) {
+//                        debt.setShabaNumber("wage_carviolation_shaba");
+//                    } else if (debt.getKey().equals("balance")) {
+//                        debt.setShabaNumber("wage_azarpark_shaba");
+//                    }
+//                }
+
+
                 objectAdapter = new DebtObjectAdapter(
                         ChangePlateActivity.this,
                         response.body().getObjects()
@@ -460,6 +478,7 @@ public class ChangePlateActivity extends AppCompatActivity {
                     }
                     setTotalPrice(total);
                 });
+
                 binding.objectLv.setAdapter(objectAdapter);
 
                 ViewGroup.LayoutParams params = binding.objectLv.getLayoutParams();
@@ -499,12 +518,30 @@ public class ChangePlateActivity extends AppCompatActivity {
                     };
 
                     // prepare transaction payload
+                    List<TransactionAmount> amountPartList = new ArrayList<>();
                     StringBuilder payload = new StringBuilder();
                     boolean first = true;
                     for (DebtObject selectedItem : objectAdapter.getSelectedItems()) {
                         if (first) first = false;
                         else payload.append(",");
                         payload.append(selectedItem.key).append(":").append(selectedItem.getId());
+
+                        if (selectedItem.getValue() > 0) {
+                            String shaba = "";
+                            if (selectedItem.getKey().equals("freeway_debt")) {
+                                shaba = SharedPreferencesRepository.getValue(Constants.WAGE_FREEWAY_SHABA);
+                            }
+
+                            if (selectedItem.getKey().equals("carviolation")) {
+                                shaba = SharedPreferencesRepository.getValue(Constants.WAGE_CARVIOLATION_SHABA);
+                            }
+
+                            if (selectedItem.getKey().equals("balance")) {
+                                shaba = SharedPreferencesRepository.getValue(Constants.WAGE_AZARPARK_SHABA);
+                            }
+
+                            amountPartList.add(new TransactionAmount(selectedItem.value, shaba));
+                        }
                     }
 
                     if (amount == 0) {
@@ -513,10 +550,15 @@ public class ChangePlateActivity extends AppCompatActivity {
                     } else {
                         paymentService.createTransaction(
                                 ShabaType.NON_CHARGE, plateType, tag1, tag2, tag3, tag4,
-                                amount, -1, Constants.TRANSACTION_TYPE_DEBT,
+                                amountPartList, amount, -1, Constants.TRANSACTION_TYPE_DEBT,
                                 finalAction, -1, true, payload.toString()
                         );
                     }
+        //        for (DebtObject debt : debtObjects) {
+//            System.out.println("DebtObject key: " + debt.getKey() + ", ID: " + debt.getId());
+//            // or use Log.i() if you're in Android and want to log the output
+////            Log.i("DebtObject", "Key: " + debt.getKey() + ", ID: " + debt.getId());
+//        }
 
 
 

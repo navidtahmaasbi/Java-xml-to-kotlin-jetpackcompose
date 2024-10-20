@@ -75,7 +75,14 @@ public class Constants {
     public static String accountNumber = "account_number";
     public static String IS_WAGE = "is_wage";
     public static String CHANGE_PLATE_WAGE_PRICE = "change_plate_wage_price";
+    public static String CHANGE_PLATE_WAGE_OBJECTS = "change_plate_wage_objects";
     public static String WAGE_SHABA = "wage_shaba";
+//    public static String WAGE_AZARPARK_SHABA = "wage_azarpark_shaba";
+//    public static String WAGE_FREEWAY_SHABA = "wage_freeway_shaba";
+//    public static String WAGE_CARVIOLATION_SHABA = "wage_carviolation_shaba";
+    public static String WAGE_AZARPARK_SHABA = "wage_azarpark_shaba";
+    public static String WAGE_FREEWAY_SHABA = "wage_freeway_shaba";
+    public static String WAGE_CARVIOLATION_SHABA = "wage_carviolation_shaba";
     public static String IMPREST_TITLE = "imprest_title";
     public static String VACATION_TITLE = "vacation_title";
     public static String CHARGE_ITEMS = "charge_items";
