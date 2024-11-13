@@ -98,6 +98,70 @@ public class BehPardakhtPayment extends PaymentService {
         }
     }
 
+//    public String shaba(TransactionAmount transactionAmount) {
+//        return "000000000000000000000000000000:" + (transactionAmount.getAmount() * 10) + ":" + transactionAmount.getShaba();
+//    }
+//
+//    @Override
+//    public void launchPayment(ShabaType shabaType, long paymentToken, int amount, @NonNull PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
+//
+//        launchPayment(shabaType, paymentToken, Collections.emptyList(), amount, plateType, tag1, tag2, tag3, tag4, placeID);
+//    }
+//
+//    @Override
+//    public void launchPayment(@NonNull ShabaType shabaType, long paymentToken, @NonNull List<TransactionAmount> amountPartList, int amount, @NonNull PlateType plateType, @Nullable String tag1, @Nullable String tag2, @Nullable String tag3, @Nullable String tag4, int placeID) {
+//        String[] param;
+//
+//        boolean isWage = false;
+//        try {
+//            isWage = Boolean.parseBoolean(SharedPreferencesRepository.getValue(Constants.IS_WAGE_TRANSACTION, "false"));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        if (isWage) {
+//            param = new String[amountPartList.size()];
+//            for (int i = 0; i < param.length; i++) {
+//                param[i] = shaba(amountPartList.get(i));
+//            }
+//        } else {
+//            param = new String[1];
+//            if (AppConfig.Companion.isArdabil()) {
+//                {
+//                    param[0] = this.shaba(new TransactionAmount(amount, Constants.ARDABIL_SHABA));
+//                }
+//            } else { // TABRIZ
+//                if (shabaType == ShabaType.CHARGE) {
+//                    param[0] = this.shaba(new TransactionAmount(amount, Constants.CHARGE_SHABA));
+//                } else if (shabaType == ShabaType.NON_CHARGE) {
+//                    param[0] = this.shaba(new TransactionAmount(amount, Constants.NON_CHARGE_SHABA));
+//                }
+//            }
+//        }
+//
+//
+//        Logger.d("--------------> Params: %s", Arrays.toString(param));
+//
+//        Intent intent = new Intent();
+//        intent.putExtra("TransType", 3);
+//        intent.putExtra("Amount", String.valueOf(amount * 10));
+//        intent.putExtra("ResNum", Long.toString(paymentToken));
+//        intent.putExtra("AppId", "0");
+//        intent.putExtra("Tashim", param);
+//
+//
+//        Logger.d(
+//                "requesting Tashim payment: (\nTransType: %d\nAmount: %s\nResNum: %s\nAppId: %s\nTashim: %s\n)",
+//                intent.getExtras().getInt("TransType"),
+//                intent.getExtras().getString("Amount"),
+//                intent.getExtras().getString("ResNum"),
+//                intent.getExtras().getString("AppId"),
+//                intent.getExtras().getStringArray("Tashim")
+//        );
+//
+//        intent.setComponent(new ComponentName("ir.sep.android.smartpos", "ir.sep.android.smartpos.ThirdPartyActivity"));
+//        getActivity().startActivityForResult(intent, PAYMENT_REQUEST_CODE);
+//    }
+
     @Override
     public void launchPayment(@NonNull ShabaType shabaType, long paymentToken, int amount, @NonNull PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
         String accountId = shabaType == ShabaType.CHARGE ? "1" : "2";

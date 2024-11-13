@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.adapters.DebtObjectAdapter;
+import com.azarpark.watchman.core.AppConfig;
 import com.azarpark.watchman.databinding.ActivityChangePlateBinding;
 import com.azarpark.watchman.databinding.DebtClearedPrintTemplateBinding;
 import com.azarpark.watchman.databinding.DebtClearedPrintTemplateContainerBinding;
@@ -68,11 +69,15 @@ public class ChangePlateActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         binding = ActivityChangePlateBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         assistant = new Assistant();
+//        AppConfig.selectedConfig.paymentType = AppConfig.PaymentType.SAMAN;
+        AppConfig.setPaymentType(AppConfig.PaymentType.SAMAN);
+
         paymentService = new PaymentService.Builder()
                 .activity(this)
                 .webService(webService)
@@ -89,6 +94,8 @@ public class ChangePlateActivity extends AppCompatActivity {
                 })
                 .build();
         paymentService.initialize();
+
+
 
 
         binding.plateSimpleTag1.requestFocus();

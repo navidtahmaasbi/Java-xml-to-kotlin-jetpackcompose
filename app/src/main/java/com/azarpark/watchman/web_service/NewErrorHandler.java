@@ -2,6 +2,7 @@ package com.azarpark.watchman.web_service;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.fragment.app.FragmentManager;
@@ -29,6 +30,7 @@ public class NewErrorHandler {
     public static boolean onResponseErrorDialogIsShowing = false;
 
     public static boolean apiResponseHasError(Response response, Context context) {
+        Log.d("kabiri", "Response: " + response);
 
 
         Gson gson = new Gson();

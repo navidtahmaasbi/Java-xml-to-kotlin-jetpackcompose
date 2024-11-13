@@ -26,6 +26,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.RemoteViews;
 
 import androidx.core.app.NotificationCompat;
+
 import com.azarpark.watchman.R;
 import com.azarpark.watchman.activities.SplashActivity;
 import com.azarpark.watchman.databinding.PrintContentPartBinding;
@@ -38,19 +39,18 @@ import com.yandex.metrica.YandexMetrica;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
 import kotlin.random.Random;
@@ -747,7 +747,7 @@ public class Assistant {
                 context,
                 0,
                 intent,
-                PendingIntent.FLAG_ONE_SHOT
+                PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE
         );
 
         NotificationCompat.Builder builder

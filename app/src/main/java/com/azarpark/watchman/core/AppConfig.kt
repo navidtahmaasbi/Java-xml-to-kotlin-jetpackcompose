@@ -11,6 +11,7 @@ class AppConfig {
         const val sarab = "sarab"
         const val ardabil = "ardabil"
         val cityPayment = mapOf(
+//            tabriz to PaymentType.SAMAN,
             tabriz to PaymentType.SAMAN,
             sarab to PaymentType.PARSIAN,
             ardabil to PaymentType.BEH_PARDAKHT,
@@ -21,6 +22,10 @@ class AppConfig {
             paymentType = PaymentType.SAMAN,
             tabriz
         ) // default to tabriz
+        @JvmStatic
+        fun setPaymentType(paymentType: PaymentType) {
+            selectedConfig = selectedConfig.copy(paymentType = paymentType)
+        }
 
         data class Config(val baseUrl: String, val paymentType: PaymentType, val city: String)
 
