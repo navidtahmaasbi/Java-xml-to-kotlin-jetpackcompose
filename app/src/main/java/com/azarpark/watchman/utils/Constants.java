@@ -77,9 +77,9 @@ public class Constants {
     public static String CHANGE_PLATE_WAGE_PRICE = "change_plate_wage_price";
     public static String CHANGE_PLATE_WAGE_OBJECTS = "change_plate_wage_objects";
     public static String WAGE_SHABA = "wage_shaba";
-//    public static String WAGE_AZARPARK_SHABA = "wage_azarpark_shaba";
-//    public static String WAGE_FREEWAY_SHABA = "wage_freeway_shaba";
-//    public static String WAGE_CARVIOLATION_SHABA = "wage_carviolation_shaba";
+    public static String PAYMENT_TYPE_TABRIZ ="payment_type_tabriz";
+    public static String PAYMENT_TYPE_ARDABIL ="payment_type_ardabil";
+    public static String PAYMENT_TYPE_SARAB ="payment_type_sarab";
     public static String WAGE_AZARPARK_SHABA = "wage_azarpark_shaba";
     public static String WAGE_FREEWAY_SHABA = "wage_freeway_shaba";
     public static String WAGE_CARVIOLATION_SHABA = "wage_carviolation_shaba";

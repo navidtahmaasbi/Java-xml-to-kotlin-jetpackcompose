@@ -1,6 +1,8 @@
 package com.azarpark.watchman.core
 
 import com.azarpark.watchman.models.TicketMessage
+import com.azarpark.watchman.utils.Constants
+import com.azarpark.watchman.utils.SharedPreferencesRepository
 
 class AppConfig {
 
@@ -12,20 +14,45 @@ class AppConfig {
         const val ardabil = "ardabil"
         val cityPayment = mapOf(
 //            tabriz to PaymentType.SAMAN,
-            tabriz to PaymentType.SAMAN,
-            sarab to PaymentType.PARSIAN,
-            ardabil to PaymentType.BEH_PARDAKHT,
+//            tabriz to PaymentType.SAMAN,
+//            sarab to PaymentType.PARSIAN,
+//            ardabil to PaymentType.BEH_PARDAKHT,
+            tabriz to getPaymentTypeFromPreferences(Constants.PAYMENT_TYPE_TABRIZ),
+            sarab to getPaymentTypeFromPreferences(Constants.PAYMENT_TYPE_SARAB),
+            ardabil to getPaymentTypeFromPreferences(Constants.PAYMENT_TYPE_ARDABIL),
 //            ardabil to PaymentType.SAMAN,
         )
+
+        private fun getPaymentTypeFromPreferences(key: String): PaymentType {
+            val paymentTypeString = SharedPreferencesRepository.getValue(key)
+            return try {
+                PaymentType.valueOf(paymentTypeString)
+            } catch (e: IllegalArgumentException) {
+                PaymentType.PAYMENT_LESS // default to PAYMENT_LESS if conversion fails
+            }
+        }
+
         var selectedConfig = Config(
             baseUrl = "$http$tabriz.$domain",
             paymentType = PaymentType.SAMAN,
             tabriz
         ) // default to tabriz
+
+        @JvmStatic
+        fun getCurrentConfig(): Config {
+            return selectedConfig
+        }
+
+        @JvmStatic
+        fun updateSelectedConfig(newConfig: Config) {
+            selectedConfig = newConfig
+        }
+
         @JvmStatic
         fun setPaymentType(paymentType: PaymentType) {
             selectedConfig = selectedConfig.copy(paymentType = paymentType)
         }
+
 
         data class Config(val baseUrl: String, val paymentType: PaymentType, val city: String)
 
@@ -57,6 +84,7 @@ class AppConfig {
             )
         }
     }
+
 
     enum class PaymentType {
         PAYMENT_LESS,

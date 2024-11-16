@@ -32,6 +32,9 @@ public class SplashResponse {
     public String wage_azarpark_shaba;
     public String wage_freeway_shaba;
     public String wage_carviolation_shaba;
+    public String payment_type_tabriz;
+    public String payment_type_ardabil;
+    public String payment_type_sarab;
     public String imprest_title;
     public String vacation_title;
     public List<ChargeItem> watchmen_charge_items;

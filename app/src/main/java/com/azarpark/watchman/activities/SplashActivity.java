@@ -319,6 +319,10 @@ private void showMessageDialog(String title, String message, String confirmButto
                 SharedPreferencesRepository.setValue(Constants.WAGE_CARVIOLATION_SHABA, response.body().wage_carviolation_shaba);
                 SharedPreferencesRepository.setWage(response.body().is_wage, response.body().change_plate_wage_price);
 
+                SharedPreferencesRepository.setValue(Constants.PAYMENT_TYPE_TABRIZ, response.body().payment_type_tabriz);
+                SharedPreferencesRepository.setValue(Constants.PAYMENT_TYPE_SARAB, response.body().payment_type_sarab);
+                SharedPreferencesRepository.setValue(Constants.PAYMENT_TYPE_ARDABIL, response.body().payment_type_ardabil);
+
                 SharedPreferencesRepository.setValue(Constants.IMPREST_TITLE, response.body().imprest_title);
                 SharedPreferencesRepository.setValue(Constants.VACATION_TITLE, response.body().vacation_title);
 

@@ -20,6 +20,7 @@ import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,6 +59,7 @@ import com.azarpark.watchman.models.TicketMessage;
 import com.azarpark.watchman.models.TicketMessagePart;
 import com.azarpark.watchman.models.Transaction;
 import com.azarpark.watchman.payment.PaymentService;
+import com.azarpark.watchman.payment.PaymentType;
 import com.azarpark.watchman.payment.ShabaType;
 import com.azarpark.watchman.utils.Assistant;
 import com.azarpark.watchman.utils.Constants;
@@ -143,6 +145,60 @@ public class MainActivity extends AppCompatActivity {
                 .setDestinationDirectoryPath(getFilesDir().toString() + Constants.IMAGES_DIRECTORY);
 
 
+//        String subdomain = "ardabil"; // Change this based on your city logic if it's dynamic
+////        AppConfig.PaymentType paymentType = AppConfig.getCurrentConfig().getPaymentType(subdomain);
+//        AppConfig.PaymentType paymentType = AppConfig.Companion.getCityPayment().containsKey(subdomain)
+//                ? AppConfig.Companion.getCityPayment().get(subdomain)
+//                : AppConfig.PaymentType.PAYMENT_LESS;
+//
+//        // Update selectedConfig with the payment type for the selected city
+//        assert paymentType != null;
+//        AppConfig.updateSelectedConfig(new AppConfig.Companion.Config(
+//                AppConfig.http + subdomain + "." + AppConfig.domain,
+//                paymentType,
+//                subdomain
+//        ));
+//
+//        // Log the selected payment type to verify it loaded correctly
+//        Log.d("MainActivity", "Selected payment type: " + AppConfig.getCurrentConfig().getPaymentType());
+//
+//        try {
+//            // Initialize payment service after confirming selectedConfig is set up
+//            paymentService = new PaymentService.Builder()
+//                    .activity(this)
+//                    .webService(webService)
+//                    .paymentCallback(new PaymentService.OnPaymentCallback() {
+//                        @Override
+//                        public void onScanDataReceived(int data) {
+//                            handleScannedPlaceID(data);
+//                        }
+//
+//                        @Override
+//                        public void onTransactionVerified(@NonNull Transaction transaction) {
+//                            String tag1 = SharedPreferencesRepository.getValue(Constants.TAG1, "0");
+//                            String tag2 = SharedPreferencesRepository.getValue(Constants.TAG2, "0");
+//                            String tag3 = SharedPreferencesRepository.getValue(Constants.TAG3, "0");
+//                            String tag4 = SharedPreferencesRepository.getValue(Constants.TAG4, "0");
+//
+//                            if (transaction.getTransactionType() == Constants.TRANSACTION_TYPE_DISCOUNT) {
+//                                printMiniFactor(tag1, tag2, tag3, tag4, Integer.valueOf(transaction.getAmount()), true);
+//                            } else {
+//                                getCarDebtHistory02(assistant.getPlateType(tag1, tag2, tag3, tag4), tag1, tag2, tag3, tag4, 0, 1);
+//                            }
+//
+//                            getPlaces02();
+//                        }
+//                    })
+//                    .build();
+//
+//            paymentService.initialize();
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw new RuntimeException("Failed to initialize payment service.", e);
+//        }
+
+
 
 
 
@@ -172,6 +228,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 })
                 .build();
+        Log.d("MainActivity", "Selected payment type: " + AppConfig.getCurrentConfig().getPaymentType());
+
         paymentService.initialize();
 
 
