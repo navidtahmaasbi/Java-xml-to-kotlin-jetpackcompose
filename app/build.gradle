@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace "com.azarpark.watchman"
+    namespace "com.azarpark.cunt"
     compileSdk 34
 
     defaultConfig {
