@@ -1,125 +1,125 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:layoutDirection="ltr"
-    >
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    xmlns:tools="http://schemas.android.com/tools"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    android:orientation="vertical"-->
+<!--    android:layoutDirection="ltr"-->
+<!--    >-->
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        app:srcCompat="@drawable/login_bg" />
+<!--    <androidx.appcompat.widget.AppCompatImageView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:scaleType="centerCrop"-->
+<!--        app:srcCompat="@drawable/login_bg" />-->
 
-    <ImageView
-        android:layout_width="@dimen/_80sdp"
-        android:layout_height="@dimen/_80sdp"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/_30sdp"
-        android:src="@drawable/ic_login_logo" />
+<!--    <ImageView-->
+<!--        android:layout_width="@dimen/_80sdp"-->
+<!--        android:layout_height="@dimen/_80sdp"-->
+<!--        android:layout_centerHorizontal="true"-->
+<!--        android:layout_gravity="center_horizontal"-->
+<!--        android:layout_marginTop="@dimen/_30sdp"-->
+<!--        android:src="@drawable/ic_login_logo" />-->
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="@dimen/_20sdp"
-        android:layout_marginTop="@dimen/_20sdp"
-        android:layout_marginEnd="@dimen/_20sdp"
-        android:layout_marginBottom="@dimen/_20sdp"
-        android:background="@drawable/white_bg_10"
-        android:orientation="vertical"
-        android:padding="@dimen/_15sdp">
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_centerVertical="true"-->
+<!--        android:layout_marginStart="@dimen/_20sdp"-->
+<!--        android:layout_marginTop="@dimen/_20sdp"-->
+<!--        android:layout_marginEnd="@dimen/_20sdp"-->
+<!--        android:layout_marginBottom="@dimen/_20sdp"-->
+<!--        android:background="@drawable/white_bg_10"-->
+<!--        android:orientation="vertical"-->
+<!--        android:padding="@dimen/_15sdp">-->
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:fontFamily="@font/iran_sans"
-            android:text="شماره موبایل خود را وارد کنید"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_15sdp" />
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="center_horizontal"-->
+<!--            android:layout_marginTop="@dimen/_10sdp"-->
+<!--            android:fontFamily="@font/iran_sans"-->
+<!--            android:text="شماره موبایل خود را وارد کنید"-->
+<!--            android:textColor="@color/black"-->
+<!--            android:textSize="@dimen/_15sdp" />-->
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_20sdp"
-            android:background="@drawable/gray_bg_5"
-            android:orientation="horizontal"
-            android:padding="@dimen/_5sdp">
+<!--        <RelativeLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="@dimen/_20sdp"-->
+<!--            android:background="@drawable/gray_bg_5"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:padding="@dimen/_5sdp">-->
 
-            <EditText
-                android:id="@+id/username"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:background="@android:color/transparent"
-                android:fontFamily="@font/iran_sans"
-                android:gravity="center"
-                android:hint="09*********"
-                android:inputType="numberDecimal"
-                android:padding="@dimen/_5sdp"
-                android:textColor="@color/black" />
+<!--            <EditText-->
+<!--                android:id="@+id/username"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_centerVertical="true"-->
+<!--                android:background="@android:color/transparent"-->
+<!--                android:fontFamily="@font/iran_sans"-->
+<!--                android:gravity="center"-->
+<!--                android:hint="09*********"-->
+<!--                android:inputType="numberDecimal"-->
+<!--                android:padding="@dimen/_5sdp"-->
+<!--                android:textColor="@color/black" />-->
 
-            <ImageView
-                android:layout_width="@dimen/_15sdp"
-                android:layout_height="@dimen/_15sdp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="@dimen/_10sdp"
-                android:src="@drawable/ic_mobile"
-                app:tint="@color/blue" />
+<!--            <ImageView-->
+<!--                android:layout_width="@dimen/_15sdp"-->
+<!--                android:layout_height="@dimen/_15sdp"-->
+<!--                android:layout_alignParentRight="true"-->
+<!--                android:layout_centerVertical="true"-->
+<!--                android:layout_marginRight="@dimen/_10sdp"-->
+<!--                android:src="@drawable/ic_mobile"-->
+<!--                app:tint="@color/blue" />-->
 
-        </RelativeLayout>
+<!--        </RelativeLayout>-->
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:background="@drawable/gray_bg_5"
-            android:orientation="horizontal"
-            android:padding="@dimen/_5sdp">
+<!--        <RelativeLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="@dimen/_10sdp"-->
+<!--            android:background="@drawable/gray_bg_5"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:padding="@dimen/_5sdp">-->
 
-            <EditText
-                android:id="@+id/password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:background="@android:color/transparent"
-                android:fontFamily="@font/iran_sans"
-                android:gravity="center"
-                android:hint="رمز عبور"
-                android:inputType="numberPassword"
-                android:padding="@dimen/_5sdp"
-                android:textColor="@color/black" />
+<!--            <EditText-->
+<!--                android:id="@+id/password"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_centerVertical="true"-->
+<!--                android:background="@android:color/transparent"-->
+<!--                android:fontFamily="@font/iran_sans"-->
+<!--                android:gravity="center"-->
+<!--                android:hint="رمز عبور"-->
+<!--                android:inputType="numberPassword"-->
+<!--                android:padding="@dimen/_5sdp"-->
+<!--                android:textColor="@color/black" />-->
 
-            <ImageView
-                android:layout_width="@dimen/_15sdp"
-                android:layout_height="@dimen/_15sdp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="@dimen/_10sdp"
-                android:src="@drawable/ic_password"
-                app:tint="@color/blue" />
+<!--            <ImageView-->
+<!--                android:layout_width="@dimen/_15sdp"-->
+<!--                android:layout_height="@dimen/_15sdp"-->
+<!--                android:layout_alignParentRight="true"-->
+<!--                android:layout_centerVertical="true"-->
+<!--                android:layout_marginRight="@dimen/_10sdp"-->
+<!--                android:src="@drawable/ic_password"-->
+<!--                app:tint="@color/blue" />-->
 
-        </RelativeLayout>
+<!--        </RelativeLayout>-->
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_20sdp"
-            android:background="@drawable/blue_bg_5"
-            android:fontFamily="@font/iran_sans_bold"
-            android:gravity="center"
-            android:onClick="onLoginClicked"
-            android:padding="@dimen/_10sdp"
-            android:text="ورود"
-            android:textColor="@color/white" />
+<!--        <TextView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="@dimen/_20sdp"-->
+<!--            android:background="@drawable/blue_bg_5"-->
+<!--            android:fontFamily="@font/iran_sans_bold"-->
+<!--            android:gravity="center"-->
+<!--            android:onClick="onLoginClicked"-->
+<!--            android:padding="@dimen/_10sdp"-->
+<!--            android:text="ورود"-->
+<!--            android:textColor="@color/white" />-->
 
-    </LinearLayout>
+<!--    </LinearLayout>-->
 
-</RelativeLayout>
+<!--</RelativeLayout>-->

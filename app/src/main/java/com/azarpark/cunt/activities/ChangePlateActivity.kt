@@ -11,6 +11,40 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScopeInstance.align
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScopeInstance.align
+import androidx.compose.foundation.layout.ColumnScopeInstance.weight
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
+import androidx.compose.material.Card
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.azarpark.cunt.R
 import com.azarpark.cunt.adapters.DebtObjectAdapter
 import com.azarpark.cunt.core.AppConfig
@@ -37,6 +71,7 @@ import com.azarpark.cunt.utils.SharedPreferencesRepository
 import com.azarpark.cunt.web_service.NewErrorHandler
 import com.azarpark.cunt.web_service.WebService
 import com.azarpark.cunt.web_service.responses.DebtHistoryResponse
+import org.w3c.dom.Text
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -706,4 +741,156 @@ class ChangePlateActivity : AppCompatActivity() {
 
         return price
     }
+}
+@Composable
+fun ChangePlateScreen() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Gray)
+    ) {
+        // Action Bar
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(45.dp)
+                .background(Color.Blue),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(
+                onClick = { /* Handle Barcode Icon Click */ },
+                modifier = Modifier.size(45.dp)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_qr_code),
+                    contentDescription = "Barcode",
+                    tint = Color.White,
+                    modifier = Modifier.visibility(visible = false)
+                )
+            }
+
+            Text(
+                text = "استعلام بدهی",
+                color = Color.White,
+                fontFamily = Font(R.font.iran_sans_bold),
+                fontSize = 13.sp,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 10.dp)
+            )
+
+            IconButton(
+                onClick = { /* Handle Back Action */ },
+                modifier = Modifier.size(45.dp)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_arrow_down),
+                    contentDescription = "Back",
+                    tint = Color.White,
+                    modifier = Modifier.rotate(-90f)
+                )
+            }
+        }
+
+        // Scrollable Content
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(20.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            // Vehicle Plate Section
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                backgroundColor = Color.White,
+                shape = RoundedCornerShape(8.dp),
+                elevation = 4.dp
+            ) {
+                Column(modifier = Modifier.padding(10.dp)) {
+                    Text(
+                        text = "پلاک خودرو",
+                        color = Color.Gray,
+                        fontFamily = Font(R.font.iran_sans),
+                        fontSize = 13.sp,
+                        modifier = Modifier.align(Alignment.End)
+                    )
+
+                    Spacer(modifier = Modifier.height(15.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        PlateOption(title = "ارس جدید", isSelected = false)
+                        PlateOption(title = "ارس", isSelected = false)
+                        PlateOption(title = "ملی", isSelected = true)
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    // Editable Plate Fields
+                    EditablePlateFields()
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Submit Button
+            Button(
+                onClick = { /* Submit Action */ },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text(text = "استعلام بدهی")
+            }
+        }
+    }
+}
+
+@Composable
+fun PlateOption(title: String, isSelected: Boolean) {
+    val backgroundColor = if (isSelected) Color.Blue else Color.LightGray
+    val textColor = if (isSelected) Color.White else Color.Black
+
+    Box(
+        modifier = Modifier
+            .weight(1f)
+            .background(backgroundColor, RoundedCornerShape(8.dp))
+            .padding(5.dp)
+    ) {
+        Text(
+            text = title,
+            color = textColor,
+            fontFamily = Font(R.font.iran_sans),
+            fontSize = 13.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.align(Alignment.Center)
+        )
+    }
+}
+
+@Composable
+fun EditablePlateFields() {
+    Row(
+        modifier = Modifier.align(Alignment.CenterHorizontally),
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        PlateField(hint = "56", maxLength = 2)
+        PlateField(hint = "س", maxLength = 1)
+        PlateField(hint = "526", maxLength = 3)
+        PlateField(hint = "15", maxLength = 2)
+    }
+}
+
+@Composable
+fun PlateField(hint: String, maxLength: Int) {
+    TextField(
+        value = "",
+        onValueChange = { /* Handle Change */ },
+        placeholder = { Text(text = hint) },
+        singleLine = true,
+        maxLines = 1,
+        modifier = Modifier
+            .width(60.dp)
+            .background(Color.LightGray, RoundedCornerShape(8.dp))
+    )
 }
