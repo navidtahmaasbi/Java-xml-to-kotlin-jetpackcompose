@@ -41,11 +41,15 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-    buildToolsVersion '34.0.0'
+//    buildToolsVersion '34.0.0'
     buildFeatures {
         viewBinding true
         buildConfig true
         aidl true
+        compose true
+    }
+    composeOptions{
+        kotlinCompilerExtensionVersion ="1.5.15"
     }
 }
 
@@ -59,6 +63,7 @@ dependencies {
     implementation "com.google.dagger:hilt-android:2.48"
     implementation 'androidx.compose.runtime:runtime-android:1.7.5'
     implementation 'androidx.compose.foundation:foundation-layout-android:1.7.5'
+    debugImplementation 'androidx.compose.ui:ui-tooling:1.7.5'
     kapt "com.google.dagger:hilt-compiler:2.48"
     implementation 'androidx.activity:activity-ktx:1.3.1'
 
@@ -87,8 +92,8 @@ dependencies {
     implementation 'com.github.samanzamani:PersianDate:1.3.4'
 
     implementation 'com.yandex.android:mobmetricalib:3.21.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
-    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.3'
+    implementation 'com.google.android.gms:play-services-maps:19.0.0'
     implementation 'com.github.leandroborgesferreira:loading-button-android:2.3.0'
 
 
@@ -98,13 +103,18 @@ dependencies {
     implementation 'com.github.mohamad-amin:PersianMaterialDateTimePicker:5bff47f7e3'
 
     implementation 'id.zelory:compressor:2.1.1'
-    implementation 'androidx.fragment:fragment:1.6.1'
+    implementation 'androidx.fragment:fragment:1.8.5'
 
     implementation "androidx.activity:activity-compose:1.9.3"
-    implementation "androidx.compose.ui.ui:1.5.0"
-    implementation "androidx.compose.material:material:1.5.0"
+    implementation "androidx.compose.material:material:1.7.5"
     implementation "androidx.compose.ui:ui-tooling-preview:1.5.0"
     implementation "androidx.compose.runtime:runtime-livedata:1.5.0"
+    implementation "androidx.compose.ui:ui:1.5.15" // Make sure to use the latest version of Compose
+    implementation "androidx.activity:activity-compose:1.9.3"
+    implementation "androidx.compose.compiler:compiler:1.5.15"
+
+    // Kotlin and other dependencies
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.0.20"
 
 
 }

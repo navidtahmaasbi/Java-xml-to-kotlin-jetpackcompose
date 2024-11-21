@@ -2,7 +2,6 @@ package com.azarpark.cunt.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
@@ -14,10 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.Role.Companion.Image
-import androidx.core.app.ComponentActivity
 import com.azarpark.cunt.R
-import com.azarpark.cunt.databinding.ActivityLoginBinding
 import com.azarpark.cunt.dialogs.ConfirmDialog
 import com.azarpark.cunt.dialogs.LoadingBar
 import com.azarpark.cunt.dialogs.MessageDialog
@@ -34,29 +30,39 @@ import retrofit2.Response
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.fragment.app.FragmentActivity
 
 class LoginActivity :
 //    AppCompatActivity()
-    androidx.activity.ComponentActivity() {
+//    androidx.activity.ComponentActivity()
+FragmentActivity()
+{
     //    var binding: ActivityLoginBinding? = null
     var assistant: Assistant? = null
     var webService: WebService = WebService()
@@ -69,24 +75,27 @@ class LoginActivity :
 
         assistant = Assistant()
         setContent {
-            LoginActivityContent()
+            LoginActivityContent{username, password ->
+                onLoginClicked(username, password)
+            }
         }
     }
 
-    fun onLoginClicked() {
+
+    fun onLoginClicked(username: String, password: String) {
         // Handle login validation and logic
-        if (!assistant!!.isMobile("your_username")) {
+        if (!assistant!!.isMobile(username)) {
             Toast.makeText(applicationContext, "شماره تلفن را درست وارد کنید", Toast.LENGTH_SHORT)
                 .show()
-        } else if (!assistant!!.isPassword("your_password")) {
+        } else if (!assistant!!.isPassword(password)) {
             Toast.makeText(applicationContext, "رمز عبور را درست وارد کنید", Toast.LENGTH_SHORT)
                 .show()
         } else {
-            showConfirmation()
+            showConfirmation(username,password)
         }
     }
 
-    private fun showConfirmation() {
+    private fun showConfirmation(username: String, password: String) {
         confirmDialog = ConfirmDialog(
             "پذیرش قوانین",
             Constants.rules,
@@ -142,7 +151,7 @@ class LoginActivity :
                     NewErrorHandler.apiFailureErrorHandler(
                         call,
                         t,
-                        supportFragmentManager,
+                        confirmDialog!!.show(supportFragmentManager, MessageDialog.TAG),
                         functionRunnable
                     )
                 }
@@ -181,6 +190,10 @@ fun LoginScreen(
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopCenter
+        ){ CenteredLogo()}
 
         // Login Form
         Box(
@@ -203,44 +216,58 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 // Username Input
-                OutlinedTextField(
+                TextField(
                     value = username,
                     onValueChange = onUsernameChange,
-                    modifier = Modifier.fillMaxWidth(),
+//                    modifier = Modifier.fillMaxWidth().background(color = Color.LightGray,shape = RoundedCornerShape(10.dp)),
                     placeholder = {
                         Text(
                             text = "09*********",
                             fontFamily = FontFamily(Font(R.font.iran_sans)),
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+
+
+
+
+
+
                         )
                     },
                     singleLine = true,
-                    leadingIcon = {
+                    trailingIcon = {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_mobile),
                             contentDescription = null,
                             tint = Color.Blue
                         )
                     },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = Color.LightGray,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                    )
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
 
                 // Password Input
-                OutlinedTextField(
+                TextField(
                     value = password,
                     onValueChange = onPasswordChange,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().background(color = Color.LightGray,shape = RoundedCornerShape(10.dp)),
                     placeholder = {
                         Text(
                             text = "رمز عبور",
                             fontFamily = FontFamily(Font(R.font.iran_sans)),
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
                         )
                     },
                     singleLine = true,
-                    leadingIcon = {
+                    trailingIcon = {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_password),
                             contentDescription = null,
@@ -275,20 +302,36 @@ fun LoginScreen(
 }
 
 @Composable
-fun LoginActivityContent() {
+fun LoginActivityContent(onLogin: (String,String)-> Unit){
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     LoginScreen(
         username = username,
-        ouUsernameChange = { username = it },
+        onUsernameChange = { username = it },
         password = password,
         onPasswordChange = { password = it },
         onLoginClicked = {
-
-            (LocalContext.current as LoginActivity).onLoginClicked(username, password)
-
+            onLogin(username, password)
         }
     )
 }
+@Composable
+fun CenteredLogo(){
+    Image(
+        painter = painterResource(id = R.drawable.ic_login_logo),
+        contentDescription = null,
+        modifier = Modifier
+            .size(150.dp)
+            .padding(top = 30.dp),
+        contentScale = ContentScale.Fit
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewLoginScreen(){
+    LoginActivityContent {username, password ->}
+}
+
 
 

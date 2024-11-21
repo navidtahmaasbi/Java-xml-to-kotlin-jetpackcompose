@@ -12,13 +12,16 @@ import com.azarpark.cunt.dialogs.ConfirmDialog;
 import com.azarpark.cunt.dialogs.MessageDialog;
 import com.azarpark.cunt.utils.Constants;
 import com.azarpark.cunt.utils.SharedPreferencesRepository;
+import com.azarpark.cunt.web_service.responses.LoginResponse;
 import com.google.gson.Gson;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
 
+import kotlin.Unit;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -117,5 +120,9 @@ public class NewErrorHandler {
         }
 
 
+    }
+
+    public static void apiFailureErrorHandler(@NotNull Call<LoginResponse> call, @NotNull Throwable t, @NotNull Unit show, @NotNull Runnable functionRunnable) {
+        
     }
 }

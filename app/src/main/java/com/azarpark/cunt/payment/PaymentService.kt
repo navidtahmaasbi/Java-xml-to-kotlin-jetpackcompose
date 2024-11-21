@@ -286,7 +286,7 @@ abstract class PaymentService(
         fun onTransactionVerified(transaction: Transaction)
     }
 
-    interface OnTransactionCreated {
+    fun interface OnTransactionCreated {
         fun onCreateTransactionFinished()
     }
 }

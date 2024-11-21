@@ -1,223 +1,180 @@
-package com.azarpark.cunt.activities;
+package com.azarpark.cunt.activities
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Toast;
+import android.content.Intent
+import android.graphics.Bitmap
+import android.os.Bundle
+import android.os.Parcelable
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.azarpark.cunt.R
+import com.azarpark.cunt.adapters.DebtObjectAdapter
+import com.azarpark.cunt.core.AppConfig
+import com.azarpark.cunt.core.AppConfig.Companion.setPaymentType
+import com.azarpark.cunt.databinding.ActivityChangePlateBinding
+import com.azarpark.cunt.databinding.DebtClearedPrintTemplateBinding
+import com.azarpark.cunt.databinding.DebtClearedPrintTemplateContainerBinding
+import com.azarpark.cunt.databinding.FreewayDebtClearedPrintTemplateBinding
+import com.azarpark.cunt.databinding.PlatePrintTemplateBinding
+import com.azarpark.cunt.dialogs.LoadingBar
+import com.azarpark.cunt.dialogs.MessageDialog
+import com.azarpark.cunt.enums.PlateType
+import com.azarpark.cunt.models.DetectionResult
+import com.azarpark.cunt.models.Transaction
+import com.azarpark.cunt.payment.PaymentService
+import com.azarpark.cunt.payment.PaymentService.OnPaymentCallback
+import com.azarpark.cunt.payment.PaymentService.OnTransactionCreated
+import com.azarpark.cunt.payment.ShabaType
+import com.azarpark.cunt.payment.TransactionAmount
+import com.azarpark.cunt.utils.Assistant
+import com.azarpark.cunt.utils.Constants
+import com.azarpark.cunt.utils.Logger.Companion.e
+import com.azarpark.cunt.utils.SharedPreferencesRepository
+import com.azarpark.cunt.web_service.NewErrorHandler
+import com.azarpark.cunt.web_service.WebService
+import com.azarpark.cunt.web_service.responses.DebtHistoryResponse
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.text.NumberFormat
+import java.util.Locale
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.azarpark.cunt.R;
-import com.azarpark.cunt.adapters.DebtObjectAdapter;
-import com.azarpark.cunt.core.AppConfig;
-import com.azarpark.cunt.databinding.ActivityChangePlateBinding;
-import com.azarpark.cunt.databinding.DebtClearedPrintTemplateBinding;
-import com.azarpark.cunt.databinding.DebtClearedPrintTemplateContainerBinding;
-import com.azarpark.cunt.databinding.FreewayDebtClearedPrintTemplateBinding;
-import com.azarpark.cunt.databinding.PlatePrintTemplateBinding;
-import com.azarpark.cunt.dialogs.LoadingBar;
-import com.azarpark.cunt.dialogs.MessageDialog;
-import com.azarpark.cunt.enums.PlateType;
-import com.azarpark.cunt.models.DetectionResult;
-import com.azarpark.cunt.models.Plate;
-import com.azarpark.cunt.models.Transaction;
-import com.azarpark.cunt.payment.PaymentService;
-import com.azarpark.cunt.payment.ShabaType;
-import com.azarpark.cunt.payment.TransactionAmount;
-import com.azarpark.cunt.utils.Assistant;
-import com.azarpark.cunt.utils.Constants;
-import com.azarpark.cunt.utils.Logger;
-import com.azarpark.cunt.utils.SharedPreferencesRepository;
-import com.azarpark.cunt.web_service.NewErrorHandler;
-import com.azarpark.cunt.web_service.WebService;
-import com.azarpark.cunt.web_service.responses.DebtHistoryResponse;
-import com.azarpark.cunt.web_service.responses.DebtObject;
-
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-public class ChangePlateActivity extends AppCompatActivity {
-
-    ActivityChangePlateBinding binding;
-    private PlateType selectedTab = PlateType.simple;
-    LoadingBar loadingBar;
-    PaymentService paymentService;
-    Assistant assistant;
-    WebService webService = new WebService();
-    MessageDialog messageDialog;
-    int wagePrice = 0;
-    int totalPrice = 0;
+class ChangePlateActivity : AppCompatActivity() {
+    var binding: ActivityChangePlateBinding? = null
+    private var selectedTab = PlateType.simple
+    var loadingBar: LoadingBar? = null
+    var paymentService: PaymentService? = null
+    var assistant: Assistant? = null
+    var webService: WebService = WebService()
+    var messageDialog: MessageDialog? = null
+    var wagePrice: Int = 0
+    var totalPrice: Int = 0
 
 
-    String ptag1, ptag2, ptag3, ptag4;
-    DebtObjectAdapter objectAdapter;
+    var ptag1: String? = null
+    var ptag2: String? = null
+    var ptag3: String? = null
+    var ptag4: String? = null
+    var objectAdapter: DebtObjectAdapter? = null
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityChangePlateBinding.inflate(layoutInflater)
+        setContentView(binding!!.root)
 
-        super.onCreate(savedInstanceState);
-        binding = ActivityChangePlateBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        assistant = Assistant()
+        //        AppConfig.selectedConfig.paymentType = AppConfig.PaymentType.SAMAN;
+        setPaymentType(AppConfig.PaymentType.SAMAN)
 
-        assistant = new Assistant();
-//        AppConfig.selectedConfig.paymentType = AppConfig.PaymentType.SAMAN;
-        AppConfig.setPaymentType(AppConfig.PaymentType.SAMAN);
-
-        paymentService = new PaymentService.Builder()
-                .activity(this)
-                .webService(webService)
-                .paymentCallback(new PaymentService.OnPaymentCallback() {
-                    @Override
-                    public void onScanDataReceived(int data) {
-
-                    }
-
-                    @Override
-                    public void onTransactionVerified(@NonNull Transaction transaction) {
-                        printMiniFactor(transaction, ptag1, ptag2, ptag3, ptag4);
-                    }
-                })
-                .build();
-        paymentService.initialize();
-
-
-
-
-        binding.plateSimpleTag1.requestFocus();
-
-        loadingBar = new LoadingBar(ChangePlateActivity.this);
-
-        binding.plateSimpleSelector.setOnClickListener(view -> setSelectedTab(PlateType.simple));
-
-        binding.plateOldArasSelector.setOnClickListener(view -> setSelectedTab(PlateType.old_aras));
-
-        binding.plateNewArasSelector.setOnClickListener(view -> setSelectedTab(PlateType.new_aras));
-
-        binding.submit.setOnClickListener(view -> loadData(false));
-
-        binding.plateSimpleTag1.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                if (binding.plateSimpleTag1.getText().toString().length() == 2)     //size is your limit
-                {
-                    binding.plateSimpleTag2.requestFocus();
+        paymentService = PaymentService.Builder()
+            .activity(this)
+            .webService(webService)
+            .paymentCallback(object : OnPaymentCallback {
+                override fun onScanDataReceived(data: Int) {
                 }
 
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
-        binding.plateSimpleTag2.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                if (binding.plateSimpleTag2.getText().toString().length() == 1)     //size is your limit
-                {
-                    binding.plateSimpleTag3.requestFocus();
+                override fun onTransactionVerified(transaction: Transaction) {
+                    printMiniFactor(transaction, ptag1, ptag2, ptag3, ptag4)
                 }
+            })
+            .build()
+        paymentService!!.initialize()
 
 
+
+
+        binding!!.plateSimpleTag1.requestFocus()
+
+        loadingBar = LoadingBar(this@ChangePlateActivity)
+
+        binding!!.plateSimpleSelector.setOnClickListener { view: View? -> setSelectedTab(PlateType.simple) }
+
+        binding!!.plateOldArasSelector.setOnClickListener { view: View? -> setSelectedTab(PlateType.old_aras) }
+
+        binding!!.plateNewArasSelector.setOnClickListener { view: View? -> setSelectedTab(PlateType.new_aras) }
+
+        binding!!.submit.setOnClickListener { view: View? -> loadData(false) }
+
+        binding!!.plateSimpleTag1.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
             }
 
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
-        binding.plateSimpleTag3.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                if (binding.plateSimpleTag3.getText().toString().length() == 3)     //size is your limit
+            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+                if (binding!!.plateSimpleTag1.text.toString().length == 2) //size is your limit
                 {
-                    binding.plateSimpleTag4.requestFocus();
+                    binding!!.plateSimpleTag2.requestFocus()
                 }
-
-
             }
 
-            @Override
-            public void afterTextChanged(Editable editable) {
-
+            override fun afterTextChanged(editable: Editable) {
             }
-        });
+        })
 
-        binding.plateNewArasTag1.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+        binding!!.plateSimpleTag2.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
             }
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                if (binding.plateNewArasTag1.getText().toString().length() == 5)     //size is your limit
+            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+                if (binding!!.plateSimpleTag2.text.toString().length == 1) //size is your limit
                 {
-                    binding.plateNewArasTag2.requestFocus();
+                    binding!!.plateSimpleTag3.requestFocus()
                 }
-
-
             }
 
-            @Override
-            public void afterTextChanged(Editable editable) {
-
+            override fun afterTextChanged(editable: Editable) {
             }
-        });
+        })
 
-        binding.payment.setOnClickListener(this::payment);
+        binding!!.plateSimpleTag3.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+            }
 
-        binding.scanPlateBtn.setOnClickListener(v -> {
+            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+                if (binding!!.plateSimpleTag3.text.toString().length == 3) //size is your limit
+                {
+                    binding!!.plateSimpleTag4.requestFocus()
+                }
+            }
+
+            override fun afterTextChanged(editable: Editable) {
+            }
+        })
+
+        binding!!.plateNewArasTag1.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+            }
+
+            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+                if (binding!!.plateNewArasTag1.text.toString().length == 5) //size is your limit
+                {
+                    binding!!.plateNewArasTag2.requestFocus()
+                }
+            }
+
+            override fun afterTextChanged(editable: Editable) {
+            }
+        })
+
+        binding!!.payment.setOnClickListener { view: View -> this.payment(view) }
+
+        binding!!.scanPlateBtn.setOnClickListener { v: View? ->
             try {
-                Intent intent = new Intent("app.irana.cameraman.ACTION_SCAN_PLATE");
-                startActivityForResult(intent, 1000);
-            } catch (Exception e) {
-                e.printStackTrace();
+                val intent = Intent("app.irana.cameraman.ACTION_SCAN_PLATE")
+                startActivityForResult(intent, 1000)
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-        });
+        }
 
 
-        wagePrice = getWagePrice();
+        wagePrice = getWagePrice()
     }
 
-    private void payment(View view) {
+    private fun payment(view: View) {
 //        String mobile = binding.mobile.getText().toString();
 //        if (mobile.isEmpty() || !assistant.isMobile(mobile)) {
 //            messageDialog = new MessageDialog("خطا",
@@ -230,236 +187,250 @@ public class ChangePlateActivity extends AppCompatActivity {
 //        }
 
 
-        if (selectedTab == PlateType.simple)
-            paymentRequest(totalPrice,
-                    selectedTab,
-                    binding.plateSimpleTag1.getText().toString(),
-                    binding.plateSimpleTag2.getText().toString(),
-                    binding.plateSimpleTag3.getText().toString(),
-                    binding.plateSimpleTag4.getText().toString(),
-                    -1
+        if (selectedTab == PlateType.simple) paymentRequest(
+            totalPrice,
+            selectedTab,
+            binding!!.plateSimpleTag1.text.toString(),
+            binding!!.plateSimpleTag2.text.toString(),
+            binding!!.plateSimpleTag3.text.toString(),
+            binding!!.plateSimpleTag4.text.toString(),
+            -1
 
-            );
-        else if (selectedTab == PlateType.old_aras)
-            paymentRequest(totalPrice,
-                    selectedTab,
-                    binding.plateOldAras.getText().toString(),
-                    "0",
-                    "0",
-                    "0",
-                    -1
-                    );
-        else if (selectedTab == PlateType.new_aras)
-            paymentRequest(totalPrice,
-                    selectedTab,
-                    binding.plateNewArasTag1.getText().toString(),
-                    binding.plateNewArasTag2.getText().toString(),
-                    "0",
-                    "0",
-                    -1
-            );
-
+        )
+        else if (selectedTab == PlateType.old_aras) paymentRequest(
+            totalPrice,
+            selectedTab,
+            binding!!.plateOldAras.text.toString(),
+            "0",
+            "0",
+            "0",
+            -1
+        )
+        else if (selectedTab == PlateType.new_aras) paymentRequest(
+            totalPrice,
+            selectedTab,
+            binding!!.plateNewArasTag1.text.toString(),
+            binding!!.plateNewArasTag2.text.toString(),
+            "0",
+            "0",
+            -1
+        )
     }
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (data != null && data.getAction() != null && data.getAction().equals("plate-detection-result") && resultCode == Activity.RESULT_OK) {
-            Bundle bundle = data.getExtras();
-            Bitmap sourceBmp = (Bitmap) bundle.getParcelable("source_bitmap");
-            Bitmap detectionBmp = (Bitmap) bundle.getParcelable("detection_bitmap");
-            String plateTag = bundle.getString("plate_tag");
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (data != null && data.action != null && data.action == "plate-detection-result" && resultCode == RESULT_OK) {
+            val bundle = data.extras
+            val sourceBmp = bundle!!.getParcelable<Parcelable>("source_bitmap") as Bitmap?
+            val detectionBmp = bundle.getParcelable<Parcelable>("detection_bitmap") as Bitmap?
+            val plateTag = bundle.getString("plate_tag")
 
-            DetectionResult result = new DetectionResult(sourceBmp, detectionBmp, plateTag);
-            Plate plate = Assistant.parse(result.getPlateTag());
+            val result = DetectionResult(sourceBmp, detectionBmp, plateTag)
+            val plate = Assistant.parse(result.plateTag)
 
-            if (Assistant.isIranPlate(result.getPlateTag())) {
-                setSelectedTab(PlateType.simple);
-                binding.plateSimpleTag1.setText(plate.getTag1());
-                binding.plateSimpleTag2.setText(plate.getTag2());
-                binding.plateSimpleTag3.setText(plate.getTag3());
-                binding.plateSimpleTag4.setText(plate.getTag4());
-            } else if (Assistant.isOldAras(result.getPlateTag())) {
-                setSelectedTab(PlateType.old_aras);
-                binding.plateOldAras.setText(plate.getTag1());
-            } else if (Assistant.isNewAras(result.getPlateTag())) {
-                setSelectedTab(PlateType.new_aras);
-                binding.plateNewArasTag1.setText(plate.getTag1());
-                binding.plateNewArasTag2.setText(plate.getTag2());
+            if (Assistant.isIranPlate(result.plateTag)) {
+                setSelectedTab(PlateType.simple)
+                binding!!.plateSimpleTag1.setText(plate.tag1)
+                binding!!.plateSimpleTag2.setText(plate.tag2)
+                binding!!.plateSimpleTag3.setText(plate.tag3)
+                binding!!.plateSimpleTag4.setText(plate.tag4)
+            } else if (Assistant.isOldAras(result.plateTag)) {
+                setSelectedTab(PlateType.old_aras)
+                binding!!.plateOldAras.setText(plate.tag1)
+            } else if (Assistant.isNewAras(result.plateTag)) {
+                setSelectedTab(PlateType.new_aras)
+                binding!!.plateNewArasTag1.setText(plate.tag1)
+                binding!!.plateNewArasTag2.setText(plate.tag2)
             }
         } else {
-            paymentService.onActivityResultHandler(requestCode, resultCode, data);
+            paymentService!!.onActivityResultHandler(requestCode, resultCode, data!!)
         }
     }
 
-    public void myOnBackPressed(View view) {
+    fun myOnBackPressed(view: View?) {
+        onBackPressed()
 
-        onBackPressed();
-
-        View v = this.getCurrentFocus();
+        val v = this.currentFocus
         if (v != null) {
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(v.windowToken, 0)
         }
-
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        paymentService.stop();
+    override fun onDestroy() {
+        super.onDestroy()
+        paymentService!!.stop()
     }
 
     //------------------------------------------------------------ view
-
-    private void setSelectedTab(PlateType selectedTab) {
-
-        this.selectedTab = selectedTab;
-        resetData();
+    private fun setSelectedTab(selectedTab: PlateType) {
+        this.selectedTab = selectedTab
+        resetData()
 
         if (selectedTab == PlateType.simple) {
+            binding!!.plateSimpleSelector.setBackgroundResource(R.drawable.selected_tab)
+            binding!!.plateOldArasSelector.setBackgroundResource(R.drawable.unselected_tab)
+            binding!!.plateNewArasSelector.setBackgroundResource(R.drawable.unselected_tab)
 
-            binding.plateSimpleSelector.setBackgroundResource(R.drawable.selected_tab);
-            binding.plateOldArasSelector.setBackgroundResource(R.drawable.unselected_tab);
-            binding.plateNewArasSelector.setBackgroundResource(R.drawable.unselected_tab);
+            binding!!.plateSimpleTitle.setTextColor(resources.getColor(R.color.white))
+            binding!!.plateOldArasTitle.setTextColor(resources.getColor(R.color.black))
+            binding!!.plateNewArasTitle.setTextColor(resources.getColor(R.color.black))
 
-            binding.plateSimpleTitle.setTextColor(getResources().getColor(R.color.white));
-            binding.plateOldArasTitle.setTextColor(getResources().getColor(R.color.black));
-            binding.plateNewArasTitle.setTextColor(getResources().getColor(R.color.black));
-
-            binding.plateSimpleArea.setVisibility(View.VISIBLE);
-            binding.plateOldAras.setVisibility(View.GONE);
-            binding.plateNewArasArea.setVisibility(View.GONE);
+            binding!!.plateSimpleArea.visibility = View.VISIBLE
+            binding!!.plateOldAras.visibility = View.GONE
+            binding!!.plateNewArasArea.visibility = View.GONE
         } else if (selectedTab == PlateType.old_aras) {
+            binding!!.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_tab)
+            binding!!.plateOldArasSelector.setBackgroundResource(R.drawable.selected_tab)
+            binding!!.plateNewArasSelector.setBackgroundResource(R.drawable.unselected_tab)
 
-            binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_tab);
-            binding.plateOldArasSelector.setBackgroundResource(R.drawable.selected_tab);
-            binding.plateNewArasSelector.setBackgroundResource(R.drawable.unselected_tab);
+            binding!!.plateSimpleTitle.setTextColor(resources.getColor(R.color.black))
+            binding!!.plateOldArasTitle.setTextColor(resources.getColor(R.color.white))
+            binding!!.plateNewArasTitle.setTextColor(resources.getColor(R.color.black))
 
-            binding.plateSimpleTitle.setTextColor(getResources().getColor(R.color.black));
-            binding.plateOldArasTitle.setTextColor(getResources().getColor(R.color.white));
-            binding.plateNewArasTitle.setTextColor(getResources().getColor(R.color.black));
-
-            binding.plateSimpleArea.setVisibility(View.GONE);
-            binding.plateOldAras.setVisibility(View.VISIBLE);
-            binding.plateNewArasArea.setVisibility(View.GONE);
+            binding!!.plateSimpleArea.visibility = View.GONE
+            binding!!.plateOldAras.visibility = View.VISIBLE
+            binding!!.plateNewArasArea.visibility = View.GONE
         } else if (selectedTab == PlateType.new_aras) {
+            binding!!.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_tab)
+            binding!!.plateOldArasSelector.setBackgroundResource(R.drawable.unselected_tab)
+            binding!!.plateNewArasSelector.setBackgroundResource(R.drawable.selected_tab)
 
-            binding.plateSimpleSelector.setBackgroundResource(R.drawable.unselected_tab);
-            binding.plateOldArasSelector.setBackgroundResource(R.drawable.unselected_tab);
-            binding.plateNewArasSelector.setBackgroundResource(R.drawable.selected_tab);
+            binding!!.plateSimpleTitle.setTextColor(resources.getColor(R.color.black))
+            binding!!.plateOldArasTitle.setTextColor(resources.getColor(R.color.black))
+            binding!!.plateNewArasTitle.setTextColor(resources.getColor(R.color.white))
 
-            binding.plateSimpleTitle.setTextColor(getResources().getColor(R.color.black));
-            binding.plateOldArasTitle.setTextColor(getResources().getColor(R.color.black));
-            binding.plateNewArasTitle.setTextColor(getResources().getColor(R.color.white));
-
-            binding.plateSimpleArea.setVisibility(View.GONE);
-            binding.plateOldAras.setVisibility(View.GONE);
-            binding.plateNewArasArea.setVisibility(View.VISIBLE);
+            binding!!.plateSimpleArea.visibility = View.GONE
+            binding!!.plateOldAras.visibility = View.GONE
+            binding!!.plateNewArasArea.visibility = View.VISIBLE
         }
-
     }
 
-    private void resetData() {
-        binding.printArea.setVisibility(View.GONE);
-        binding.debtArea.setVisibility(View.GONE);
-        binding.plateSimpleTag1.setText("");
-        binding.plateSimpleTag2.setText("");
-        binding.plateSimpleTag3.setText("");
-        binding.plateSimpleTag4.setText("");
-        binding.plateOldAras.setText("");
-        binding.plateNewArasTag1.setText("");
-        binding.plateNewArasTag2.setText("");
-        binding.mobile.setText("");
+    private fun resetData() {
+        binding!!.printArea.visibility = View.GONE
+        binding!!.debtArea.visibility = View.GONE
+        binding!!.plateSimpleTag1.setText("")
+        binding!!.plateSimpleTag2.setText("")
+        binding!!.plateSimpleTag3.setText("")
+        binding!!.plateSimpleTag4.setText("")
+        binding!!.plateOldAras.setText("")
+        binding!!.plateNewArasTag1.setText("")
+        binding!!.plateNewArasTag2.setText("")
+        binding!!.mobile.setText("")
 
-        totalPrice = 0;
-        ptag1 = "";
-        ptag2 = "";
-        ptag3 = "";
-        ptag4 = "";
+        totalPrice = 0
+        ptag1 = ""
+        ptag2 = ""
+        ptag3 = ""
+        ptag4 = ""
     }
 
     //------------------------------------------------------------ api calls
-
-    private void loadData(boolean isLazyLoad) {
-
-        Assistant assistant = new Assistant();
+    private fun loadData(isLazyLoad: Boolean) {
+        val assistant = Assistant()
 
         if (!isLazyLoad) {
-            binding.debtArea.setVisibility(View.GONE);
+            binding!!.debtArea.visibility = View.GONE
         }
 
         if (selectedTab == PlateType.simple &&
-                (binding.plateSimpleTag1.getText().toString().length() != 2 ||
-                        binding.plateSimpleTag2.getText().toString().length() != 1 ||
-                        binding.plateSimpleTag3.getText().toString().length() != 3 ||
-                        binding.plateSimpleTag4.getText().toString().length() != 2))
-            Toast.makeText(getApplicationContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
+            (binding!!.plateSimpleTag1.text.toString().length != 2 || binding!!.plateSimpleTag2.text.toString().length != 1 || binding!!.plateSimpleTag3.text.toString().length != 3 || binding!!.plateSimpleTag4.text.toString().length != 2)
+        ) Toast.makeText(
+            applicationContext, "پلاک را درست وارد کنید", Toast.LENGTH_SHORT
+        ).show()
         else if (selectedTab == PlateType.simple &&
-                !assistant.isPersianAlphabet(binding.plateSimpleTag2.getText().toString()))
-            Toast.makeText(getApplicationContext(), "حرف وسط پلاک باید فارسی باشد", Toast.LENGTH_SHORT).show();
+            !assistant.isPersianAlphabet(binding!!.plateSimpleTag2.text.toString())
+        ) Toast.makeText(
+            applicationContext, "حرف وسط پلاک باید فارسی باشد", Toast.LENGTH_SHORT
+        ).show()
         else if (selectedTab == PlateType.old_aras &&
-                binding.plateOldAras.getText().toString().length() != 5)
-            Toast.makeText(getApplicationContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
-
+            binding!!.plateOldAras.text.toString().length != 5
+        ) Toast.makeText(applicationContext, "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show()
         else if (selectedTab == PlateType.new_aras &&
-                (binding.plateNewArasTag1.getText().toString().length() != 5 ||
-                        binding.plateNewArasTag2.getText().toString().length() != 2))
-            Toast.makeText(getApplicationContext(), "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show();
-        else if (selectedTab == PlateType.simple)
-            getCarDebtHistory02(
-                    selectedTab,
-                    binding.plateSimpleTag1.getText().toString(),
-                    binding.plateSimpleTag2.getText().toString(),
-                    binding.plateSimpleTag3.getText().toString(),
-                    binding.plateSimpleTag4.getText().toString(),
-                    binding.nationalCode.getText().toString(),
-                    binding.mobile.getText().toString()
+            (binding!!.plateNewArasTag1.text.toString().length != 5 ||
+                    binding!!.plateNewArasTag2.text.toString().length != 2)
+        ) Toast.makeText(applicationContext, "پلاک را درست وارد کنید", Toast.LENGTH_SHORT).show()
+        else if (selectedTab == PlateType.simple) getCarDebtHistory02(
+            selectedTab,
+            binding!!.plateSimpleTag1.text.toString(),
+            binding!!.plateSimpleTag2.text.toString(),
+            binding!!.plateSimpleTag3.text.toString(),
+            binding!!.plateSimpleTag4.text.toString(),
+            binding!!.nationalCode.text.toString(),
+            binding!!.mobile.text.toString()
 
-            );
-        else if (selectedTab == PlateType.old_aras)
-            getCarDebtHistory02(
-                    selectedTab,
-                    binding.plateOldAras.getText().toString(),
-                    "0", "0", "0",
-                    binding.nationalCode.getText().toString(),
-                    binding.mobile.getText().toString()
-            );
-        else
-            getCarDebtHistory02(
-                    selectedTab,
-                    binding.plateNewArasTag1.getText().toString(),
-                    binding.plateNewArasTag2.getText().toString(),
-                    "0", "0",
-                    binding.nationalCode.getText().toString(),
-                    binding.mobile.getText().toString()
-            );
-
+        )
+        else if (selectedTab == PlateType.old_aras) getCarDebtHistory02(
+            selectedTab,
+            binding!!.plateOldAras.text.toString(),
+            "0", "0", "0",
+            binding!!.nationalCode.text.toString(),
+            binding!!.mobile.text.toString()
+        )
+        else getCarDebtHistory02(
+            selectedTab,
+            binding!!.plateNewArasTag1.text.toString(),
+            binding!!.plateNewArasTag2.text.toString(),
+            "0", "0",
+            binding!!.nationalCode.text.toString(),
+            binding!!.mobile.text.toString()
+        )
     }
 
-    private void getCarDebtHistory02(PlateType plateType, String tag1, String tag2, String tag3, String tag4, String nationalCode, String mobile) {
+    private fun getCarDebtHistory02(
+        plateType: PlateType,
+        tag1: String,
+        tag2: String,
+        tag3: String,
+        tag4: String,
+        nationalCode: String,
+        mobile: String
+    ) {
+        val functionRunnable = Runnable {
+            getCarDebtHistory02(
+                plateType,
+                tag1,
+                tag2,
+                tag3,
+                tag4,
+                nationalCode,
+                mobile
+            )
+        }
+        val loadingBar = LoadingBar(this@ChangePlateActivity)
+        loadingBar.show()
 
-        Runnable functionRunnable = () -> getCarDebtHistory02(plateType, tag1, tag2, tag3, tag4, nationalCode, mobile);
-        LoadingBar loadingBar = new LoadingBar(ChangePlateActivity.this);
-        loadingBar.show();
+        Assistant.hideKeyboard(this@ChangePlateActivity, binding!!.root)
 
-        Assistant.hideKeyboard(ChangePlateActivity.this, binding.getRoot());
+        webService.getClient(applicationContext).getCarDebtHistory(
+            SharedPreferencesRepository.getTokenWithPrefix(),
+            plateType.toString(),
+            tag1,
+            tag2,
+            tag3,
+            tag4,
+            0,
+            0,
+            nationalCode,
+            mobile,
+            1
+        ).enqueue(object : Callback<DebtHistoryResponse?> {
+            override fun onResponse(
+                call: Call<DebtHistoryResponse?>,
+                response: Response<DebtHistoryResponse?>
+            ) {
+                loadingBar.dismiss()
+                if (NewErrorHandler.apiResponseHasError(response, applicationContext)) return
 
-        webService.getClient(getApplicationContext()).getCarDebtHistory(SharedPreferencesRepository.getTokenWithPrefix(), plateType.toString(), tag1, tag2, tag3, tag4, 0, 0, nationalCode,mobile,1).enqueue(new Callback<DebtHistoryResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<DebtHistoryResponse> call, @NonNull Response<DebtHistoryResponse> response) {
+                ptag1 = tag1
+                ptag2 = tag2
+                ptag3 = tag3
+                ptag4 = tag4
 
-                loadingBar.dismiss();
-                if (NewErrorHandler.apiResponseHasError(response, getApplicationContext()))
-                    return;
+                binding!!.debtArea.visibility = View.VISIBLE
 
-                ptag1 = tag1;
-                ptag2 = tag2;
-                ptag3 = tag3;
-                ptag4 = tag4;
 
-                binding.debtArea.setVisibility(View.VISIBLE);
-
-//                List<DebtObject> receivedDebts = response.body().getObjects();
+                //                List<DebtObject> receivedDebts = response.body().getObjects();
 //
 //                // Set SHABA numbers based on keys
 //                for (DebtObject debt : debts) {
@@ -471,212 +442,268 @@ public class ChangePlateActivity extends AppCompatActivity {
 //                        debt.setShabaNumber("wage_azarpark_shaba");
 //                    }
 //                }
+                objectAdapter = DebtObjectAdapter(
+                    this@ChangePlateActivity,
+                    response.body()!!.getObjects()
+                )
 
-
-                objectAdapter = new DebtObjectAdapter(
-                        ChangePlateActivity.this,
-                        response.body().getObjects()
-                );
-
-                objectAdapter.setOnSelectionsChangedListener(() -> {
-                    int total = 0;
-                    for (DebtObject selectedItem : objectAdapter.getSelectedItems()) {
-                        total += selectedItem.value;
+                objectAdapter!!.setOnSelectionsChangedListener {
+                    var total = 0
+                    for (selectedItem in objectAdapter!!.selectedItems) {
+                        total += selectedItem.value
                     }
-                    setTotalPrice(total);
-                });
+                    setTotalPrice(total)
+                }
 
-                binding.objectLv.setAdapter(objectAdapter);
+                binding!!.objectLv.adapter = objectAdapter
 
-                ViewGroup.LayoutParams params = binding.objectLv.getLayoutParams();
-                params.height = Assistant.dpToPx(ChangePlateActivity.this, 50) * binding.objectLv.getCount();
-                binding.objectLv.setLayoutParams(params);
-                binding.objectLv.requestLayout();
-                objectAdapter.checkAll();
-                setTotalPrice(response.body().calculateTotalPrice());
+                val params = binding!!.objectLv.layoutParams
+                params.height =
+                    Assistant.dpToPx(this@ChangePlateActivity, 50f) * binding!!.objectLv.count
+                binding!!.objectLv.layoutParams = params
+                binding!!.objectLv.requestLayout()
+                objectAdapter!!.checkAll()
+                setTotalPrice(response.body()!!.calculateTotalPrice())
             }
 
-            @Override
-            public void onFailure(@NonNull Call<DebtHistoryResponse> call, @NonNull Throwable t) {
-                loadingBar.dismiss();
-                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), functionRunnable);
+            override fun onFailure(call: Call<DebtHistoryResponse?>, t: Throwable) {
+                loadingBar.dismiss()
+                NewErrorHandler.apiFailureErrorHandler(
+                    call,
+                    t,
+                    supportFragmentManager,
+                    functionRunnable
+                )
             }
-        });
 
+//            override fun onResponse(
+//                call: Call<DebtHistoryResponse?>,
+//                response: Response<DebtHistoryResponse?>
+//            ) {
+//                TODO("Not yet implemented")
+//            }
+//
+//            override fun onFailure(call: Call<DebtHistoryResponse?>, t: Throwable) {
+//                TODO("Not yet implemented")
+//            }
+        })
     }
 
-    private void setTotalPrice(int total) {
-        totalPrice = total;
+    private fun setTotalPrice(total: Int) {
+        totalPrice = total
 
-        binding.totalPriceTv.setText(totalPrice + " تومان");
+        binding!!.totalPriceTv.text = "$totalPrice تومان"
     }
 
-    public void paymentRequest(int amount, PlateType plateType, String tag1, String tag2, String tag3, String tag4, int placeID) {
-        binding.payment.startAnimation();
-        binding.payment.setOnClickListener(null);
-        Runnable retryFunction = () -> paymentRequest(amount, plateType, tag1, tag2, tag3, tag4, placeID);
+    fun paymentRequest(
+        amount: Int,
+        plateType: PlateType?,
+        tag1: String?,
+        tag2: String?,
+        tag3: String?,
+        tag4: String?,
+        placeID: Int
+    ) {
+        binding!!.payment.startAnimation()
+        binding!!.payment.setOnClickListener(null)
+        val retryFunction =
+            Runnable { paymentRequest(amount, plateType, tag1, tag2, tag3, tag4, placeID) }
 
-        String mobile = binding.mobile.getText().toString();
+        val mobile = binding!!.mobile.text.toString()
 
 
-                    PaymentService.OnTransactionCreated finalAction = () -> {
-                        binding.payment.revertAnimation();
-                        binding.payment.setOnClickListener(ChangePlateActivity.this::payment);
-                    };
+        val finalAction: OnTransactionCreated = OnTransactionCreated {
+            binding!!.payment.revertAnimation()
+            binding!!.payment.setOnClickListener { view: View ->
+                this@ChangePlateActivity.payment(
+                    view
+                )
+            }
+        }
 
-                    // prepare transaction payload
-                    List<TransactionAmount> amountPartList = new ArrayList<>();
-                    StringBuilder payload = new StringBuilder();
-                    boolean first = true;
-                    for (DebtObject selectedItem : objectAdapter.getSelectedItems()) {
-                        if (first) first = false;
-                        else payload.append(",");
-                        payload.append(selectedItem.key).append(":").append(selectedItem.getId());
+        // prepare transaction payload
+        val amountPartList: MutableList<TransactionAmount> = ArrayList()
+        val payload = StringBuilder()
+        var first = true
+        for (selectedItem in objectAdapter!!.selectedItems) {
+            if (first) first = false
+            else payload.append(",")
+            payload.append(selectedItem.key).append(":").append(selectedItem.getId())
 
-                        if (selectedItem.getValue() > 0) {
-                            String shaba = "";
-                            if (selectedItem.getKey().equals("freeway_debt")) {
-                                shaba = SharedPreferencesRepository.getValue(Constants.WAGE_FREEWAY_SHABA);
-                            }
+            if (selectedItem.getValue() > 0) {
+                var shaba: String? = ""
+                if (selectedItem.getKey() == "freeway_debt") {
+                    shaba = SharedPreferencesRepository.getValue(Constants.WAGE_FREEWAY_SHABA)
+                }
 
-                            if (selectedItem.getKey().equals("carviolation")) {
-                                shaba = SharedPreferencesRepository.getValue(Constants.WAGE_CARVIOLATION_SHABA);
-                            }
+                if (selectedItem.getKey() == "carviolation") {
+                    shaba = SharedPreferencesRepository.getValue(Constants.WAGE_CARVIOLATION_SHABA)
+                }
 
-                            if (selectedItem.getKey().equals("balance")) {
-                                shaba = SharedPreferencesRepository.getValue(Constants.WAGE_AZARPARK_SHABA);
-                            }
+                if (selectedItem.getKey() == "balance") {
+                    shaba = SharedPreferencesRepository.getValue(Constants.WAGE_AZARPARK_SHABA)
+                }
 
-                            amountPartList.add(new TransactionAmount(selectedItem.value, shaba));
-                        }
-                    }
+                amountPartList.add(TransactionAmount(selectedItem.value, shaba!!))
+            }
+        }
 
-                    if (amount == 0) {
-                        finalAction.onCreateTransactionFinished();
-                        printMiniFactor(null, ptag1, ptag2, ptag3, ptag4);
-                    } else {
-                        paymentService.createTransaction(
-                                ShabaType.NON_CHARGE, plateType, tag1, tag2, tag3, tag4,
-                                amountPartList, amount, -1, Constants.TRANSACTION_TYPE_DEBT,
-                                finalAction, -1, true, payload.toString()
-                        );
-                    }
+        if (amount == 0) {
+            finalAction.onCreateTransactionFinished()
+            printMiniFactor(null, ptag1, ptag2, ptag3, ptag4)
+        } else {
+            paymentService!!.createTransaction(
+                ShabaType.NON_CHARGE, plateType!!, tag1, tag2, tag3, tag4,
+                amountPartList, amount, -1, Constants.TRANSACTION_TYPE_DEBT,
+                finalAction, -1, true, payload.toString()
+            )
+        }
+
+
         //        for (DebtObject debt : debtObjects) {
 //            System.out.println("DebtObject key: " + debt.getKey() + ", ID: " + debt.getId());
 //            // or use Log.i() if you're in Android and want to log the output
 ////            Log.i("DebtObject", "Key: " + debt.getKey() + ", ID: " + debt.getId());
 //        }
-
-
-
     }
 
-//    public void submitMobile(String mobile, String tag1, String tag2, String tag3, String tag4, Runnable onDone, Runnable retryFunction) {
-//        // todo: comment for release
-////        if(true){
-////            onDone.run();
-////            return;
-////        }
-//
-//        webService.getClient(this).addMobileToPlate(SharedPreferencesRepository.getTokenWithPrefix(), assistant.getPlateType(tag1, tag2, tag3, tag4).toString(), tag1 != null ? tag1 : "0", tag2 != null ? tag2 : "0", tag3 != null ? tag3 : "0", tag4 != null ? tag4 : "0", mobile, 1).enqueue(new Callback<AddMobieToPlateResponse>() {
-//            @Override
-//            public void onResponse(Call<AddMobieToPlateResponse> call, Response<AddMobieToPlateResponse> response) {
-//                loadingBar.dismiss();
-//                if (NewErrorHandler.apiResponseHasError(response, ChangePlateActivity.this)) {
-//                    binding.payment.revertAnimation();
-//                    binding.payment.setOnClickListener(ChangePlateActivity.this::payment);
-//                    return;
-//                }
-//
-//                onDone.run();
-//            }
-//
-//            @Override
-//            public void onFailure(Call<AddMobieToPlateResponse> call, Throwable t) {
-//                loadingBar.dismiss();
-//                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), retryFunction);
-//            }
-//        });
-//    }
+    //    public void submitMobile(String mobile, String tag1, String tag2, String tag3, String tag4, Runnable onDone, Runnable retryFunction) {
+    //        // todo: comment for release
+    ////        if(true){
+    ////            onDone.run();
+    ////            return;
+    ////        }
+    //
+    //        webService.getClient(this).addMobileToPlate(SharedPreferencesRepository.getTokenWithPrefix(), assistant.getPlateType(tag1, tag2, tag3, tag4).toString(), tag1 != null ? tag1 : "0", tag2 != null ? tag2 : "0", tag3 != null ? tag3 : "0", tag4 != null ? tag4 : "0", mobile, 1).enqueue(new Callback<AddMobieToPlateResponse>() {
+    //            @Override
+    //            public void onResponse(Call<AddMobieToPlateResponse> call, Response<AddMobieToPlateResponse> response) {
+    //                loadingBar.dismiss();
+    //                if (NewErrorHandler.apiResponseHasError(response, ChangePlateActivity.this)) {
+    //                    binding.payment.revertAnimation();
+    //                    binding.payment.setOnClickListener(ChangePlateActivity.this::payment);
+    //                    return;
+    //                }
+    //
+    //                onDone.run();
+    //            }
+    //
+    //            @Override
+    //            public void onFailure(Call<AddMobieToPlateResponse> call, Throwable t) {
+    //                loadingBar.dismiss();
+    //                NewErrorHandler.apiFailureErrorHandler(call, t, getSupportFragmentManager(), retryFunction);
+    //            }
+    //        });
+    //    }
+    private fun printMiniFactor(
+        transaction: Transaction?,
+        tag1: String?,
+        tag2: String?,
+        tag3: String?,
+        tag4: String?
+    ) {
+        binding!!.printArea.removeAllViews()
+        binding!!.printArea.visibility = View.VISIBLE
+        val containerBinding = DebtClearedPrintTemplateContainerBinding.inflate(
+            LayoutInflater.from(
+                applicationContext
+            ), binding!!.printArea, true
+        )
 
-    private void printMiniFactor(Transaction transaction, String tag1, String tag2, String tag3, String tag4) {
-        binding.printArea.removeAllViews();
-        binding.printArea.setVisibility(View.VISIBLE);
-        DebtClearedPrintTemplateContainerBinding containerBinding = DebtClearedPrintTemplateContainerBinding.inflate(LayoutInflater.from(getApplicationContext()), binding.printArea, true);
+        for (selectedItem in objectAdapter!!.selectedItems) {
+            if (selectedItem.getKey() == "freeway_debt") {
+                val printTemplateBinding = FreewayDebtClearedPrintTemplateBinding.inflate(
+                    LayoutInflater.from(
+                        applicationContext
+                    ), containerBinding.body, true
+                )
 
-        for (DebtObject selectedItem : objectAdapter.getSelectedItems()) {
-            if (selectedItem.getKey().equals("freeway_debt")) {
-                FreewayDebtClearedPrintTemplateBinding printTemplateBinding = FreewayDebtClearedPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), containerBinding.body, true);
+                printTemplateBinding.priceTv.text = String.format(
+                    "%s تومان", NumberFormat.getNumberInstance(
+                        Locale.US
+                    ).format(selectedItem.value.toLong())
+                )
+                printTemplateBinding.timeTv.text = assistant!!.time
+                printTemplateBinding.traceNumberTv.text =
+                    if (transaction != null) transaction.trace_number else ""
 
-                printTemplateBinding.priceTv.setText(String.format("%s تومان", NumberFormat.getNumberInstance(Locale.US).format(selectedItem.value)));
-                printTemplateBinding.timeTv.setText(assistant.getTime());
-                printTemplateBinding.traceNumberTv.setText(
-                        transaction != null ? transaction.getTrace_number() : ""
-                );
+                val platePrintTemplateBinding = PlatePrintTemplateBinding.inflate(
+                    LayoutInflater.from(
+                        applicationContext
+                    ), printTemplateBinding.plateContainer, true
+                )
+                setPrintData(platePrintTemplateBinding, tag1, tag2, tag3, tag4)
+            } else if (selectedItem.getKey() == "balance") {
+                val printTemplateBinding = DebtClearedPrintTemplateBinding.inflate(
+                    LayoutInflater.from(
+                        applicationContext
+                    ), containerBinding.body, true
+                )
 
-                PlatePrintTemplateBinding platePrintTemplateBinding = PlatePrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), printTemplateBinding.plateContainer, true);
-                setPrintData(platePrintTemplateBinding, tag1, tag2, tag3, tag4);
-            } else if (selectedItem.getKey().equals("balance")) {
-                DebtClearedPrintTemplateBinding printTemplateBinding = DebtClearedPrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), containerBinding.body, true);
+                printTemplateBinding.priceTv.text = String.format(
+                    "%s تومان", NumberFormat.getNumberInstance(
+                        Locale.US
+                    ).format(selectedItem.value.toLong())
+                )
+                printTemplateBinding.timeTv.text = assistant!!.time
+                printTemplateBinding.traceNumberTv.text =
+                    if (transaction != null) transaction.trace_number else ""
 
-                printTemplateBinding.priceTv.setText(String.format("%s تومان", NumberFormat.getNumberInstance(Locale.US).format(selectedItem.value)));
-                printTemplateBinding.timeTv.setText(assistant.getTime());
-                printTemplateBinding.traceNumberTv.setText(
-                        transaction != null ? transaction.getTrace_number() : ""
-                );
-
-                PlatePrintTemplateBinding platePrintTemplateBinding = PlatePrintTemplateBinding.inflate(LayoutInflater.from(getApplicationContext()), printTemplateBinding.plateContainer, true);
-                setPrintData(platePrintTemplateBinding, tag1, tag2, tag3, tag4);
+                val platePrintTemplateBinding = PlatePrintTemplateBinding.inflate(
+                    LayoutInflater.from(
+                        applicationContext
+                    ), printTemplateBinding.plateContainer, true
+                )
+                setPrintData(platePrintTemplateBinding, tag1, tag2, tag3, tag4)
             }
         }
 
-        paymentService.print(binding.printArea, 1500, this::resetData);
+        paymentService!!.print(binding!!.printArea, 1500) { this.resetData() }
     }
 
-    private void setPrintData(PlatePrintTemplateBinding printTemplateBinding, String tag1, String tag2, String tag3, String tag4) {
-        if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.simple) {
+    private fun setPrintData(
+        printTemplateBinding: PlatePrintTemplateBinding,
+        tag1: String?,
+        tag2: String?,
+        tag3: String?,
+        tag4: String?
+    ) {
+        if (assistant!!.getPlateType(tag1, tag2, tag3, tag4) == PlateType.simple) {
+            printTemplateBinding.plateSimpleArea.visibility = View.VISIBLE
+            printTemplateBinding.plateOldArasArea.visibility = View.GONE
+            printTemplateBinding.plateNewArasArea.visibility = View.GONE
 
-            printTemplateBinding.plateSimpleArea.setVisibility(View.VISIBLE);
-            printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
-            printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
+            printTemplateBinding.plateSimpleTag1.text = tag1
+            printTemplateBinding.plateSimpleTag2.text = tag2
+            printTemplateBinding.plateSimpleTag3.text = tag3
+            printTemplateBinding.plateSimpleTag4.text = tag4
+        } else if (assistant!!.getPlateType(tag1, tag2, tag3, tag4) == PlateType.old_aras) {
+            printTemplateBinding.plateSimpleArea.visibility = View.GONE
+            printTemplateBinding.plateOldArasArea.visibility = View.VISIBLE
+            printTemplateBinding.plateNewArasArea.visibility = View.GONE
 
-            printTemplateBinding.plateSimpleTag1.setText(tag1);
-            printTemplateBinding.plateSimpleTag2.setText(tag2);
-            printTemplateBinding.plateSimpleTag3.setText(tag3);
-            printTemplateBinding.plateSimpleTag4.setText(tag4);
-
-        } else if (assistant.getPlateType(tag1, tag2, tag3, tag4) == PlateType.old_aras) {
-
-            printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
-            printTemplateBinding.plateOldArasArea.setVisibility(View.VISIBLE);
-            printTemplateBinding.plateNewArasArea.setVisibility(View.GONE);
-
-            printTemplateBinding.plateOldArasTag1En.setText(tag1);
-            printTemplateBinding.plateOldArasTag1Fa.setText(tag1);
-
+            printTemplateBinding.plateOldArasTag1En.text = tag1
+            printTemplateBinding.plateOldArasTag1Fa.text = tag1
         } else {
+            printTemplateBinding.plateSimpleArea.visibility = View.GONE
+            printTemplateBinding.plateOldArasArea.visibility = View.GONE
+            printTemplateBinding.plateNewArasArea.visibility = View.VISIBLE
 
-            printTemplateBinding.plateSimpleArea.setVisibility(View.GONE);
-            printTemplateBinding.plateOldArasArea.setVisibility(View.GONE);
-            printTemplateBinding.plateNewArasArea.setVisibility(View.VISIBLE);
-
-            printTemplateBinding.plateNewArasTag1En.setText(tag1);
-            printTemplateBinding.plateNewArasTag1Fa.setText(tag1);
-            printTemplateBinding.plateNewArasTag2En.setText(tag2);
-            printTemplateBinding.plateNewArasTag2Fa.setText(tag2);
-
+            printTemplateBinding.plateNewArasTag1En.text = tag1
+            printTemplateBinding.plateNewArasTag1Fa.text = tag1
+            printTemplateBinding.plateNewArasTag2En.text = tag2
+            printTemplateBinding.plateNewArasTag2Fa.text = tag2
         }
     }
 
-    private int getWagePrice() {
-        int price = 0;
+    private fun getWagePrice(): Int {
+        var price = 0
 
         try {
-            price = Integer.parseInt(SharedPreferencesRepository.getWagePrice());
-        } catch (Exception e) {
-            Logger.e("Error: No valid wage price received");
+            price = SharedPreferencesRepository.getWagePrice().toInt()
+        } catch (e: Exception) {
+            e("Error: No valid wage price received")
         }
 
-        return price;
+        return price
     }
 }
