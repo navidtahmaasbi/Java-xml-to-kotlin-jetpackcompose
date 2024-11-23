@@ -3,6 +3,8 @@ package com.azarpark.cunt.payment
 import android.content.Intent
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.azarpark.cunt.activities.ChangePlateActivity
+import com.azarpark.cunt.adapters.DebtObjectAdapter
 import com.azarpark.cunt.core.AppConfig
 import com.azarpark.cunt.enums.PlateType
 import com.azarpark.cunt.models.Transaction
@@ -16,13 +18,11 @@ import com.azarpark.cunt.utils.SharedPreferencesRepository
 import com.azarpark.cunt.web_service.NewErrorHandler
 import com.azarpark.cunt.web_service.WebService
 import com.azarpark.cunt.web_service.responses.CreateTransactionResponse
-import com.azarpark.cunt.adapters.DebtObjectAdapter
 import com.azarpark.cunt.web_service.responses.DebtObject
 import com.azarpark.cunt.web_service.responses.VerifyTransactionResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-
 
 
 abstract class PaymentService(
@@ -256,7 +256,7 @@ abstract class PaymentService(
         var paymentCallback: OnPaymentCallback? = null
             private set
 
-        fun activity(activity: AppCompatActivity) = apply { this.activity = activity }
+        fun activity(activity: ChangePlateActivity) = apply { this.activity = AppCompatActivity() }
         fun webService(webService: WebService) = apply { this.webService = webService }
         fun paymentCallback(paymentCallback: OnPaymentCallback) =
             apply { this.paymentCallback = paymentCallback }

@@ -43,6 +43,7 @@ android {
     }
 //    buildToolsVersion '34.0.0'
     buildFeatures {
+        dataBinding true
         viewBinding true
         buildConfig true
         aidl true
@@ -115,6 +116,7 @@ dependencies {
 
     // Kotlin and other dependencies
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.0.20"
+    annotationProcessor 'com.android.databinding:compiler:3.1.4'
 
 
 }
