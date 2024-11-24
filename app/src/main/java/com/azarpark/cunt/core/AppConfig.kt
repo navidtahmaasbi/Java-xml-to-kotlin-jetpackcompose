@@ -69,7 +69,7 @@ class AppConfig {
         var ticketMessage: Map<String, TicketMessage>? = null
 
         fun buildConfig(subdomain: String): Config {
-            if (subdomain == null || subdomain.isEmpty()) {
+            if (subdomain.isEmpty()) {
                 return Config(
                     baseUrl = "$http$tabriz.$domain",
                     paymentType = PaymentType.SAMAN,

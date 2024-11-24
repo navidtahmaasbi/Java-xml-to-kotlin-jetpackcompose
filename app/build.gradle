@@ -113,10 +113,13 @@ dependencies {
     implementation "androidx.compose.ui:ui:1.5.15" // Make sure to use the latest version of Compose
     implementation "androidx.activity:activity-compose:1.9.3"
     implementation "androidx.compose.compiler:compiler:1.5.15"
+    implementation "androidx.compose.material:material-icons-extended:1.5.0"
+
 
     // Kotlin and other dependencies
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.0.20"
     annotationProcessor 'com.android.databinding:compiler:3.1.4'
+
 
 
 }

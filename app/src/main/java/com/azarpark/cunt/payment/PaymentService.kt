@@ -3,7 +3,6 @@ package com.azarpark.cunt.payment
 import android.content.Intent
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.azarpark.cunt.activities.ChangePlateActivity
 import com.azarpark.cunt.adapters.DebtObjectAdapter
 import com.azarpark.cunt.core.AppConfig
 import com.azarpark.cunt.enums.PlateType
@@ -256,7 +255,7 @@ abstract class PaymentService(
         var paymentCallback: OnPaymentCallback? = null
             private set
 
-        fun activity(activity: ChangePlateActivity) = apply { this.activity = AppCompatActivity() }
+        fun activity(activity: AppCompatActivity) = apply { this.activity = activity }
         fun webService(webService: WebService) = apply { this.webService = webService }
         fun paymentCallback(paymentCallback: OnPaymentCallback) =
             apply { this.paymentCallback = paymentCallback }
